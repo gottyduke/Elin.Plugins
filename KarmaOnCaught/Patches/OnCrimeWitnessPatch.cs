@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
@@ -9,6 +10,7 @@ namespace KoC.Patches;
 internal class OnCrimeWitnessPatch
 {
     private const string OnCrimeWitnessClosure = $"<{nameof(AI_Steal.Run)}>b__4";
+    private static Type? _closures;
 
     private static string CaughtPrompt => Lang.langCode switch {
         "CN" => "你被抓了现行！",
@@ -19,40 +21,44 @@ internal class OnCrimeWitnessPatch
 
     internal static MethodInfo TargetMethod()
     {
-        var closures = AccessTools.FirstInner(typeof(AI_Steal), t => t.Name.Contains("DisplayClass"));
+        _closures = AccessTools.FirstInner(typeof(AI_Steal), t => t.Name.Contains("DisplayClass"));
         return AccessTools.Method(
-            closures,
+            _closures,
             OnCrimeWitnessClosure
         );
     }
 
     [HarmonyTranspiler]
-    internal static IEnumerable<CodeInstruction> OnCrimeWitnessIl(IEnumerable<CodeInstruction> instructions,
-        ILGenerator generator)
+    internal static IEnumerable<CodeInstruction> OnCrimeWitnessIl(IEnumerable<CodeInstruction> instructions)
     {
-        var codes = new List<CodeInstruction>(instructions);
-        for (var i = 0; i < codes.Count; ++i) {
-            if (i >= 4 &&
-                codes[i].opcode == OpCodes.Ret &&
-                codes[i - 1].opcode == OpCodes.Cgt &&
-                codes[i - 2].opcode == OpCodes.Add &&
-                codes[i - 3].opcode == OpCodes.Ldloc_0) {
-                codes[i].labels.Add(generator.DefineLabel());
-                var disp = codes[i].labels[0];
-
-                yield return new(OpCodes.Dup);
-                yield return new(OpCodes.Brfalse_S, disp);
-                yield return new(OpCodes.Call,
-                    AccessTools.Method(typeof(OnCrimeWitnessPatch), nameof(ModKarmaOnCaught)));
-            }
-
-            yield return codes[i];
-        }
+        return new CodeMatcher(instructions)
+            .MatchForward(false,
+                new CodeMatch(OpCodes.Ldloc_0),
+                new CodeMatch(OpCodes.Add),
+                new CodeMatch(OpCodes.Cgt),
+                new CodeMatch(OpCodes.Ret))
+            .Advance(3)
+            .InsertAndAdvance(
+                new CodeInstruction(OpCodes.Dup),
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(_closures, "chara")),
+                new CodeInstruction(OpCodes.Call,
+                    AccessTools.Method(typeof(OnCrimeWitnessPatch), nameof(ModKarmaOnCaught))))
+            .InstructionEnumeration();
     }
 
-    private static void ModKarmaOnCaught()
+    private static void ModKarmaOnCaught(bool isCrime, Chara? target)
     {
+        if (!isCrime) {
+            return;
+        }
+
         EClass.pc.Say(CaughtPrompt);
-        EClass.player.ModKarma(-1);
+
+        if (target != null && (target.IsPCFaction || target.OriginalHostility >= Hostility.Friend)) {
+            EClass.player.ModKarma(-1);
+        } else if (target == null || target.hostility > Hostility.Enemy) {
+            EClass.player.ModKarma(-1);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
@@ -20,36 +21,22 @@ internal class OnModKarmaPatch
     }
 
     [HarmonyTranspiler]
-    internal static IEnumerable<CodeInstruction> OnModKarmaIl(IEnumerable<CodeInstruction> instructions,
-        ILGenerator generator)
+    internal static IEnumerable<CodeInstruction> OnModKarmaIl(IEnumerable<CodeInstruction> instructions)
     {
-        var codes = new List<CodeInstruction>(instructions);
-        Label? disp = null;
-        for (var i = codes.Count - 4; i > 0; --i) {
-            if (codes[i].opcode != OpCodes.Callvirt ||
-                !codes[i].operand.ToString().Contains(nameof(Player.ModKarma))) {
-                continue;
+        const int offset = 3 + 4 + 5 + 3 + 1 + 3 + 5 + 3;
+        // CodeMatcher sucks
+        var c = new List<CodeInstruction>(instructions);
+        for (var i = 0; i < c.Count; ++i) {
+            if (i >= 3 &&
+                c[i - 1].opcode == OpCodes.Callvirt &&
+                c[i - 2].opcode == OpCodes.Ldnull &&
+                c[i - 3].opcode == OpCodes.Ldnull &&
+                (MethodInfo)c[i - 1].operand == AccessTools.Method(typeof(Card), nameof(Card.Say),
+                    [typeof(string), typeof(Card), typeof(Card), typeof(string), typeof(string)])) {
+                i += offset;
             }
 
-            codes[i + 1].labels.Add(generator.DefineLabel());
-            disp = codes[i + 1].labels[0];
-            break;
-        }
-
-        var patched = false;
-        for (var i = 0; i < codes.Count; ++i) {
-            if (i <= codes.Count - 4 &&
-                disp is not null &&
-                !patched &&
-                codes[i].opcode == OpCodes.Ldarg_0 &&
-                codes[i + 1].opcode == OpCodes.Ldfld &&
-                codes[i + 1].operand.ToString().Contains("chara") &&
-                codes[i + 2].opcode == OpCodes.Brfalse) {
-                yield return new(OpCodes.Br_S, disp);
-                patched = true;
-            }
-
-            yield return codes[i];
+            yield return c[i];
         }
     }
 }

@@ -6,7 +6,6 @@ Stealing(pickpocketing) does not reduce karma unless you are caught in the act.
 
 偷窃只有在被抓现行时才会减少善恶值。
 
-# 捕まらない限りカルマを失わない
+# 成功すればカルマは失わない
 
-盗み（スリ）は、行為が見つからない限りカルマを減らしません。
-
+窃盗行為によるカルマ減少は失敗した時のみ行われます。
