@@ -1,6 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KarmaOnCaught", "KarmaOnCaught\KarmaOnCaught.csproj", "{A504BEE4-AD1F-4657-81FA-70E3DFE162FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiElin", "MultiElin\MultiElin.Core\MultiElin.csproj", "{74406121-4C1A-4216-9D27-5E2A735DAD34}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +17,12 @@ Global
 		{A504BEE4-AD1F-4657-81FA-70E3DFE162FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A504BEE4-AD1F-4657-81FA-70E3DFE162FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A504BEE4-AD1F-4657-81FA-70E3DFE162FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74406121-4C1A-4216-9D27-5E2A735DAD34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74406121-4C1A-4216-9D27-5E2A735DAD34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 EndGlobal
