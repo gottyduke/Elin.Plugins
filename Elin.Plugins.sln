@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KarmaOnCaught", "KarmaOnCau
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiElin", "MultiElin\MultiElin.Core\MultiElin.csproj", "{74406121-4C1A-4216-9D27-5E2A735DAD34}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FixedPackageLoader", "FixedPackageLoader\FixedPackageLoader.csproj", "{C5A95EBC-6442-4C8D-B667-8B06E95748F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Erpc", "ElinRichPresence\Erpc.csproj", "{A504BEE4-AD1F-4657-81FA-70E3DFE162DF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +23,14 @@ Global
 		{A504BEE4-AD1F-4657-81FA-70E3DFE162FE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{74406121-4C1A-4216-9D27-5E2A735DAD34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{74406121-4C1A-4216-9D27-5E2A735DAD34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5A95EBC-6442-4C8D-B667-8B06E95748F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5A95EBC-6442-4C8D-B667-8B06E95748F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5A95EBC-6442-4C8D-B667-8B06E95748F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5A95EBC-6442-4C8D-B667-8B06E95748F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A504BEE4-AD1F-4657-81FA-70E3DFE162DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A504BEE4-AD1F-4657-81FA-70E3DFE162DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A504BEE4-AD1F-4657-81FA-70E3DFE162DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A504BEE4-AD1F-4657-81FA-70E3DFE162DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

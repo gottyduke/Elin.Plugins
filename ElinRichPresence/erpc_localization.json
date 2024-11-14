@@ -1,0 +1,103 @@
+{
+  "erpc_state_main_menu": {
+    "Cn": [
+      "主菜单"
+    ],
+    "Jp": [
+      "メインメニュー"
+    ],
+    "En": [
+      "Main Menu"
+    ]
+  },
+  "erpc_state_embark": {
+    "Cn": [
+      "准备着一场冒险",
+      "准备大干特干一场",
+      "密谋捕获少女"
+    ],
+    "Jp": [
+      "冒険の準備をする",
+      "大規模な準備をする",
+      "少女を捕まえる計画を立てる"
+    ],
+    "En": [
+      "Preparing for an adventure",
+      "Stockpiling before embarking",
+      "Scheming to capture sisters"
+    ]
+  },
+  "erpc_state_explore": {
+    "Cn": [
+      "探索{0}中",
+      "于{0}处游荡",
+      "游览{0}中"
+    ],
+    "Jp": [
+      "{0}を探索中",
+      "{0}を徘徊中",
+      "{0}を観光中"
+    ],
+    "En": [
+      "Exploring {0}",
+      "Roaming {0}",
+      "Touring around {0}"
+    ]
+  },
+  "erpc_state_nefia": {
+    "Cn": [
+      "在{0}中探险",
+      "从{0}杀出一条血路",
+      "{0}, 战斗, 爽!"
+    ],
+    "Jp": [
+      "{0}でダンジョン探索中",
+      "{0}で血路を開く",
+      "{0}で戦い、楽しさを感じる"
+    ],
+    "En": [
+      "Delving into {0}",
+      "Left 4 Dead in {0}",
+      "Spilling blood in {0}",
+      "Fighting monsters in {0}"
+    ]
+  },
+  "erpc_state_travel": {
+    "Cn": [
+      "在{0}旅行",
+      "穿梭于{0}",
+      "在{0}跑来跑去",
+      "{0}观光之旅",
+      "在{0}跋山涉水"
+    ],
+    "Jp": [
+      "{0}を旅する",
+      "{0}を駆け回る",
+      "{0}の観光ツアー",
+      "{0}のハイキング"
+    ],
+    "En": [
+      "Traveling in {0}",
+      "Running wild around {0}",
+      "Sightseeing tour in {0}",
+      "Hiking in {0}"
+    ]
+  },
+  "erpc_state_base_build": {
+    "Cn": [
+      "在{0}建设家园",
+      "在{0}搞装修",
+      "在{0}搜刮地皮"
+    ],
+    "Jp": [
+      "{0}で基地を建設中",
+      "{0}で家を飾る",
+      "{0}の地形を整える"
+    ],
+    "En": [
+      "Building base in {0}",
+      "Decorating houses in {0}",
+      "Terraforming in {0}"
+    ]
+  }
+}
