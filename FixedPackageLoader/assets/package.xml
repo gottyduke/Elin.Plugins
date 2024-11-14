@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Meta>
+  <title>Fixed Packaged Loader</title>
+  <id>dk.elinplugins.fixedpackageloader</id>
+  <author>DK</author>
+  <builtin>false</builtin>
+  <loadPriority>-99</loadPriority>
+  <version>0.23.24</version>
+  <description>
+Fix chain package loader so it can resolve script mod dependencies
+  </description>
+</Meta>
