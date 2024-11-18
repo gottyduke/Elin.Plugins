@@ -84,6 +84,14 @@
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
             <Private>False</Private>
         </Reference>
+        <Reference Include="UnityEngine.InputLegacyModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.InputModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.InputModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
         <Reference Include="UnityEngine.UI">
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UI.dll</HintPath>
             <Private>False</Private>
@@ -96,6 +104,7 @@
     <ItemGroup>
         <Compile Include="Components\AuxNote.cs"/>
         <Compile Include="Components\AuxTooltip.cs"/>
+        <Compile Include="EquipmentComparisonConfig.cs"/>
         <Compile Include="EquipmentComparisonMod.cs"/>
         <Compile Include="Helper\ComponentFetch.cs"/>
         <Compile Include="Helper\CoroutineHelper.cs"/>
@@ -112,6 +121,7 @@
     </ItemGroup>
     <ItemGroup>
         <Content Include="README.md"/>
+        <Content Include="README_CN.md"/>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -11,6 +11,7 @@ internal class AuxTooltip : MonoBehaviour
 {
     private readonly List<UITooltip> _cached = [];
     internal UITooltip? BaseNote { get; private set; }
+    internal bool IsEnabled { get; private set; }
 
     private void Awake()
     {
@@ -40,7 +41,29 @@ internal class AuxTooltip : MonoBehaviour
             ..instance.tooltips,
             .._cached,
         ];
+
+        IsEnabled = true;
         ECMod.Log("aux notes patched");
+    }
+
+    private void Update()
+    {
+        var mod = EquipmentComparisonConfig.Modifier!.Value;
+        if (mod != KeyCode.None && !Input.GetKey(mod)) {
+            return;
+        }
+
+        var toggle = EquipmentComparisonConfig.Toggle!.Value;
+        if (toggle == KeyCode.None || !Input.GetKeyDown(toggle)) {
+            return;
+        }
+
+        IsEnabled = !IsEnabled;
+        EClass.pc.Say(Lang.langCode switch {
+            "CN" => "装备比较: " + (IsEnabled ? "启用 " : "禁用 "),
+            "JP" => "装備比較: " + (IsEnabled ? "启用 " : "無効 "),
+            _ => "Compare Equipment: " + (IsEnabled ? "Enabled " : "Disabled "),
+        });
     }
 
     internal static void TryDrawAuxTooltip(UIButton? btn)
@@ -50,6 +73,10 @@ internal class AuxTooltip : MonoBehaviour
         var @this = tm.gameObject.GetOrAddComponent<AuxTooltip>();
         var notes = @this.GetComponentsInChildren<AuxNote>();
         notes.Do(n => n.SetActive(false));
+
+        if (!@this.IsEnabled) {
+            return;
+        }
 
         if (btn is not ButtonGridDrag { card: Thing thing } grid) {
             return;
@@ -67,7 +94,8 @@ internal class AuxTooltip : MonoBehaviour
         }
 
         // unless checking pet inv, always compare with pc
-        var owner = grid.invOwner.Chara.IsPCFactionOrMinion
+        var owner = grid.invOwner.Chara?.IsPCFactionOrMinion ??
+                    false
             ? grid.invOwner.Chara
             : EClass.pc;
 
