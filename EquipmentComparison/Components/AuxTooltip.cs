@@ -51,37 +51,37 @@ internal class AuxTooltip : MonoBehaviour
         var notes = @this.GetComponentsInChildren<AuxNote>();
         notes.Do(n => n.SetActive(false));
 
-        if (btn is not ButtonGrid { card: Thing thing } inv) {
+        if (btn is not ButtonGridDrag { card: Thing thing } grid) {
             return;
         }
 
-        if (!thing.IsEquipmentOrRanged ||
+        if (grid.invOwner is InvOwnerEquip or InvOwnerHotbar) {
+            // not drawing for hotbar item
+            return;
+        }
+
+        if (thing is { IsEquipmentOrRanged: false, IsThrownWeapon: false } ||
             thing.isEquipped) {
             // already equipped or not a equipment
             return;
         }
 
         // unless checking pet inv, always compare with pc
-        var owner = inv.invOwner.Chara.IsPCFactionOrMinion
-            ? inv.invOwner.Chara
+        var owner = grid.invOwner.Chara.IsPCFactionOrMinion
+            ? grid.invOwner.Chara
             : EClass.pc;
 
         // GetEquippedThing() only returns first equipped
         // need to iterate in case of dual wielding
         // also search for hotbar & toolbelt items
-        var comparables = GetAllComparableGrids(thing.category.slot, owner);
-        if (comparables.Count == 0) {
-            // nothing to compare
-            return;
-        }
-
+        var comparables = GetAllComparableGrids(thing, owner);
         for (var i = 0; i < Math.Min(2, comparables.Count); ++i) {
             var copyTooltip = comparables[i].tooltip.CopyWithId($"aux_note_{i}");
             tm.ShowTooltip(copyTooltip, @this.BaseNote!.transform);
         }
     }
 
-    private static List<ButtonGridDrag> GetAllComparableGrids(int slotId, Chara owner)
+    private static List<ButtonGridDrag> GetAllComparableGrids(Thing item, Chara owner)
     {
         // wtf did I write
         if (!owner.IsPCC) {
@@ -90,10 +90,17 @@ internal class AuxTooltip : MonoBehaviour
                 .Where(l => l.Inv.Chara == owner)
                 .SelectMany(l => l.invs)
                 .SelectMany(l => l.list.buttons)
-                .Where(p => p.obj is Thing { isEquipped: true } t &&
-                            t.category.slot == slotId)
+                .Where(p => p.obj switch {
+                    Thing { isEquipped: true } t
+                        when !item.IsThrownWeapon &&
+                             t.category.slot == item.category.slot => true,
+                    Thing { isEquipped: false, IsThrownWeapon: true }
+                        when item.IsThrownWeapon => true,
+                    _ => false,
+                })
                 .Select(p => p.component)
                 .OfType<ButtonGridDrag>()
+                .Where(b => b.card != item)
                 .ToList();
         }
 
@@ -106,10 +113,16 @@ internal class AuxTooltip : MonoBehaviour
         ];
 
         return grids
-            .Where(p => p.obj is BodySlot { thing: not null } s &&
-                        s.elementId == slotId)
+            .Where(p => p.obj switch {
+                BodySlot { thing: not null } s
+                    when s.elementId == item.category.slot => true,
+                Thing { IsThrownWeapon: true }
+                    when item.IsThrownWeapon => true,
+                _ => false,
+            })
             .Select(p => p.component)
             .OfType<ButtonGridDrag>()
+            .Where(b => b.card != item)
             .ToList();
     }
 }

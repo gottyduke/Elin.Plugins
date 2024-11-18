@@ -7,7 +7,7 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.equipmentcomparison";
     internal const string Name = "Equipment Comparison";
-    internal const string Version = "1.0";
+    internal const string Version = "1.1";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]

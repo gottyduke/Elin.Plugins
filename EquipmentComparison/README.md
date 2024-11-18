@@ -1,6 +1,7 @@
 ﻿# Equipment Comparison
 
-When viewing unequipped items, display comparison information for items already equipped in the same slot. When viewing a pet's inventory, it will also compare the pet's equipment.
+When viewing unequipped items, display comparison information for items already equipped in the same slot. When viewing
+a pet's inventory, it will also compare the pet's equipment.
 
 # 装备比较
 

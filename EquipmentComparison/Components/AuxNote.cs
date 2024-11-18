@@ -27,7 +27,7 @@ internal class AuxNote : MonoBehaviour
 
         var baseRect = baseNote.GetComponent<RectTransform>();
         var baseSize = baseRect.sizeDelta;
-        var auxSize = GetComponent<RectTransform>().sizeDelta;
+        var rect = GetComponent<RectTransform>();
 
         var basePos = baseRect.position;
         var auxPos = basePos with { x = basePos.x - baseSize.x * scale };
@@ -35,15 +35,11 @@ internal class AuxNote : MonoBehaviour
         if (name == "aux_note_1") {
             var notes = aux.GetComponentsInChildren<AuxNote>();
             var last = notes[0].GetComponent<RectTransform>();
-            last.position = last.position with {
-                y = last.position.y - last.sizeDelta.y / 2f * scale,
-            };
             auxPos = auxPos with {
-                y = auxPos.y + auxSize.y / 2f * scale,
+                x = auxPos.x - last.sizeDelta.x * scale,
             };
         }
 
-        var rect = GetComponent<RectTransform>();
         rect.position = auxPos;
     }
 }
