@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 namespace EC.Components;
 
@@ -23,23 +24,36 @@ internal class AuxNote : MonoBehaviour
         var aux = GetComponentInParent<AuxTooltip>();
         var baseNote = aux.BaseNote!;
 
+        if (name == "aux_note_0") {
+            AttachToRect(baseNote.GetComponent<RectTransform>());
+        } else {
+            var notes = aux.GetComponentsInChildren<AuxNote>().ToList();
+            var index = notes.IndexOf(this);
+            var last = notes[index - 1].GetComponent<RectTransform>();
+            AttachToRect(last);
+        }
+    }
+
+    private void AttachToRect(RectTransform baseRect)
+    {
         var scale = ELayer.ui.canvasScaler.scaleFactor;
 
-        var baseRect = baseNote.GetComponent<RectTransform>();
         var baseSize = baseRect.sizeDelta;
         var rect = GetComponent<RectTransform>();
 
         var basePos = baseRect.position;
-        var auxPos = basePos with { x = basePos.x - baseSize.x * scale };
+        var auxPos = basePos;
 
-        if (name == "aux_note_1") {
-            var notes = aux.GetComponentsInChildren<AuxNote>();
-            var last = notes[0].GetComponent<RectTransform>();
-            auxPos = auxPos with {
-                x = auxPos.x - last.sizeDelta.x * scale,
-            };
+        if (baseRect.pivot == Vector2.one) {
+            auxPos = basePos with { x = basePos.x - baseSize.x * scale };
         }
 
+        if (baseRect.pivot == Vector2.up) {
+            auxPos = basePos with { x = basePos.x + baseSize.x * scale };
+        }
+
+        rect.localPosition = baseRect.localPosition;
         rect.position = auxPos;
+        rect.pivot = baseRect.pivot;
     }
 }
