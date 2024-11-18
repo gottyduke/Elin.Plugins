@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FixedPackageLoader", "Fixed
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Erpc", "ElinRichPresence\Erpc.csproj", "{A504BEE4-AD1F-4657-81FA-70E3DFE162DF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModConfigurationMenu", "ModConfigurationMenu\ModConfigurationMenu.csproj", "{A504BEE4-AD1F-4657-81FA-70E3DEADBEEF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EquipmentComparison", "EquipmentComparison\EquipmentComparison.csproj", "{A504BEE4-AD1F-4657-81FA-BEEFDFE162FE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +35,14 @@ Global
 		{A504BEE4-AD1F-4657-81FA-70E3DFE162DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A504BEE4-AD1F-4657-81FA-70E3DFE162DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A504BEE4-AD1F-4657-81FA-70E3DFE162DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A504BEE4-AD1F-4657-81FA-70E3DEADBEEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A504BEE4-AD1F-4657-81FA-70E3DEADBEEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A504BEE4-AD1F-4657-81FA-70E3DEADBEEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A504BEE4-AD1F-4657-81FA-70E3DEADBEEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A504BEE4-AD1F-4657-81FA-BEEFDFE162FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A504BEE4-AD1F-4657-81FA-BEEFDFE162FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A504BEE4-AD1F-4657-81FA-BEEFDFE162FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A504BEE4-AD1F-4657-81FA-BEEFDFE162FE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

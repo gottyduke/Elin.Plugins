@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Meta>
+  <title>Compare Equipment</title>
+  <id>dk.elinplugins.equipmentcomparison</id>
+  <author>DK</author>
+  <builtin>false</builtin>
+  <loadPriority>100</loadPriority>
+  <version>0.23.31</version>
+  <description>
+[h1]Equipment Comparison[/h1]
+
+When viewing unequipped items, display comparison information for items already equipped in the same slot. When viewing a pet's inventory, it will also compare the pet's equipment.
+
+[h1]装备比较[/h1]
+
+查看未装备物品时显示同栏位已装备物品的比较信息。在查看宠物的库存时，还会比较宠物装备。
+
+[h1]装備比較[/h1]
+
+未装備のアイテムを表示する際に、同じスロットに装備されているアイテムの比較情報を表示します。ペットのインベントリを確認する際には、ペットの装備も比較されます。
+
+[h1]!!Caution!![/h1]
+
+If UI scale is set to > 140%, tooltips look funny.
+
+[url=https://github.com/gottyduke/Elin.Plugins/tree/master/EquipmentComparison]source[/url]
+  </description>
+</Meta>

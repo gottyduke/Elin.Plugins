@@ -20,7 +20,7 @@ internal static class Zones
             // Specwing
             // Tinker
             // Willow
-            // Yowyn
+            Zone_Yowyn or
             Zone_Aquli or
             Zone_Derphy => z.idExport,
             // Zone_Arena or Zone_Arena2
