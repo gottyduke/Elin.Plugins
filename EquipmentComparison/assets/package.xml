@@ -6,23 +6,27 @@
   <builtin>false</builtin>
   <loadPriority>100</loadPriority>
   <version>0.23.31</version>
-  <description>
-[h1]Equipment Comparison[/h1]
+  <description>[h2]Equipment Comparison[/h2]
 
-When viewing unequipped items, display comparison information for items already equipped in the same slot. When viewing a pet's inventory, it will also compare the pet's equipment.
+When viewing unequipped items, display comparison information for items already equipped in the same slot. When viewing
+a pet's inventory, it will also compare the pet's equipment.
 
-[h1]装备比较[/h1]
+[h2]Toggle[/h2]
 
-查看未装备物品时显示同栏位已装备物品的比较信息。在查看宠物的库存时，还会比较宠物装备。
+To toggle the comparison functionality, press [b](Left)Shift + C[/b]  
+Keybindings can be changed in `Elin/BepInEx/config/dk.elinplugins.equipmentcomparison.cfg` 
 
-[h1]装備比較[/h1]
+[h2]!!Caution!![/h2]
 
-未装備のアイテムを表示する際に、同じスロットに装備されているアイテムの比較情報を表示します。ペットのインベントリを確認する際には、ペットの装備も比較されます。
+If UI scale is set to > 140%, tooltips will look funny.
 
-[h1]!!Caution!![/h1]
 
-If UI scale is set to > 140%, tooltips look funny.
+[b]1.4[/b] Fixed the overlapping bug when the tooltip was first time drawn to the right.
+[b]1.3[/b] Fixed a bug where items in public containers with no owner cannot be compared with player.
+[b]1.2[/b] Updated keybinding for toggling comparison functionality.
+[b]1.1[/b] Updated the alignment for multiple tooltips at the same time, instead of overlapping vertically, they'll stack horizontally.
 
-[url=https://github.com/gottyduke/Elin.Plugins/tree/master/EquipmentComparison]source[/url]
+
+[url=https://github.com/gottyduke/Elin.Plugins/tree/master/EquipmentComparison]sauce[/url]
   </description>
 </Meta>
