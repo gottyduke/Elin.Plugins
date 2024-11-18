@@ -82,7 +82,8 @@ internal class AuxTooltip : MonoBehaviour
             return;
         }
 
-        if (grid.invOwner is InvOwnerEquip or InvOwnerHotbar) {
+        if (btn is ButtonHotItem ||
+            grid.invOwner is InvOwnerEquip or InvOwnerHotbar) {
             // not drawing for hotbar item
             return;
         }
