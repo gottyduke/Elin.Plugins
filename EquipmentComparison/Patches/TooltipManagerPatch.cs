@@ -12,7 +12,7 @@ internal class TooltipManagerPatch
     internal static IEnumerable<CodeInstruction> OnUpdateIl(IEnumerable<CodeInstruction> instructions)
     {
         return new CodeMatcher(instructions)
-            .MatchForward(true,
+            .MatchEndForward(
                 new CodeMatch(OpCodes.Ldfld,
                     AccessTools.Field(typeof(TooltipManager), nameof(TooltipManager.disableHide))),
                 new CodeMatch(OpCodes.Call))

@@ -13,18 +13,15 @@ internal class ShowTooltipPatch
     [HarmonyPatch(typeof(UIButton), nameof(UIButton.ShowTooltip))]
     internal static IEnumerable<CodeInstruction> OnShowTooltipIl(IEnumerable<CodeInstruction> instructions)
     {
-        var codes = new List<CodeInstruction>(instructions);
-        if (codes.LastItem().opcode != OpCodes.Ret) {
-            ECMod.Log($"failed to patch {nameof(UIButton.ShowTooltip)} due to unknown IL changes");
-            return codes;
-        }
-
-        codes.InsertRange(codes.Count - 1,
-        [
-            new(OpCodes.Ldarg_0),
-            Transpilers.EmitDelegate(AuxTooltip.TryDrawAuxTooltip),
-        ]);
-
-        return codes;
+        return new CodeMatcher(instructions)
+            .MatchEndForward(
+                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(
+                    typeof(TooltipManager),
+                    nameof(TooltipManager.ShowTooltip))),
+                new CodeMatch(OpCodes.Ret))
+            .InsertAndAdvance(
+                new(OpCodes.Ldarg_0),
+                Transpilers.EmitDelegate(AuxTooltip.TryDrawAuxTooltip))
+            .InstructionEnumeration();
     }
 }
