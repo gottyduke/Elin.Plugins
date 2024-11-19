@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Ec.Helper;
+namespace EC.Helper;
 
 public static class ComponentFetch
 {

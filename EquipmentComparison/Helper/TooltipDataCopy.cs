@@ -1,11 +1,13 @@
 ﻿using BepInEx;
+using EC.Components;
 
-namespace Ec.Helper;
+namespace EC.Helper;
 
 internal static class TooltipDataCopy
 {
-    internal static TooltipData CopyWithId(this TooltipData data, string idOverride = "")
+    internal static TooltipData CopyTooltipWithId(this ButtonGridDrag grid, string idOverride = "")
     {
+        var data = grid.tooltip;
         return new() {
             enable = data.enable,
             icon = data.icon,
@@ -13,7 +15,7 @@ internal static class TooltipDataCopy
             id = idOverride.IsNullOrWhiteSpace() ? data.id : idOverride,
             lang = data.lang,
             text = data.text,
-            onShowTooltip = data.onShowTooltip,
+            onShowTooltip = t => AuxTooltip.SetTooltipOverride(grid.card, t),
         };
     }
 }

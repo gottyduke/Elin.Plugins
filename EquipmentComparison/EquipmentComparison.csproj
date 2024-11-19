@@ -106,9 +106,11 @@
         <Compile Include="Components\AuxTooltip.cs"/>
         <Compile Include="EquipmentComparisonConfig.cs"/>
         <Compile Include="EquipmentComparisonMod.cs"/>
+        <Compile Include="Helper\ChildrenIterator.cs"/>
         <Compile Include="Helper\ComponentFetch.cs"/>
         <Compile Include="Helper\CoroutineHelper.cs"/>
         <Compile Include="Helper\DeferredCoroutine.cs"/>
+        <Compile Include="Helper\Loc.cs"/>
         <Compile Include="Helper\TooltipDataCopy.cs"/>
         <Compile Include="Patches\ShowTooltipPatch.cs"/>
         <Compile Include="Patches\TooltipManagerPatch.cs"/>

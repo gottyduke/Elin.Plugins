@@ -7,13 +7,13 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.equipmentcomparison";
     internal const string Name = "Equipment Comparison";
-    internal const string Version = "1.5";
+    internal const string Version = "1.6";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
-internal class ECMod : BaseUnityPlugin
+internal class EcMod : BaseUnityPlugin
 {
-    internal static ECMod? Instance { get; private set; }
+    internal static EcMod? Instance { get; private set; }
 
     private void Awake()
     {

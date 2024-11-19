@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Ec.Helper;
+using EC.Helper;
 using HarmonyLib;
 using UnityEngine;
 
@@ -18,12 +18,12 @@ internal class AuxTooltip : MonoBehaviour
         var instance = GetComponent<TooltipManager>();
         BaseNote = instance.tooltips.FirstOrDefault(t => t.name == "note");
         if (BaseNote == null) {
-            ECMod.Log("failed to patch aux notes, missing base note");
+            EcMod.Log("failed to patch aux notes, missing base note");
             return;
         }
 
         if (instance.tooltips.Any(t => t.name.StartsWith("aux"))) {
-            ECMod.Log("already patched aux notes");
+            EcMod.Log("already patched aux notes");
             return;
         }
 
@@ -44,7 +44,7 @@ internal class AuxTooltip : MonoBehaviour
         ];
 
         IsEnabled = true;
-        ECMod.Log("aux notes patched");
+        EcMod.Log("aux notes patched");
     }
 
     private void Update()
@@ -60,15 +60,11 @@ internal class AuxTooltip : MonoBehaviour
         }
 
         IsEnabled = !IsEnabled;
-        EClass.pc.Say(Lang.langCode switch {
-            "CN" => "装备比较: " + (IsEnabled ? "启用 " : "禁用 "),
-            "JP" => "装備比較: " + (IsEnabled ? "启用 " : "無効 "),
-            _ => "Compare Equipment: " + (IsEnabled ? "Enabled " : "Disabled "),
-        });
-
         if (!IsEnabled) {
             _cached.Do(n => n.SetActive(false));
         }
+
+        EClass.pc.Say(Loc.TogglePrompt(IsEnabled));
     }
 
     internal static void TryDrawAuxTooltip(UIButton? btn)
@@ -111,7 +107,7 @@ internal class AuxTooltip : MonoBehaviour
         var maxNotes = EquipmentComparisonConfig.MaxAuxNotes!.Value;
         var comparables = GetAllComparableGrids(thing, owner);
         for (var i = 0; i < Math.Min(maxNotes, comparables.Count); ++i) {
-            var copyTooltip = comparables[i].tooltip.CopyWithId($"aux_note_{i}");
+            var copyTooltip = comparables[i].CopyTooltipWithId($"aux_note_{i}");
             tm.ShowTooltip(copyTooltip, @this.BaseNote!.transform);
         }
     }
@@ -159,5 +155,13 @@ internal class AuxTooltip : MonoBehaviour
             .OfType<ButtonGridDrag>()
             .Where(b => b.card != item)
             .ToList();
+    }
+
+    internal static void SetTooltipOverride(Card card, UITooltip tooltip)
+    {
+        card.WriteNote(tooltip.note, n => {
+            var headerText = n.GetComponentInChildren<UIText>();
+            headerText.text = $"{Loc.EquippedIndicator} {headerText.text}";
+        });
     }
 }

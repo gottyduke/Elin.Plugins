@@ -27,7 +27,8 @@ internal static class EquipmentComparisonConfig
             ModInfo.Name,
             "Max Comparable Tooltips",
             2,
-            new ConfigDescription("Max amount of possible comparable tooltips to display at the same time; Note that too many will possibly be out of screen",
+            new ConfigDescription(
+                "Max amount of possible comparable tooltips to display at the same time; Note that too many will possibly be out of screen",
                 new AcceptableValueRange<int>(0, 6))
         );
     }

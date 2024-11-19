@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using EC.Helper;
 using UnityEngine;
 
 namespace EC.Components;
@@ -20,6 +21,11 @@ internal class AuxNote : MonoBehaviour
     }
 
     private void OnEnable()
+    {
+        this.StartDeferredCoroutine(AdjustPosition);
+    }
+
+    private void AdjustPosition()
     {
         var aux = GetComponentInParent<AuxTooltip>();
 
@@ -44,18 +50,13 @@ internal class AuxNote : MonoBehaviour
         var basePos = baseRect.position;
         var auxPos = basePos;
 
-        if (baseRect.pivot == Vector2.one) {
-            auxPos = basePos with { x = basePos.x - baseSize.x * scale };
-        }
-
-        if (baseRect.pivot == Vector2.up) {
-            auxPos = basePos with { x = basePos.x + baseSize.x * scale };
-        }
+        var pivot = baseRect.pivot == Vector2.one ? -1f : 1f;
+        auxPos = auxPos with { x = basePos.x + baseSize.x * scale * pivot };
 
         rect.localPosition = baseRect.localPosition;
         rect.position = auxPos;
         rect.pivot = baseRect.pivot;
-        
-        Util.ClampToScreen(rect, 13);
+
+        Util.ClampToScreen(rect, 10);
     }
 }
