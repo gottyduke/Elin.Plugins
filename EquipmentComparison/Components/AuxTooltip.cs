@@ -28,7 +28,8 @@ internal class AuxTooltip : MonoBehaviour
         }
 
         _cached.Clear();
-        for (var i = 0; i < 2; ++i) {
+        var maxNotes = EquipmentComparisonConfig.MaxAuxNotes!.Value;
+        for (var i = 0; i < maxNotes; ++i) {
             var aux = Instantiate(BaseNote, instance.transform);
             aux.gameObject.AddComponent<AuxNote>();
             aux.name = $"aux_note_{i}";
@@ -64,6 +65,10 @@ internal class AuxTooltip : MonoBehaviour
             "JP" => "装備比較: " + (IsEnabled ? "启用 " : "無効 "),
             _ => "Compare Equipment: " + (IsEnabled ? "Enabled " : "Disabled "),
         });
+
+        if (!IsEnabled) {
+            _cached.Do(n => n.SetActive(false));
+        }
     }
 
     internal static void TryDrawAuxTooltip(UIButton? btn)
@@ -103,8 +108,9 @@ internal class AuxTooltip : MonoBehaviour
         // GetEquippedThing() only returns first equipped
         // need to iterate in case of dual wielding
         // also search for hotbar & toolbelt items
+        var maxNotes = EquipmentComparisonConfig.MaxAuxNotes!.Value;
         var comparables = GetAllComparableGrids(thing, owner);
-        for (var i = 0; i < Math.Min(2, comparables.Count); ++i) {
+        for (var i = 0; i < Math.Min(maxNotes, comparables.Count); ++i) {
             var copyTooltip = comparables[i].tooltip.CopyWithId($"aux_note_{i}");
             tm.ShowTooltip(copyTooltip, @this.BaseNote!.transform);
         }
@@ -136,8 +142,8 @@ internal class AuxTooltip : MonoBehaviour
         List<UIList.ButtonPair> grids = [
             ..WidgetEquip.Instance.listMain.buttons,
             ..WidgetEquip.Instance.listEtc.buttons,
-            ..WidgetEquip.Instance.transLayer.GetComponentInChildren<LayerInventory>().invs.FirstOrDefault()?.list
-                .buttons ?? [],
+            ..WidgetEquip.Instance.transLayer.GetComponentInChildren<LayerInventory>().invs
+                .FirstOrDefault()?.list.buttons ?? [],
             ..WidgetCurrentTool.Instance.list.buttons,
         ];
 
