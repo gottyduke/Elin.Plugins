@@ -4,6 +4,7 @@ Elin plugins for funzie
 - [Lose Karma On Caught](./KarmaOnCaught/)
 - [Fixed Package Loader](./FixedPackageLoader/)
 - [Elin Rich Presence](./ElinRichPresence/)
+- [Compare Equipment](./EquipmentComparison/)
 
 ## In Progress
 - Elin Stranding?!
