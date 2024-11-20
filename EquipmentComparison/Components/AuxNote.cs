@@ -38,6 +38,8 @@ internal class AuxNote : MonoBehaviour
             var index = notes.IndexOf(this);
             AttachToRect(notes[index - 1].Rect());
         }
+
+        Util.ClampToScreen(this.Rect(), 10);
     }
 
     private void AttachToRect(RectTransform baseRect)
@@ -56,7 +58,5 @@ internal class AuxNote : MonoBehaviour
         rect.localPosition = baseRect.localPosition;
         rect.position = auxPos;
         rect.pivot = baseRect.pivot;
-
-        Util.ClampToScreen(rect, 10);
     }
 }

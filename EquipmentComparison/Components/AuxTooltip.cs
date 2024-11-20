@@ -11,7 +11,7 @@ internal class AuxTooltip : MonoBehaviour
 {
     private readonly List<UITooltip> _cached = [];
     internal UITooltip? BaseNote { get; private set; }
-    internal bool IsEnabled { get; private set; }
+    private bool IsEnabled { get; set; }
 
     private void Awake()
     {
@@ -91,7 +91,7 @@ internal class AuxTooltip : MonoBehaviour
 
         if (thing is { IsEquipmentOrRanged: false, IsThrownWeapon: false } ||
             thing.isEquipped) {
-            // already equipped or not a equipment
+            // already equipped or not an equipment
             return;
         }
 
@@ -105,56 +105,11 @@ internal class AuxTooltip : MonoBehaviour
         // need to iterate in case of dual wielding
         // also search for hotbar & toolbelt items
         var maxNotes = EquipmentComparisonConfig.MaxAuxNotes!.Value;
-        var comparables = GetAllComparableGrids(thing, owner);
+        var comparables = owner.GetAllComparableGrids(thing);
         for (var i = 0; i < Math.Min(maxNotes, comparables.Count); ++i) {
             var copyTooltip = comparables[i].CopyTooltipWithId($"aux_note_{i}");
             tm.ShowTooltip(copyTooltip, @this.BaseNote!.transform);
         }
-    }
-
-    private static List<ButtonGridDrag> GetAllComparableGrids(Thing item, Chara owner)
-    {
-        // wtf did I write
-        if (!owner.IsPCC) {
-            return ELayer.ui.layers
-                .OfType<LayerInventory>()
-                .Where(l => l.Inv.Chara == owner)
-                .SelectMany(l => l.invs)
-                .SelectMany(l => l.list.buttons)
-                .Where(p => p.obj switch {
-                    Thing { isEquipped: true } t
-                        when !item.IsThrownWeapon &&
-                             t.category.slot == item.category.slot => true,
-                    Thing { isEquipped: false, IsThrownWeapon: true }
-                        when item.IsThrownWeapon => true,
-                    _ => false,
-                })
-                .Select(p => p.component)
-                .OfType<ButtonGridDrag>()
-                .Where(b => b.card != item)
-                .ToList();
-        }
-
-        List<UIList.ButtonPair> grids = [
-            ..WidgetEquip.Instance.listMain.buttons,
-            ..WidgetEquip.Instance.listEtc.buttons,
-            ..WidgetEquip.Instance.transLayer.GetComponentInChildren<LayerInventory>().invs
-                .FirstOrDefault()?.list.buttons ?? [],
-            ..WidgetCurrentTool.Instance.list.buttons,
-        ];
-
-        return grids
-            .Where(p => p.obj switch {
-                BodySlot { thing: not null } s
-                    when s.elementId == item.category.slot => true,
-                Thing { IsThrownWeapon: true }
-                    when item.IsThrownWeapon => true,
-                _ => false,
-            })
-            .Select(p => p.component)
-            .OfType<ButtonGridDrag>()
-            .Where(b => b.card != item)
-            .ToList();
     }
 
     internal static void SetTooltipOverride(Card card, UITooltip tooltip)

@@ -107,6 +107,7 @@
         <Compile Include="EquipmentComparisonConfig.cs"/>
         <Compile Include="EquipmentComparisonMod.cs"/>
         <Compile Include="Helper\ChildrenIterator.cs"/>
+        <Compile Include="Helper\ComparableGrids.cs"/>
         <Compile Include="Helper\ComponentFetch.cs"/>
         <Compile Include="Helper\CoroutineHelper.cs"/>
         <Compile Include="Helper\DeferredCoroutine.cs"/>
