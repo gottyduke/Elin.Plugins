@@ -5,6 +5,7 @@ Elin plugins for funzie
 - [Fixed Package Loader](./FixedPackageLoader/)
 - [Elin Rich Presence](./ElinRichPresence/)
 - [Compare Equipment](./EquipmentComparison/)
+- [Variable Sprite Support](./VariableSpriteSupport/)
 
 ## In Progress
 - Elin Stranding?!

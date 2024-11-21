@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Meta>
+  <title>Variable Sprite Support</title>
+  <id>dk.elinplugins.forcepixelsize</id>
+  <author>DK</author>
+  <builtin>false</builtin>
+  <loadPriority>100</loadPriority>
+  <version>0.23.34</version>
+  <description>
+# Variable Sprite 
+
+Allows the usage of variable dimensions and ratios of PCC sprites and accordingly fit them onto the PCC.
+
+#
+  </description>
+</Meta>

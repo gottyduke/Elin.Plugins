@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"
+            Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"/>
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{A504BEE4-AD1F-4657-81FA-70E3DFE11919}</ProjectGuid>
+        <OutputType>Library</OutputType>
+        <RootNamespace>VSS</RootNamespace>
+        <AssemblyName>VariableSpriteSupport</AssemblyName>
+        <ReferencePath>$(ElinGamePath)/Elin_Data/Managed</ReferencePath>
+        <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+        <LangVersion>preview</LangVersion>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>$(ElinGamePath)\Package\Mod_$(AssemblyName)\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>$(ElinGamePath)\Package\Mod_$(AssemblyName)\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="0Harmony">
+            <HintPath>$(ElinGamePath)\BepInEx\core\0Harmony.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="BepInEx.Core">
+            <HintPath>$(ElinGamePath)\BepInEx\core\BepInEx.Core.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="BepInEx.Unity">
+            <HintPath>$(ElinGamePath)\BepInEx\core\BepInEx.Unity.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Elin">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Elin.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="mscorlib">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\mscorlib.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="netstandard">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\netstandard.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Plugins.ActorSystem">
+            <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Elin\Elin_Data\Managed\Plugins.ActorSystem.dll</HintPath>
+        </Reference>
+        <Reference Include="Plugins.BaseCore">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.BaseCore.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System"/>
+        <Reference Include="System.Core"/>
+        <Reference Include="UnityEngine">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.CoreModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.UI">
+            <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Elin\Elin_Data\Managed\UnityEngine.UI.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Helper\TextureExtender.cs"/>
+        <Compile Include="Patches\BuildSpritesPatch.cs"/>
+        <Compile Include="Patches\UpdateSpritePatch.cs"/>
+        <Compile Include="VariableSpriteSupportMod.cs"/>
+    </ItemGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
+    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+           Other similar extension points exist, see Microsoft.Common.targets.
+      <Target Name="BeforeBuild">
+      </Target>
+      <Target Name="AfterBuild">
+      </Target>
+      -->
+</Project>
