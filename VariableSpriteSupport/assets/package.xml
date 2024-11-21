@@ -7,10 +7,24 @@
   <loadPriority>100</loadPriority>
   <version>0.23.34</version>
   <description>
-# Variable Sprite 
+[h1]Variable Sprite Support (formerly High Res Sprite Fix)[/h1]
 
-Allows the usage of variable dimensions and ratios of PCC sprites and accordingly fit them onto the PCC.
+Allows the usage of variable resolutions and ratios of PCC sprites and accordingly fit them onto the PCC.
 
-#
+[h1]Parts[/h1]
+
+[img=https://i.postimg.cc/Y9YcFhnf/demo.jpg]
+
+Mod authors can now create PCC parts with sprites other than 32x48.
+
+[h1]Body[/h1]
+
+Body asset must be in the ratio of 2:3 still, the resolution doesn't matter.
+
+[h1]Credits[/h1]
+Mirkhan for the idea and help with testing.
+noa for not setting all textures on GPU side so I don't have to copy & blit
+
+[url=https://github.com/gottyduke/Elin.Plugins/tree/master/VariableSpriteSupport]sauce[/url]
   </description>
 </Meta>

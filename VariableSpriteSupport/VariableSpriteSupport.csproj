@@ -26,7 +26,7 @@
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
         <PlatformTarget>AnyCPU</PlatformTarget>
-        <DebugType>pdbonly</DebugType>
+        <DebugType>none</DebugType>
         <Optimize>true</Optimize>
         <OutputPath>$(ElinGamePath)\Package\Mod_$(AssemblyName)\</OutputPath>
         <DefineConstants>TRACE</DefineConstants>
@@ -59,7 +59,7 @@
             <Private>False</Private>
         </Reference>
         <Reference Include="Plugins.ActorSystem">
-            <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Elin\Elin_Data\Managed\Plugins.ActorSystem.dll</HintPath>
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.ActorSystem.dll</HintPath>
         </Reference>
         <Reference Include="Plugins.BaseCore">
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.BaseCore.dll</HintPath>
@@ -76,7 +76,7 @@
             <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.UI">
-            <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Elin\Elin_Data\Managed\UnityEngine.UI.dll</HintPath>
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UI.dll</HintPath>
         </Reference>
     </ItemGroup>
     <ItemGroup>
