@@ -41,14 +41,14 @@ internal static class TextureExtender
         var offsetWidth = width - texture.width;
         var offsetHeight = height - texture.height;
 
-        var xPadding = Mathf.RoundToInt(offsetWidth / (tilesPerRow + 1f));
+        var xPadding = offsetWidth / tilesPerRow;
         var yPadding = offsetHeight / tilesPerColumn;
-
+        
         for (var w = 0; w < 4; ++w) {
             for (var h = 0; h < 4; ++h) {
                 var originalX = w * tileWidth;
                 var originalY = h * tileHeight;
-                var extendedX = originalX + (w + 1) * xPadding;
+                var extendedX = originalX + w * xPadding + xPadding / 2;
                 var extendedY = originalY + h * yPadding;
                 extended.SetPixels(extendedX, extendedY, tileWidth, tileHeight,
                     texture.GetPixels(originalX, originalY, tileWidth, tileHeight));
