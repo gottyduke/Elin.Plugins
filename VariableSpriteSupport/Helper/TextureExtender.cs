@@ -35,17 +35,17 @@ internal static class TextureExtender
         var extended = MakeBaseTexture(width, height);
 
         // blit into 16 tiles with paddings
-        var tileWidth = texture.width / 4;
-        var tileHeight = texture.height / 4;
+        var tileWidth = texture.width / tilesPerRow;
+        var tileHeight = texture.height / tilesPerColumn;
 
         var offsetWidth = width - texture.width;
         var offsetHeight = height - texture.height;
 
         var xPadding = offsetWidth / tilesPerRow;
         var yPadding = offsetHeight / tilesPerColumn;
-        
-        for (var w = 0; w < 4; ++w) {
-            for (var h = 0; h < 4; ++h) {
+
+        for (var w = 0; w < tilesPerRow; ++w) {
+            for (var h = 0; h < tilesPerColumn; ++h) {
                 var originalX = w * tileWidth;
                 var originalY = h * tileHeight;
                 var extendedX = originalX + w * xPadding + xPadding / 2;
