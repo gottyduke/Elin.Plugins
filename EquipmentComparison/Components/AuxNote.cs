@@ -13,6 +13,7 @@ internal class AuxNote : MonoBehaviour
         var tooltip = GetComponent<UITooltip>();
 
         if (baseNote.gameObject.activeSelf) {
+            tooltip.cg.alpha = baseNote.cg.alpha;
             return;
         }
 
