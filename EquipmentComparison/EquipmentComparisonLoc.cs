@@ -1,11 +1,17 @@
-﻿namespace EC.Helper;
+﻿namespace EC;
 
-internal static class Loc
+internal static class EquipmentComparisonLoc
 {
     internal static string EquippedIndicator => Lang.langCode switch {
         "CN" => "(已装备)",
         "JP" => "(装備中)",
         _ => "(Equipped)",
+    };
+
+    internal static string CarriedIndicator => Lang.langCode switch {
+        "CN" => "(已携带)",
+        "JP" => "(装備中)", // ? 持っている??
+        _ => "(Carried)",
     };
 
     internal static string TogglePrompt(bool on)

@@ -20,6 +20,8 @@ internal static class ComparableGrids
                              t.category.slot == item.category.slot => true,
                     Thing { isEquipped: false, IsThrownWeapon: true }
                         when item.IsThrownWeapon => true,
+                    Thing { isEquipped: false, IsRangedWeapon: true }
+                        when item.IsRangedWeapon => true,
                     _ => false,
                 })
                 .Select(p => p.component)
@@ -38,10 +40,12 @@ internal static class ComparableGrids
 
         return grids
             .Where(p => p.obj switch {
-                BodySlot { thing: not null } s
+                BodySlot { thing.isEquipped: true } s
                     when s.elementId == item.category.slot => true,
-                Thing { IsThrownWeapon: true }
+                Thing { isEquipped: false, IsThrownWeapon: true }
                     when item.IsThrownWeapon => true,
+                Thing { isEquipped: false, IsRangedWeapon: true }
+                    when item.IsRangedWeapon => true,
                 _ => false,
             })
             .Select(p => p.component)

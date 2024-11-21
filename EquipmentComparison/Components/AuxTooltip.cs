@@ -64,7 +64,7 @@ internal class AuxTooltip : MonoBehaviour
             _cached.Do(n => n.SetActive(false));
         }
 
-        EClass.pc.Say(Loc.TogglePrompt(IsEnabled));
+        EClass.pc.Say(EquipmentComparisonLoc.TogglePrompt(IsEnabled));
     }
 
     internal static void TryDrawAuxTooltip(UIButton? btn)
@@ -107,16 +107,12 @@ internal class AuxTooltip : MonoBehaviour
         var maxNotes = EquipmentComparisonConfig.MaxAuxNotes!.Value;
         var comparables = owner.GetAllComparableGrids(thing);
         for (var i = 0; i < Math.Min(maxNotes, comparables.Count); ++i) {
-            var copyTooltip = comparables[i].CopyTooltipWithId($"aux_note_{i}");
+            var comparable = comparables[i];
+            var header = comparable.card.IsRangedWeapon
+                ? EquipmentComparisonLoc.CarriedIndicator
+                : EquipmentComparisonLoc.EquippedIndicator;
+            var copyTooltip = comparable.CopyTooltipWithId($"aux_note_{i}", header);
             tm.ShowTooltip(copyTooltip, @this.BaseNote!.transform);
         }
-    }
-
-    internal static void SetTooltipOverride(Card card, UITooltip tooltip)
-    {
-        card.WriteNote(tooltip.note, n => {
-            var headerText = n.GetComponentInChildren<UIText>();
-            headerText.text = $"{Loc.EquippedIndicator} {headerText.text}";
-        });
     }
 }
