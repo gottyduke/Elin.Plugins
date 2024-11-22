@@ -4,7 +4,7 @@ Allows the usage of variable resolutions and ratios of PCC sprites and according
 
 # Parts
 
-![demo](https://i.postimg.cc/Y9YcFhnf/demo.jpg)
+![demo](./assets/demo_en.png)
 
 Mod authors can now create PCC parts with sprites other than 32x48.
 

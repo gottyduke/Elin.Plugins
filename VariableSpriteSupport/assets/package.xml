@@ -13,17 +13,18 @@ Allows the usage of variable resolutions and ratios of PCC sprites and according
 
 [h1]Parts[/h1]
 
-[img=https://i.postimg.cc/Y9YcFhnf/demo.jpg]
+[img=https://i.postimg.cc/8j6K3Zjf/demo-en.png]
 
 Mod authors can now create PCC parts with sprites other than 32x48.
 
 [h1]Body[/h1]
 
-Body asset must be in the ratio of 2:3 still, the resolution doesn't matter.
+Body sprite still needs to be in the ratio of 2:3, but the resolution doesn't matter. You can use a large canvas if that helps.
 
 [h1]Credits[/h1]
+
 Mirkhan for the idea and help with testing.
-noa for not setting all textures on GPU side so I don't have to copy & blit
+noa for not setting all textures on GPU side so I don't have to copy and blit
 
 [url=https://github.com/gottyduke/Elin.Plugins/tree/master/VariableSpriteSupport]sauce[/url]
   </description>
