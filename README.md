@@ -6,6 +6,7 @@ Elin plugins for funzie
 - [Elin Rich Presence](./ElinRichPresence/)
 - [Compare Equipment](./EquipmentComparison/)
 - [Variable Sprite Support](./VariableSpriteSupport/)
+- [Custom Dialog Loader](./CustomDialogLoader/)
 
 ## In Progress
 - Elin Stranding?!

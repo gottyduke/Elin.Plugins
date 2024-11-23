@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Meta>
+  <title>Custom Dialog Loader</title>
+  <id>dk.elinplugins.customdialogloader</id>
+  <author>DK</author>
+  <builtin>false</builtin>
+  <loadPriority>100</loadPriority>
+  <version>0.23.35</version>
+  <description>
+[h1]Custom Dialog Loader[/h1]
+
+Allows the game to load modders' custom `Dialog/Drama` sheets from mod folder.
+
+[h1]Localization[/h1]
+
+Because of how game handles localizations and such, to make a localized version(that's not `EN` or `JP`) of your dialog sheet, you cannot use the same folder structure as the game's built-in translation mods, instead you need to suffix the language code to that sheet.
+
+[quote]
+└── Mod_MyDialogMod/
+    ├── Lang/
+    │   └── Dialog/
+    │       └── Drama/
+    │           ├── mycustomNPC.xlsx
+    │           ├── mycustomNPC_CN.xlsx
+    │           └── mycustomNPC_KR.xlsx
+    │           └── mycustomNPC_XX.xlsx
+    └── package.xml
+[/quote]
+
+[h2]WARNING[/h2]
+
+Do not put a sub folder under `Lang` with the language code name, like `Lang/CN`. Game will duplicate entire translation folder in your mod folder.
+
+[url=https://github.com/gottyduke/Elin.Plugins/tree/master/CustomDialogLoader]sauce[/url]
+  </description>
+</Meta>
