@@ -6,16 +6,16 @@
   <builtin>false</builtin>
   <loadPriority>100</loadPriority>
   <version>0.23.34</version>
-  <description>
-[h1]Variable Sprite Support (formerly High Res Sprite Fix)[/h1]
+  <description>[h1]Variable Sprite Support (formerly High Res Sprite Fix)[/h1]
 
 Allows the usage of variable resolutions and ratios of PCC sprites and accordingly fit them onto the PCC.
 
 [h1]Parts[/h1]
 
-[img=https://i.postimg.cc/8j6K3Zjf/demo-en.png]
-
 Mod authors can now create PCC parts with sprites other than 32x48.
+
+[img]https://i.postimg.cc/t45LQvrF/demo-en.png[/img]
+[img]https://i.postimg.cc/wMmSC6PB/faq-en.png[/img]
 
 [h1]Body[/h1]
 
