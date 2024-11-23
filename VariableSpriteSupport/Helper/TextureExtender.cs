@@ -1,40 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace VSS.Helper;
 
 internal static class TextureExtender
 {
-    private static readonly Dictionary<string, Texture2D> _cached = [];
-
-    internal static Texture2D MakeBaseTexture(int width, int height)
-    {
-        var id = $"base_{width}x{height}";
-        var texture = new Texture2D(width, height, TextureFormat.ARGB32, false);
-
-        if (_cached.TryGetValue(id, out var cachedTexture)) {
-            Graphics.CopyTexture(cachedTexture, texture);
-        } else {
-            var cached = new Texture2D(width, height, TextureFormat.ARGB32, false);
-            var transparent = new Color32[width * height];
-            Array.Fill(transparent, Color.clear);
-            cached.SetPixels32(transparent);
-            cached.Apply();
-            _cached[id] = cached;
-
-            Graphics.CopyTexture(cached, texture);
-        }
-
-        return texture;
-    }
-
     internal static Texture2D ExtendBlit(this Texture2D texture, int width, int height, int tilesPerRow = 4,
         int tilesPerColumn = 4)
     {
-        var extended = MakeBaseTexture(width, height);
+        var extended = TextureBase.MakeTransparent(width, height);
 
-        // blit into 16 tiles with paddings
+        // blit into tiles with paddings
         var tileWidth = texture.width / tilesPerRow;
         var tileHeight = texture.height / tilesPerColumn;
 

@@ -43,38 +43,29 @@ internal class BuildSpritesPatch
         var pccm = PCC.pccm;
         var body = pcc.layerList.list[pcc.layerList.indexBody].tex as Texture2D;
 
-        var maxWidth = body!.width;
-        var maxHeight = body.height;
-        // enforce 2:3 ratio for body tex
-        if (maxHeight / maxWidth != 48 / 32) {
-            VssMod.Log($"body tex is not 2:3 ratio: {maxWidth}x{maxHeight}");
-            return false;
-        }
-
         try {
+            ReversePartId.BuildPartCache(pcc);
+
+            // enforce 2:3 ratio for body tex
+            if (body!.width / body.height != 32 / 48) {
+                VssMod.Log($"body tex is not 2:3 ratio: {body.width}x{body.height}");
+                return false;
+            }
+
             // downscale body tex
             const int bodyWidth = 32 * 4;
             const int bodyHeight = 48 * 4;
-            if (maxWidth > bodyWidth && maxHeight > bodyHeight) {
+            if (body is { width: > bodyWidth, height: > bodyHeight }) {
                 VssMod.Log(
-                    $"body tex is larger than {bodyWidth}x{bodyHeight}, downscaling from {maxWidth}x{maxHeight}");
-
-                var bodyRt = new RenderTexture(bodyWidth, bodyHeight, 0, RenderTextureFormat.ARGB32);
-
-                RenderTexture.active = bodyRt;
-                GL.Clear(true, true, Color.clear);
+                    $"body tex is larger than {bodyWidth}x{bodyHeight}, downscaling from {body.width}x{body.height}");
 
                 pccm.mat.SetColor(_color, pcc.layerList.list[pcc.layerList.indexBody].color);
-                Graphics.Blit(body, bodyRt, pccm.mat);
-
-                body = new(bodyWidth, bodyHeight, TextureFormat.ARGB32, false);
-                Graphics.CopyTexture(bodyRt, body);
-
-                maxWidth = bodyWidth;
-                maxHeight = bodyHeight;
+                body = body.Downscale(bodyWidth, bodyHeight, pccm.mat);
             }
 
             // iterate all layers to get max
+            var maxWidth = body.width;
+            var maxHeight = body.height;
             for (var i = pcc.layerList.list.Count - 1; i >= 0; --i) {
                 var tex = pcc.layerList.list[i].tex;
                 if (i == pcc.layerList.indexBody) {
