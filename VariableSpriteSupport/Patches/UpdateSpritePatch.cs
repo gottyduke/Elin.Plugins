@@ -20,10 +20,12 @@ internal class UpdateSpritePatch
         var maxHeight = maxWidth * tileHeight / tileWidth * 32 / 48;
 
         if (maxHeight < frameHeight) {
-            maxWidth *= frameHeight / maxHeight;
-            maxHeight = frameHeight;
+            var scale = frameHeight / maxHeight;
+            maxWidth *= scale;
+            maxHeight = maxWidth;
+            maxWidth *= scale;
         }
-        
+
         __instance.body.sizeDelta = new(maxWidth, maxHeight);
     }
 }

@@ -46,6 +46,10 @@
             <HintPath>$(ElinGamePath)\BepInEx\core\BepInEx.Unity.dll</HintPath>
             <Private>False</Private>
         </Reference>
+        <Reference Include="Elin">
+            <HintPath>$(ElinGamePath)\\Elin_Data\Managed\Elin.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
         <Reference Include="mscorlib">
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\mscorlib.dll</HintPath>
             <Private>False</Private>
@@ -62,6 +66,10 @@
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.BaseCore.dll</HintPath>
             <Private>False</Private>
         </Reference>
+        <Reference Include="Plugins.UI">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.UI.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
         <Reference Include="System"/>
         <Reference Include="System.Core"/>
         <Reference Include="UnityEngine">
@@ -72,6 +80,10 @@
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
             <Private>False</Private>
         </Reference>
+        <Reference Include="UnityEngine.UI">
+            <HintPath>$(ElinGamePath)\\Elin_Data\Managed\UnityEngine.UI.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
     </ItemGroup>
     <ItemGroup>
         <Compile Include="Helper\TextureBase.cs"/>
@@ -79,6 +91,7 @@
         <Compile Include="Helper\ReversePartId.cs"/>
         <Compile Include="Helper\TextureExtender.cs"/>
         <Compile Include="Patches\BuildSpritesPatch.cs"/>
+        <Compile Include="Patches\SetImagePatch.cs"/>
         <Compile Include="Patches\UpdateSpritePatch.cs"/>
         <Compile Include="VssMod.cs"/>
     </ItemGroup>

@@ -95,12 +95,12 @@ internal class BuildSpritesPatch
                 var offsetWidth = maxWidth - tex!.width;
                 var offsetHeight = maxHeight - tex.height;
 
-                VssMod.Log($"rebuilding layer {i}, tex {tex.width}x{tex.height}, offset {offsetWidth}x{offsetHeight}");
-
                 // extend layer tex if necessary
                 var extend = offsetWidth != 0 || offsetHeight != 0;
                 if (extend) {
-                    VssMod.Log(">> extending layer...");
+                    VssMod.Log(
+                        $"rebuilding layer {i}, tex {tex.width}x{tex.height}, offset {offsetWidth}x{offsetHeight}");
+
                     tex = tex.ExtendBlit(maxWidth, maxHeight);
                     rebuildTexSheet = true;
                 }
