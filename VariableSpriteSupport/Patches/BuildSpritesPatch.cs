@@ -19,15 +19,16 @@ internal class BuildSpritesPatch
     internal static IEnumerable<CodeInstruction> OnBuildSprites(IEnumerable<CodeInstruction> instructions,
         ILGenerator generator)
     {
-        var label = generator.DefineLabel();
-        return new CodeMatcher(instructions)
+        return new CodeMatcher(instructions, generator)
             .MatchStartForward(
                 new CodeMatch(OpCodes.Call, AccessTools.PropertyGetter(
-                    typeof(PCC), nameof(PCC.pccm))),
+                    typeof(PCC),
+                    nameof(PCC.pccm))),
                 new CodeMatch(OpCodes.Ldfld, AccessTools.Field(
-                    typeof(PCCManager), nameof(PCCManager.pixelize))),
+                    typeof(PCCManager),
+                    nameof(PCCManager.pixelize))),
                 new CodeMatch(OpCodes.Brtrue))
-            .AddLabels([label])
+            .CreateLabel(out var label)
             .InsertAndAdvance(
                 new CodeInstruction(OpCodes.Ldarg_0),
                 Transpilers.EmitDelegate(RebuildSprites),
