@@ -29,17 +29,17 @@ internal class AuxNote : MonoBehaviour
     private void AdjustPosition()
     {
         var aux = GetComponentInParent<AuxTooltip>();
+        var rect = aux.BaseNote!.Rect();
 
-        if (name == "aux_note_0") {
-            AttachToRect(aux.BaseNote!.Rect());
-        } else {
+        if (name != "aux_note_0") {
             var notes = aux.GetComponentsInChildren<AuxNote>()
                 .OrderBy(n => n.name)
                 .ToList();
             var index = notes.IndexOf(this);
-            AttachToRect(notes[index - 1].Rect());
+            rect = notes[index - 1].Rect();
         }
 
+        AttachToRect(rect);
         Util.ClampToScreen(this.Rect(), 10);
     }
 

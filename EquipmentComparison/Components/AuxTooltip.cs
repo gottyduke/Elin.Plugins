@@ -96,7 +96,7 @@ internal class AuxTooltip : MonoBehaviour
         }
 
         // unless checking pet inv, always compare with pc
-        var owner = grid.invOwner.Chara?.IsPCFactionOrMinion ??
+        var owner = grid.invOwner?.Chara?.IsPCFactionOrMinion ??
                     false
             ? grid.invOwner.Chara
             : EClass.pc;

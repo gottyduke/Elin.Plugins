@@ -11,7 +11,7 @@
         <AssemblyName>EquipmentComparison</AssemblyName>
         <ReferencePath>$(ElinGamePath)/Elin_Data/Managed</ReferencePath>
         <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-        <LangVersion>12.0</LangVersion>
+        <LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
