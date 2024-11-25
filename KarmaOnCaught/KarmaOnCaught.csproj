@@ -11,7 +11,7 @@
         <AssemblyName>KarmaOnCaught</AssemblyName>
         <ReferencePath>$(ElinGamePath)/Elin_Data/Managed</ReferencePath>
         <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-        <LangVersion>12.0</LangVersion>
+        <LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -26,7 +26,7 @@
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
         <PlatformTarget>AnyCPU</PlatformTarget>
-        <DebugType>pdbonly</DebugType>
+        <DebugType>none</DebugType>
         <Optimize>true</Optimize>
         <OutputPath>$(ElinGamePath)\Package\Mod_$(AssemblyName)\</OutputPath>
         <DefineConstants>TRACE</DefineConstants>
@@ -74,9 +74,12 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="KarmaOnCaughtMod.cs"/>
-        <Compile Include="Patches\OnCrimeWitnessPatch.cs"/>
-        <Compile Include="Patches\OnModKarmaPatch.cs"/>
+        <Compile Include="DoModKarma.cs" />
+        <Compile Include="KocConfig.cs" />
+        <Compile Include="KocLoc.cs" />
+        <Compile Include="KocMod.cs" />
+        <Compile Include="Patches\AIStealPatch.cs" />
+        <Compile Include="Patches\OpenLockPatch.cs" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
