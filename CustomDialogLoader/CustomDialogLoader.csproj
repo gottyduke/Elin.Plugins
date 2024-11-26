@@ -5,10 +5,10 @@
     <PropertyGroup>
         <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
         <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <ProjectGuid>{A504BEE4-AD1F-4657-81FA-70E3DFE162FE}</ProjectGuid>
+        <ProjectGuid>{A504BEE4-AD1F-4657-81FA-BBDDBBDDAABB}</ProjectGuid>
         <OutputType>Library</OutputType>
-        <RootNamespace>Cdl</RootNamespace>
-        <AssemblyName>CustomDialogLoader</AssemblyName>
+        <RootNamespace>Cwl</RootNamespace>
+        <AssemblyName>CustomWhateverLoader</AssemblyName>
         <ReferencePath>$(ElinGamePath)/Elin_Data/Managed</ReferencePath>
         <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
         <LangVersion>preview</LangVersion>
@@ -62,6 +62,10 @@
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.BaseCore.dll</HintPath>
             <Private>False</Private>
         </Reference>
+        <Reference Include="Plugins.UI">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.UI.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
         <Reference Include="System"/>
         <Reference Include="System.Core"/>
         <Reference Include="UnityEngine">
@@ -72,9 +76,16 @@
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
             <Private>False</Private>
         </Reference>
+        <Reference Include="UnityEngine.InputLegacyModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="CustomDialogLoaderMod.cs"/>
+        <Compile Include="CustomWhateverLoader.cs"/>
+        <Compile Include="Helper\PackageFileIterator.cs"/>
+        <Compile Include="Helper\PathNormalizer.cs"/>
+        <Compile Include="Patches\LoadBookPatch.cs"/>
         <Compile Include="Patches\LoadDramaPatch.cs"/>
     </ItemGroup>
     <ItemGroup>

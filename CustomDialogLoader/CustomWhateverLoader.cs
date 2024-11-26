@@ -1,19 +1,20 @@
 ﻿using BepInEx;
 using HarmonyLib;
 
-namespace Cdl;
+namespace Cwl;
 
 internal static class ModInfo
 {
+    // for legacy reason
     internal const string Guid = "dk.elinplugins.customdialogloader";
-    internal const string Name = "Custom Dialog Loader";
-    internal const string Version = "1.0";
+    internal const string Name = "Custom Whatever Loader";
+    internal const string Version = "1.1";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
-internal class CdlMod : BaseUnityPlugin
+internal class CwlMod : BaseUnityPlugin
 {
-    internal static CdlMod? Instance { get; private set; }
+    internal static CwlMod? Instance { get; private set; }
 
     private void Awake()
     {

@@ -2,14 +2,16 @@
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
+using Cwl.Helper;
 using HarmonyLib;
 
-namespace Cdl.Patches;
+namespace Cwl.Patches;
 
 [HarmonyPatch]
 internal class LoadDramaPatch
 {
-    private static readonly Dictionary<string, string> _cachedSheets = [];
+    private const string CacheEntry = "Dialog/Drama/";
+    private const string Pattern = "*.xlsx";
 
     [HarmonyTranspiler]
     [HarmonyPatch(typeof(DramaManager), nameof(DramaManager.Load))]
@@ -31,40 +33,35 @@ internal class LoadDramaPatch
             .InstructionEnumeration();
     }
 
-
-    internal static List<Dictionary<string, string>> BuildRelocatedList(ExcelData data, string oldPath,
+    private static List<Dictionary<string, string>> BuildRelocatedList(ExcelData data, string oldPath,
         DramaManager dm)
     {
-        var setup = dm.setup;
+        var book = dm.setup.book;
+        var sheet = dm.setup.sheet;
+        var lang = Lang.langCode;
 
-        var cachedBookName = $"{setup.book}_{Lang.langCode}";
-        if (_cachedSheets.TryGetValue(cachedBookName, out var cachedPath)) {
+        var cachedBookName = $"{CacheEntry}{book}_{lang}";
+        if (PackageFileIterator.TryLoadFromPackage(cachedBookName, out var cachedPath)) {
             data.path = cachedPath;
-            return data.BuildList(setup.sheet);
+            return data.BuildList(sheet);
         }
 
-        var sheets = BaseModManager.Instance.packages
-            .Select(p => p.dirInfo)
-            .SelectMany(d => Directory.GetFiles(d.FullName, "*.xlsx", SearchOption.AllDirectories))
-            .Select(b => b.Replace('\\', '/'))
-            .Where(b => b.Contains("Dialog/Drama/"));
-
-        var books = sheets
-            .Where(s => Path.GetFileNameWithoutExtension(s).Contains(setup.book))
+        var books = PackageFileIterator.GetLangFilesFromPackage(Pattern)
+            .Where(b => b.Contains(CacheEntry))
+            .Where(s => Path.GetFileNameWithoutExtension(s) == book)
             .OrderBy(b => b)
             .ToArray();
 
-        var lang = Lang.langCode;
+        // Elona Dialog/Drama files are not in their LangCode subdirectory
         var fallback = books.First();
-        var localized = books.FirstOrDefault(b => b.Contains($"Lang/{lang}/") || b.Contains($"_{lang}")) ?? fallback;
+        var localized = books.FirstOrDefault(b => b.Contains($"/{lang}/")) ?? fallback;
 
-        var path = lang switch {
-            "EN" or "JP" => fallback,
-            _ => localized,
-        };
+        if (data.path.NormalizePath() != localized) {
+            CwlMod.Log($"relocated sheet > {cachedBookName}:{Pattern}\n> {localized}");
+        }
 
-        _cachedSheets[cachedBookName] = path;
-        data.path = path;
-        return data.BuildList(setup.sheet);
+        PackageFileIterator.AddCachedPath(cachedBookName, localized);
+        data.path = localized;
+        return data.BuildList(sheet);
     }
 }
