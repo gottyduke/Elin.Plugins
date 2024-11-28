@@ -17,7 +17,7 @@ internal class LoadBookPatch
     [HarmonyPatch(typeof(BookList), nameof(BookList.Init))]
     internal static void OnBookListInit(BookList __instance)
     {
-        var sources = PackageFileIterator.GetLocalizedModFiles()
+        var sources = PackageFileIterator.GetLandModFilesFromPackage()
             .SelectMany(d => d.GetDirectories(CacheEntry))
             .SelectMany(d => d.GetDirectories())
             .ToArray();
@@ -43,7 +43,6 @@ internal class LoadBookPatch
                 BookList.dict[category][item.id] = item;
                 PackageFileIterator.AddCachedPath($"{category}/{item.id}", book.FullName);
 
-                sr.Close();
                 CwlMod.Log($"{category}: {book.Name}|{book.Directory?.Parent?.Parent?.Name}");
             }
         }

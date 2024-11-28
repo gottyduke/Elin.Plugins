@@ -19,7 +19,7 @@ internal static class PackageFileIterator
             .Select(PathNormalizer.NormalizePath);
     }
 
-    internal static IEnumerable<DirectoryInfo> GetLocalizedModFiles(string? modId = null)
+    internal static IEnumerable<DirectoryInfo> GetLandModFilesFromPackage(string? modId = null)
     {
         return BaseModManager.Instance.packages
             .Where(p => !p.builtin)
@@ -28,6 +28,15 @@ internal static class PackageFileIterator
             .SelectMany(d => d.GetDirectories("LangMod"))
             .Select(d => d.GetDirectories().FirstOrDefault(sd => sd.Name == Lang.langCode)
                          ?? d.GetDirectories().First());
+    }
+
+    internal static IEnumerable<DirectoryInfo> GetSoundFilesFromPackage(string? modId = null)
+    {
+        return BaseModManager.Instance.packages
+            .Where(p => !p.builtin)
+            .Where(p => modId is null || p.id == modId)
+            .Select(p => p.dirInfo)
+            .SelectMany(d => d.GetDirectories("Sound"));
     }
 
     internal static bool TryLoadFromPackage(string cacheName, out string path)
