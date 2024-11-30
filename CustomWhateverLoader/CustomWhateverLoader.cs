@@ -10,7 +10,7 @@ internal static class ModInfo
     // for legacy reason
     internal const string Guid = "dk.elinplugins.customdialogloader";
     internal const string Name = "Custom Whatever Loader";
-    internal const string Version = "1.2";
+    internal const string Version = "1.3";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]

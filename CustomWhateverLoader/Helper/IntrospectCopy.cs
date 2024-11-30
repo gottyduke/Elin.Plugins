@@ -4,19 +4,20 @@ using HarmonyLib;
 
 namespace Cwl.Helper;
 
-internal static class IntrospectCopy
+public static class IntrospectCopy
 {
-    internal static void IntrospectCopyTo<T, TU>(this T source, TU dest)
+    public static void IntrospectCopyTo<T, TU>(this T source, TU target)
     {
-        var flag = AccessTools.all & ~BindingFlags.Static;
-        var fields = typeof(T).GetFields(flag);
-        foreach (var d in typeof(TU).GetFields(flag)) {
-            var field = fields.FirstOrDefault(f => f.Name == d.Name && f.FieldType == d.FieldType);
+        var access = AccessTools.all & ~BindingFlags.Static;
+        var fields = typeof(T).GetFields(access);
+        foreach (var dest in typeof(TU).GetFields(access)) {
+            var field = fields.FirstOrDefault(f => f.Name == dest.Name &&
+                                                   f.FieldType == dest.FieldType);
             if (field is null) {
                 continue;
             }
 
-            d.SetValue(dest, field.GetValue(source));
+            dest.SetValue(target, field.GetValue(source));
         }
     }
 }

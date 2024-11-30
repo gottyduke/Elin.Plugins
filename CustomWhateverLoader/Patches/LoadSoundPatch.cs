@@ -2,13 +2,11 @@
 using System.IO;
 using Cwl.API;
 using Cwl.Helper;
-using HarmonyLib;
 using UnityEngine;
 using UnityEngine.Networking;
 
 namespace Cwl.Patches;
 
-[HarmonyPatch]
 internal class LoadSoundPatch
 {
     private const string Pattern = "*.wav";
@@ -24,8 +22,8 @@ internal class LoadSoundPatch
                 yield return clipLoader.SendWebRequest();
 
                 var data = ScriptableObject.CreateInstance<SoundData>();
-
                 var metafile = $"{file.DirectoryName}/{name}.json";
+
                 if (ConfigCereal.ReadConfig<SerializableSoundData>(metafile, out var meta) && meta is not null) {
                     if (meta.type == SoundData.Type.BGM) {
                         var bgm = ScriptableObject.CreateInstance<BGMData>();
@@ -33,10 +31,13 @@ internal class LoadSoundPatch
                         bgm.song = new();
 
                         meta.bgmDataOptional.IntrospectCopyTo(bgm);
+                        meta.bgmDataOptional.parts.RemoveAt(0);
                         meta.bgmDataOptional.IntrospectCopyTo(bgm.song);
 
+                        Object.Destroy(data);
                         data = bgm;
                     }
+
                     meta.IntrospectCopyTo(data);
                 } else {
                     meta = new();

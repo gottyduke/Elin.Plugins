@@ -5,43 +5,59 @@
   <author>DK</author>
   <builtin>false</builtin>
   <loadPriority>10</loadPriority>
-  <version>0.23.35</version>
-  <description>
-[h1]Custom Whatever Loader[/h1]
+  <version>0.23.40</version>
+  <description>[h1]Custom Whatever Loader[/h1]
 
-Allows the game to load modders' custom Lang resources from mod folder. 
+Patches the game to load modders' custom resources from mod directory.
+
+Modders can use [b]ShowDialog(sheet_name)[/b], [b]PlaySound(sound_name)[/b], or [b]Book.Show(book_name)[/b] normally without needing to do anything extra.
+
+[img]https://i.postimg.cc/T1N5F2y8/sister.png[/img]
 
 Currently supports:
 [list]
 [*] Dialog/Drama
 [*] Text
+[*] Sound
 [/list]
 
 New features are added on demand.
 
-[h1]Localization[/h1]
+[h2]Example Mod Layout[/h2]
 
 [quote]
-Mod_MyCustomContent/
-├─ package.xml
-├─ LangMod/
-│  ├─ EN/
-│  │  ├─ Dialog/
-│  │  │  ├─ Drama/
-│  │  │  │  ├─ my_custom_NPC.xlsx
-│  │  ├─ Text/
-│  │  │  ├─ Book/
-│  │  │  │  ├─ my_new_book.txt
-│  │  │  ├─ Scoll/
-│  │  │  │  ├─ my_new_letter.txt
-│  ├─ JP/
-│  │  ├─ &lt;ibid&gt;/
-│  ├─ CN/
-│  │  ├─ &lt;ibid&gt;/
+📦 Mod_MyMod
+├─ 📑 package.xml
+├─ 📂 LangMod
+│  ├─ 📂 EN
+│  │  ├─ 📂 Dialog
+│  │  │  └─ 📂 Drama
+│  │  │     └─ 📝 custom_npc.xlsx
+│  │  └─ 📂 Text
+│  │     ├─ 📂 Book
+│  │     │  └─ 📖 sister_breeding.txt
+│  │     └─ 📂 Scroll
+│  │        └─ 📖 sister_scroll.txt
+│  ├─ 📂 JP
+│  └─ 📂 CN
+└─ 📂 Sound
+   ├─ 📂 Instrument
+   │  └─ 🎧 custom_lute.wav
+   └─ 🎧 doodle.wav
 [/quote]
+
+[h2]Lang Sheets and Book Texts[/h2]
 
 You have to use [b]LangMod[/b] folder instead of [b]Lang[/b] otherwise game will duplicate entire translation tree into your mod folder.
 
-[url=https://github.com/gottyduke/Elin.Plugins/tree/master/CustomDialogLoader]sauce[/url]
+[h2]Sound Files[/h2]
+
+Sound files need to be in [b]wav[/b] format. When a sound file is loaded, a default metadata json will be generated next to it. Modders may edit the metadata about the sound file which will be applied next time game launches.
+
+By setting "type": "BGM" in the metadata, the sound file will be instantiated as a [b]BGMData[/b] instead of [b]SoundData[/b]. You may also customize the BGM parts in the metadata too.
+
+Sub directories in the Sound folder will serve as id prefix, for example, AI_PlayMusic will be using [b]Instrument/sound_id[/b], which you should be placing the sound file in the Instrument folder if you are going to patch the method to play custom sound.
+
+[url=https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader]sauce[/url]
   </description>
 </Meta>

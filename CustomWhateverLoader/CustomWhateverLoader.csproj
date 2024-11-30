@@ -59,14 +59,16 @@
             <Private>False</Private>
         </Reference>
         <Reference Include="Newtonsoft.Json">
-            <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Elin\Elin_Data\Managed\Newtonsoft.Json.dll</HintPath>
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Newtonsoft.Json.dll</HintPath>
+            <Private>False</Private>
         </Reference>
         <Reference Include="Plugins.BaseCore">
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.BaseCore.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Plugins.Sound">
-            <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Elin\Elin_Data\Managed\Plugins.Sound.dll</HintPath>
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.Sound.dll</HintPath>
+            <Private>False</Private>
         </Reference>
         <Reference Include="Plugins.UI">
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.UI.dll</HintPath>
@@ -79,7 +81,8 @@
             <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.AudioModule">
-            <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Elin\Elin_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
+            <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.CoreModule">
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
@@ -90,19 +93,24 @@
             <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule">
-            <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Elin\Elin_Data\Managed\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
+            <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.UnityWebRequestAudioModule">
-            <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Elin\Elin_Data\Managed\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+            <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.UnityWebRequestModule">
-            <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Elin\Elin_Data\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
+            <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.UnityWebRequestTextureModule">
-            <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Elin\Elin_Data\Managed\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+            <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.UnityWebRequestWWWModule">
-            <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Elin\Elin_Data\Managed\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+            <Private>False</Private>
         </Reference>
     </ItemGroup>
     <ItemGroup>

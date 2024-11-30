@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace Cwl.Helper;
 
-internal static class ConfigCereal
+public static class ConfigCereal
 {
-    internal static void WriteConfig<T>(T data, string path)
+    public static void WriteConfig<T>(T data, string path)
     {
         try {
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
@@ -20,7 +20,7 @@ internal static class ConfigCereal
         }
     }
 
-    internal static bool ReadConfig<T>(string path, out T? inferred)
+    public static bool ReadConfig<T>(string path, out T? inferred)
     {
         try {
             if (File.Exists(path)) {
