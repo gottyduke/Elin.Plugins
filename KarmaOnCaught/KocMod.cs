@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.IO;
-using System.Reflection;
-using BepInEx;
+﻿using BepInEx;
 using HarmonyLib;
 
 namespace KoC;
@@ -22,12 +18,10 @@ internal partial class KocMod : BaseUnityPlugin
     private void Awake()
     {
         Instance = this;
-        
         KocConfig.LoadConfig(Config);
-        
+
         var harmony = new Harmony(ModInfo.Guid);
         harmony.PatchAll();
-
     }
 
     internal static void Log(object payload)

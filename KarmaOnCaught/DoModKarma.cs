@@ -2,25 +2,29 @@
 
 internal partial class KocMod
 {
-    internal static void DoModKarma(bool isCrime, Chara? cc, int modifier)
+    internal static void DoModKarma(bool isCrime, Chara? cc, int modifier, bool suspicious = false, int witnesses = 0)
     {
         if (!isCrime) {
             return;
         }
 
-        EClass.pc.Say(KocLoc.CaughtPrompt);
-
-        // pc
-        if (cc?.IsPC ?? false) {
-            EClass.player.ModKarma(modifier);
-            return;
+        Msg.SetColor("bad");
+        Msg.Say(KocLoc.CaughtPrompt);
+        if (witnesses != 0) {
+            Msg.Say(KocLoc.WithWitness(witnesses));
         }
-        
-        // target
-        if (cc is not null && (cc.IsPCFaction || cc.OriginalHostility >= Hostility.Friend)) {
+
+        var doMod = cc switch {
+            { IsPC: true } => true,
+            { IsPCFaction: true } or { OriginalHostility: >= Hostility.Friend } => true,
+            null or { hostility: > Hostility.Enemy } => true,
+            _ => false,
+        };
+
+        if (doMod) {
             EClass.player.ModKarma(modifier);
-        } else if (cc is null || cc.hostility > Hostility.Enemy) {
-            EClass.player.ModKarma(modifier);
+        } else if (suspicious) {
+            Msg.Say(KocLoc.RaiseSuspicion);
         }
     }
 }

@@ -9,10 +9,8 @@ namespace KoC.Patches;
 [HarmonyPatch]
 internal class AIStealPatch
 {
-    private const string OnProgressCompleteClosure = $"<{nameof(AI_Steal.Run)}>b__3";
-    private const string OnCrimeWitnessClosure = $"<{nameof(AI_Steal.Run)}>b__4";
     private static Type? _closures;
-    
+
     private static bool PatchEnabled => (KocConfig.PatchSteal?.Value ?? false) && _closures is not null;
 
     [HarmonyPrepare]
@@ -20,16 +18,65 @@ internal class AIStealPatch
     {
         _closures = AccessTools.FirstInner(typeof(AI_Steal), t => t.Name.Contains("DisplayClass9_0"));
     }
-    
+
+    [HarmonyPatch]
+    internal class OnCrimeWitnessSubPatch
+    {
+        private const string OnCrimeWitnessClosure = $"<{nameof(AI_Steal.Run)}>b__2";
+
+        internal static bool Prepare()
+        {
+            return PatchEnabled;
+        }
+
+        internal static MethodInfo TargetMethod()
+        {
+            return AccessTools.Method(_closures, OnCrimeWitnessClosure);
+        }
+
+        [HarmonyTranspiler]
+        internal static IEnumerable<CodeInstruction> OnCrimeWitnessIl(IEnumerable<CodeInstruction> instructions)
+        {
+            return new CodeMatcher(instructions)
+                .End()
+                .MatchEndBackwards(
+                    new CodeMatch(OpCodes.Callvirt, AccessTools.Method(
+                        typeof(Point),
+                        nameof(Point.TryWitnessCrime))))
+                .SetAndAdvance(OpCodes.Call, AccessTools.Method(
+                    typeof(OnCrimeWitnessSubPatch),
+                    nameof(TryWitnessPickpocket)))
+                .InstructionEnumeration();
+        }
+
+        private static bool TryWitnessPickpocket(Point pos, Chara cc, Chara? target, int radius, Func<Chara, bool> func)
+        {
+            var detection = KocConfig.DetectionRadius!.Value;
+            var caught = pos.TryWitnessCrime(cc, target, detection, func);
+            var witnesses = pos.ListWitnesses(cc, detection).Count;
+
+            KocMod.DoModKarma(caught, cc, -1, false, witnesses);
+            return caught;
+        }
+    }
+
     [HarmonyPatch]
     internal class OnProgressCompleteSubPatch
     {
-        internal static bool Prepare() => PatchEnabled;
-        
-        internal static MethodInfo TargetMethod() => AccessTools.Method(_closures, OnProgressCompleteClosure);
+        private const string OnProgressCompleteClosure = $"<{nameof(AI_Steal.Run)}>b__3";
+
+        internal static bool Prepare()
+        {
+            return PatchEnabled;
+        }
+
+        internal static MethodInfo TargetMethod()
+        {
+            return AccessTools.Method(_closures, OnProgressCompleteClosure);
+        }
 
         [HarmonyTranspiler]
-        internal static IEnumerable<CodeInstruction> OnProgressCompleteIl(IEnumerable<CodeInstruction> instructions, 
+        internal static IEnumerable<CodeInstruction> OnProgressCompleteIl(IEnumerable<CodeInstruction> instructions,
             ILGenerator generator)
         {
             return new CodeMatcher(instructions, generator)
@@ -53,32 +100,6 @@ internal class AIStealPatch
                 .Advance(1)
                 .InsertAndAdvance(
                     new CodeInstruction(OpCodes.Br, jmp))
-                .InstructionEnumeration();
-        }
-    }
-    
-    [HarmonyPatch]
-    internal class OnCrimeWitnessSubPatch
-    {
-        internal static bool Prepare() => PatchEnabled;
-        
-        internal static MethodInfo TargetMethod() => AccessTools.Method(_closures, OnCrimeWitnessClosure);
-
-        [HarmonyTranspiler]
-        internal static IEnumerable<CodeInstruction> OnCrimeWitnessIl(IEnumerable<CodeInstruction> instructions)
-        {
-            return new CodeMatcher(instructions)
-                .MatchEndForward(
-                    new CodeMatch(OpCodes.Ldloc_0),
-                    new CodeMatch(OpCodes.Add),
-                    new CodeMatch(OpCodes.Cgt),
-                    new CodeMatch(OpCodes.Ret))
-                .InsertAndAdvance(
-                    new CodeInstruction(OpCodes.Dup),
-                    new CodeInstruction(OpCodes.Ldarg_0),
-                    new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(_closures, "chara")),
-                    new CodeInstruction(OpCodes.Ldc_I4_M1),
-                    Transpilers.EmitDelegate(KocMod.DoModKarma))
                 .InstructionEnumeration();
         }
     }

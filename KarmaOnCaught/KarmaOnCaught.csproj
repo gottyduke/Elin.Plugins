@@ -74,12 +74,14 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="DoModKarma.cs" />
-        <Compile Include="KocConfig.cs" />
-        <Compile Include="KocLoc.cs" />
-        <Compile Include="KocMod.cs" />
-        <Compile Include="Patches\AIStealPatch.cs" />
-        <Compile Include="Patches\OpenLockPatch.cs" />
+        <Compile Include="DoModKarma.cs"/>
+        <Compile Include="KocConfig.cs"/>
+        <Compile Include="KocLoc.cs"/>
+        <Compile Include="KocMod.cs"/>
+        <Compile Include="Patches\AIStealPatch.cs"/>
+        <Compile Include="Patches\OpenLockPatch.cs"/>
+        <Compile Include="Patches\TaskDwarfPatch.cs"/>
+        <Compile Include="Patches\TaskHarvestPatch.cs"/>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

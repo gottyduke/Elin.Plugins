@@ -5,12 +5,20 @@
   <author>DK</author>
   <builtin>false</builtin>
   <loadPriority>100</loadPriority>
-  <version>0.23.23</version>
+  <version>0.23.45</version>
   <description>
-Stealing(pickpocketing) does not reduce karma unless you are caught in the act.
+[h1]Only Lose Karma If Caught[/h1]
 
-偷窃只有在被抓现行时才会减少善恶值。
+[b]Stealing(pickpocketing)[/b], [b]Harvesting[/b], [b]Lockpicking[/b], and [b]Dwarfing[/b](rock n stone) does not reduce karma unless you are caught in the act.
 
-盗み（スリ）は、行為が見つからない限りカルマを減らしません。
+[h1]完美犯罪[/h1]
+
+[b]偷窃[/b]，[b]收获[/b]，[b]撬锁[/b]，以及[b]矮人行为[/b]均只会在被抓现行时才减少善恶值。
+
+[h1]完璧な犯罪[/h1]
+
+[b]盗み[/b]、[b]収穫[/b]、[b]ロックピッキング[/b]、および[b]ドワーフ行為[/b]は、現行犯で捕まった時のみ善悪値を減少させます。
+
+[url=https://github.com/gottyduke/Elin.Plugins/tree/master/KarmaOnCaught]source[/url]
   </description>
 </Meta>
