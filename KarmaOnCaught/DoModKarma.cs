@@ -8,12 +8,6 @@ internal partial class KocMod
             return;
         }
 
-        Msg.SetColor("bad");
-        Msg.Say(KocLoc.CaughtPrompt);
-        if (witnesses != 0) {
-            Msg.Say(KocLoc.WithWitness(witnesses));
-        }
-
         var doMod = cc switch {
             { IsPC: true } => true,
             { IsPCFaction: true } or { OriginalHostility: >= Hostility.Friend } => true,
@@ -22,6 +16,12 @@ internal partial class KocMod
         };
 
         if (doMod) {
+            Msg.SetColor("bad");
+            Msg.Say(KocLoc.CaughtPrompt);
+            if (witnesses != 0) {
+                Msg.Say(KocLoc.WithWitness(witnesses));
+            }
+
             EClass.player.ModKarma(modifier);
         } else if (suspicious) {
             Msg.Say(KocLoc.RaiseSuspicion);

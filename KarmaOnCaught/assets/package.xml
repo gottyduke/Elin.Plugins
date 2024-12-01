@@ -11,13 +11,14 @@
 
 [b]Stealing(pickpocketing)[/b], [b]Harvesting[/b], [b]Lockpicking[/b], and [b]Dwarfing[/b](rock n stone) does not reduce karma unless you are caught in the act.
 
-[h1]完美犯罪[/h1]
+[h2]Toggle Individual Behaviour[/h2]
 
-[b]偷窃[/b]，[b]收获[/b]，[b]撬锁[/b]，以及[b]矮人行为[/b]均只会在被抓现行时才减少善恶值。
+All patches are enabled by default, the detection radius is 4 tiles, the same as Elin game code.
+You may change the setting in `Elin\BepInEx\config\dk.elinplugins.karmaoncaught.cfg` to toggle individual patch.
 
-[h1]完璧な犯罪[/h1]
+[h2]Chance of Getting Caught[/h2]
 
-[b]盗み[/b]、[b]収穫[/b]、[b]ロックピッキング[/b]、および[b]ドワーフ行為[/b]は、現行犯で捕まった時のみ善悪値を減少させます。
+The chance of getting caught depends on the number of possible witnesses in the detection range, whether they have you on line of sight, and the corresponding skill for the action.
 
 [url=https://github.com/gottyduke/Elin.Plugins/tree/master/KarmaOnCaught]source[/url]
   </description>
