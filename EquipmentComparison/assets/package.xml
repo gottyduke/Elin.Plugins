@@ -5,7 +5,7 @@
   <author>DK</author>
   <builtin>false</builtin>
   <loadPriority>100</loadPriority>
-  <version>0.23.33</version>
+  <version>0.23.46</version>
   <description>[h2]Equipment Comparison[/h2]
 
 When viewing unequipped items, displays additional comparison tooltips for items already equipped in the same slot. 
@@ -18,6 +18,8 @@ Keybindings can be changed in `Elin/BepInEx/config/dk.elinplugins.equipmentcompa
 
 [h2]Updates[/h2]
 
+[b]1.9[/b] Added ZHTW and KR language display &#38; fixed possible bug if user disables system widgets.
+[b]1.8[/b] Fixed a display issue during Ctrl+F search.
 [b]1.7[/b] Fixed ranged weapon comparisons &#38; added fade out effect same as vanilla tooltips.
 [b]1.6[/b] Added a `(Equipped)` indicator in comparison tooltips.
 [b]1.5[/b] Fixed a non harmful code error when hovering over current held hotbar item.
