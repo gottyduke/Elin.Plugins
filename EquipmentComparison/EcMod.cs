@@ -7,7 +7,7 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.equipmentcomparison";
     internal const string Name = "Equipment Comparison";
-    internal const string Version = "1.9";
+    internal const string Version = "1.10";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
@@ -19,7 +19,7 @@ internal class EcMod : BaseUnityPlugin
     {
         Instance = this;
 
-        EquipmentComparisonConfig.LoadConfig(Config);
+        EcConfig.LoadConfig(Config);
 
         var harmony = new Harmony(ModInfo.Guid);
         harmony.PatchAll();

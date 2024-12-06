@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace EC;
 
-internal static class EquipmentComparisonConfig
+internal static class EcConfig
 {
     internal static ConfigEntry<KeyCode>? Toggle;
     internal static ConfigEntry<KeyCode>? Modifier;

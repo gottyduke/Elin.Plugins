@@ -1,6 +1,6 @@
 ﻿namespace EC;
 
-internal static class EquipmentComparisonLoc
+internal static class EcLoc
 {
     internal static string EquippedIndicator => Lang.langCode switch {
         "CN" => "(已装备)",

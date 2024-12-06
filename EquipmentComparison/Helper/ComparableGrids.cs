@@ -9,13 +9,14 @@ internal static class ComparableGrids
     internal static List<ButtonGridDrag> GetAllComparableGrids(this Chara owner, Thing item)
     {
         IEnumerable<Component> components;
+
+        var petLayer = ELayer.ui.layers
+            .OfType<LayerInventory>()
+            .Where(l => l.Inv?.Chara is not null)
+            .FirstOrDefault(l => l.Inv.Chara.IsPCFactionOrMinion || l.Inv.Chara == owner);
         
-        // wtf did I write
-        if (!owner.IsPCC) {
-            components = ELayer.ui.layers
-                .OfType<LayerInventory>()
-                .Where(l => l.Inv?.Chara == owner)
-                .SelectMany(l => l.invs)
+        if (petLayer is not null) {
+            components = petLayer.invs
                 .SelectMany(l => l.list.buttons)
                 .Where(p => p.obj switch {
                     Thing { isEquipped: true } t

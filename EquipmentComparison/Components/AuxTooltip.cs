@@ -28,7 +28,7 @@ internal class AuxTooltip : MonoBehaviour
         }
 
         _cached.Clear();
-        var maxNotes = EquipmentComparisonConfig.MaxAuxNotes!.Value;
+        var maxNotes = EcConfig.MaxAuxNotes!.Value;
         for (var i = 0; i < maxNotes; ++i) {
             var aux = Instantiate(BaseNote, instance.transform);
             aux.gameObject.AddComponent<AuxNote>();
@@ -49,12 +49,12 @@ internal class AuxTooltip : MonoBehaviour
 
     private void Update()
     {
-        var mod = EquipmentComparisonConfig.Modifier!.Value;
+        var mod = EcConfig.Modifier!.Value;
         if (mod != KeyCode.None && !Input.GetKey(mod)) {
             return;
         }
 
-        var toggle = EquipmentComparisonConfig.Toggle!.Value;
+        var toggle = EcConfig.Toggle!.Value;
         if (toggle == KeyCode.None || !Input.GetKeyDown(toggle)) {
             return;
         }
@@ -64,7 +64,7 @@ internal class AuxTooltip : MonoBehaviour
             _cached.Do(n => n.SetActive(false));
         }
 
-        EClass.pc.Say(EquipmentComparisonLoc.TogglePrompt(IsEnabled));
+        EClass.pc.Say(EcLoc.TogglePrompt(IsEnabled));
     }
 
     internal static void TryDrawAuxTooltip(UIButton? btn)
@@ -103,13 +103,13 @@ internal class AuxTooltip : MonoBehaviour
         // GetEquippedThing() only returns first equipped
         // need to iterate in case of dual wielding
         // also search for hotbar & toolbelt items
-        var maxNotes = EquipmentComparisonConfig.MaxAuxNotes!.Value;
+        var maxNotes = EcConfig.MaxAuxNotes!.Value;
         var comparables = owner.GetAllComparableGrids(thing);
         for (var i = 0; i < Math.Min(maxNotes, comparables.Count); ++i) {
             var comparable = comparables[i];
             var header = comparable.card.IsRangedWeapon
-                ? EquipmentComparisonLoc.CarriedIndicator
-                : EquipmentComparisonLoc.EquippedIndicator;
+                ? EcLoc.CarriedIndicator
+                : EcLoc.EquippedIndicator;
             var copyTooltip = comparable.CopyTooltipWithId($"aux_note_{i}", header);
             tm.ShowTooltip(copyTooltip, @this.BaseNote!.transform);
         }
