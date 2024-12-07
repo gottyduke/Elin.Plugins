@@ -62,6 +62,22 @@
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\Newtonsoft.Json.dll</HintPath>
             <Private>False</Private>
         </Reference>
+        <Reference Include="NPOI">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\NPOI.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="NPOI.OOXML">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\NPOI.OOXML.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="NPOI.OpenXml4Net">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\NPOI.OpenXml4Net.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="NPOI.OpenXmlFormats">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\NPOI.OpenXmlFormats.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
         <Reference Include="Plugins.BaseCore">
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.BaseCore.dll</HintPath>
             <Private>False</Private>
@@ -122,6 +138,7 @@
         <Compile Include="Helper\PathNormalizer.cs"/>
         <Compile Include="Patches\LoadBookPatch.cs"/>
         <Compile Include="Patches\LoadDramaPatch.cs"/>
+        <Compile Include="Patches\ImportPatch.cs"/>
         <Compile Include="Patches\LoadSoundPatch.cs"/>
     </ItemGroup>
     <ItemGroup>

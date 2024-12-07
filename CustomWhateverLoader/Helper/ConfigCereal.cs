@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using Newtonsoft.Json;
-using UnityEngine;
 
 namespace Cwl.Helper;
 
@@ -29,7 +28,7 @@ public static class ConfigCereal
                 return true;
             }
         } catch (Exception ex) {
-            Debug.Log($"failed to read config: {ex.Message}");
+            CwlMod.Log($"failed to read config: {ex.Message}");
             throw;
         }
 

@@ -17,7 +17,7 @@ internal class LoadBookPatch
     [HarmonyPatch(typeof(BookList), nameof(BookList.Init))]
     internal static void OnBookListInit(BookList __instance)
     {
-        var sources = PackageFileIterator.GetLandModFilesFromPackage()
+        var sources = PackageFileIterator.GetLangModFilesFromPackage()
             .SelectMany(d => d.GetDirectories(CacheEntry))
             .SelectMany(d => d.GetDirectories())
             .ToArray();

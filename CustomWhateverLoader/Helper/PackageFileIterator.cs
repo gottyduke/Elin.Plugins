@@ -19,7 +19,7 @@ public static class PackageFileIterator
             .Select(PathNormalizer.NormalizePath);
     }
 
-    public static IEnumerable<DirectoryInfo> GetLandModFilesFromPackage(string? modId = null)
+    public static IEnumerable<DirectoryInfo> GetLangModFilesFromPackage(string? modId = null)
     {
         return BaseModManager.Instance.packages
             .Where(p => !p.builtin)
