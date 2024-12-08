@@ -29,7 +29,7 @@ internal class ImportPatch
             try {
                 var owner = import.Directory!.Parent!.Parent;
                 var shortPath = import.FullName[(owner!.Parent!.FullName.Length + 1)..];
-                CwlMod.Log($"importing workbook: {shortPath}");
+                CwlMod.Log($"workbook: {shortPath}");
                 
                 var book = new XSSFWorkbook(import);
                 for (var i = 0; i < book.NumberOfSheets; ++i) {
@@ -43,6 +43,7 @@ internal class ImportPatch
                             continue;
                         }
                         var sheetName = $"{sourceField.Name}:{import.Name}/{sheet.SheetName}";
+                        CwlMod.Log($"importing {sheetName}");
 
                         if (sourceField.GetValue(EMono.sources) is not SourceData source ||
                             !source.ImportData(sheet, import.Name, true)) {
@@ -50,7 +51,6 @@ internal class ImportPatch
                         }
 
                         dirty.Add(source);
-                        CwlMod.Log($"imported sheet {sheetName}");
                     } catch (Exception ex) {
                         CwlMod.Log($"internal failure: {ex.Message}");
                         // noexcept

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using BepInEx;
 
 namespace Cwl.Helper;
 
@@ -11,6 +12,7 @@ public static class PackageFileIterator
     public static IEnumerable<string> GetLangFilesFromPackage(string pattern, bool excludeBuiltIn = false)
     {
         return BaseModManager.Instance.packages
+            .Where(p => p.activated)
             .Where(p => !excludeBuiltIn || (excludeBuiltIn && !p.builtin))
             .Select(p => p.dirInfo)
             .SelectMany(d => d.GetDirectories("Lang*"))
@@ -19,26 +21,28 @@ public static class PackageFileIterator
             .Select(PathNormalizer.NormalizePath);
     }
 
-    public static IEnumerable<DirectoryInfo> GetLangModFilesFromPackage(string? modId = null)
+    public static IEnumerable<DirectoryInfo> GetLangModFilesFromPackage()
     {
-        return BaseModManager.Instance.packages
-            .Where(p => !p.builtin)
-            .Where(p => modId is null || p.id == modId)
-            .Select(p => p.dirInfo)
+        return GetLoadedPackages()
             .SelectMany(d => d.GetDirectories("LangMod"))
-            .Select(d => d.GetDirectories().FirstOrDefault(sd => sd.Name == Lang.langCode)
+            .Select(d => d.GetDirectories().FirstOrDefault(sd => sd.Name == Core.Instance.config.lang)
                          ?? d.GetDirectories().First());
     }
 
-    public static IEnumerable<DirectoryInfo> GetSoundFilesFromPackage(string? modId = null)
+    public static IEnumerable<DirectoryInfo> GetSoundFilesFromPackage()
     {
-        return BaseModManager.Instance.packages
-            .Where(p => !p.builtin)
-            .Where(p => modId is null || p.id == modId)
-            .Select(p => p.dirInfo)
+        return GetLoadedPackages()
             .SelectMany(d => d.GetDirectories("Sound"));
     }
 
+    public static IEnumerable<DirectoryInfo> GetLoadedPackages(string? modId = null)
+    {
+        return BaseModManager.Instance.packages
+            .Where(p => p.activated && !p.builtin)
+            .Where(p => modId is null || p.id == modId)
+            .Select(p => p.dirInfo);
+    }
+    
     public static bool TryLoadFromPackage(string cacheName, out string path)
     {
         return _cachedPaths.TryGetValue(cacheName, out path);
