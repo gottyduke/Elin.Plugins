@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
+using ACS.Helper;
 using HarmonyLib;
 using UnityEngine;
 
@@ -60,7 +61,7 @@ internal class LoadSpritePatch
         data.tex = allTex[0];
         data.sprites = allTex
             .Select(t => Sprite.Create(t, new(0, 0, t.width, t.height),
-                new(0.5f, 64f / t.height), 100f, 0u, SpriteMeshType.FullRect))
+                t.AdjustPivot(), 100f, 0u, SpriteMeshType.FullRect))
             .ToArray();
         data.sprites.Do(s => s.name = s.texture.name);
         data.frame = 1;

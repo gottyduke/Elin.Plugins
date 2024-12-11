@@ -47,7 +47,7 @@ internal class AcsController : MonoBehaviour
 
     private void Update()
     {
-        if (CurrentClip?.sprites?.Length is null or 0) {
+        if (CurrentClip?.sprites?.Length is not > 1) {
             _playing = false;
             return;
         }
@@ -61,12 +61,12 @@ internal class AcsController : MonoBehaviour
             if (chara is null && _owner is Thing { parentCard: Chara wielder }) {
                 chara = wielder;
             }
-            
-            var newClip = chara?.ai switch {
-                GoalCombat or GoalAutoCombat => _owner.GetAcsClip(AcsAnimationType.Combat),
-                // other conditions?
-                _ => null,
-            };
+
+            AcsClip? newClip = null;
+            if (chara?.IsInCombat ?? false) {
+                newClip = _owner.GetAcsClip(AcsAnimationType.Combat);
+            }
+            newClip ??= _owner.GetAcsClip(AcsAnimationType.Idle);
 
             if (newClip?.sprites?.Length is > 0 && newClip != CurrentClip) {
                 StartClip(newClip);
@@ -84,7 +84,7 @@ internal class AcsController : MonoBehaviour
 
     internal Sprite CurrentFrame()
     {
-        if (!IsPlaying || CurrentClip?.sprites?.Length is null or 0) {
+        if (!IsPlaying || CurrentClip?.sprites?.Length is not > 1) {
             return _sr!.sprite;
         }
 
