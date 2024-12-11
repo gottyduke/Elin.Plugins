@@ -6,6 +6,7 @@ Ideal for mods that introduce new items, characters, or audio elements, the Cust
 
 ## Features
 + SourceSheets
++ Custom Adventurer
 + Dialog/Drama
 + Book Text
 + Sound/BGM
@@ -16,7 +17,7 @@ New features are added upon request.
 
 Custom Whatever Loader requires your resources to be placed under the [b]LangMod[/b] folder instead of [b]Lang[/b]; otherwise, the game will duplicate the entire translation tree into your mod folder. Within the [b]LangMod[/b] folder, you can add as many supported languages as you want by naming the subfolders with the language code, for example:
 
-[img]https://i.postimg.cc/wB198VkM/Screenshot-2.png[/img]
+![](https://i.postimg.cc/1t4Dgkgw/Screenshot-2.png)
 
 When Custom Whatever Loader imports the resources, it will import from the current language folder first, effectively addressing the translation issue with the current Elin xlsx implementation, which generally only has JP and EN entries.
 
@@ -43,9 +44,13 @@ Instead of calling `ModUtil.ImportExcel` on each xlsx worksheet manually, modder
 
 Note that it's the [b]sheet name[/b], not the file name! For example, this will import `SourceThing`, `SourceChara`, `LangGeneral` accordingly.
 
-[img]https://i.postimg.cc/vZqGNjfC/Screenshot-1.png[/img]
+![](https://i.postimg.cc/vZqGNjfC/Screenshot-1.png)
 
 You may also split the sheets into multiple xlsx files for organizing.
+
+## Custom Adventurer
+
+To automatically add your custom character as adventurer to the game, add `addAdvZone_*` to the tag column,replace the `*` with zone name or keep it for random zone. For example, a tag cell could look like `noPotrait,addAdvZone_Palmia`.
 
 ## Sound Files
 
