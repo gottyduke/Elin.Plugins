@@ -63,7 +63,7 @@ internal class AcsController : MonoBehaviour
             }
             
             var newClip = chara?.ai switch {
-                GoalCombat or GoalAutoCombat => chara.GetAcsClip(AcsAnimationType.Combat),
+                GoalCombat or GoalAutoCombat => _owner.GetAcsClip(AcsAnimationType.Combat),
                 // other conditions?
                 _ => null,
             };
