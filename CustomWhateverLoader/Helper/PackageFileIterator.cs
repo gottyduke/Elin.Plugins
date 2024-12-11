@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using BepInEx;
 
 namespace Cwl.Helper;
 
@@ -42,7 +41,7 @@ public static class PackageFileIterator
             .Where(p => modId is null || p.id == modId)
             .Select(p => p.dirInfo);
     }
-    
+
     public static bool TryLoadFromPackage(string cacheName, out string path)
     {
         return _cachedPaths.TryGetValue(cacheName, out path);

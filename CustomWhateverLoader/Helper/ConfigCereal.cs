@@ -14,7 +14,7 @@ public static class ConfigCereal
             using var sw = new StreamWriter(path);
             sw.Write(JsonConvert.SerializeObject(data, Formatting.Indented));
         } catch (Exception ex) {
-            CwlMod.Log($"internal failure: {ex.Message}");
+            CwlMod.Error($"internal failure: {ex.Message}");
             // noexcept
         }
     }
@@ -28,7 +28,7 @@ public static class ConfigCereal
                 return true;
             }
         } catch (Exception ex) {
-            CwlMod.Log($"failed to read config: {ex.Message}");
+            CwlMod.Error($"failed to read config: {ex.Message}");
             throw;
         }
 

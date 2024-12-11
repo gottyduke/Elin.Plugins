@@ -46,7 +46,7 @@ internal class LoadSoundPatch
                 }
 
                 if (clipLoader.result != UnityWebRequest.Result.Success) {
-                    CwlMod.Log($"failed to load sound {id}\n{clipLoader.error}");
+                    CwlMod.Error($"failed to load sound {id}\n{clipLoader.error}");
                     continue;
                 }
 
