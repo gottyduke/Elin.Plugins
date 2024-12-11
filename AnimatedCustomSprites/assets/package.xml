@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Meta>
+  <title>Animated Custom Sprites</title>
+  <id>dk.elinplugins.animatedcustomsprites</id>
+  <author>DK</author>
+  <builtin>false</builtin>
+  <loadPriority>69</loadPriority>
+  <version>1.14.514</version>
+  <description>
+  [h1]Animated Custom Sprites[/h1]
+
+Allows the usage of animated sprites for [b]custom[/b] characters and items.
+
+To create [b]custom[/b] characters and items, you can use [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3370512305]Custom Whatever Loader[/url] to simplify the process.
+
+[h2]Animation Clip[/h2]
+
+To create a clip, simply name each frame with `id_acs_name#interval_index`.
+
+For example, a custom character with id `boxchicken`, you should prepare the following sprites in the [b]Texture[/b] folder:
+
+[list]
+[*] `boxchicken.png`, base sprite, that gets loaded as a still image, used everywhere in the game.
+
+[*] `boxchicken_acs_idle#66_1.png`, 1st frame of clip "idle", which is used when card is **idling**, with an interval of 66ms.
+[*] repeat and follow the same convention to create frames for clip "idle".
+
+[*] `boxchicken_acs_combat#66_1.png`, 1st frame of clip "combat", which is used when card is **in combat**, with an interval of 66ms.
+[*] repeat and follow the same convention to create frames for clip "combat".
+
+[*] Note that combat clip is [b]not required[/b].
+
+[*] `boxchicken_acs_customClipName#66_0.png`, 1st frame of clip "customClipName", this clip needs to be played manually by using Animated Custom Sprites API. 
+[*] repeat and follow the same convention to create frames for clip "customClipName"...
+[/list]
+
+[img]https://i.postimg.cc/25H2KpgX/image.png[/img]
+
+[h2]API[/h2]
+
+By referencing AnimatedCustomSprites.dll, you can access the entire `ACS.API` namespace, with the following extension methods:
+[code]
+// clip control
+card.StartAcsClip(clipName)
+card.StartAcsClip(clipType)
+card.StopAcsClip()
+
+// clip access
+card.GetAcsClip(clipName)
+card.GetAcsClip(clipType)
+card.GetAcsClips(clipName)
+card.GetAcsClips(clipType)
+card.GetAllAcsClips()
+
+// clip creation
+card.CreateAcsClip(sprites[], clipName, clipType, interval)
+card.CreateAcsClips(sprites[])
+[/code]
+
+[h2]Having a Problem?[/h2]
+
+Want to request new animation conditions without needing to mess with API? New features? Bugs? Need of assistance? Feel free to leave comments or reach my at Elona Discord @freshcloth.
+[url=https://github.com/gottyduke/Elin.Plugins/tree/master/AnimatedCustomSprites]sauce[/url]
+  </description>
+</Meta>
