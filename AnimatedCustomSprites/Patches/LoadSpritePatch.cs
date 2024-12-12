@@ -26,6 +26,7 @@ internal class LoadSpritePatch
             .InsertAndAdvance(
                 new CodeInstruction(OpCodes.Dup),
                 new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Ldarg, 4),
                 Transpilers.EmitDelegate(TryLoadExtensively),
                 new CodeInstruction(OpCodes.Brtrue, jmp),
                 new CodeInstruction(OpCodes.Pop),
@@ -33,9 +34,9 @@ internal class LoadSpritePatch
             .InstructionEnumeration();
     }
 
-    internal static bool TryLoadExtensively(bool shouldLoad, SpriteData data)
+    internal static bool TryLoadExtensively(bool loaded, SpriteData data, string suffix)
     {
-        if (shouldLoad) {
+        if (loaded || suffix == "_snow.png") {
             return true;
         }
 
@@ -58,6 +59,7 @@ internal class LoadSpritePatch
             allTex.Add(tex);
         }
 
+        
         data.tex = allTex[0];
         data.sprites = allTex
             .Select(t => Sprite.Create(t, new(0, 0, t.width, t.height),

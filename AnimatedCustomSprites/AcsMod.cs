@@ -7,7 +7,7 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.animatedcustomsprites";
     internal const string Name = "Animated Custom Sprites";
-    internal const string Version = "1.2";
+    internal const string Version = "1.3";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
