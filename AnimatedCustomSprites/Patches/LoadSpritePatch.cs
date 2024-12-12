@@ -64,31 +64,30 @@ internal class LoadSpritePatch
         data.sprites = allTex
             .SelectMany(t => {
                 var index = t.name.Split("_")[^1];
-                if (index.Contains("-")) {
-                    var regex = new Regex(@"\d+");
-                    var matches = regex.Matches(index);
-                    if (!int.TryParse(matches[0].Value, out var begin) ||
-                        !int.TryParse(matches[1].Value, out var end)) {
-                        AcsMod.Warn($"failed to create sequential frames from sheet: {t.name}");
-                        return [];
-                    }
-
-                    var count = end - begin + 1;
-                    var width = t.width / count;
-                    var sprites = new Sprite[count];
-                    for (var i = 0; i < count; ++i) {
-                        sprites[i] = Sprite.Create(t, new(i * width, 0f, width, t.height),
-                            new(0.5f, t.AdjustPivot(width)), 100f, 0u,
-                            SpriteMeshType.FullRect);
-                    }
-
-                    return sprites;
+                if (!index.Contains("-")) {
+                    return [
+                        Sprite.Create(t, new(0, 0, t.width, t.height), new(0.5f, t.AdjustPivot()), 100f, 0u,
+                            SpriteMeshType.FullRect),
+                    ];
                 }
 
-                return [
-                    Sprite.Create(t, new(0, 0, t.width, t.height), new(0.5f, t.AdjustPivot()), 100f, 0u,
-                        SpriteMeshType.FullRect),
-                ];
+                var regex = new Regex(@"\d+");
+                var matches = regex.Matches(index);
+                if (!int.TryParse(matches[0].Value, out var begin) ||
+                    !int.TryParse(matches[1].Value, out var end)) {
+                    AcsMod.Warn($"failed to create sequential frames from sheet: {t.name}");
+                    return [];
+                }
+
+                var count = end - begin + 1;
+                var width = t.width / count;
+                var sprites = new Sprite[count];
+                for (var i = 0; i < count; ++i) {
+                    sprites[i] = Sprite.Create(t, new(i * width, 0f, width, t.height),
+                        new(0.5f, t.AdjustPivot(width)), 100f, 0u, SpriteMeshType.FullRect);
+                }
+
+                return sprites;
             })
             .ToArray();
         data.sprites.Do(s => s.name = s.texture.name);

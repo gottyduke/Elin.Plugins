@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using ACS.API;
 using UnityEngine;
 
@@ -8,12 +9,11 @@ internal class AcsController : MonoBehaviour
 {
     internal static readonly Dictionary<string, Sprite> Cached = [];
     internal static readonly Dictionary<string, List<AcsClip>> Clips = [];
-    private CardActor? _actor;
 
+    private CardActor? _actor;
     private float _elapsed;
     private bool _playing;
     private SpriteReplacer? _replacer;
-
     private SpriteRenderer? _sr;
 
     internal int CurrentIndex { get; private set; }
@@ -21,27 +21,6 @@ internal class AcsController : MonoBehaviour
     internal bool ExternalOverride { get; set; }
     internal float Interval => CurrentClip?.interval ?? 0f;
     internal bool IsPlaying => _playing && _replacer?.data is not null;
-
-    private void Awake()
-    {
-        _sr ??= GetComponent<SpriteRenderer>();
-        _actor ??= GetComponent<CardActor>();
-        _replacer ??= _actor.owner.sourceCard.replacer;
-
-        if (_replacer?.data?.sprites?.Length is null or 0) {
-            _playing = false;
-            return;
-        }
-
-        _actor.owner.CreateAcsClips(_replacer.data.sprites);
-
-        var idleClip = _actor.owner.GetAcsClip(AcsAnimationType.Idle);
-        if (idleClip is null) {
-            return;
-        }
-
-        StartClip(idleClip);
-    }
 
     private void Update()
     {
@@ -79,6 +58,37 @@ internal class AcsController : MonoBehaviour
 
         _elapsed -= Interval;
         CurrentIndex = (CurrentIndex + 1) % CurrentClip.sprites.Length;
+    }
+
+    private void OnEnable()
+    {
+        // pool chara has its card set 1 frame afterwards
+        StartCoroutine(DelayedValidate());
+    }
+
+    private IEnumerator DelayedValidate()
+    {
+        yield return null;
+
+        _sr ??= GetComponent<SpriteRenderer>();
+        _actor ??= GetComponent<CardActor>();
+        _replacer = _actor.owner.sourceCard.replacer;
+
+        if (_replacer?.data?.sprites?.Length is null or 0) {
+            _playing = false;
+            yield break;
+        }
+
+        if (!Clips.ContainsKey(_actor.owner.id)) {
+            _actor.owner.CreateAcsClips(_replacer.data.sprites);
+        }
+
+        var idleClip = _actor.owner.GetAcsClip(AcsAnimationType.Idle);
+        if (idleClip is null) {
+            yield break;
+        }
+
+        StartClip(idleClip);
     }
 
     internal Sprite CurrentFrame()
