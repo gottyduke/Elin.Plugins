@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ACS.API;
 using UnityEngine;
 
@@ -11,7 +12,6 @@ internal class AcsController : MonoBehaviour
     private CardActor? _actor;
 
     private float _elapsed;
-    private Card? _owner;
     private bool _playing;
     private SpriteReplacer? _replacer;
 
@@ -27,7 +27,6 @@ internal class AcsController : MonoBehaviour
     {
         _sr ??= GetComponent<SpriteRenderer>();
         _actor ??= GetComponent<CardActor>();
-        _owner ??= _actor.owner;
         _replacer ??= _actor.owner.sourceCard.replacer;
 
         if (_replacer?.data?.sprites?.Length is null or 0) {
@@ -35,9 +34,9 @@ internal class AcsController : MonoBehaviour
             return;
         }
 
-        _owner.CreateAcsClips(_replacer.data.sprites);
+        _actor.owner.CreateAcsClips(_replacer.data.sprites);
 
-        var idleClip = _owner.GetAcsClip(AcsAnimationType.Idle);
+        var idleClip = _actor.owner.GetAcsClip(AcsAnimationType.Idle);
         if (idleClip is null) {
             return;
         }
@@ -52,21 +51,21 @@ internal class AcsController : MonoBehaviour
             return;
         }
 
-        if (!_playing || _owner is null) {
+        if (!_playing || _actor?.owner is null) {
             return;
         }
 
         if (!ExternalOverride) {
-            var chara = _owner as Chara;
-            if (chara is null && _owner is Thing { parentCard: Chara wielder }) {
+            var chara = _actor.owner as Chara;
+            if (chara is null && _actor.owner is Thing { parentCard: Chara wielder }) {
                 chara = wielder;
             }
 
             AcsClip? newClip = null;
             if (chara?.IsInCombat ?? false) {
-                newClip = _owner.GetAcsClip(AcsAnimationType.Combat);
+                newClip = _actor.owner.GetAcsClip(AcsAnimationType.Combat);
             }
-            newClip ??= _owner.GetAcsClip(AcsAnimationType.Idle);
+            newClip ??= _actor.owner.GetAcsClip(AcsAnimationType.Idle);
 
             if (newClip?.sprites?.Length is > 0 && newClip != CurrentClip) {
                 StartClip(newClip);

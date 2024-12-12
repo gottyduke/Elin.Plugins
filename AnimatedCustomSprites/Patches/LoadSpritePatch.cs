@@ -36,7 +36,7 @@ internal class LoadSpritePatch
 
     internal static bool TryLoadExtensively(bool loaded, SpriteData data, string suffix)
     {
-        if (loaded || suffix == "_snow.png") {
+        if (loaded || suffix == "_snow.png" || File.Exists(data.path + ".ini")) {
             return true;
         }
 
@@ -59,14 +59,12 @@ internal class LoadSpritePatch
             allTex.Add(tex);
         }
 
-        
         data.tex = allTex[0];
         data.sprites = allTex
             .Select(t => Sprite.Create(t, new(0, 0, t.width, t.height),
                 t.AdjustPivot(), 100f, 0u, SpriteMeshType.FullRect))
             .ToArray();
         data.sprites.Do(s => s.name = s.texture.name);
-        data.frame = 1;
 
         return false;
     }
