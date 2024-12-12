@@ -24,8 +24,13 @@ public static class PackageFileIterator
     {
         return GetLoadedPackages()
             .SelectMany(d => d.GetDirectories("LangMod"))
-            .Select(d => d.GetDirectories().FirstOrDefault(sd => sd.Name == Core.Instance.config.lang)
-                         ?? d.GetDirectories().First());
+            .Select(d => {
+                var dirs = d.GetDirectories();
+                return dirs.FirstOrDefault(sd => sd.Name == Core.Instance.config.lang) ??
+                       // 1.7 use EN as 1st fallback
+                       dirs.FirstOrDefault(sd => sd.Name == "EN") ??
+                       dirs.First();
+            });
     }
 
     public static IEnumerable<DirectoryInfo> GetSoundFilesFromPackage()

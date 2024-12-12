@@ -50,7 +50,7 @@ public static class CustomAdventurer
                             if (@params[1] != "Replace") {
                                 CwlMod.Log($"skipped adventurer {id}, already exists");
                                 chara.Destroy();
-                                continue;
+                                break;
                             }
 
                             EMono.game.cards.listAdv.Remove(duplicate);
