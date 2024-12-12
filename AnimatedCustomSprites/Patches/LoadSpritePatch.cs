@@ -27,7 +27,6 @@ internal class LoadSpritePatch
             .InsertAndAdvance(
                 new CodeInstruction(OpCodes.Dup),
                 new CodeInstruction(OpCodes.Ldarg_0),
-                new CodeInstruction(OpCodes.Ldarg, 4),
                 Transpilers.EmitDelegate(TryLoadExtensively),
                 new CodeInstruction(OpCodes.Brtrue, jmp),
                 new CodeInstruction(OpCodes.Pop),
@@ -35,9 +34,9 @@ internal class LoadSpritePatch
             .InstructionEnumeration();
     }
 
-    internal static bool TryLoadExtensively(bool loaded, SpriteData data, string suffix)
+    internal static bool TryLoadExtensively(bool loaded, SpriteData data)
     {
-        if (loaded || suffix == "_snow.png" || File.Exists(data.path + ".ini")) {
+        if (loaded) {
             return true;
         }
 
@@ -48,7 +47,12 @@ internal class LoadSpritePatch
             .GetFiles("*.png", SearchOption.TopDirectoryOnly)
             .Where(f => f.Name != baseFile.Name && f.Name.Contains("_acs_"))
             .Where(f => f.Name.StartsWith(baseName))
-            .OrderBy(f => f.Name);
+            .OrderBy(f => f.Name)
+            .ToArray();
+
+        if (altTex.Length == 0) {
+            return true;
+        }
 
         var baseTex = IO.LoadPNG(baseFile.FullName);
         baseTex.name = baseName;
