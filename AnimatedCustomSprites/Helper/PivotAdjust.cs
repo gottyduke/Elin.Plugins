@@ -4,9 +4,10 @@ namespace ACS.Helper;
 
 public static class PivotAdjust
 {
-    public static Vector2 AdjustPivot(this Texture texture)
+    public static float AdjustPivot(this Texture texture, float? widthOverride = null)
     {
-        var offset = texture.width > 128f ? 128f : 0f;
-        return new(0.5f, texture.height / (texture.height + offset) / 2f);
+        widthOverride ??= texture.width;
+        var offset = widthOverride > 128f ? 128f : 0f;
+        return texture.height / (texture.height + offset) / 2f;
     }
 }

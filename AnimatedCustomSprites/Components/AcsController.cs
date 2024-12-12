@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ACS.API;
 using UnityEngine;
 
@@ -65,6 +64,7 @@ internal class AcsController : MonoBehaviour
             if (chara?.IsInCombat ?? false) {
                 newClip = _actor.owner.GetAcsClip(AcsAnimationType.Combat);
             }
+
             newClip ??= _actor.owner.GetAcsClip(AcsAnimationType.Idle);
 
             if (newClip?.sprites?.Length is > 0 && newClip != CurrentClip) {

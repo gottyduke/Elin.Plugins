@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
+using System.Text.RegularExpressions;
 using ACS.Helper;
 using HarmonyLib;
 using UnityEngine;
@@ -61,8 +62,34 @@ internal class LoadSpritePatch
 
         data.tex = allTex[0];
         data.sprites = allTex
-            .Select(t => Sprite.Create(t, new(0, 0, t.width, t.height),
-                t.AdjustPivot(), 100f, 0u, SpriteMeshType.FullRect))
+            .SelectMany(t => {
+                var index = t.name.Split("_")[^1];
+                if (index.Contains("-")) {
+                    var regex = new Regex(@"\d+");
+                    var matches = regex.Matches(index);
+                    if (!int.TryParse(matches[0].Value, out var begin) ||
+                        !int.TryParse(matches[1].Value, out var end)) {
+                        AcsMod.Warn($"failed to create sequential frames from sheet: {t.name}");
+                        return [];
+                    }
+
+                    var count = end - begin + 1;
+                    var width = t.width / count;
+                    var sprites = new Sprite[count];
+                    for (var i = 0; i < count; ++i) {
+                        sprites[i] = Sprite.Create(t, new(i * width, 0f, width, t.height),
+                            new(0.5f, t.AdjustPivot(width)), 100f, 0u,
+                            SpriteMeshType.FullRect);
+                    }
+
+                    return sprites;
+                }
+
+                return [
+                    Sprite.Create(t, new(0, 0, t.width, t.height), new(0.5f, t.AdjustPivot()), 100f, 0u,
+                        SpriteMeshType.FullRect),
+                ];
+            })
             .ToArray();
         data.sprites.Do(s => s.name = s.texture.name);
 

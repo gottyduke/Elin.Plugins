@@ -98,7 +98,7 @@
         <Compile Include="Helper\ConfigCereal.cs"/>
         <Compile Include="Helper\CoroutineHelper.cs"/>
         <Compile Include="Helper\DeferredCoroutine.cs"/>
-        <Compile Include="Helper\PivotAdjust.cs" />
+        <Compile Include="Helper\PivotAdjust.cs"/>
         <Compile Include="Patches\LoadSpritePatch.cs"/>
         <Compile Include="Patches\RenderFramePatch.cs"/>
     </ItemGroup>
