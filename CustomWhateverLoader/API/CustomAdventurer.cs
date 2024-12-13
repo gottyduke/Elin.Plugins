@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Cwl.Helper;
@@ -21,7 +22,7 @@ public static class CustomAdventurer
     public static Chara CreateTaggedChara(string charaId)
     {
         var adventurer = CharaGen.Create(charaId);
-
+        adventurer.RemoveThings();
         return adventurer;
     }
 
@@ -31,7 +32,7 @@ public static class CustomAdventurer
         while (SafeToCreate && delayed > 0) {
             foreach (var (id, tags) in DelayedCharaImport) {
                 delayed--;
-                
+
                 var chara = CreateTaggedChara(id);
                 if (chara.id == "beggar") {
                     CwlMod.Error($"failed to add adventurer {id}, cannot be generated");
@@ -41,7 +42,7 @@ public static class CustomAdventurer
 
                 var towns = EMono.game.world.region.ListTowns();
                 foreach (var tag in tags) {
-                    var @params = tag.Parse("#", 4);
+                    var @params = tag.Parse("#", 3);
                     var payload = @params[0];
 
                     if (payload.StartsWith("Zone_")) {
@@ -74,11 +75,44 @@ public static class CustomAdventurer
                         continue;
                     }
 
-                    if (payload.StartsWith("Eq_")) {
+                    if (payload.StartsWith("Eq_") || payload.StartsWith("Thing_")) {
+                        var thingId = payload.StartsWith("Eq_") ? payload[3..] : payload[6..];
+                        var doEquip = payload.StartsWith("Eq_");
+                        if (thingId is "") {
+                            continue;
+                        }
+
+                        var thing = EMono.sources.cards.map.TryGetValue(thingId);
+                        if (thing is null) {
+                            CwlMod.Warn($"failed to add thing:{thingId} to {id}, cannot be generated");
+                            continue;
+                        }
+
+                        if (doEquip) {
+                            var rarity = Rarity.Random;
+                            if (Enum.TryParse<Rarity>(@params[1], true, out var rarityEnum)) {
+                                rarity = rarityEnum;
+                            }
+
+                            var equip = chara.EQ_ID(thingId, r: rarity);
+                            if (!chara.things.Contains(equip) && !equip.isDestroyed) {
+                                chara.AddThing(equip);
+                            }
+
+                            CwlMod.Log(
+                                $"added equipment:{thingId}, {Enum.GetName(typeof(Rarity), rarity)} to {id}");
+                        } else {
+                            int.TryParse(@params[1], out var count);
+                            count = count is 0 ? 1 : count;
+
+                            chara.AddThing(ThingGen.Create(thingId).SetNum(count));
+                            CwlMod.Log($"added thing:{thingId}, x{count} to {id}");
+                        }
+
                         continue;
                     }
 
-                    if (payload.StartsWith("Thing_")) {
+                    if (payload.StartsWith("Placeholder")) {
                     }
                 }
             }
