@@ -33,7 +33,8 @@ internal class SourceInitPatch
                 var shortPath = import.FullName[(owner!.Parent!.FullName.Length + 1)..];
                 CwlMod.Log($"workbook: {shortPath}");
 
-                var book = new XSSFWorkbook(import);
+                using var fs = File.OpenRead(import.FullName);
+                var book = new XSSFWorkbook(fs);
                 for (var i = 0; i < book.NumberOfSheets; ++i) {
                     try {
                         var sheet = book.GetSheetAt(i);
@@ -50,7 +51,7 @@ internal class SourceInitPatch
 
                         if (sourceField.GetValue(EMono.sources) is not SourceData source ||
                             !source.ImportData(sheet, import.Name, true)) {
-                            throw new($"failed to import {sheetName}");
+                            throw new SourceParseException($"failed to import {sheetName}");
                         }
 
                         dirty.Add(source);
