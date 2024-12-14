@@ -3,9 +3,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
 using Cwl.Helper;
+using Cwl.Helper.File;
+using Cwl.Helper.String;
 using HarmonyLib;
 
-namespace Cwl.Patches;
+namespace Cwl.Patches.Relocation;
 
 [HarmonyPatch]
 internal class LoadDramaPatch

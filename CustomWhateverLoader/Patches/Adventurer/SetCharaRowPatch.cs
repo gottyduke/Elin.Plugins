@@ -2,7 +2,7 @@
 using Cwl.API;
 using HarmonyLib;
 
-namespace Cwl.Patches;
+namespace Cwl.Patches.Adventurer;
 
 [HarmonyPatch]
 internal class SetCharaRowPatch

@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace Cwl.Helper;
+namespace Cwl.Helper.Unity;
 
 public class CoroutineHelper : MonoBehaviour
 {

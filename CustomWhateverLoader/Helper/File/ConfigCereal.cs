@@ -2,7 +2,7 @@
 using System.IO;
 using Newtonsoft.Json;
 
-namespace Cwl.Helper;
+namespace Cwl.Helper.File;
 
 public static class ConfigCereal
 {
@@ -22,7 +22,7 @@ public static class ConfigCereal
     public static bool ReadConfig<T>(string path, out T? inferred)
     {
         try {
-            if (File.Exists(path)) {
+            if (System.IO.File.Exists(path)) {
                 using var sr = new StreamReader(path);
                 inferred = JsonConvert.DeserializeObject<T>(sr.ReadToEnd());
                 return true;

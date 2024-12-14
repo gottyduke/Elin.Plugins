@@ -6,9 +6,10 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using Cwl.Helper;
+using Cwl.Helper.File;
 using HarmonyLib;
 
-namespace Cwl.Patches;
+namespace Cwl.Patches.Relocation;
 
 [HarmonyPatch]
 internal class LoadDialogPatch

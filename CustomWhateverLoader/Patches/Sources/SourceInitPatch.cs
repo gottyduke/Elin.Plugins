@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Cwl.API;
 using Cwl.Helper;
+using Cwl.Helper.File;
 using HarmonyLib;
 using NPOI.XSSF.UserModel;
 
-namespace Cwl.Patches;
+namespace Cwl.Patches.Sources;
 
 [HarmonyPatch]
-internal class ImportPatch
+internal class SourceInitPatch
 {
     private const string Pattern = "*.xlsx";
 

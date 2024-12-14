@@ -4,11 +4,16 @@ using System.Reflection;
 using Cwl.API;
 using HarmonyLib;
 
-namespace Cwl.Patches;
+namespace Cwl.Patches.Sources;
 
 [HarmonyPatch]
 internal class RethrowParsePatch
 {
+    internal static bool Prepare()
+    {
+        return CwlConfig.Source.RethrowException?.Value ?? false;
+    }
+    
     [HarmonyTargetMethods]
     internal static IEnumerable<MethodInfo> SourceDataCellParsers()
     {
@@ -34,6 +39,7 @@ internal class RethrowParsePatch
             var row = ExcelParser.row;
             var details = $"row#{row.RowNum}, cell#{id}, expected:{parser.ReturnType.Name}, raw:{row.Cells[id]}";
             var message = ex.InnerException?.Message.SplitNewline()[0];
+            
             throw new SourceParseException($"{message}\n{details}", ex);
         }
 

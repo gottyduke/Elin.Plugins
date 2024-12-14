@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Cwl.Helper;
+namespace Cwl.Helper.String;
 
 public static class ParamParser
 {

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Cwl.Helper;
+namespace Cwl.Helper.Unity;
 
 public static class DeferredCoroutine
 {

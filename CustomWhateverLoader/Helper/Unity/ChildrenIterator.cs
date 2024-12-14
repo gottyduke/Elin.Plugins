@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace Cwl.Helper;
+namespace Cwl.Helper.Unity;
 
 public static class ChildrenIterator
 {

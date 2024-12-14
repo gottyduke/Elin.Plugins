@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Cwl.Helper.String;
 
-namespace Cwl.Helper;
+namespace Cwl.Helper.File;
 
 public static class PackageFileIterator
 {

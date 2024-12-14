@@ -131,32 +131,37 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="API\CustomAdventurer.cs"/>
+        <Compile Include="API\MigrateDetail.cs" />
         <Compile Include="API\SerializableSoundData.cs"/>
         <Compile Include="API\SourceParseException.cs"/>
+        <Compile Include="API\ValidateSheet.cs" />
         <Compile Include="CustomWhateverLoader.cs"/>
-        <Compile Include="Helper\ChildrenIterator.cs"/>
-        <Compile Include="Helper\ComponentFetch.cs"/>
-        <Compile Include="Helper\ConfigCereal.cs"/>
-        <Compile Include="Helper\CoroutineHelper.cs"/>
-        <Compile Include="Helper\DeferredCoroutine.cs"/>
+        <Compile Include="CwlConfig.cs" />
+        <Compile Include="Helper\File\ConfigCereal.cs" />
+        <Compile Include="Helper\File\PackageFileIterator.cs" />
         <Compile Include="Helper\IntrospectCopy.cs"/>
-        <Compile Include="Helper\PackageFileIterator.cs"/>
-        <Compile Include="Helper\ParamParser.cs"/>
-        <Compile Include="Helper\PathNormalizer.cs"/>
-        <Compile Include="Patches\LoadDialogPatch.cs"/>
-        <Compile Include="Patches\RethrowParsePatch.cs"/>
-        <Compile Include="Patches\LoadBookPatch.cs"/>
-        <Compile Include="Patches\LoadDramaPatch.cs"/>
-        <Compile Include="Patches\ImportPatch.cs"/>
+        <Compile Include="Helper\String\GameVersion.cs" />
+        <Compile Include="Helper\String\ParamParser.cs" />
+        <Compile Include="Helper\String\PathNormalizer.cs" />
+        <Compile Include="Helper\Unity\ChildrenIterator.cs" />
+        <Compile Include="Helper\Unity\ComponentFetch.cs" />
+        <Compile Include="Helper\Unity\CoroutineHelper.cs" />
+        <Compile Include="Helper\Unity\DeferredCoroutine.cs" />
+        <Compile Include="Patches\Adventurer\SafeSceneInitPatch.cs" />
+        <Compile Include="Patches\Adventurer\SetCharaRowPatch.cs" />
         <Compile Include="Patches\LoadSoundPatch.cs"/>
-        <Compile Include="Patches\SafeSceneInitPatch.cs"/>
-        <Compile Include="Patches\SetCharaRowPatch.cs"/>
+        <Compile Include="Patches\Sources\SourceInitPatch.cs" />
+        <Compile Include="Patches\Sources\RelaxedImportPatch.cs" />
+        <Compile Include="Patches\Sources\RethrowParsePatch.cs" />
+        <Compile Include="Patches\Relocation\LoadBookPatch.cs" />
+        <Compile Include="Patches\Relocation\LoadDialogPatch.cs" />
+        <Compile Include="Patches\Relocation\LoadDramaPatch.cs" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="PolySharp" Version="1.15.0">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
+      <PackageReference Include="PolySharp" Version="1.15.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

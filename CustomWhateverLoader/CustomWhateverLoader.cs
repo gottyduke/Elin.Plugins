@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using BepInEx;
 using Cwl.Patches;
+using Cwl.Patches.Relocation;
+using Cwl.Patches.Sources;
 using HarmonyLib;
 
 namespace Cwl;
@@ -21,6 +23,9 @@ internal class CwlMod : BaseUnityPlugin
     private void Awake()
     {
         Instance = this;
+        
+        CwlConfig.Load(Config);
+        
         var harmony = new Harmony(ModInfo.Guid);
         harmony.PatchAll();
     }
@@ -34,6 +39,14 @@ internal class CwlMod : BaseUnityPlugin
 
     internal static void Log(object payload)
     {
+        Instance!.Logger.LogInfo(payload);
+    }
+
+    internal static void Debug(object payload)
+    {
+        if (!CwlConfig.VerboseLogging?.Value ?? false) {
+            return;
+        }
         Instance!.Logger.LogInfo(payload);
     }
 

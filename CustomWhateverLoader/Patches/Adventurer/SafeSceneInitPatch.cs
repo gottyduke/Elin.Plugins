@@ -1,8 +1,9 @@
 ﻿using Cwl.API;
 using Cwl.Helper;
+using Cwl.Helper.Unity;
 using HarmonyLib;
 
-namespace Cwl.Patches;
+namespace Cwl.Patches.Adventurer;
 
 // credits to 105gun
 [HarmonyPatch]
