@@ -5,9 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using Cwl.Helper;
 using Cwl.Helper.File;
 using HarmonyLib;
+using MethodTimer;
 
 namespace Cwl.Patches.Relocation;
 
@@ -41,6 +41,7 @@ internal class LoadDialogPatch
             .InstructionEnumeration();
     }
 
+    [Time]
     private static void BuildRelocatedMap(ExcelData data, string sheetName)
     {
         data.BuildMap(sheetName);
@@ -57,6 +58,7 @@ internal class LoadDialogPatch
         }
     }
 
+    [Time]
     internal static IEnumerator LoadAllDialogs()
     {
         var books = PackageFileIterator.GetLangModFilesFromPackage()

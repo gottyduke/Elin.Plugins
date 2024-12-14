@@ -2,9 +2,9 @@
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
-using Cwl.Helper;
 using Cwl.Helper.File;
 using HarmonyLib;
+using MethodTimer;
 
 namespace Cwl.Patches.Relocation;
 
@@ -14,6 +14,7 @@ internal class LoadBookPatch
     private const string CacheEntry = "Text";
     private const string Pattern = "*.txt";
 
+    [Time]
     [HarmonyPostfix]
     [HarmonyPatch(typeof(BookList), nameof(BookList.Init))]
     internal static void OnBookListInit(BookList __instance)

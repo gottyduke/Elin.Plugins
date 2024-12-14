@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Cwl.Helper;
 using Cwl.Helper.String;
 
 namespace Cwl.API;
@@ -12,11 +11,11 @@ public static class CustomAdventurer
     internal static readonly Dictionary<string, HashSet<string>> DelayedCharaImport = [];
     internal static bool SafeToCreate = false;
 
-    public static void AddAdventurer(string charaId, params string[] zones)
+    public static void AddAdventurer(string charaId, params string[] tags)
     {
         DelayedCharaImport.TryAdd(charaId, []);
-        foreach (var zone in zones) {
-            DelayedCharaImport[charaId].Add(zone);
+        foreach (var tag in tags) {
+            DelayedCharaImport[charaId].Add(tag);
         }
     }
 

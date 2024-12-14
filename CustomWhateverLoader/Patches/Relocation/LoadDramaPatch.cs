@@ -2,10 +2,10 @@
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
-using Cwl.Helper;
 using Cwl.Helper.File;
 using Cwl.Helper.String;
 using HarmonyLib;
+using MethodTimer;
 
 namespace Cwl.Patches.Relocation;
 
@@ -35,6 +35,7 @@ internal class LoadDramaPatch
             .InstructionEnumeration();
     }
 
+    [Time]
     private static List<Dictionary<string, string>> BuildRelocatedList(ExcelData data, string oldPath,
         DramaManager dm)
     {

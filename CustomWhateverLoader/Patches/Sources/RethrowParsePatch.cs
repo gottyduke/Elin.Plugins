@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Cwl.API;
 using HarmonyLib;
+using MethodTimer;
 
 namespace Cwl.Patches.Sources;
 
@@ -13,7 +14,7 @@ internal class RethrowParsePatch
     {
         return CwlConfig.Source.RethrowException?.Value ?? false;
     }
-    
+
     [HarmonyTargetMethods]
     internal static IEnumerable<MethodInfo> SourceDataCellParsers()
     {
@@ -29,8 +30,9 @@ internal class RethrowParsePatch
         ];
     }
 
+    [Time]
     [HarmonyPrefix]
-    internal static bool ParseRethrowInvoke(int id, ref object __result, MethodInfo __originalMethod)
+    internal static bool RethrowParseInvoke(int id, ref object __result, MethodInfo __originalMethod)
     {
         var parser = AccessTools.FirstMethod(typeof(ExcelParser), mi => mi.Name == __originalMethod.Name);
         try {
@@ -39,7 +41,7 @@ internal class RethrowParsePatch
             var row = ExcelParser.row;
             var details = $"row#{row.RowNum}, cell#{id}, expected:{parser.ReturnType.Name}, raw:{row.Cells[id]}";
             var message = ex.InnerException?.Message.SplitNewline()[0];
-            
+
             throw new SourceParseException($"{message}\n{details}", ex);
         }
 

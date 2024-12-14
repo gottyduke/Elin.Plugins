@@ -1,12 +1,14 @@
 ﻿using System.Linq;
 using Cwl.API;
 using HarmonyLib;
+using MethodTimer;
 
 namespace Cwl.Patches.Adventurer;
 
 [HarmonyPatch]
 internal class SetCharaRowPatch
 {
+    [Time]
     [HarmonyPostfix]
     [HarmonyPatch(typeof(SourceChara), nameof(SourceChara.SetRow))]
     internal static void OnSetRow(SourceChara.Row r)

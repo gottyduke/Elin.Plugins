@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Cwl.API;
-using Cwl.Helper;
 using Cwl.Helper.File;
 using HarmonyLib;
+using MethodTimer;
 using NPOI.XSSF.UserModel;
 
 namespace Cwl.Patches.Sources;
@@ -15,12 +15,14 @@ internal class SourceInitPatch
 {
     private const string Pattern = "*.xlsx";
 
+    [Time]
     [HarmonyPrefix]
     [HarmonyPatch(typeof(SourceManager), nameof(SourceManager.Init))]
     internal static void ImportAllSheets()
     {
-        var langs = PackageFileIterator.GetLangModFilesFromPackage();
-        var imports = langs.SelectMany(d => d.GetFiles(Pattern, SearchOption.TopDirectoryOnly));
+        var imports = PackageFileIterator.GetLangModFilesFromPackage()
+            .SelectMany(d => d.GetFiles(Pattern, SearchOption.TopDirectoryOnly))
+            .Where(f => !f.Name.Contains("cwl_migrated"));
         var sources = typeof(SourceManager)
             .GetFields(AccessTools.all)
             .Where(f => typeof(SourceData).IsAssignableFrom(f.FieldType))
@@ -35,6 +37,8 @@ internal class SourceInitPatch
 
                 using var fs = File.OpenRead(import.FullName);
                 var book = new XSSFWorkbook(fs);
+                MigrateDetail.GetOrAdd(book).SetFile(import.GetFullFileNameWithoutExtension());
+
                 for (var i = 0; i < book.NumberOfSheets; ++i) {
                     try {
                         var sheet = book.GetSheetAt(i);
@@ -56,12 +60,12 @@ internal class SourceInitPatch
 
                         dirty.Add(source);
                     } catch (Exception ex) {
-                        CwlMod.Error($"internal failure: {ex.Message}");
+                        CwlMod.Error($"internal failure: {ex}");
                         // noexcept
                     }
                 }
             } catch (Exception ex) {
-                CwlMod.Error($"internal failure: {ex.Message}");
+                CwlMod.Error($"internal failure: {ex}");
                 // noexcept
             }
         }

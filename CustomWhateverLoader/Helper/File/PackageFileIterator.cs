@@ -21,9 +21,9 @@ public static class PackageFileIterator
             .Select(PathNormalizer.NormalizePath);
     }
 
-    public static IEnumerable<DirectoryInfo> GetLangModFilesFromPackage()
+    public static IEnumerable<DirectoryInfo> GetLangModFilesFromPackage(string? modGuid = null)
     {
-        return GetLoadedPackages()
+        return GetLoadedPackages(modGuid)
             .SelectMany(d => d.GetDirectories("LangMod"))
             .Select(d => {
                 var dirs = d.GetDirectories();
@@ -34,17 +34,17 @@ public static class PackageFileIterator
             });
     }
 
-    public static IEnumerable<DirectoryInfo> GetSoundFilesFromPackage()
+    public static IEnumerable<DirectoryInfo> GetSoundFilesFromPackage(string? modGuid = null)
     {
-        return GetLoadedPackages()
+        return GetLoadedPackages(modGuid)
             .SelectMany(d => d.GetDirectories("Sound"));
     }
 
-    public static IEnumerable<DirectoryInfo> GetLoadedPackages(string? modId = null)
+    public static IEnumerable<DirectoryInfo> GetLoadedPackages(string? modGuid = null)
     {
         return BaseModManager.Instance.packages
             .Where(p => p.activated && !p.builtin)
-            .Where(p => modId is null || p.id == modId)
+            .Where(p => modGuid is null || p.id == modGuid)
             .Select(p => p.dirInfo);
     }
 

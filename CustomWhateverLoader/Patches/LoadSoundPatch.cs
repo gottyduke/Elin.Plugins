@@ -3,6 +3,7 @@ using System.IO;
 using Cwl.API;
 using Cwl.Helper;
 using Cwl.Helper.File;
+using MethodTimer;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -12,6 +13,7 @@ internal class LoadSoundPatch
 {
     private const string Pattern = "*.wav";
 
+    [Time]
     internal static IEnumerator LoadAllSounds()
     {
         foreach (var dir in PackageFileIterator.GetSoundFilesFromPackage()) {
