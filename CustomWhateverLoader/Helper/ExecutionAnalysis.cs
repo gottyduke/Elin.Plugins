@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Cwl.LangMod;
 using UnityEngine;
 
 namespace Cwl.Helper;
@@ -12,7 +13,7 @@ internal class ExecutionAnalysis
 
     internal static void DispatchAnalysis()
     {
-        CwlMod.Log("Execution analysis:");
+        CwlMod.Log("cwl_log_execution_analysis".Loc());
 
         var methodNameWidth = _cached.Keys.Max(mi => (mi.DeclaringType?.Name.Length ?? 0) + mi.Name.Length);
         var total = 0d;
@@ -25,10 +26,10 @@ internal class ExecutionAnalysis
             var elapsed = counted.Sum(e => e.TotalMilliseconds);
             total += elapsed;
 
-            Debug.Log($"{method}{counted.Count,5} call{plural}, {elapsed:0.##}ms");
+            Debug.Log("cwl_log_execution_detail".Loc(method, counted.Count, plural, elapsed));
         }
 
-        Debug.Log($"CWL slowed your game down by {total:0.##}ms");
+        Debug.Log("cwl_log_execution_tally".Loc(total));
         _cached.Clear();
     }
 

@@ -2,7 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cwl.Helper;
 using Cwl.Helper.String;
+using Cwl.LangMod;
+using MethodTimer;
 
 namespace Cwl.API;
 
@@ -26,6 +29,7 @@ public static class CustomAdventurer
         return adventurer;
     }
 
+    [Time]
     internal static IEnumerator AddDelayedChara()
     {
         var delayed = DelayedCharaImport.Count;
@@ -35,7 +39,7 @@ public static class CustomAdventurer
 
                 var chara = CreateTaggedChara(id);
                 if (chara.id == "beggar") {
-                    CwlMod.Error($"failed to add adventurer {id}, cannot be generated");
+                    CwlMod.Error("cwl_error_chara_gen".Loc(id));
                     chara.Destroy();
                     continue;
                 }
@@ -49,7 +53,7 @@ public static class CustomAdventurer
                         var duplicate = EMono.game.cards.listAdv.FirstOrDefault(c => c.id == id);
                         if (duplicate is not null) {
                             if (@params[1] != "Replace") {
-                                CwlMod.Log($"skipped adventurer {id}, already exists");
+                                CwlMod.Log("cwl_log_skipped_adv".Loc(id));
                                 chara.Destroy();
                                 break;
                             }
@@ -70,7 +74,7 @@ public static class CustomAdventurer
                         zone.AddCard(chara);
                         EMono.game.cards.listAdv.Add(chara);
 
-                        CwlMod.Log($"added adventurer {id} to {zone.GetType().Name}");
+                        CwlMod.Log("cwl_log_added_adv".Loc(id, zone.GetType().Name));
 
                         continue;
                     }
@@ -84,7 +88,7 @@ public static class CustomAdventurer
 
                         var thing = EMono.sources.cards.map.TryGetValue(thingId);
                         if (thing is null) {
-                            CwlMod.Warn($"failed to add thing:{thingId} to {id}, cannot be generated");
+                            CwlMod.Warn("cwl_warn_thing_gen".Loc(thingId, id));
                             continue;
                         }
 
@@ -99,14 +103,13 @@ public static class CustomAdventurer
                                 chara.AddThing(equip);
                             }
 
-                            CwlMod.Log(
-                                $"added equipment:{thingId}, {Enum.GetName(typeof(Rarity), rarity)} to {id}");
+                            CwlMod.Log("cwl_log_added_eq".Loc(thingId, Enum.GetName(typeof(Rarity), rarity)!, id));
                         } else {
                             int.TryParse(@params[1], out var count);
                             count = count is 0 ? 1 : count;
 
                             chara.AddThing(ThingGen.Create(thingId).SetNum(count));
-                            CwlMod.Log($"added thing:{thingId}, x{count} to {id}");
+                            CwlMod.Log("cwl_log_added_thing".Loc(thingId, count, id));
                         }
 
                         continue;

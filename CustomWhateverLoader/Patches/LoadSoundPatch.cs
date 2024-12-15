@@ -3,6 +3,7 @@ using System.IO;
 using Cwl.API;
 using Cwl.Helper;
 using Cwl.Helper.File;
+using Cwl.LangMod;
 using MethodTimer;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -45,11 +46,11 @@ internal class LoadSoundPatch
                 } else {
                     meta = new();
                     ConfigCereal.WriteConfig(meta, metafile);
-                    CwlMod.Log($"generated default meta for sound {id}");
+                    CwlMod.Log("cwl_log_sound_default_meta".Loc(id));
                 }
 
                 if (clipLoader.result != UnityWebRequest.Result.Success) {
-                    CwlMod.Error($"failed to load sound {id}\n{clipLoader.error}");
+                    CwlMod.Error("cwl_error_sound_loader".Loc(id, clipLoader.error));
                     continue;
                 }
 
@@ -60,7 +61,7 @@ internal class LoadSoundPatch
                 data.name = id;
 
                 SoundManager.current.dictData[id] = data;
-                CwlMod.Log($"loaded {meta.type} sound {id} {clip.frequency}Hz x{clip.channels}, {clip.length}s");
+                CwlMod.Log("cwl_log_sound_loaded".Loc(meta.type, id, clip.frequency, clip.channels, clip.length));
             }
         }
     }

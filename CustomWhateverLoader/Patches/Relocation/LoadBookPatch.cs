@@ -2,7 +2,10 @@
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
+using Cwl.Helper;
 using Cwl.Helper.File;
+using Cwl.Helper.String;
+using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
 
@@ -73,11 +76,11 @@ internal class LoadBookPatch
             return textArray;
         }
 
-        if (!PackageFileIterator.TryLoadFromPackage(id, out var cachedPath)) {
+        if (!PackageFileIterator.TryLoadFromPackageCache(id, out var cachedPath)) {
             return [];
         }
 
-        CwlMod.Log($"relocated book > {id}:{Pattern}\n> {cachedPath}");
+        CwlMod.Log("cwl_relocate_book".Loc(id, Pattern, cachedPath.ShortPath()));
         return IO.LoadTextArray(cachedPath);
     }
 }

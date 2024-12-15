@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Cwl.Helper;
 using Cwl.Helper.String;
+using Cwl.LangMod;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
-using UnityEngine;
 
 namespace Cwl.API;
 
@@ -67,9 +68,7 @@ public sealed class MigrateDetail
     {
         switch (CurrentSheet?.MigrateStrategy) {
             case Strategy.Reorder: {
-                CwlMod.Warn("sheet has misaligned columns, CWL imported by column names instead");
-                CwlMod.Warn(
-                    $"if this is causing issues, please update the sheet or disable {CwlConfig.Source.NamedImport!.Definition.Key} in the config file");
+                CwlMod.Warn("cwl_warn_misaligned_sheet".Loc(CwlConfig.Source.NamedImport!.Definition.Key));
                 DumpHeaders();
 
                 if (CwlConfig.Source.SheetMigrate?.Value is true) {
@@ -79,8 +78,7 @@ public sealed class MigrateDetail
                 break;
             }
             case Strategy.Missing: {
-                CwlMod.Warn(
-                    "sheet is missing header entries and might be incompatible, this does not prevent CWL from importing");
+                CwlMod.Warn("cwl_warn_missing_header".Loc());
                 DumpHeaders();
                 break;
             }
@@ -98,8 +96,7 @@ public sealed class MigrateDetail
         var sheet = CurrentSheet.Sheet;
         var migratedFile = $"{SheetFile}_{sheet.SheetName}_{GameVersion.Normalized}_cwl_migrated.xlsx";
         if (File.Exists(migratedFile)) {
-            CwlMod.Log(
-                $"migration cancelled, sheet has already been migrated for this version: {GameVersion.Normalized}");
+            CwlMod.Warn("cwl_log_migration_cancel".Loc(GameVersion.Normalized));
             return;
         }
 
@@ -130,9 +127,9 @@ public sealed class MigrateDetail
             using var fs = File.OpenWrite(migratedFile);
             book.Write(fs);
 
-            CwlMod.Log($"migration complete, sheet has been reordered at\n{migratedFile}");
+            CwlMod.Log("cwl_log_migration_complete".Loc(migratedFile));
         } catch (Exception ex) {
-            CwlMod.Warn($"migration failure: cannot reorder sheet, this does not affect the import data\n{ex}");
+            CwlMod.Warn("cwl_warn_migration_failure".Loc(ex));
             // noexcept
         }
     }
@@ -143,6 +140,9 @@ public sealed class MigrateDetail
             return;
         }
 
+        var file = new FileInfo(SheetFile);
+        CwlMod.Warn(file.ShortPath());
+
         var expected = CurrentSheet.Expected.OrderBy(c => c.Index).ToList();
         var given = CurrentSheet.Given.OrderBy(c => c.Index).ToList();
         var maxNameWidth = expected.Max(c => c.Name.Length);
@@ -152,14 +152,14 @@ public sealed class MigrateDetail
 
             var guessCell = given.FirstOrDefault(c => c.Name == header.Name);
             var guessName = guessCell is not null && guessCell.Index != header.Index
-                ? $"maybe {guessCell.Index,2}: {guessCell.Name}"
+                ? "cwl_cell_guess".Loc(guessCell.Index, guessCell.Name)
                 : "";
 
             var givenCell = given.FirstOrDefault(c => c.Index == header.Index);
-            var givenName = givenCell is not null ? givenCell.Name : "<missing>";
+            var givenName = givenCell is not null ? givenCell.Name : "cwl_cell_missing".Loc();
             givenName = givenName.PadRight(maxNameWidth + 3);
 
-            Debug.Log($"{header.Index,2}: {expectedName} -> {givenName} {guessName}");
+            CwlMod.Warn($"{header.Index,2}: {expectedName} -> {givenName} {guessName}");
         }
     }
 

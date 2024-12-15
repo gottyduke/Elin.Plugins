@@ -1,7 +1,6 @@
 ﻿using Cwl.API;
 using Cwl.Helper.Unity;
 using HarmonyLib;
-using MethodTimer;
 
 namespace Cwl.Patches.Adventurer;
 
@@ -9,7 +8,6 @@ namespace Cwl.Patches.Adventurer;
 [HarmonyPatch]
 internal class SafeSceneInitPatch
 {
-    [Time]
     [HarmonyPostfix]
     [HarmonyPatch(typeof(Scene), nameof(Scene.Init))]
     internal static void OnSceneInit(Scene.Mode newMode)

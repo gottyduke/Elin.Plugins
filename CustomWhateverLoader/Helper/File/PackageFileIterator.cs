@@ -48,7 +48,48 @@ public static class PackageFileIterator
             .Select(p => p.dirInfo);
     }
 
-    public static bool TryLoadFromPackage(string cacheName, out string path)
+    public static IEnumerable<ExcelData> GetRelocatedExcelsFromPackage(string relativePath)
+    {
+        return GetRelocatedFilesFromPackage(relativePath)
+            .Select(b => new ExcelData(b.FullName));
+    }
+
+    public static IEnumerable<FileInfo> GetRelocatedFilesFromPackage(string relativePath)
+    {
+        return BaseModManager.Instance.packages
+            .Where(p => p.activated && !p.builtin)
+            .Select(p => GetRelocatedFileFromPackage(relativePath, p.id))
+            .OfType<FileInfo>();
+    }
+
+    public static ExcelData? GetRelocatedExcelFromPackage(string relativePath, string modGuid)
+    {
+        var excel = GetRelocatedFileFromPackage(relativePath, modGuid);
+        return excel is null ? null : new(excel.FullName);
+    }
+
+    public static FileInfo? GetRelocatedFileFromPackage(string relativePath, string modGuid)
+    {
+        var cacheName = $"{modGuid}/Resources";
+        if (!TryLoadFromPackageCache(cacheName, out var cachedPath)) {
+            var resources = GetLangModFilesFromPackage(modGuid).FirstOrDefault();
+            if (resources?.Exists is not true) {
+                return null;
+            }
+
+            cachedPath = resources.FullName;
+            AddCachedPath(cacheName, cachedPath);
+        }
+
+        var file = Path.Combine(cachedPath, relativePath);
+        if (!System.IO.File.Exists(file)) {
+            return null;
+        }
+
+        return new(file);
+    }
+
+    public static bool TryLoadFromPackageCache(string cacheName, out string path)
     {
         return _cachedPaths.TryGetValue(cacheName, out path);
     }

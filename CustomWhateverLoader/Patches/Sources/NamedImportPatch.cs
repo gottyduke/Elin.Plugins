@@ -5,6 +5,8 @@ using System.Reflection;
 using System.Reflection.Emit;
 using BepInEx;
 using Cwl.API;
+using Cwl.Helper;
+using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
 using NPOI.SS.UserModel;
@@ -130,8 +132,8 @@ internal class NamedImportPatch
                 : parser.Invoke(null, [readPos]);
             field.SetValue(row, parsed);
 
-            var parseDetail = readPos == id ? $"parse {readPos}" : $"reloc {id}->{readPos}";
-            CwlMod.Debug($"{parseDetail}:{field.Name}:{parser.Name}");
+            var parseDetail = readPos == id ? "cwl_import_parse" : "cwl_import_reloc";
+            CwlMod.Debug($"{parseDetail.Loc(id, readPos)}:{field.Name}:{parser.Name}");
         } finally {
             if (id == expected.Count - 1) {
                 migrate.FinalizeMigration();

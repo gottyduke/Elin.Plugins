@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using Cwl.Helper;
 using Cwl.Helper.File;
+using Cwl.Helper.String;
+using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
 
@@ -61,26 +61,13 @@ internal class LoadDialogPatch
     [Time]
     internal static IEnumerator LoadAllDialogs()
     {
-        var books = PackageFileIterator.GetLangModFilesFromPackage()
-            .SelectMany(d => d.GetDirectories(CacheEntry))
-            .SelectMany(d => d.GetFiles(Pattern, SearchOption.TopDirectoryOnly))
-            .Where(f => Path.GetFileNameWithoutExtension(f.Name) == "dialog");
+        var dialogs = PackageFileIterator.GetRelocatedFilesFromPackage("Dialog/dialog.xlsx");
 
-        foreach (var book in books) {
-            try {
-                var data = new ExcelData {
-                    path = book.FullName,
-                };
-                _cached.Add(data);
-            } catch (Exception ex) {
-                CwlMod.Error($"failed to load dialog {book.FullName}\n{ex.Message}");
-                continue;
-                // noexcept
-            }
-
-            CwlMod.Log($"loaded relocated dialog {book.FullName}");
+        foreach (var book in dialogs) {
+            _cached.Add(new(book.FullName));
+            CwlMod.Log("cwl_preload_dialog".Loc(book.ShortPath()));
         }
 
-        yield return null;
+        yield break;
     }
 }
