@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Cwl.Helper;
 using Cwl.LangMod;
 using HarmonyLib;
 using NPOI.XSSF.UserModel;

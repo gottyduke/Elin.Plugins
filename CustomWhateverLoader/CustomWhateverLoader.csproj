@@ -149,6 +149,7 @@
         <Compile Include="Helper\String\ParamParser.cs"/>
         <Compile Include="Helper\String\PathNormalizer.cs"/>
         <Compile Include="Helper\String\PathTruncation.cs"/>
+        <Compile Include="Helper\TrimCellSpaces.cs" />
         <Compile Include="Helper\Unity\ChildrenIterator.cs"/>
         <Compile Include="Helper\Unity\ComponentFetch.cs"/>
         <Compile Include="Helper\Unity\CoroutineHelper.cs"/>
@@ -164,6 +165,7 @@
         <Compile Include="Patches\CustomReligion\SetReligionOwnerPatch.cs"/>
         <Compile Include="Patches\CustomReligion\SetReligionRowPatch.cs"/>
         <Compile Include="Patches\Relocation\LoadDataPatch.cs"/>
+        <Compile Include="Patches\Sources\PostProcessCellPatch.cs" />
         <Compile Include="Patches\Sources\SourceInitPatch.cs"/>
         <Compile Include="Patches\Sources\NamedImportPatch.cs"/>
         <Compile Include="Patches\Sources\RethrowParsePatch.cs"/>

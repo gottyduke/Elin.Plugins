@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Cwl.API;
-using Cwl.Helper;
 using Cwl.Helper.File;
 using Cwl.Helper.String;
 using Cwl.LangMod;

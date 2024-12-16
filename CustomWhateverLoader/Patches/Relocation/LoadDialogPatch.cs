@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using Cwl.Helper;
 using Cwl.Helper.File;
 using Cwl.Helper.String;
 using Cwl.LangMod;

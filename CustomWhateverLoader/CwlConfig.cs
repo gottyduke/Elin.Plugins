@@ -24,6 +24,12 @@ internal class CwlConfig
             true,
             "Rethrow the excel exception as SourceParseException with more details attached");
 
+        Source.TrimSpaces = config.Bind(
+            ModInfo.Name,
+            "Source.TrimSpaces",
+            true,
+            "Trim all leading and trailing spaces from cell value");
+
         Source.NamedImport = config.Bind(
             ModInfo.Name,
             "Source.NamedImport",
@@ -46,6 +52,7 @@ internal class CwlConfig
     internal class Source
     {
         internal static ConfigEntry<bool>? RethrowException { get; set; }
+        internal static ConfigEntry<bool>? TrimSpaces { get; set; }
         internal static ConfigEntry<bool>? NamedImport { get; set; }
         internal static ConfigEntry<bool>? SheetMigrate { get; set; }
     }

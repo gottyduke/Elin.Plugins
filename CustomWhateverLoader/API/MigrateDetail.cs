@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Cwl.Helper;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using NPOI.SS.UserModel;
@@ -72,7 +71,8 @@ public sealed class MigrateDetail
                 DumpHeaders();
 
                 if (CwlConfig.Source.SheetMigrate?.Value is true) {
-                    ReorderSheet();
+                    //TODO: disable for now cuz game updates so often
+                    //ReorderSheet();
                 }
 
                 break;

@@ -6,58 +6,291 @@
   <builtin>false</builtin>
   <loadPriority>10</loadPriority>
   <version>0.23.40</version>
-  <description>[h1]Custom Whatever Loader[/h1]
+  <description>[h2]Custom Whatever Loader[/h2]
 
-Patches the game to load modders' custom resources from mod directory.
+[b]Version: 1.10[/b]
 
-Modders can use [b]ShowDialog(sheet_name)[/b], [b]PlaySound(sound_name)[/b], or [b]Book.Show(book_name)[/b] normally without needing to do anything extra.
+Allows the game to automatically load modders' custom resources from the mod directory, simplifying the process for modders to utilize various game functionalities without any additional steps, and with extended localization support.
 
-[img]https://i.postimg.cc/T1N5F2y8/sister.png[/img]
+Ideal for mods that introduce new items, characters, or audio elements, the Custom Whatever Loader eliminates the need for creating script DLLs to import Excel sheets.
 
-Currently supports:
+[h2]Features[/h2]
 [list]
-[*] Dialog/Drama
-[*] Text
-[*] Sound
+  [*]Source Sheets (Character, Items, Races, Talks, etc)
+  [*]Custom Adventurer
+  [*]Custom Religion
+  [*]Dialog/Drama
+  [*]Book Text
+  [*]Sound/BGM
 [/list]
 
-New features are added on demand.
+New features are added upon request.
 
-[h2]Example Mod Layout[/h2]
+[h2]Example Mod Setup[/h2]
 
-[quote]
-📦 Mod_MyMod
-├─ 📑 package.xml
-├─ 📂 LangMod
-│  ├─ 📂 EN
-│  │  ├─ 📂 Dialog
-│  │  │  └─ 📂 Drama
-│  │  │     └─ 📝 custom_npc.xlsx
-│  │  └─ 📂 Text
-│  │     ├─ 📂 Book
-│  │     │  └─ 📖 sister_breeding.txt
-│  │     └─ 📂 Scroll
-│  │        └─ 📖 sister_scroll.txt
-│  ├─ 📂 JP
-│  └─ 📂 CN
-└─ 📂 Sound
-   ├─ 📂 Instrument
-   │  └─ 🎧 custom_lute.wav
-   └─ 🎧 doodle.wav
-[/quote]
+Custom Whatever Loader requires your resources to be placed under the [b]LangMod[/b] folder instead of [b]Lang[/b]; otherwise, the game will duplicate the entire translation tree into your mod folder. 
 
-[h2]Lang Sheets and Book Texts[/h2]
+Within the [b]LangMod[/b] folder, you can add as many supported languages as you want by naming the subfolders with the language code, for example:
+[img]https://i.postimg.cc/h4LqnrjS/image.png[/img]
 
-You have to use [b]LangMod[/b] folder instead of [b]Lang[/b] otherwise game will duplicate entire translation tree into your mod folder.
+When Custom Whatever Loader imports the resources, it will import from the current language folder first, effectively addressing the translation issue with the current Elin xlsx implementation, which generally only has JP and EN entries.
 
-[h2]Sound Files[/h2]
+[h2]Custom Sources[/h2]
 
-Sound files need to be in [b]wav[/b] format. When a sound file is loaded, a default metadata json will be generated next to it. Modders may edit the metadata about the sound file which will be applied next time game launches.
+Instead of calling [b]ModUtil.ImportExcel[/b] on each xlsx worksheet manually, modders can now simply place the xlsx files within each language folder. Custom Whatever Loader will import all the localized sources according to the sheet name that matches a SourceData or SourceLang.
 
-By setting "type": "BGM" in the metadata, the sound file will be instantiated as a [b]BGMData[/b] instead of [b]SoundData[/b]. You may also customize the BGM parts in the metadata too.
+Note that it's the [b]sheet name[/b], not the file name! For example, this will import [b]SourceThing[/b], [b]SourceChara[/b], [b]LangGeneral[/b] accordingly.
+[img]https://i.postimg.cc/vZqGNjfC/Screenshot-1.png[/img]
 
-Sub directories in the Sound folder will serve as id prefix, for example, AI_PlayMusic will be using [b]Instrument/sound_id[/b], which you should be placing the sound file in the Instrument folder if you are going to patch the method to play custom sound.
+Supported source data are: 
+[code]
+Chara, CharaText, Thing, Element, Job, Obj, Quest, Race, Religion, Zone, Area, Backer, Block, Calc, Category, CellEffect, Check, Collectible, Faction, Floor, Food, GlobalTile, Hobby, HomeResource, KeyItem, Material, Person, Recipe, Research, SpawnList, Stat, Tactics, ThingV, ZoneAffix
+[/code]
+
+Supported source lang are: 
+[code]
+General, Game, List, Word, Note
+[/code]
+
+You may also split the sheets into multiple xlsx files for organizing. The xlsx file name doesn't matter.
+
+If you want to browse what are IDs for in game things/charas/various sources, checkout [url=https://elin-modding-resources.github.io/Elin.Docs/]Elin Modding Wiki[/url]:
+[img]https://i.postimg.cc/15wF6V2L/image.png[/img]
+
+[h2]Custom Adventurer[/h2]
+
+To automatically add your custom character as adventurer to the game, make sure it has trait [b]Adventurer[/b] or [b]AdventurerBacker[/b], and add [b]addAdvZone_*[/b] to the tag column, replace the [b]*[/b] (asterisk) with zone name or keep it for random zone. For example, a tag cell could look like [b]noPotrait,addAdvZone_Palmia[/b].
+[img]https://i.postimg.cc/SN93258B/image.png[/img]
+
+To assign specific equipment to the adventurer, you can add an additional tag [b]addAdvEq_ItemID#Rarity[/b], where ItemID is replaced by the item's ID, and Rarity is one of the following: [b]Random, Crude, Normal, Superior, Legendary, Mythical, Artifact[/b]. If [b]#Rarity[/b] is omitted, the default rarity [b]#Random[/b] will be used. 
+
+For example, to set a legendary [b]BS_Flydragonsword[/b] and a random [b]axe_machine[/b] as the main weapons for the adventurer, use the following code:
+[code]
+addAdvZone_Palmia,addAdvEq_BS_Flydragonsword#Legendary,addAdvEq_axe_machine
+[/code]
+
+To add starting items to the adventurer, you can use the tag [b]addAdvThing_ItemID#Count[/b]. If [b]#Count[/b] is omitted, a default of 1 item will be generated. 
+
+For example:
+[code]
+addAdvZone_Palmia,addAdvThing_padoru_gift#10,addAdvThing_1174#5
+[/code]
+
+You may add as many tags as you want. [b]Remember, tags are separated by commas (,) with no spaces in between.[/b] If you need additional features, please let me know.
+
+To see some CWL usage examples, checkout the following mods:
+
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3380127472]若葉睦[/url]
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3380350255]The Eternal Student, Kubrika[/url]
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3383166653]Miranda, Rookie Gunner[/url]
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3383191390]Christmas Red Saber[/url]
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3384670717]Una[/url]
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3381789374]Kiria's Memory Quest DLC[/url]
+
+[h2]Custom Religion[/h2]
+
+Custom Whatever Loader can import the Religion source sheet and patch it into the game. However, your custom religion id must begin with [b]cwl_[/b], for example:
+[code]
+cwl_spaghettigod
+[/code]
+
+By default the religion is joinable and not minor god. To override it, append tags to the id:
+[list]
+  [*]To set it as a minor god, append [b]#minor[/b]
+  [*]To make it unjoinable, append [b]#cannot[/b]
+[/list]
+
+For example: [b]cwl_spaghettigod#minor#cannot[/b] . However, do note that the actual id of your religion is still [b]cwl_spaghettigod[/b], the tags will be removed upon importing.
+
+To setup a custom portrait for your religion, place a [b].png[/b] image into [b]YourMod/Texture[/b] folder, with the same id as file name, e.g. [b]cwl_spaghettigod.png[/b].
+
+Custom Whatever Loader can also merge your custom god_talk.xlsx into base game. You may reference the base game sheet at [b]Elin/Package/_Elona/Lang/EN/Data/god_talk.xlsx[/b].
+[img]https://i.postimg.cc/P5V71tTq/image.png[/img]
+
+[h2]Custom Sounds[/h2]
+
+Sound files should be in [b]wav[/b] format, with the filename serving as the sound ID. A default metadata JSON is generated upon loading, allowing you to edit and apply sound file metadata upon the next game launch. [b]You can override existing in-game sounds using the same ID[/b]. 
+
+By setting "type": "BGM" in the metadata, the sound file will be instantiated as [b]BGMData[/b] instead of [b]SoundData[/b]. You can also customize the BGM parts in the metadata.
+
+Subdirectories in the Sound folder will serve as ID prefixes. For example, AI_PlayMusic will use [b]Instrument/sound_id[/b], so you should place the sound file in the Instrument folder if you plan to replace instrument sounds.
+
+[h2]API[/h2]
+
+By referencing CustomWhateverLoader.dll, you gain access to the entire [b]CWL.API[/b] and [b]CWL.Helper[/b] namespaces, please check out the GitHub source code down below for specifics.
+
+If using API via referencing dll, please do not ship the CustomWhateverLoader.dll with your mod.
+
+[h2]DLL Localization[/h2]
+
+You may export the string entries to a General sheet and let Custom Whatever Loader import it to LangGeneral, then you may use [b]"my_lang_str".lang()[/b] to localize in code at runtime.
+[img]https://i.postimg.cc/wMSyvD8D/image.png[/img]
+
+[h2]Change Logs[/h2]
+
+[b]1.10[/b] Added support for custom religion imports and custom religion/domain/faction portraits.
+[b]1.9[/b] Added auto detection for incompatible source sheets and sheet header realignment. Configurable.
+[b]1.8[/b] Added custom adventurer tagging for equipment/things.
+[b]1.7[/b] Set EN as 1st fallback language.
+[b]1.6[/b] Added support for custom adventurer related imports and dialog.xlsx merging.
+[b]1.5[/b] API refactor.
+[b]1.4[/b] Added source sheet imports with localization support.
+[b]1.3[/b] Fixed BGMData.Part duplicating first entry.
+[b]1.2[/b] Added support for custom sounds.
+[b]1.1[/b] Added support for book texts.
+[b]1.0[/b] Added support for dialogs/drama sheets.
+
+[h2]Having a Problem?[/h2]
+
+If you want to request new features, provide feedback, in need of assistance, feel free to leave comments or reach my at Elona Discord @freshcloth.
+
+It's also helpful to check AppData/LocalLow/Lafrontier/Elin/Player.log if you encounter problem, Custom Whatever Loader logs [b]a lot[/b] of stuff there.
 
 [url=https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader]sauce[/url]
   </description>
 </Meta>
+[h1]随便加载器[/h1]
+
+[b]版本: 1.10[/b]
+
+允许游戏能够自动从模组目录加载模组制作者的自定义资源。
+
+模组制作者可以正常使用各种游戏方法，无需任何额外步骤。
+
+适用于引入新物品、角色、元素或音频等资源的模组。
+
+[h2]目前支持：[/h2]
+[list]
+[*] 源表 (物品，种族，人物，对话，等)
+[*] 自定义冒险者
+[*] 自定义信仰
+[*] 对话/剧情
+[*] 书籍
+[*] 音频
+[/list]
+
+所有资源都具有扩展的本地化支持：当前游戏语言的版本将优先加载。
+
+按需添加新功能。
+
+[h2]示例模组设置[/h2]
+
+随便加载器要求Mod资源放置在[b]LangMod[/b]文件夹下，而不是[b]Lang[/b]；否则，游戏将把整个翻译树复制到模组文件夹中。在[b]LangMod[/b]文件夹下，你可以通过使用语言代码命名子文件夹来添加任意数量的支持语言，例如：
+[img]https://i.postimg.cc/h4LqnrjS/image.png[/img]
+
+当随便加载器导入资源时，它将首先从当前语言文件夹导入，有效解决了当前Elin xlsx的翻译问题，因为大部分sheet通常只包含JP和EN条目。
+
+[h2]自定义源表[/h2]
+
+模组制作者现在可以简单地将xlsx文件放置在每个语言文件夹中，而不必手动对每个xlsx工作表调用[b]ModUtil.ImportExcel[/b]。随便加载器将根据与Source匹配的表名导入：
+
+请注意是[b]表名称[/b]，而不是文件名！例如，这将相应地导入[b]SourceThing[/b], [b]SourceChara[/b], [b]LangGeneral[/b]。
+
+[img]https://i.postimg.cc/vZqGNjfC/Screenshot-1.png[/img]
+
+支持的SourceData类: 
+[code]
+Chara, CharaText, Thing, Element, Job, Obj, Quest, Race, Religion, Zone, Area, Backer, Block, Calc, Category, CellEffect, Check, Collectible, Faction, Floor, Food, GlobalTile, Hobby, HomeResource, KeyItem, Material, Person, Recipe, Research, SpawnList, Stat, Tactics, ThingV, ZoneAffix
+[/code]
+
+支持的SourceLang类: 
+[code]
+General, Game, List, Word, Note
+[/code]
+
+也可以将表格拆分成多个xlsx文件以便于管理。文件名可随意设定。
+
+如果你的mod时单纯添加新物品，人物或者对话，而不需要做额外补丁的话，那么你可以让随便加载器导入你的源表而不需单独再生成一个dll插件来导入。
+
+如果你想浏览游戏中物品/角色/各种source的ID，请查看 [url=https://elin-modding-resources.github.io/Elin.Docs/]Elin Modding Wiki[/url]：
+[img]https://i.postimg.cc/15wF6V2L/image.png[/img]
+
+[h2]自定义冒险者[/h2]
+
+要在游戏中自动添加自定义角色为冒险者，确保 trait 设定为 [b]Adventurer[/b] 或者 [b]AdventurerBacker[/b]，并在tag单元格中添加 [b]addAdvZone_*[/b] ，将 [b]*[/b] 替换为区域名称或保留 [b]*[/b] 以使用随机区域名称。例如，tag单元格可以是[b]noPotrait,addAdvZone_Palmia[/b]。
+感谢105gun提供的代码。
+
+[img]https://i.postimg.cc/SN93258B/image.png[/img]
+
+要为冒险者分配特定装备，您可以添加一个额外的tag [b]addAdvEq_ItemID#Rarity[/b]，其中 ItemID 替换为物品的 ID，Rarity 是以下之一：[b]Random, Crude, Normal, Superior, Legendary, Mythical, Artifact[/b] (随机、粗糙、普通、优越、传奇、神话、神器)。如果省略 [b]#Rarity[/b]，将使用默认随机稀有度 [b]#Random[/b]。
+
+例如，要将传奇的 [b]BS_Flydragonsword[/b] 和随机的 [b]axe_machine[/b] 设置为冒险者的主武器，可以使用以下tag：
+[code]
+addAdvZone_Palmia,addAdvEq_BS_Flydragonsword#Legendary,addAdvEq_axe_machine
+[/code]
+
+要为冒险者添加起始物品，您可以使用tag [b]addAdvThing_ItemID#Count[/b]。如果省略 [b]#Count[/b]，将生成默认的 1 件物品。例如：
+[code]
+addAdvZone_Palmia,addAdvThing_padoru_gift#10,addAdvThing_1174#5
+[/code]
+
+您可以添加任意数量的tag。[b]请记住，tag之间用逗号 (,) 分隔，中间没有空格。[/b] 如果您需要其他功能，请告知。
+
+可以查看以下Mod作为示例:
+
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3380127472]若葉睦[/url]
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3380350255]The Eternal Student, Kubrika[/url]
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3383166653]Miranda, Rookie Gunner[/url]
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3383191390]Christmas Red Saber[/url]
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3384670717]Una[/url]
+[url=https://steamcommunity.com/sharedfiles/filedetails/?id=3381789374]Kiria's Memory Quest DLC[/url]
+
+[h2]自定义信仰[/h2]
+
+随便加载器可以导入信仰表并将其添加到游戏中。然而，您的自定义信仰 ID 必须以 [b]cwl_[/b] 开头，例如：
+[code]
+cwl_spaghettigod
+[/code]
+
+默认情况下，该信仰是可加入的，并且不是弱神。要覆盖此设置，请将标签附加到 ID：
+[list]
+  [*]要将其设置为是弱神，请附加 [b]#minor[/b]
+  [*]要使其不可加入，请附加 [b]#cannot[/b]
+[/list]
+
+例如：[b]cwl_spaghettigod#minor#cannot[/b]。但请注意，您的信仰的实际 ID 仍然是 [b]cwl_spaghettigod[/b]，在导入时标签将被移除。
+
+要为您的信仰设置自定义肖像，请将 [b].png[/b] 图像放入 [b]YourMod/Texture[/b] 文件夹中，文件名与 ID 相同，例如 [b]cwl_spaghettigod.png[/b]。
+
+自定义加载器还可以将您的自定义 god_talk.xlsx 合并到基础游戏中。您可以参考基础游戏文件 [b]Elin/Package/_Elona/Lang/EN/Data/god_talk.xlsx[/b]。
+[img]https://i.postimg.cc/P5V71tTq/image.png[/img]
+
+[h2]音频文件[/h2]
+
+音频文件应为[b]wav[/b]格式，文件名用作声音ID。加载时会生成默认的元数据JSON，允许您在下次游戏启动时编辑和应用声音文件的元数据。[b]您可以使用相同的ID覆盖现有的游戏内声音[/b]。
+
+通过在元数据中设置"type": "BGM"，声音文件将被实例化为[b]BGMData[/b]而不是[b]SoundData[/b]。您还可以在元数据中自定义BGM部分。
+
+声音文件夹中的子目录将作为ID前缀。例如，AI_PlayMusic将使用[b]Instrument/ID[/b]，因此如果您打算替换乐器声音，应将声音文件放置在Instrument文件夹中。
+
+[h2]API[/h2]
+
+通过引用 CustomWhateverLoader.dll，您可以访问整个 [b]CWL.API[/b] 和 [b]CWL.Helper[/b] 命名空间，请查看下面的 GitHub 源代码以获取具体信息。
+
+如果通过引用 dll 使用 API，请不要将 CustomWhateverLoader.dll 与模组打包发布。
+
+[h2]DLL本地化[/h2]
+
+通过将本地化条目保存至General表并由随便加载器导入至 LangGeneral，你可以在代码中使用 [b]"my_lang_str".lang()[/b] 进行本地化。
+
+[h2]更新日志[/h2]
+
+[b]1.10[/b] 增加对自定义信仰导入和自定义信仰/领域/派系肖像的支持。
+[b]1.9[/b] 增加对不兼容源表的自动检测和表头重新对齐。可配置。
+[b]1.8[/b] 增加对装备/物品的自定义冒险者标签支持。
+[b]1.7[/b] 将英语设置为第一备用语言。
+[b]1.6[/b] 增加对自定义冒险者相关导入和 dialog.xlsx 合并的支持。
+[b]1.5[/b] API 重构。
+[b]1.4[/b] 增加带本地化支持的源表导入。
+[b]1.3[/b] 修复 BGMData.Part 首条目重复的问题。
+[b]1.2[/b] 增加对自定义声音的支持。
+[b]1.1[/b] 增加对书籍文本的支持。
+[b]1.0[/b] 增加对对话/剧情表的支持。
+
+[h2]遇到问题了吗？[/h2]
+
+如果想请求新功能、提供反馈或需要帮助，请随时留言或通过 Elona Discord 联系我 @freshcloth。
+
+如果遇到问题也可以检查AppData\LocalLow\Lafrontier\Elin\Player.log文件, 随便加载器会记录[b]很多[/b]信息。
+
+[url=https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader]sauce[/url]
