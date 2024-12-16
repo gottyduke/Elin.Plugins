@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Cwl.LangMod;
 using HarmonyLib;
+using MethodTimer;
 using NPOI.XSSF.UserModel;
 
 namespace Cwl.API;
@@ -16,9 +17,10 @@ public class WorkbookImporter
         .Where(f => typeof(SourceData).IsAssignableFrom(f.FieldType))
         .ToList();
 
+    [Time]
     public static IEnumerable<SourceData?> BySheetName(FileInfo? import)
     {
-        if (import is null) {
+        if (import?.FullName is null or "") {
             return [];
         }
 

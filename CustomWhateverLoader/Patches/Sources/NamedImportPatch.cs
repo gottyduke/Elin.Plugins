@@ -104,16 +104,18 @@ internal class NamedImportPatch
                 migrate.StartNewSheet(sheet, expected);
             }
 
-            // TODO: O(n^2), maybe use a O(1) lookup
-            var strategy = expected.All(ec => header.Any(hc => hc == ec))
+            var headerSet = new HashSet<MigrateDetail.HeaderCell>(header);
+            var strategy = expected.All(headerSet.Contains)
                 ? MigrateDetail.Strategy.Correct
                 : MigrateDetail.Strategy.Missing;
 
             var readPos = id;
             if (strategy == MigrateDetail.Strategy.Missing) {
-                if (header.Count == expected.Count &&
-                    expected.All(ec => header.Any(hc => ec.Name == hc.Name))) {
-                    // TODO: O(2n^2) now, could really use a O(1) lookup
+                var expectedFlat = expected.GroupBy(c => c.Name).ToDictionary(c => c.Key, c => c.Count());
+                var headerFlat = header.GroupBy(c => c.Name).ToDictionary(c => c.Key, c => c.Count());
+
+                if (header.Count == expected.Count && 
+                    expectedFlat.All(c => headerFlat.TryGetValue(c.Key, out var count) && count == c.Value)) {
                     strategy = MigrateDetail.Strategy.Reorder;
 
                     var matched = header.FindAll(c => c.Name == field.Name);
@@ -122,8 +124,7 @@ internal class NamedImportPatch
                     }
                 }
 
-                migrate.SetStrategy(strategy);
-                migrate.SetGiven(header);
+                migrate.SetStrategy(strategy).SetGiven(header);
             }
 
             var parsed = extraParse

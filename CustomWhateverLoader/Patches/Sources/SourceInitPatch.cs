@@ -7,7 +7,6 @@ using Cwl.Helper.File;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;
-using MethodTimer;
 
 namespace Cwl.Patches.Sources;
 
@@ -18,16 +17,13 @@ internal class SourceInitPatch
 
     internal static bool SafeToCreate;
 
-    [Time]
     [HarmonyPrefix]
     [HarmonyPatch(typeof(SourceManager), nameof(SourceManager.Init))]
     internal static void ImportAllSheets()
     {
         var imports = PackageFileIterator.GetLangModFilesFromPackage()
             .SelectMany(d => d.GetFiles(Pattern, SearchOption.TopDirectoryOnly))
-            .Where(f => !f.Name.Contains("cwl_migrated"))
-            .ToList();
-
+            .Where(f => !f.Name.Contains("cwl_migrated"));
         HashSet<SourceData> dirty = [EMono.sources.elements, EMono.sources.materials];
 
         foreach (var import in imports) {
