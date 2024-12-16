@@ -149,13 +149,13 @@
         <Compile Include="Helper\String\ParamParser.cs"/>
         <Compile Include="Helper\String\PathNormalizer.cs"/>
         <Compile Include="Helper\String\PathTruncation.cs"/>
-        <Compile Include="Helper\TrimCellSpaces.cs" />
+        <Compile Include="Helper\TrimCellProcessor.cs" />
         <Compile Include="Helper\Unity\ChildrenIterator.cs"/>
         <Compile Include="Helper\Unity\ComponentFetch.cs"/>
         <Compile Include="Helper\Unity\CoroutineHelper.cs"/>
         <Compile Include="Helper\Unity\DeferredCoroutine.cs"/>
         <Compile Include="Helper\Unity\SpriteCreator.cs"/>
-        <Compile Include="LangMod\LocFormatter.cs" />
+        <Compile Include="LangMod\LocFormatter.cs"/>
         <Compile Include="Patches\CustomAdv\SafeSceneInitPatch.cs"/>
         <Compile Include="Patches\CustomAdv\SetCharaRowPatch.cs"/>
         <Compile Include="Patches\CustomReligion\SetReligionPortraitPatch.cs"/>
@@ -165,7 +165,7 @@
         <Compile Include="Patches\CustomReligion\SetReligionOwnerPatch.cs"/>
         <Compile Include="Patches\CustomReligion\SetReligionRowPatch.cs"/>
         <Compile Include="Patches\Relocation\LoadDataPatch.cs"/>
-        <Compile Include="Patches\Sources\PostProcessCellPatch.cs" />
+        <Compile Include="Patches\Sources\PostProcessCellPatch.cs"/>
         <Compile Include="Patches\Sources\SourceInitPatch.cs"/>
         <Compile Include="Patches\Sources\NamedImportPatch.cs"/>
         <Compile Include="Patches\Sources\RethrowParsePatch.cs"/>
@@ -189,13 +189,13 @@
     <ItemGroup>
         <Content Include="FodyWeavers.xml"/>
         <Content Include="LangMod\CN\cwl_sources.xlsx">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
         <Content Include="LangMod\EN\cwl_sources.xlsx">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
         <Content Include="LangMod\ZHTW\cwl_sources.xlsx">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>

@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using BepInEx;
-using Cwl.API;
 using Cwl.Helper;
 using Cwl.Helper.File;
 using Cwl.Patches;
@@ -8,7 +7,6 @@ using Cwl.Patches.Relocation;
 using Cwl.Patches.Sources;
 using HarmonyLib;
 using MethodTimer;
-using UnityEngine;
 
 namespace Cwl;
 
@@ -33,7 +31,7 @@ internal class CwlMod : BaseUnityPlugin
         CwlConfig.Load(Config);
 
         if (CwlConfig.Source.TrimSpaces?.Value is true) {
-            PostProcessCellPatch.AddProcessor(TrimCellSpaces.TrimCell);
+            PostProcessCellPatch.AddProcessor(TrimCellProcessor.TrimCell);
         }
 
         // load CWL own localization first
