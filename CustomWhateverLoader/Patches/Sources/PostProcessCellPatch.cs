@@ -1,7 +1,6 @@
 ﻿using System;
 using Cwl.LangMod;
 using HarmonyLib;
-using MethodTimer;
 
 namespace Cwl.Patches.Sources;
 

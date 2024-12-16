@@ -89,6 +89,14 @@ internal class NamedImportPatch
     private static void RelaxedImport(object row, int id, FieldInfo field, MethodInfo parser, Type rowCreator,
         bool extraParse)
     {
+        if (!SourceInitPatch.SafeToCreate) {
+            var parsed = extraParse
+                ? Core.ParseElements((string)parser.Invoke(null, [id, false]))
+                : parser.Invoke(null, [id]);
+            field.SetValue(row, parsed);
+            return;
+        }
+
         var sheet = SourceData.row.Sheet;
         var migrate = MigrateDetail.GetOrAdd(sheet.Workbook);
         var expected = _expected[rowCreator];
@@ -114,7 +122,7 @@ internal class NamedImportPatch
                 var expectedFlat = expected.GroupBy(c => c.Name).ToDictionary(c => c.Key, c => c.Count());
                 var headerFlat = header.GroupBy(c => c.Name).ToDictionary(c => c.Key, c => c.Count());
 
-                if (header.Count == expected.Count && 
+                if (header.Count == expected.Count &&
                     expectedFlat.All(c => headerFlat.TryGetValue(c.Key, out var count) && count == c.Value)) {
                     strategy = MigrateDetail.Strategy.Reorder;
 

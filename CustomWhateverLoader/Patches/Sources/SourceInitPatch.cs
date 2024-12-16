@@ -21,6 +21,8 @@ internal class SourceInitPatch
     [HarmonyPatch(typeof(SourceManager), nameof(SourceManager.Init))]
     internal static void ImportAllSheets()
     {
+        SafeToCreate = true;
+
         var imports = PackageFileIterator.GetLangModFilesFromPackage()
             .SelectMany(d => d.GetFiles(Pattern, SearchOption.TopDirectoryOnly))
             .Where(f => !f.Name.Contains("cwl_migrated"));
@@ -40,7 +42,6 @@ internal class SourceInitPatch
             }
         }
 
-        SafeToCreate = true;
         dirty.Do(s => s.Reset());
         SafeToCreate = false;
 

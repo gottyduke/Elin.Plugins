@@ -149,7 +149,7 @@
         <Compile Include="Helper\String\ParamParser.cs"/>
         <Compile Include="Helper\String\PathNormalizer.cs"/>
         <Compile Include="Helper\String\PathTruncation.cs"/>
-        <Compile Include="Helper\TrimCellProcessor.cs" />
+        <Compile Include="Helper\TrimCellProcessor.cs"/>
         <Compile Include="Helper\Unity\ChildrenIterator.cs"/>
         <Compile Include="Helper\Unity\ComponentFetch.cs"/>
         <Compile Include="Helper\Unity\CoroutineHelper.cs"/>
