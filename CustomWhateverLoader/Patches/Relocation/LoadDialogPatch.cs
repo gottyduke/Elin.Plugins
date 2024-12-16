@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using Cwl.Helper.File;
+using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;
@@ -60,7 +60,7 @@ internal class LoadDialogPatch
     [Time]
     internal static IEnumerator LoadAllDialogs()
     {
-        var dialogs = PackageFileIterator.GetRelocatedFilesFromPackage("Dialog/dialog.xlsx");
+        var dialogs = PackageIterator.GetRelocatedFilesFromPackage("Dialog/dialog.xlsx");
 
         foreach (var book in dialogs) {
             _cached.Add(new(book.FullName));

@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Cwl.Helper.File;
+using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;
@@ -10,12 +10,10 @@ using MethodTimer;
 
 namespace Cwl.Patches.Relocation;
 
-[HarmonyPatch]
 internal class LoadDataPatch
 {
     private const string DefaultSheet = "_default";
 
-    [Time]
     internal static IEnumerator LoadAllData()
     {
         MergeCharaTalk();
@@ -25,31 +23,32 @@ internal class LoadDataPatch
         yield break;
     }
 
+    [Time]
     private static void MergeCharaTalk()
     {
-        foreach (var charaTalk in PackageFileIterator.GetRelocatedExcelsFromPackage("Data/chara_talk.xlsx")) {
+        foreach (var charaTalk in PackageIterator.GetRelocatedExcelsFromPackage("Data/chara_talk.xlsx")) {
             MOD.listTalk.items.Add(charaTalk);
             CwlMod.Log("cwl_preload_chara_talk".Loc(charaTalk.path.ShortPath()));
         }
     }
 
+    [Time]
     private static void MergeCharaTone()
     {
-        foreach (var charaTone in PackageFileIterator.GetRelocatedExcelsFromPackage("Data/chara_tone.xlsx")) {
+        foreach (var charaTone in PackageIterator.GetRelocatedExcelsFromPackage("Data/chara_tone.xlsx")) {
             MOD.tones.items.Add(charaTone);
             CwlMod.Log("cwl_preload_chara_tone".Loc(charaTone.path.ShortPath()));
         }
     }
 
+    [Time]
     private static void MergeGodTalk()
     {
         var godTalk = EMono.sources.dataGodTalk;
         var map = godTalk.sheets[DefaultSheet].map.ToArray();
 
-        foreach (var file in PackageFileIterator.GetRelocatedFilesFromPackage("Data/god_talk.xlsx")) {
+        foreach (var talk in PackageIterator.GetRelocatedExcelsFromPackage("Data/god_talk.xlsx", 3)) {
             try {
-                var talk = new ExcelData(file.FullName, 3);
-
                 foreach (var (topic, _) in map) {
                     if (topic is "") {
                         continue;
@@ -60,9 +59,9 @@ internal class LoadDataPatch
                         .Do(kv => godTalk.sheets[DefaultSheet].map[topic].TryAdd(kv.Key, kv.Value));
                 }
 
-                CwlMod.Log("cwl_preload_god_talk".Loc(file.ShortPath()));
+                CwlMod.Log("cwl_preload_god_talk".Loc(talk.path.ShortPath()));
             } catch (Exception ex) {
-                CwlMod.Error("cwl_error_merge_god_talk".Loc(file.ShortPath(), ex));
+                CwlMod.Error("cwl_error_merge_god_talk".Loc(talk.path.ShortPath(), ex));
                 // noexcept
             }
         }

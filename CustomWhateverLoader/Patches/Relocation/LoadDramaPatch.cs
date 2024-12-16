@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
-using Cwl.Helper.File;
+using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;
@@ -45,12 +45,12 @@ internal class LoadDramaPatch
         var lang = Lang.langCode;
 
         var cachedBookName = $"{CacheEntry}{book}_{lang}";
-        if (PackageFileIterator.TryLoadFromPackageCache(cachedBookName, out var cachedPath)) {
+        if (PackageIterator.TryLoadFromPackageCache(cachedBookName, out var cachedPath)) {
             data.path = cachedPath;
             return data.BuildList(sheet);
         }
 
-        var books = PackageFileIterator.GetLangFilesFromPackage(Pattern)
+        var books = PackageIterator.GetLangFilesFromPackage(Pattern)
             .Where(b => b.Contains(CacheEntry))
             .Where(s => Path.GetFileNameWithoutExtension(s) == book)
             .OrderBy(b => b)
@@ -64,7 +64,7 @@ internal class LoadDramaPatch
             CwlMod.Log("cwl_relocate_drama".Loc(cachedBookName, Pattern, localized.ShortPath()));
         }
 
-        PackageFileIterator.AddCachedPath(cachedBookName, localized);
+        PackageIterator.AddCachedPath(cachedBookName, localized);
         data.path = localized;
         return data.BuildList(sheet);
     }

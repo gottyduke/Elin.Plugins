@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using BepInEx;
 using Cwl.Helper;
-using Cwl.Helper.File;
+using Cwl.Helper.FileUtil;
 using Cwl.Patches;
 using Cwl.Patches.Relocation;
 using Cwl.Patches.Sources;
@@ -15,7 +15,7 @@ public static class ModInfo
     // for legacy reason
     public const string Guid = "dk.elinplugins.customdialogloader";
     public const string Name = "Custom Whatever Loader";
-    public const string Version = "1.11";
+    public const string Version = "1.11.1";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
@@ -35,7 +35,7 @@ internal class CwlMod : BaseUnityPlugin
         }
 
         // load CWL own localization first
-        var loc = PackageFileIterator.GetRelocatedFileFromPackage("cwl_sources.xlsx", ModInfo.Guid)!;
+        var loc = PackageIterator.GetRelocatedFileFromPackage("cwl_sources.xlsx", ModInfo.Guid)!;
         ModUtil.ImportExcel(loc.FullName, "General", EMono.sources.langGeneral);
 
         var harmony = new Harmony(ModInfo.Guid);
@@ -44,7 +44,7 @@ internal class CwlMod : BaseUnityPlugin
 
     private IEnumerator Start()
     {
-        DispatchGlance.TrySetupGlance();
+        Glance.TryConnect();
         yield return null;
 
         yield return LoadDataPatch.LoadAllData();
@@ -78,12 +78,12 @@ internal class CwlMod : BaseUnityPlugin
     internal static void Warn(object payload)
     {
         Instance!.Logger.LogWarning(payload);
-        DispatchGlance.Dispatch(payload);
+        Glance.Dispatch(payload);
     }
 
     internal static void Error(object payload)
     {
         Instance!.Logger.LogError(payload);
-        DispatchGlance.Dispatch(payload);
+        Glance.Dispatch(payload);
     }
 }

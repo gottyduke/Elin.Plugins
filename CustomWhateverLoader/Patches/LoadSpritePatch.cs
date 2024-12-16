@@ -13,7 +13,7 @@ internal class LoadSpritePatch
     [HarmonyPatch(typeof(Religion), nameof(Religion.GetSprite))]
     internal static bool OnGetReligionSprite(ref Sprite? __result, Religion __instance)
     {
-        if (__instance is not CustomReligion.CustomReligion custom) {
+        if (__instance is not API.CustomReligion custom) {
             return true;
         }
 

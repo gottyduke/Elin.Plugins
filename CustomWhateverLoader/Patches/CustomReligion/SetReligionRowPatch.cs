@@ -24,7 +24,7 @@ internal class SetReligionRowPatch
             return;
         }
 
-        CustomReligion.GerOrAdd(r.id)
+        API.CustomReligion.GerOrAdd(r.id)
             .SetMinor(@params.Contains("minor"))
             .SetCanJoin(!@params.Contains("cannot"));
     }

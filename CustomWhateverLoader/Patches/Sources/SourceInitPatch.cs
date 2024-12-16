@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Cwl.API;
-using Cwl.Helper.File;
+using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;
@@ -23,7 +23,7 @@ internal class SourceInitPatch
     {
         SafeToCreate = true;
 
-        var imports = PackageFileIterator.GetLangModFilesFromPackage()
+        var imports = PackageIterator.GetLangModFilesFromPackage()
             .SelectMany(d => d.GetFiles(Pattern, SearchOption.TopDirectoryOnly))
             .Where(f => !f.Name.Contains("cwl_migrated"));
         HashSet<SourceData> dirty = [EMono.sources.elements, EMono.sources.materials];

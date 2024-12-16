@@ -2,7 +2,7 @@
 using System.IO;
 using Cwl.API;
 using Cwl.Helper;
-using Cwl.Helper.File;
+using Cwl.Helper.FileUtil;
 using Cwl.LangMod;
 using MethodTimer;
 using UnityEngine;
@@ -17,7 +17,7 @@ internal class LoadSoundPatch
     [Time]
     internal static IEnumerator LoadAllSounds()
     {
-        foreach (var dir in PackageFileIterator.GetSoundFilesFromPackage()) {
+        foreach (var dir in PackageIterator.GetSoundFilesFromPackage()) {
             foreach (var file in dir.GetFiles(Pattern, SearchOption.AllDirectories)) {
                 var name = Path.GetFileNameWithoutExtension(file.FullName);
                 var id = file.GetFullFileNameWithoutExtension()[(dir.FullName.Length + 1)..];

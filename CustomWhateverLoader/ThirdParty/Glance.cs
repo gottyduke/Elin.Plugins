@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Cwl;
 
-public class DispatchGlance
+public class Glance
 {
     private const string GlanceGuid = "dk.elinplugins.modglance";
     private static Component? _glance;
@@ -17,14 +17,14 @@ public class DispatchGlance
         _queued.Add((string)message);
     }
 
-    public static IEnumerable<string> PopGlance()
+    public static IEnumerable<string> PopAll()
     {
         var current = _queued.ToList();
         _queued.Clear();
         return current;
     }
 
-    public static void TrySetupGlance()
+    public static void TryConnect()
     {
         var loaded = Resources.FindObjectsOfTypeAll<BaseUnityPlugin>();
         _glance = loaded.FirstOrDefault(p => p.Info.Metadata.GUID == GlanceGuid);

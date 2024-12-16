@@ -13,6 +13,10 @@ internal class ExecutionAnalysis
 
     internal static void DispatchAnalysis()
     {
+        if (_cached.Count == 0) {
+            return;
+        }
+        
         CwlMod.Log("cwl_log_execution_analysis".Loc());
 
         var methodNameWidth = _cached.Keys.Max(mi => (mi.DeclaringType?.Name.Length ?? 0) + mi.Name.Length);

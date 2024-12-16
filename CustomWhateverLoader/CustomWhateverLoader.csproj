@@ -135,6 +135,7 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="API\CustomAdventurer.cs"/>
+        <Compile Include="API\CustomReligion.cs" />
         <Compile Include="API\WorkbookImporter.cs"/>
         <Compile Include="API\MigrateDetail.cs"/>
         <Compile Include="API\SerializableSoundData.cs"/>
@@ -142,8 +143,8 @@
         <Compile Include="CustomWhateverLoader.cs"/>
         <Compile Include="CwlConfig.cs"/>
         <Compile Include="Helper\ExecutionAnalysis.cs"/>
-        <Compile Include="Helper\File\ConfigCereal.cs"/>
-        <Compile Include="Helper\File\PackageFileIterator.cs"/>
+        <Compile Include="Helper\FileUtil\ConfigCereal.cs" />
+        <Compile Include="Helper\FileUtil\PackageIterator.cs" />
         <Compile Include="Helper\IntrospectCopy.cs"/>
         <Compile Include="Helper\String\GameVersion.cs"/>
         <Compile Include="Helper\String\ParamParser.cs"/>
@@ -161,7 +162,6 @@
         <Compile Include="Patches\CustomReligion\SetReligionPortraitPatch.cs"/>
         <Compile Include="Patches\LoadSpritePatch.cs"/>
         <Compile Include="Patches\LoadSoundPatch.cs"/>
-        <Compile Include="Patches\CustomReligion\CustomReligion.cs"/>
         <Compile Include="Patches\CustomReligion\SetReligionOwnerPatch.cs"/>
         <Compile Include="Patches\CustomReligion\SetReligionRowPatch.cs"/>
         <Compile Include="Patches\Relocation\LoadDataPatch.cs"/>
@@ -172,10 +172,10 @@
         <Compile Include="Patches\Relocation\LoadBookPatch.cs"/>
         <Compile Include="Patches\Relocation\LoadDialogPatch.cs"/>
         <Compile Include="Patches\Relocation\LoadDramaPatch.cs"/>
-        <Compile Include="ThirdParty\DispatchGlance.cs"/>
+        <Compile Include="ThirdParty\Glance.cs" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Fody" Version="6.9.1">
+        <PackageReference Include="Fody" Version="6.9.1" >
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="MethodTimer.Fody" Version="3.2.2">
@@ -196,6 +196,15 @@
         </Content>
         <Content Include="LangMod\ZHTW\cwl_sources.xlsx">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="README.CN.md">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="README.JP.md">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="README.md">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>

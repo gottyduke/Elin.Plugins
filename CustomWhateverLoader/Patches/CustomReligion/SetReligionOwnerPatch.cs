@@ -11,7 +11,7 @@ internal class SetReligionOwnerPatch
     [HarmonyPatch(typeof(ReligionManager), nameof(ReligionManager.SetOwner))]
     internal static void OnSetOwner(ReligionManager __instance)
     {
-        foreach (var custom in CustomReligion.All) {
+        foreach (var custom in API.CustomReligion.All) {
             __instance.list.Add(custom);
             __instance.dictAll.Add(custom.id, custom);
             custom.Init();

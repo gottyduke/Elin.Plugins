@@ -3,9 +3,9 @@ using System.IO;
 using System.Linq;
 using Cwl.Helper.String;
 
-namespace Cwl.Helper.File;
+namespace Cwl.Helper.FileUtil;
 
-public static class PackageFileIterator
+public static class PackageIterator
 {
     private static readonly Dictionary<string, string> _cachedPaths = [];
 
@@ -48,10 +48,10 @@ public static class PackageFileIterator
             .Select(p => p.dirInfo);
     }
 
-    public static IEnumerable<ExcelData> GetRelocatedExcelsFromPackage(string relativePath)
+    public static IEnumerable<ExcelData> GetRelocatedExcelsFromPackage(string relativePath, int startIndex = 5)
     {
         return GetRelocatedFilesFromPackage(relativePath)
-            .Select(b => new ExcelData(b.FullName));
+            .Select(b => new ExcelData(b.FullName, startIndex));
     }
 
     public static IEnumerable<FileInfo> GetRelocatedFilesFromPackage(string relativePath)
@@ -62,10 +62,10 @@ public static class PackageFileIterator
             .OfType<FileInfo>();
     }
 
-    public static ExcelData? GetRelocatedExcelFromPackage(string relativePath, string modGuid)
+    public static ExcelData? GetRelocatedExcelFromPackage(string relativePath, string modGuid, int startIndex = 5)
     {
         var excel = GetRelocatedFileFromPackage(relativePath, modGuid);
-        return excel is null ? null : new(excel.FullName);
+        return excel is null ? null : new(excel.FullName, startIndex);
     }
 
     public static FileInfo? GetRelocatedFileFromPackage(string relativePath, string modGuid)
@@ -82,7 +82,7 @@ public static class PackageFileIterator
         }
 
         var file = Path.Combine(cachedPath, relativePath);
-        if (!System.IO.File.Exists(file)) {
+        if (!File.Exists(file)) {
             return null;
         }
 

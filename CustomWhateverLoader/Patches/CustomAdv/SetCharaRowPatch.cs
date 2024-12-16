@@ -4,7 +4,7 @@ using Cwl.Patches.Sources;
 using HarmonyLib;
 using MethodTimer;
 
-namespace Cwl.Patches.Adventurer;
+namespace Cwl.Patches.CustomAdv;
 
 [HarmonyPatch]
 internal class SetCharaRowPatch

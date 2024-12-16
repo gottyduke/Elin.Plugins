@@ -15,7 +15,7 @@ internal class SetReligionPortraitPatch
     [HarmonyPatch(typeof(LayerDrama), nameof(LayerDrama.Activate))]
     internal static void OnSetupWorshipAct()
     {
-        if (LayerDrama.currentReligion is not CustomReligion custom) {
+        if (LayerDrama.currentReligion is not API.CustomReligion custom) {
             return;
         }
 
