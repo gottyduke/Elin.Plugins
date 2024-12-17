@@ -2,14 +2,13 @@
 using Cwl.LangMod;
 using HarmonyLib;
 
-namespace Cwl.Patches.Sources;
+namespace Cwl.Loader.Patches.Sources;
 
-[HarmonyPatch]
-internal class PostProcessCellPatch
+public class CellPostProcessPatch
 {
-    public delegate string? CellProcessor(string? cellValue);
+    public delegate string? CellProcess(string? cellValue);
 
-    public static event CellProcessor OnCellProcess = cell => cell;
+    private static event CellProcess OnCellProcess = cell => cell;
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(ExcelParser), nameof(ExcelParser.GetStr))]
@@ -18,11 +17,11 @@ internal class PostProcessCellPatch
         __result = OnCellProcess(__result);
     }
 
-    internal static void AddProcessor(CellProcessor cellProcessor)
+    public static void Add(CellProcess cellProcess)
     {
         OnCellProcess += cell => {
             try {
-                return cellProcessor(cell);
+                return cellProcess(cell);
             } catch (Exception ex) {
                 CwlMod.Warn("cwl_cell_post_process".Loc(ex));
                 // noexcept

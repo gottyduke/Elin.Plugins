@@ -1,8 +1,8 @@
 ﻿using BepInEx.Configuration;
 
-namespace Cwl;
+namespace Cwl.Loader;
 
-internal class CwlConfig
+public class CwlConfig
 {
     internal static void Load(ConfigFile config)
     {
@@ -49,11 +49,11 @@ internal class CwlConfig
         internal static ConfigEntry<bool>? Execution { get; set; }
     }
 
-    internal class Source
+    public class Source
     {
-        internal static ConfigEntry<bool>? RethrowException { get; set; }
-        internal static ConfigEntry<bool>? TrimSpaces { get; set; }
-        internal static ConfigEntry<bool>? NamedImport { get; set; }
-        internal static ConfigEntry<bool>? SheetMigrate { get; set; }
+        public static ConfigEntry<bool>? RethrowException { get; internal set; }
+        public static ConfigEntry<bool>? TrimSpaces { get; internal set; }
+        public static ConfigEntry<bool>? NamedImport { get; internal set; }
+        public static ConfigEntry<bool>? SheetMigrate { get; internal set; }
     }
 }

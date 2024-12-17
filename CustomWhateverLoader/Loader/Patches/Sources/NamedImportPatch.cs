@@ -10,7 +10,7 @@ using HarmonyLib;
 using MethodTimer;
 using NPOI.SS.UserModel;
 
-namespace Cwl.Patches.Sources;
+namespace Cwl.Loader.Patches.Sources;
 
 [HarmonyPatch]
 internal class NamedImportPatch

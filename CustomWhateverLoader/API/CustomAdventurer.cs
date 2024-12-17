@@ -4,20 +4,21 @@ using System.Collections.Generic;
 using System.Linq;
 using Cwl.Helper.String;
 using Cwl.LangMod;
+using Cwl.Loader;
 using MethodTimer;
 
 namespace Cwl.API;
 
 public static class CustomAdventurer
 {
-    internal static readonly Dictionary<string, HashSet<string>> DelayedCharaImport = [];
+    private static readonly Dictionary<string, HashSet<string>> _delayedCharaImport = [];
     internal static bool SafeToCreate = false;
 
     public static void AddAdventurer(string charaId, params string[] tags)
     {
-        DelayedCharaImport.TryAdd(charaId, []);
+        _delayedCharaImport.TryAdd(charaId, []);
         foreach (var tag in tags) {
-            DelayedCharaImport[charaId].Add(tag);
+            _delayedCharaImport[charaId].Add(tag);
         }
     }
 
@@ -31,10 +32,10 @@ public static class CustomAdventurer
     [Time]
     internal static IEnumerator AddDelayedChara()
     {
-        var delayed = DelayedCharaImport.Count;
-        while (SafeToCreate && delayed > 0) {
-            foreach (var (id, tags) in DelayedCharaImport) {
-                delayed--;
+        var remain = _delayedCharaImport.Count;
+        while (SafeToCreate && remain > 0) {
+            foreach (var (id, tags) in _delayedCharaImport) {
+                remain--;
 
                 var chara = CreateTaggedChara(id);
                 if (chara.id == "beggar") {

@@ -2,7 +2,7 @@
 using Cwl.Helper.Unity;
 using HarmonyLib;
 
-namespace Cwl.Patches.CustomAdv;
+namespace Cwl.Loader.Patches.CustomAdv;
 
 // credits to 105gun
 [HarmonyPatch]

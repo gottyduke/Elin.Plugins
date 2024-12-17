@@ -2,24 +2,25 @@
 using BepInEx;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
-using Cwl.Patches;
-using Cwl.Patches.Relocation;
-using Cwl.Patches.Sources;
+using Cwl.Loader.Patches;
+using Cwl.Loader.Patches.Relocation;
+using Cwl.Loader.Patches.Sources;
+using Cwl.ThirdParty;
 using HarmonyLib;
 using MethodTimer;
 
-namespace Cwl;
+namespace Cwl.Loader;
 
 public static class ModInfo
 {
     // for legacy reason
     public const string Guid = "dk.elinplugins.customdialogloader";
     public const string Name = "Custom Whatever Loader";
-    public const string Version = "1.11.1";
+    public const string Version = "1.12";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
-internal class CwlMod : BaseUnityPlugin
+internal sealed partial class CwlMod : BaseUnityPlugin
 {
     internal static CwlMod? Instance { get; private set; }
 
@@ -31,7 +32,7 @@ internal class CwlMod : BaseUnityPlugin
         CwlConfig.Load(Config);
 
         if (CwlConfig.Source.TrimSpaces?.Value is true) {
-            PostProcessCellPatch.AddProcessor(TrimCellProcessor.TrimCell);
+            CellPostProcessPatch.Add(TrimCellProcessor.TrimCell);
         }
 
         // load CWL own localization first
@@ -59,31 +60,5 @@ internal class CwlMod : BaseUnityPlugin
         if (CwlConfig.Logging.Execution?.Value is true) {
             ExecutionAnalysis.DispatchAnalysis();
         }
-    }
-
-    internal static void Log(object payload)
-    {
-        Instance!.Logger.LogInfo(payload);
-    }
-
-    internal static void Debug(object payload)
-    {
-        if (!CwlConfig.Logging.Verbose?.Value is true) {
-            return;
-        }
-
-        Instance!.Logger.LogInfo(payload);
-    }
-
-    internal static void Warn(object payload)
-    {
-        Instance!.Logger.LogWarning(payload);
-        Glance.Dispatch(payload);
-    }
-
-    internal static void Error(object payload)
-    {
-        Instance!.Logger.LogError(payload);
-        Glance.Dispatch(payload);
     }
 }

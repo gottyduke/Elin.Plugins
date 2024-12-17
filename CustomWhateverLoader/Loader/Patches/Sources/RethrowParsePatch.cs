@@ -5,7 +5,7 @@ using Cwl.API;
 using HarmonyLib;
 using MethodTimer;
 
-namespace Cwl.Patches.Sources;
+namespace Cwl.Loader.Patches.Sources;
 
 [HarmonyPatch]
 internal class RethrowParsePatch

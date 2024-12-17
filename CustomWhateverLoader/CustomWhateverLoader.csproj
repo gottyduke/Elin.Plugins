@@ -134,17 +134,18 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="API\CustomElement.cs"/>
         <Compile Include="API\CustomAdventurer.cs"/>
-        <Compile Include="API\CustomReligion.cs" />
+        <Compile Include="API\CustomReligion.cs"/>
+        <Compile Include="API\Processors\SheetProcessor.cs"/>
+        <Compile Include="API\Processors\WorkbookProcessor.cs"/>
         <Compile Include="API\WorkbookImporter.cs"/>
         <Compile Include="API\MigrateDetail.cs"/>
         <Compile Include="API\SerializableSoundData.cs"/>
         <Compile Include="API\SourceParseException.cs"/>
-        <Compile Include="CustomWhateverLoader.cs"/>
-        <Compile Include="CwlConfig.cs"/>
         <Compile Include="Helper\ExecutionAnalysis.cs"/>
-        <Compile Include="Helper\FileUtil\ConfigCereal.cs" />
-        <Compile Include="Helper\FileUtil\PackageIterator.cs" />
+        <Compile Include="Helper\FileUtil\ConfigCereal.cs"/>
+        <Compile Include="Helper\FileUtil\PackageIterator.cs"/>
         <Compile Include="Helper\IntrospectCopy.cs"/>
         <Compile Include="Helper\String\GameVersion.cs"/>
         <Compile Include="Helper\String\ParamParser.cs"/>
@@ -157,25 +158,30 @@
         <Compile Include="Helper\Unity\DeferredCoroutine.cs"/>
         <Compile Include="Helper\Unity\SpriteCreator.cs"/>
         <Compile Include="LangMod\LocFormatter.cs"/>
-        <Compile Include="Patches\CustomAdv\SafeSceneInitPatch.cs"/>
-        <Compile Include="Patches\CustomAdv\SetCharaRowPatch.cs"/>
-        <Compile Include="Patches\CustomReligion\SetReligionPortraitPatch.cs"/>
-        <Compile Include="Patches\LoadSpritePatch.cs"/>
-        <Compile Include="Patches\LoadSoundPatch.cs"/>
-        <Compile Include="Patches\CustomReligion\SetReligionOwnerPatch.cs"/>
-        <Compile Include="Patches\CustomReligion\SetReligionRowPatch.cs"/>
-        <Compile Include="Patches\Relocation\LoadDataPatch.cs"/>
-        <Compile Include="Patches\Sources\PostProcessCellPatch.cs"/>
-        <Compile Include="Patches\Sources\SourceInitPatch.cs"/>
-        <Compile Include="Patches\Sources\NamedImportPatch.cs"/>
-        <Compile Include="Patches\Sources\RethrowParsePatch.cs"/>
-        <Compile Include="Patches\Relocation\LoadBookPatch.cs"/>
-        <Compile Include="Patches\Relocation\LoadDialogPatch.cs"/>
-        <Compile Include="Patches\Relocation\LoadDramaPatch.cs"/>
-        <Compile Include="ThirdParty\Glance.cs" />
+        <Compile Include="Loader\CustomWhateverLoader.cs"/>
+        <Compile Include="Loader\CwlConfig.cs"/>
+        <Compile Include="Loader\CwlLogger.cs"/>
+        <Compile Include="Loader\Patches\CustomAdv\SafeSceneInitPatch.cs"/>
+        <Compile Include="Loader\Patches\CustomAdv\SetCharaRowPatch.cs"/>
+        <Compile Include="Loader\Patches\CustomElement\MergeAttackElementPatch.cs"/>
+        <Compile Include="Loader\Patches\CustomElement\SetElementRowPatch.cs"/>
+        <Compile Include="Loader\Patches\CustomReligion\SetReligionOwnerPatch.cs"/>
+        <Compile Include="Loader\Patches\CustomReligion\SetReligionPortraitPatch.cs"/>
+        <Compile Include="Loader\Patches\CustomReligion\SetReligionRowPatch.cs"/>
+        <Compile Include="Loader\Patches\LoadSoundPatch.cs"/>
+        <Compile Include="Loader\Patches\LoadSpritePatch.cs"/>
+        <Compile Include="Loader\Patches\Relocation\LoadBookPatch.cs"/>
+        <Compile Include="Loader\Patches\Relocation\LoadDataPatch.cs"/>
+        <Compile Include="Loader\Patches\Relocation\LoadDialogPatch.cs"/>
+        <Compile Include="Loader\Patches\Relocation\LoadDramaPatch.cs"/>
+        <Compile Include="Loader\Patches\Sources\CellPostProcessPatch.cs"/>
+        <Compile Include="Loader\Patches\Sources\NamedImportPatch.cs"/>
+        <Compile Include="Loader\Patches\Sources\RethrowParsePatch.cs"/>
+        <Compile Include="Loader\Patches\Sources\SourceInitPatch.cs"/>
+        <Compile Include="ThirdParty\Glance.cs"/>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Fody" Version="6.9.1" >
+        <PackageReference Include="Fody" Version="6.9.1">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="MethodTimer.Fody" Version="3.2.2">
@@ -196,15 +202,6 @@
         </Content>
         <Content Include="LangMod\ZHTW\cwl_sources.xlsx">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-        <Content Include="README.CN.md">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-        <Content Include="README.JP.md">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-        <Content Include="README.md">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>

@@ -8,7 +8,7 @@ using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
 
-namespace Cwl.Patches.Relocation;
+namespace Cwl.Loader.Patches.Relocation;
 
 [HarmonyPatch]
 internal class LoadBookPatch

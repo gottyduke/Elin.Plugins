@@ -3,7 +3,7 @@ using HarmonyLib;
 using MethodTimer;
 using UnityEngine;
 
-namespace Cwl.Patches.CustomReligion;
+namespace Cwl.Loader.Patches.CustomReligion;
 
 [HarmonyPatch]
 internal class SetReligionPortraitPatch

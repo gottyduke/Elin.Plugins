@@ -1,9 +1,9 @@
 ﻿using Cwl.Helper.String;
-using Cwl.Patches.Sources;
+using Cwl.Loader.Patches.Sources;
 using HarmonyLib;
 using MethodTimer;
 
-namespace Cwl.Patches.CustomReligion;
+namespace Cwl.Loader.Patches.CustomReligion;
 
 [HarmonyPatch]
 internal class SetReligionRowPatch

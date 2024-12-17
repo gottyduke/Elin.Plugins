@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Cwl.LangMod;
+using Cwl.Loader;
 using UnityEngine;
 
 namespace Cwl.Helper;
@@ -16,7 +17,7 @@ internal class ExecutionAnalysis
         if (_cached.Count == 0) {
             return;
         }
-        
+
         CwlMod.Log("cwl_log_execution_analysis".Loc());
 
         var methodNameWidth = _cached.Keys.Max(mi => (mi.DeclaringType?.Name.Length ?? 0) + mi.Name.Length);
