@@ -105,7 +105,7 @@ internal class NamedImportPatch
             if (!_cached.TryGetValue(sheet, out var header)) {
                 header = sheet.GetRow(sheet.FirstRowNum).Cells
                     .Where(c => !c.StringCellValue.IsNullOrWhiteSpace())
-                    .Select(c => new MigrateDetail.HeaderCell(c.ColumnIndex, c.StringCellValue))
+                    .Select(c => new MigrateDetail.HeaderCell(c.ColumnIndex, c.StringCellValue.Trim()))
                     .ToList();
 
                 _cached[sheet] = header;

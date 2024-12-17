@@ -11,10 +11,6 @@ public static class PathTruncation
 
     public static string ShortPath(this FileInfo file)
     {
-        if (!file.Exists) {
-            return file.FullName;
-        }
-
         var owner = file.Directory!.Parent!.Parent!.Parent;
         return file.FullName[(owner!.Parent!.FullName.Length + 1)..].NormalizePath();
     }

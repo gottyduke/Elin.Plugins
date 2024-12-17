@@ -5,14 +5,14 @@ using System.Linq;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using Cwl.Loader;
+using Cwl.Loader.Patches;
 using MethodTimer;
 
 namespace Cwl.API;
 
-public static class CustomAdventurer
+public class CustomAdventurer
 {
     private static readonly Dictionary<string, HashSet<string>> _delayedCharaImport = [];
-    internal static bool SafeToCreate = false;
 
     public static void AddAdventurer(string charaId, params string[] tags)
     {
@@ -33,7 +33,7 @@ public static class CustomAdventurer
     internal static IEnumerator AddDelayedChara()
     {
         var remain = _delayedCharaImport.Count;
-        while (SafeToCreate && remain > 0) {
+        while (SafeSceneInitPatch.SafeToCreate && remain > 0) {
             foreach (var (id, tags) in _delayedCharaImport) {
                 remain--;
 
@@ -44,6 +44,7 @@ public static class CustomAdventurer
                     continue;
                 }
 
+                // credits to 105gun
                 var towns = EMono.game.world.region.ListTowns();
                 foreach (var tag in tags) {
                     var @params = tag.Parse("#", 3);
