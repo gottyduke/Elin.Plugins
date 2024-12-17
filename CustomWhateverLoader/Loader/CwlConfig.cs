@@ -18,6 +18,12 @@ public class CwlConfig
             true,
             "Measure the extra loading time added by CWL");
 
+        Patches.SafeCreateElement = config.Bind(
+            ModInfo.Name,
+            "Patches.SafeCreateElement",
+            true,
+            "When custom element fails to load from save, let CWL replace it with a safety cone and keep the game going");
+        
         Source.RethrowException = config.Bind(
             ModInfo.Name,
             "Source.RethrowException",
@@ -49,6 +55,11 @@ public class CwlConfig
         internal static ConfigEntry<bool>? Execution { get; set; }
     }
 
+    internal class Patches
+    {
+        internal static ConfigEntry<bool>? SafeCreateElement { get; set; }
+    }
+    
     public class Source
     {
         public static ConfigEntry<bool>? RethrowException { get; internal set; }

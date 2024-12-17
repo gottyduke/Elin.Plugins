@@ -164,6 +164,7 @@
         <Compile Include="Loader\CwlLogger.cs"/>
         <Compile Include="Loader\Patches\CustomAdv\SetCharaRowPatch.cs"/>
         <Compile Include="Loader\Patches\CustomEle\CollapseIdPatch.cs"/>
+        <Compile Include="Loader\Patches\CustomEle\SafeCreateElementPatch.cs" />
         <Compile Include="Loader\Patches\CustomEle\PurgeGameSavePatch.cs"/>
         <Compile Include="Loader\Patches\CustomEle\MergeAttackElementPatch.cs"/>
         <Compile Include="Loader\Patches\CustomEle\SetElementRowPatch.cs"/>
