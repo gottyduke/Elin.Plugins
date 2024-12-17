@@ -36,8 +36,10 @@ internal sealed partial class CwlMod : BaseUnityPlugin
         }
 
         // load CWL own localization first
-        var loc = PackageIterator.GetRelocatedFileFromPackage("cwl_sources.xlsx", ModInfo.Guid)!;
-        ModUtil.ImportExcel(loc.FullName, "General", EMono.sources.langGeneral);
+        var loc = PackageIterator.GetRelocatedFileFromPackage("cwl_sources.xlsx", ModInfo.Guid);
+        if (loc is not null) {
+            ModUtil.ImportExcel(loc.FullName, "General", EMono.sources.langGeneral);
+        }
 
         var harmony = new Harmony(ModInfo.Guid);
         harmony.PatchAll();

@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Cwl.API;
+using Cwl.Loader.Patches.Sources;
 using HarmonyLib;
 using MethodTimer;
 
@@ -13,6 +14,10 @@ internal class SetCharaRowPatch
     [HarmonyPatch(typeof(SourceChara), nameof(SourceChara.SetRow))]
     internal static void OnSetRow(SourceChara.Row r)
     {
+        if (!SourceInitPatch.SafeToCreate) {
+            return;
+        }
+
         var tags = r.tag
             .Where(t => t.StartsWith("addAdv"))
             .Select(t => t[6..])

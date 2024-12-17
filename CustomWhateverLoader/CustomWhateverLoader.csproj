@@ -157,14 +157,16 @@
         <Compile Include="Helper\Unity\CoroutineHelper.cs"/>
         <Compile Include="Helper\Unity\DeferredCoroutine.cs"/>
         <Compile Include="Helper\Unity\SpriteCreator.cs"/>
+        <Compile Include="Helper\Unity\TextureResizer.cs"/>
         <Compile Include="LangMod\LocFormatter.cs"/>
         <Compile Include="Loader\CustomWhateverLoader.cs"/>
         <Compile Include="Loader\CwlConfig.cs"/>
         <Compile Include="Loader\CwlLogger.cs"/>
-        <Compile Include="Loader\Patches\CustomAdv\SafeSceneInitPatch.cs"/>
         <Compile Include="Loader\Patches\CustomAdv\SetCharaRowPatch.cs"/>
-        <Compile Include="Loader\Patches\CustomElement\MergeAttackElementPatch.cs"/>
-        <Compile Include="Loader\Patches\CustomElement\SetElementRowPatch.cs"/>
+        <Compile Include="Loader\Patches\CustomEle\CollapseIdPatch.cs"/>
+        <Compile Include="Loader\Patches\CustomEle\PurgeGameSavePatch.cs"/>
+        <Compile Include="Loader\Patches\CustomEle\MergeAttackElementPatch.cs"/>
+        <Compile Include="Loader\Patches\CustomEle\SetElementRowPatch.cs"/>
         <Compile Include="Loader\Patches\CustomReligion\SetReligionOwnerPatch.cs"/>
         <Compile Include="Loader\Patches\CustomReligion\SetReligionPortraitPatch.cs"/>
         <Compile Include="Loader\Patches\CustomReligion\SetReligionRowPatch.cs"/>
@@ -174,6 +176,7 @@
         <Compile Include="Loader\Patches\Relocation\LoadDataPatch.cs"/>
         <Compile Include="Loader\Patches\Relocation\LoadDialogPatch.cs"/>
         <Compile Include="Loader\Patches\Relocation\LoadDramaPatch.cs"/>
+        <Compile Include="Loader\Patches\SafeSceneInitPatch.cs"/>
         <Compile Include="Loader\Patches\Sources\CellPostProcessPatch.cs"/>
         <Compile Include="Loader\Patches\Sources\NamedImportPatch.cs"/>
         <Compile Include="Loader\Patches\Sources\RethrowParsePatch.cs"/>
@@ -194,15 +197,6 @@
     </ItemGroup>
     <ItemGroup>
         <Content Include="FodyWeavers.xml"/>
-        <Content Include="LangMod\CN\cwl_sources.xlsx">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-        <Content Include="LangMod\EN\cwl_sources.xlsx">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-        <Content Include="LangMod\ZHTW\cwl_sources.xlsx">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

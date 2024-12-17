@@ -2,7 +2,7 @@
 using HarmonyLib;
 using MethodTimer;
 
-namespace Cwl.Loader.Patches.CustomElement;
+namespace Cwl.Loader.Patches.CustomEle;
 
 [HarmonyPatch]
 internal class MergeAttackElementPatch

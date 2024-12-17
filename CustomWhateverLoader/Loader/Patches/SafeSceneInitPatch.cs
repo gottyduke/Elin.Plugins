@@ -2,12 +2,13 @@
 using Cwl.Helper.Unity;
 using HarmonyLib;
 
-namespace Cwl.Loader.Patches.CustomAdv;
+namespace Cwl.Loader.Patches;
 
-// credits to 105gun
 [HarmonyPatch]
 internal class SafeSceneInitPatch
 {
+    internal static bool SafeToCreate;
+
     [HarmonyPostfix]
     [HarmonyPatch(typeof(Scene), nameof(Scene.Init))]
     internal static void OnSceneInit(Scene.Mode newMode)
@@ -16,10 +17,13 @@ internal class SafeSceneInitPatch
             return;
         }
 
-        CustomAdventurer.SafeToCreate = true;
+        SafeToCreate = true;
+
         CoroutineHelper.Immediate(CustomAdventurer.AddDelayedChara());
+        CoroutineHelper.Immediate(CustomElement.GainAbilityOnLoad());
+
         CoroutineHelper.Deferred(
-            () => CustomAdventurer.SafeToCreate = false,
-            () => EMono.core is null || EMono.game is null);
+            () => SafeToCreate = false,
+            () => EMono.core?.game is null);
     }
 }
