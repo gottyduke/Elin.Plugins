@@ -7,6 +7,7 @@
 ## 支持
 - 源表（角色、物品、种族、对话等）
 - 自定义冒险者
+- 自定义能力
 - 自定义信仰
 - 对话/剧情
 - 书籍文本
@@ -18,7 +19,7 @@
 
 CWL要求Mod放置在**LangMod**文件夹下，而不是**Lang**；否则，游戏将把整个翻译树复制到您的模组文件夹中。在**LangMod**文件夹中，您可以通过使用语言代码命名子文件夹来添加任意数量的支持语言，例如：
 
-![img](https://i.postimg.cc/h4LqnrjS/image.png)
+![img](https://i.postimg.cc/tJypn1Ys/image.png)
 
 当CWL导入资源时，它将优先从当前语言文件夹导入，有效解决了当前Elin xlsx的翻译问题，因为大部分工作表通常只包含JP和EN条目。
 
@@ -45,13 +46,11 @@ General, Game, List, Word, Note
 
 ![img](https://i.postimg.cc/15wF6V2L/image.png)
 
-## 自定义冒险者
+## 特殊自定义源表
 
-想制作您的自定义冒险者吗？请查看[如果制作自定义冒险者](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomAdventurer.md)
-
-## 自定义信仰
-
-想制作您的自定义信仰吗？请查看[如何制作自定义信仰](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomReligion.md)
+[如果制作自定义冒险者](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomAdventurer.md#自定义冒险者)
+[如何制作自定义信仰](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomReligion.md#自定义信仰)
+[如何制作自定义能力/法术](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomElement.md#自定义能力)
 
 ## 自定义音频
 
@@ -95,6 +94,7 @@ General, Game, List, Word, Note
 
 ## 更新日志
 
+**1.12** 添加了对自定义能力导入的支持。
 **1.11** 修复了CWL试图对其他模组做一些奇怪的事情的错误。  
 **1.10** 添加了对自定义信仰导入和自定义信仰/领域/派系肖像的支持。  
 **1.9** 添加了对不兼容源表的自动检测和表头重新对齐。可开关。  

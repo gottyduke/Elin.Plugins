@@ -7,6 +7,7 @@
 ## サポート
 - ソース表（キャラクター、アイテム、種族、対話など）
 - カスタム冒険者
+- カスタム能力
 - カスタム宗教
 - 対話/ストーリー
 - 書籍テキスト
@@ -18,7 +19,7 @@
 
 CWLは、Modを**LangMod**フォルダーに配置することを要求します。**Lang**ではありません。そうしないと、ゲームは翻訳ツリー全体をあなたのモジュールフォルダーにコピーします。**LangMod**フォルダー内では、言語コードを使用してサブフォルダーを命名することで、任意の数のサポート言語を追加できます。例えば：
 
-![img](https://i.postimg.cc/h4LqnrjS/image.png)
+![img](https://i.postimg.cc/tJypn1Ys/image.png)
 
 CWLがリソースをインポートする際は、現在の言語フォルダーから優先的にインポートされ、現在のElin xlsxの翻訳問題を効果的に解決します。なぜなら、ほとんどのワークシートには通常JPとENのエントリしか含まれていないからです。
 
@@ -45,13 +46,11 @@ General, Game, List, Word, Note
 
 ![img](https://i.postimg.cc/15wF6V2L/image.png)
 
-## カスタム冒険者
+## 特殊カスタム
 
-カスタム冒険者をインポートしたいですか？[カスタム冒険者の作成方法](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomAdventurer.md)を確認してください。
-
-## カスタム信仰
-
-カスタム信仰をインポートしたいですか？[カスタム信仰の作成方法](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomReligion.md)をご覧ください。
+[カスタム冒険者の作成方法](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomAdventurer.md#カスタム冒険者)
+[カスタム信仰の作成方法](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomReligion.md#カスタム信仰)
+[カスタム能力の作成方法](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomElement.md#カスタム能力)
 
 ## カスタムオーディオ
 
@@ -95,6 +94,7 @@ dllを参照してAPIを使用する場合は、CustomWhateverLoader.dllをモ�
 
 ## 更新ログ
 
+**1.12** カスタム能力のインポートサポートが追加されました。
 **1.11** CWLが他のモジュールに対して奇妙なことをしようとするバグを修正しました。  
 **1.10** カスタム信仰のインポートおよびカスタム信仰/領域/派閥の肖像のサポートを追加しました。  
 **1.9** 非互換のソーステーブルの自動検出およびヘッダーの再整列を追加しました。切り替え可能です。  

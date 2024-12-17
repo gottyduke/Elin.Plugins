@@ -1,5 +1,7 @@
 ## Custom Whatever Loader
 
+![Version](https://img.shields.io/badge/Version-1.12.0-R.svg)
+
 [中文](./README.CN.md) [日本語](./README.JP.md)
 
 Allows the game to automatically load modders' custom resources from the mod directory, simplifying the process for modders to utilize various game functionalities without any additional steps, and with extended localization support.
@@ -9,6 +11,7 @@ Ideal for mods that introduce new items, characters, or audio elements, the Cust
 ## Features
 - Source Sheets (Character, Items, Races, Talks, etc)
 - Custom Adventurer
+- Custom Element (Ability, Spell)
 - Custom Religion
 - Dialog/Drama
 - Book Text
@@ -20,7 +23,7 @@ New features are added upon request.
 
 Custom Whatever Loader requires your resources to be placed under the **LangMod** folder instead of **Lang**; otherwise, the game will duplicate the entire translation tree into your mod folder. Within the **LangMod** folder, you can add as many supported languages as you want by naming the subfolders with the language code, for example:
 
-![img](https://i.postimg.cc/h4LqnrjS/image.png)
+![img](https://i.postimg.cc/tJypn1Ys/image.png)
 
 When Custom Whatever Loader imports the resources, it will import from the current language folder first, effectively addressing the translation issue with the current Elin xlsx implementation, which generally only has JP and EN entries.
 
@@ -44,17 +47,15 @@ General, Game, List, Word, Note
 
 You may also split the sheets into multiple xlsx files for organizing. The xlsx file name doesn't matter.
 
-If you want to browse what are IDs for in game things/charas/various sources, checkout [Elin Modding Wiki](https://elin-modding-resources.github.io/Elin.Docs):
+If you want to browse the IDs for in game things/charas/various sources, checkout [Elin Modding Wiki](https://elin-modding-resources.github.io/Elin.Docs):
 
 ![img](https://i.postimg.cc/15wF6V2L/image.png)
 
-## Custom Adventurer
+## Special Sources
 
-Want to create your custom adventurer? See [How to Create Custom Adventurer](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomAdventurer.md)
-
-## Custom Religion
-
-Want to create your custom religion? See [How to Create Custom Religion](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomReligion.md)
+[How to Create Custom Adventurer](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomAdventurer.md)
+[How to Create Custom Religion](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomReligion.md)
+[How to Create Custom Ability](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomElement.md)
 
 ## Custom Sounds
 
@@ -98,6 +99,7 @@ You may export the string entries to a General sheet and let Custom Whatever Loa
 
 ## Change Logs
 
+**1.12** Added support for custom abilities and spells.
 **1.11** Fixed a cryptic bug where CWL attempts to do its funny things for other mods.
 **1.10** Added support for custom religion imports and custom religion/domain/faction portraits.
 **1.9** Added auto detection for incompatible source sheets and sheet header realignment. Configurable.
