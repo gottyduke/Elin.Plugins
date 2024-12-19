@@ -1,9 +1,10 @@
-﻿using Cwl.Helper.Unity;
+﻿using Cwl.API;
+using Cwl.Helper.Unity;
 using HarmonyLib;
 using MethodTimer;
 using UnityEngine;
 
-namespace Cwl.Loader.Patches.CustomReligion;
+namespace Cwl.Loader.Patches.Religions;
 
 [HarmonyPatch]
 internal class SetReligionPortraitPatch
@@ -15,7 +16,7 @@ internal class SetReligionPortraitPatch
     [HarmonyPatch(typeof(LayerDrama), nameof(LayerDrama.Activate))]
     internal static void OnSetupWorshipAct()
     {
-        if (LayerDrama.currentReligion is not API.CustomReligion custom) {
+        if (LayerDrama.currentReligion is not CustomReligion custom) {
             return;
         }
 

@@ -6,22 +6,21 @@ using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
 
-namespace Cwl.Loader.Patches.CustomEle;
+namespace Cwl.Loader.Patches.Elements;
 
 [HarmonyPatch]
 internal class SafeCreateElementPatch
 {
     internal static bool Prepare()
     {
-        return CwlConfig.Patches.SafeCreateElement?.Value is true;
+        return CwlConfig.SafeCreateClass;
     }
-    
+
     [HarmonyTranspiler]
     [HarmonyPatch(typeof(Element), nameof(Element.Create), typeof(int), typeof(int))]
     internal static IEnumerable<CodeInstruction> OnCreateIl(IEnumerable<CodeInstruction> instructions)
     {
-        var cm = new CodeMatcher(instructions);
-        return cm
+        return new CodeMatcher(instructions)
             .MatchEndForward(
                 new CodeMatch(OpCodes.Ldstr, nameof(Element)),
                 new CodeMatch(OpCodes.Call),
@@ -43,16 +42,17 @@ internal class SafeCreateElementPatch
             if (element is null) {
                 throw new SourceParseException("cwl_warn_deserialize_ele");
             }
+
             return element;
         } catch (Exception ex) {
-            CwlMod.Warn(ex.Message.Loc(id, unqualified, CwlConfig.Patches.SafeCreateElement!.Definition.Key));
+            CwlMod.Warn(ex.Message.Loc(id, unqualified, CwlConfig.Patches.SafeCreateClass!.Definition.Key));
             // noexcept
         }
 
         var row = EMono.sources.elements.map.TryGetValue(id)!;
         row.name = "cwl_ele_safety_cone".Loc(id, row.alias, unqualified);
         row.detail = "cwl_ele_safety_desc".Loc();
-        
+
         return new CustomElement();
     }
 }

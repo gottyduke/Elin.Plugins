@@ -2,5 +2,10 @@
 
 internal static class GameVersion
 {
-    internal static string Normalized => BaseCore.Instance.version.GetInt().ToString();
+    internal static string Normalized => Int().ToString();
+
+    internal static int Int()
+    {
+        return BaseCore.Instance.version.GetInt();
+    }
 }

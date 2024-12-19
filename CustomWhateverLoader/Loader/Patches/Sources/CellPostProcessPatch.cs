@@ -10,6 +10,11 @@ public class CellPostProcessPatch
 
     private static event CellProcess OnCellProcess = cell => cell;
 
+    internal static bool Prepare()
+    {
+        return CwlConfig.AllowProcessors;
+    }
+
     [HarmonyPostfix]
     [HarmonyPatch(typeof(ExcelParser), nameof(ExcelParser.GetStr))]
     internal static void OnGetCell(ref string? __result)

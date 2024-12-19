@@ -20,7 +20,7 @@ internal class NamedImportPatch
 
     internal static bool Prepare()
     {
-        return CwlConfig.Source.NamedImport?.Value is true;
+        return CwlConfig.NamedImport;
     }
 
     [HarmonyTargetMethods]

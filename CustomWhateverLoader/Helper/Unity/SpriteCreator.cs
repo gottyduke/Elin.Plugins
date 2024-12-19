@@ -24,7 +24,8 @@ public static class SpriteCreator
         var cache = $"{path}/{pivot}/{resizeWidth}/{resizeHeight}";
         name ??= cache;
 
-        if (_cached.TryGetValue(cache, out var sprite)) {
+        if (_cached.TryGetValue(cache, out var sprite) &&
+            CwlConfig.CacheSprites) {
             return sprite;
         }
 

@@ -1,9 +1,10 @@
-﻿using Cwl.Helper.String;
+﻿using Cwl.API;
+using Cwl.Helper.String;
 using Cwl.Loader.Patches.Sources;
 using HarmonyLib;
 using MethodTimer;
 
-namespace Cwl.Loader.Patches.CustomReligion;
+namespace Cwl.Loader.Patches.Religions;
 
 [HarmonyPatch]
 internal class SetReligionRowPatch
@@ -24,7 +25,7 @@ internal class SetReligionRowPatch
             return;
         }
 
-        API.CustomReligion.GerOrAdd(r.id)
+        CustomReligion.GerOrAdd(r.id)
             .SetMinor(@params.Contains("minor"))
             .SetCanJoin(!@params.Contains("cannot"));
     }

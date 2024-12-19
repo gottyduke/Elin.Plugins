@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
+using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
@@ -18,7 +19,7 @@ internal class LoadDataPatch
     {
         MergeCharaTalk();
         MergeCharaTone();
-        MergeGodTalk();
+        CoroutineHelper.Deferred(MergeGodTalk, () => Lang.setting is not null);
 
         yield break;
     }

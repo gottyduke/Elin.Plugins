@@ -14,10 +14,7 @@ namespace Cwl.API;
 
 public class WorkbookImporter
 {
-    private static List<FieldInfo> Sources => typeof(SourceManager)
-        .GetFields(AccessTools.all)
-        .Where(f => typeof(SourceData).IsAssignableFrom(f.FieldType))
-        .ToList();
+    private static List<FieldInfo>? _sources;
 
     [Time]
     public static IEnumerable<SourceData?> BySheetName(FileInfo? import)
@@ -25,6 +22,11 @@ public class WorkbookImporter
         if (import?.FullName is null or "") {
             return [];
         }
+
+        _sources ??= typeof(SourceManager)
+            .GetFields(AccessTools.all)
+            .Where(f => typeof(SourceData).IsAssignableFrom(f.FieldType))
+            .ToList();
 
         using var fs = File.OpenRead(import.FullName);
         var book = new XSSFWorkbook(fs);
@@ -37,8 +39,8 @@ public class WorkbookImporter
         for (var i = 0; i < book.NumberOfSheets; ++i) {
             try {
                 var sheet = book.GetSheetAt(i);
-                var sourceField = Sources.FirstOrDefault(f => f.FieldType.Name == $"Source{sheet.SheetName}" ||
-                                                              f.FieldType.Name == $"Lang{sheet.SheetName}");
+                var sourceField = _sources.FirstOrDefault(f => f.FieldType.Name == $"Source{sheet.SheetName}" ||
+                                                               f.FieldType.Name == $"Lang{sheet.SheetName}");
                 if (sourceField is null) {
                     CwlMod.Log("cwl_log_sheet_skip".Loc(sheet.SheetName));
                     continue;

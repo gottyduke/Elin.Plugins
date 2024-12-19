@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.IO;
-using System.Linq;
 using Cwl.API;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
@@ -17,20 +16,20 @@ internal class LoadSoundPatch
 
     internal static IEnumerator LoadAllSounds()
     {
-        var files = PackageIterator.GetSoundFilesFromPackage()
-            .SelectMany(d => d.GetFiles(Pattern, SearchOption.AllDirectories));
+        var dirs = PackageIterator.GetSoundFilesFromPackage();
 
-        foreach (var file in files) {
-            yield return LoadSound(file);
+        foreach (var dir in dirs) {
+            foreach (var file in dir.GetFiles(Pattern, SearchOption.AllDirectories)) {
+                var id = file.GetFullFileNameWithoutExtension()[(dir.FullName.Length + 1)..];
+                yield return LoadSound(file, id);
+            }
         }
     }
 
     [Time]
-    private static IEnumerator LoadSound(FileInfo file)
+    private static IEnumerator LoadSound(FileInfo file, string id = "")
     {
-        var dir = file.Directory!;
         var name = Path.GetFileNameWithoutExtension(file.FullName);
-        var id = file.GetFullFileNameWithoutExtension()[(dir.FullName.Length + 1)..];
 
         using var clipLoader = UnityWebRequestMultimedia.GetAudioClip($"file://{file.FullName}", AudioType.WAV);
         yield return clipLoader.SendWebRequest();

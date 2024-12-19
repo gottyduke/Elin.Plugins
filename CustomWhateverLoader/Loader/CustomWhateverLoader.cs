@@ -16,7 +16,7 @@ public static class ModInfo
     // for legacy reason
     public const string Guid = "dk.elinplugins.customdialogloader";
     public const string Name = "Custom Whatever Loader";
-    public const string Version = "1.12";
+    public const string Version = "1.12.5";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
@@ -31,7 +31,7 @@ internal sealed partial class CwlMod : BaseUnityPlugin
 
         CwlConfig.Load(Config);
 
-        if (CwlConfig.Source.TrimSpaces?.Value is true) {
+        if (CwlConfig.TrimSpaces) {
             CellPostProcessPatch.Add(TrimCellProcessor.TrimCell);
         }
 
@@ -42,6 +42,7 @@ internal sealed partial class CwlMod : BaseUnityPlugin
         }
 
         var harmony = new Harmony(ModInfo.Guid);
+        harmony.PatchAll(typeof(CwlForwardPatch));
         harmony.PatchAll();
     }
 

@@ -37,11 +37,15 @@ public class WorkbookProcessor
 
     internal static void PreProcess(IWorkbook workbook)
     {
-        OnWorkbookPreProcess(workbook);
+        if (CwlConfig.AllowProcessors) {
+            OnWorkbookPreProcess(workbook);
+        }
     }
 
     internal static void PostProcess(IWorkbook workbook)
     {
-        OnWorkbookPostProcess(workbook);
+        if (CwlConfig.AllowProcessors) {
+            OnWorkbookPostProcess(workbook);
+        }
     }
 }

@@ -12,7 +12,7 @@ internal class RethrowParsePatch
 {
     internal static bool Prepare()
     {
-        return CwlConfig.Source.RethrowException?.Value ?? false;
+        return CwlConfig.RethrowException;
     }
 
     [HarmonyTargetMethods]

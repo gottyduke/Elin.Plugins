@@ -71,9 +71,8 @@ public sealed class MigrateDetail
                 CwlMod.Warn("cwl_warn_misaligned_sheet".Loc(CwlConfig.Source.NamedImport!.Definition.Key));
                 DumpHeaders();
 
-                if (CwlConfig.Source.SheetMigrate?.Value is true) {
-                    //TODO: disable for now cuz game updates so often
-                    //ReorderSheet();
+                if (CwlConfig.SheetMigrate) {
+                    ReorderSheet();
                 }
 
                 break;
@@ -137,6 +136,10 @@ public sealed class MigrateDetail
 
     public void DumpHeaders()
     {
+        if (!CwlConfig.SheetInspection) {
+            return;
+        }
+
         if (CurrentSheet is null) {
             return;
         }

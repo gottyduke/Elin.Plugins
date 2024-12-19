@@ -2,14 +2,12 @@
 using Cwl.API;
 using Cwl.Loader.Patches.Sources;
 using HarmonyLib;
-using MethodTimer;
 
-namespace Cwl.Loader.Patches.CustomAdv;
+namespace Cwl.Loader.Patches.Adv;
 
 [HarmonyPatch]
 internal class SetCharaRowPatch
 {
-    [Time]
     [HarmonyPostfix]
     [HarmonyPatch(typeof(SourceChara), nameof(SourceChara.SetRow))]
     internal static void OnSetRow(SourceChara.Row r)

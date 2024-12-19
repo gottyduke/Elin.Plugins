@@ -1,4 +1,5 @@
-﻿using Cwl.Helper.Unity;
+﻿using Cwl.API;
+using Cwl.Helper.Unity;
 using HarmonyLib;
 using MethodTimer;
 using UnityEngine;
@@ -13,7 +14,7 @@ internal class LoadSpritePatch
     [HarmonyPatch(typeof(Religion), nameof(Religion.GetSprite))]
     internal static bool OnGetReligionSprite(ref Sprite? __result, Religion __instance)
     {
-        if (__instance is not API.CustomReligion custom) {
+        if (__instance is not CustomReligion custom) {
             return true;
         }
 

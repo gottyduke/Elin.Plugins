@@ -37,11 +37,15 @@ public class SheetProcessor
 
     internal static void PreProcess(ISheet sheet)
     {
-        OnSheetPreProcess(sheet);
+        if (CwlConfig.AllowProcessors) {
+            OnSheetPreProcess(sheet);
+        }
     }
 
     internal static void PostProcess(ISheet sheet)
     {
-        OnSheetPostProcess(sheet);
+        if (CwlConfig.AllowProcessors) {
+            OnSheetPostProcess(sheet);
+        }
     }
 }

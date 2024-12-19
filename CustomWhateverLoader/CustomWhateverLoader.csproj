@@ -137,12 +137,14 @@
         <Compile Include="API\CustomElement.cs"/>
         <Compile Include="API\CustomAdventurer.cs"/>
         <Compile Include="API\CustomReligion.cs"/>
+        <Compile Include="API\CustomCondition.cs"/>
         <Compile Include="API\Processors\SheetProcessor.cs"/>
         <Compile Include="API\Processors\WorkbookProcessor.cs"/>
         <Compile Include="API\WorkbookImporter.cs"/>
         <Compile Include="API\MigrateDetail.cs"/>
         <Compile Include="API\SerializableSoundData.cs"/>
         <Compile Include="API\SourceParseException.cs"/>
+        <Compile Include="Helper\CwlForwardPatch.cs"/>
         <Compile Include="Helper\ExecutionAnalysis.cs"/>
         <Compile Include="Helper\FileUtil\ConfigCereal.cs"/>
         <Compile Include="Helper\FileUtil\PackageIterator.cs"/>
@@ -152,7 +154,9 @@
         <Compile Include="Helper\String\PathNormalizer.cs"/>
         <Compile Include="Helper\String\PathTruncation.cs"/>
         <Compile Include="Helper\TrimCellProcessor.cs"/>
+        <Compile Include="Helper\TypeQualifier.cs"/>
         <Compile Include="Helper\Unity\ChildrenIterator.cs"/>
+        <Compile Include="Helper\Unity\ColorParser.cs"/>
         <Compile Include="Helper\Unity\ComponentFetch.cs"/>
         <Compile Include="Helper\Unity\CoroutineHelper.cs"/>
         <Compile Include="Helper\Unity\DeferredCoroutine.cs"/>
@@ -162,15 +166,19 @@
         <Compile Include="Loader\CustomWhateverLoader.cs"/>
         <Compile Include="Loader\CwlConfig.cs"/>
         <Compile Include="Loader\CwlLogger.cs"/>
-        <Compile Include="Loader\Patches\CustomAdv\SetCharaRowPatch.cs"/>
-        <Compile Include="Loader\Patches\CustomEle\CollapseIdPatch.cs"/>
-        <Compile Include="Loader\Patches\CustomEle\SafeCreateElementPatch.cs" />
-        <Compile Include="Loader\Patches\CustomEle\PurgeGameSavePatch.cs"/>
-        <Compile Include="Loader\Patches\CustomEle\MergeAttackElementPatch.cs"/>
-        <Compile Include="Loader\Patches\CustomEle\SetElementRowPatch.cs"/>
-        <Compile Include="Loader\Patches\CustomReligion\SetReligionOwnerPatch.cs"/>
-        <Compile Include="Loader\Patches\CustomReligion\SetReligionPortraitPatch.cs"/>
-        <Compile Include="Loader\Patches\CustomReligion\SetReligionRowPatch.cs"/>
+        <Compile Include="Loader\Patches\Adv\SetCharaRowPatch.cs"/>
+        <Compile Include="Loader\Patches\Conditions\SafeCreateConditionPatch.cs"/>
+        <Compile Include="Loader\Patches\Conditions\SetConditionRowPatch.cs"/>
+        <Compile Include="Loader\Patches\Dialogs\VariableQuotePatch.cs"/>
+        <Compile Include="Loader\Patches\Elements\SafeCreateElementPatch.cs"/>
+        <Compile Include="Loader\Patches\Elements\PurgeGameSavePatch.cs"/>
+        <Compile Include="Loader\Patches\Elements\MergeAttackElementPatch.cs"/>
+        <Compile Include="Loader\Patches\Elements\SetElementRowPatch.cs"/>
+        <Compile Include="Loader\Patches\Materials\SetMaterialRowPatch.cs"/>
+        <Compile Include="Loader\Patches\Quests\SafeCreateQuestPatch.cs"/>
+        <Compile Include="Loader\Patches\Religions\SetReligionOwnerPatch.cs"/>
+        <Compile Include="Loader\Patches\Religions\SetReligionPortraitPatch.cs"/>
+        <Compile Include="Loader\Patches\Religions\SetReligionRowPatch.cs"/>
         <Compile Include="Loader\Patches\LoadSoundPatch.cs"/>
         <Compile Include="Loader\Patches\LoadSpritePatch.cs"/>
         <Compile Include="Loader\Patches\Relocation\LoadBookPatch.cs"/>
@@ -181,6 +189,7 @@
         <Compile Include="Loader\Patches\Sources\CellPostProcessPatch.cs"/>
         <Compile Include="Loader\Patches\Sources\NamedImportPatch.cs"/>
         <Compile Include="Loader\Patches\Sources\RethrowParsePatch.cs"/>
+        <Compile Include="Loader\Patches\Sources\SafeCreateCardPatch.cs"/>
         <Compile Include="Loader\Patches\Sources\SourceInitPatch.cs"/>
         <Compile Include="ThirdParty\Glance.cs"/>
     </ItemGroup>
@@ -198,6 +207,15 @@
     </ItemGroup>
     <ItemGroup>
         <Content Include="FodyWeavers.xml"/>
+        <Content Include="LangMod\CN\cwl_sources.xlsx">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="LangMod\EN\cwl_sources.xlsx">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="LangMod\ZHTW\cwl_sources.xlsx">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

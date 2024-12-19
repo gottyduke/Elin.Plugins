@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using Cwl.Helper.String;
+using Cwl.Loader;
 
 namespace Cwl.Helper.FileUtil;
 
@@ -91,7 +92,8 @@ public static class PackageIterator
 
     public static bool TryLoadFromPackageCache(string cacheName, out string path)
     {
-        return _cachedPaths.TryGetValue(cacheName, out path);
+        path = string.Empty;
+        return CwlConfig.CachePaths && _cachedPaths.TryGetValue(cacheName, out path);
     }
 
     public static void AddCachedPath(string cacheName, string path)

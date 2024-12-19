@@ -25,7 +25,7 @@ internal class SourceInitPatch
         try {
             var imports = PackageIterator.GetLangModFilesFromPackage()
                 .SelectMany(d => d.GetFiles(Pattern, SearchOption.TopDirectoryOnly))
-                .Where(f => !f.Name.Contains("cwl_migrated"));
+                .Where(f => !f.Name.Contains("cwl_migrated") && !f.Name.Contains("~$"));
             HashSet<SourceData> dirty = [EMono.sources.elements, EMono.sources.materials];
 
             foreach (var import in imports) {
@@ -43,9 +43,9 @@ internal class SourceInitPatch
             }
 
             dirty.Do(s => s.Reset());
+            CwlMod.Log("cwl_log_workbook_complete".Loc());
         } finally {
             SafeToCreate = false;
-            CwlMod.Log("cwl_log_workbook_complete".Loc());
         }
     }
 }
