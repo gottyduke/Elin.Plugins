@@ -10,16 +10,25 @@
 
 Allows the usage of variable resolutions and ratios of PCC sprites and accordingly fit them onto the PCC.
 
+[h1]Body[/h1]
+
+Body sprite still needs to be in the ratio of 2:3, but the resolution doesn't matter. You can use a large canvas if that helps.
+
 [h1]Parts[/h1]
 
 Mod authors can now create PCC parts with sprites other than 32x48.
 
 [img]https://i.postimg.cc/t45LQvrF/demo-en.png[/img]
 [img]https://i.postimg.cc/wMmSC6PB/faq-en.png[/img]
+[img]https://i.postimg.cc/43F5Dx42/before-en.png[/img]
+[img]https://i.postimg.cc/7hSnJ13j/after-en.png[/img]
 
-[h1]Body[/h1]
-
-Body sprite still needs to be in the ratio of 2:3, but the resolution doesn't matter. You can use a large canvas if that helps.
+[h1]Mods that utilize VSS[/h1]
+[list]
+[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3369919962]Witch Hat[/url]
+[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3370446538]Cooking Attire[/url]
+[*] [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3371250172]Berserk Golden Age Guts[/url]
+[/list]
 
 [h1]Credits[/h1]
 

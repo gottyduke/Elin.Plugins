@@ -2,9 +2,9 @@
 
 namespace VSS.Helper;
 
-internal static class TextureExtender
+public static class TextureExtender
 {
-    internal static Texture2D ExtendBlit(this Texture2D texture, int width, int height, int tilesPerRow = 4,
+    public static Texture2D ExtendBlit(this Texture2D texture, int width, int height, int tilesPerRow = 4,
         int tilesPerColumn = 4)
     {
         var extended = TextureBase.MakeTransparent(width, height);

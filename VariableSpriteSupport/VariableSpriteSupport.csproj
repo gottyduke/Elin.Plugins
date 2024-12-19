@@ -86,6 +86,11 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="API\LayerRebuildDispatcher.cs"/>
+        <Compile Include="Helper\ChildrenIterator.cs"/>
+        <Compile Include="Helper\ComponentFetch.cs"/>
+        <Compile Include="Helper\CoroutineHelper.cs"/>
+        <Compile Include="Helper\DeferredCoroutine.cs"/>
         <Compile Include="Helper\TextureBase.cs"/>
         <Compile Include="Helper\TextureResizer.cs"/>
         <Compile Include="Helper\ReversePartId.cs"/>
@@ -94,6 +99,12 @@
         <Compile Include="Patches\SetImagePatch.cs"/>
         <Compile Include="Patches\UpdateSpritePatch.cs"/>
         <Compile Include="VssMod.cs"/>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="PolySharp" Version="1.15.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

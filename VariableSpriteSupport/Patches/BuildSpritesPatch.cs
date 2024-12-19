@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using HarmonyLib;
 using UnityEngine;
+using VSS.API;
 using VSS.Helper;
 using Object = UnityEngine.Object;
 using Texture2D = UnityEngine.Texture2D;
@@ -13,6 +14,7 @@ namespace VSS.Patches;
 internal class BuildSpritesPatch
 {
     private static readonly int _color = Shader.PropertyToID("_Color");
+    private static readonly int _flesh = Shader.PropertyToID("_Flesh");
 
     [HarmonyTranspiler]
     [HarmonyPatch(typeof(PCC), nameof(PCC.Build), typeof(PCCState), typeof(bool))]
@@ -28,11 +30,11 @@ internal class BuildSpritesPatch
                     typeof(PCCManager),
                     nameof(PCCManager.pixelize))),
                 new CodeMatch(OpCodes.Brtrue))
-            .CreateLabel(out var label)
+            .CreateLabel(out var failed)
             .InsertAndAdvance(
                 new CodeInstruction(OpCodes.Ldarg_0),
                 Transpilers.EmitDelegate(RebuildSprites),
-                new CodeInstruction(OpCodes.Brfalse, label),
+                new CodeInstruction(OpCodes.Brfalse, failed),
                 new CodeInstruction(OpCodes.Ret))
             .InstructionEnumeration();
     }
@@ -92,6 +94,7 @@ internal class BuildSpritesPatch
                 var tex = i != pcc.layerList.indexBody
                     ? layer.tex as Texture2D
                     : body;
+
                 // calculate layer offset
                 var offsetWidth = maxWidth - tex!.width;
                 var offsetHeight = maxHeight - tex.height;
@@ -105,6 +108,9 @@ internal class BuildSpritesPatch
                     tex = tex.ExtendBlit(maxWidth, maxHeight);
                     rebuildTexSheet = true;
                 }
+
+                // dispatch before committing
+                LayerRebuildDispatcher.Dispatch(layer, tex, i);
 
                 Graphics.Blit(tex, renderTexture, pccm.mat);
             }
@@ -130,6 +136,7 @@ internal class BuildSpritesPatch
             }
 
             Graphics.CopyTexture(renderTexture, variation.tex);
+
             if (variation.main is null || needRebuild) {
                 variation.BuildSprites(variation.tex);
             }

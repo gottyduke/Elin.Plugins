@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace VSS.Helper;
 
-internal static class TextureBase
+public static class TextureBase
 {
     internal static readonly Dictionary<string, Texture2D> Cached = [];
 
-    internal static Texture2D MakeTransparent(int width, int height)
+    public static Texture2D MakeTransparent(int width, int height)
     {
         var id = $"base_{width}x{height}";
         var texture = new Texture2D(width, height, TextureFormat.ARGB32, false);
