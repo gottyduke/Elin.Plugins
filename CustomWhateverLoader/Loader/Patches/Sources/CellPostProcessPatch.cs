@@ -4,6 +4,7 @@ using HarmonyLib;
 
 namespace Cwl.Loader.Patches.Sources;
 
+[HarmonyPatch]
 public class CellPostProcessPatch
 {
     public delegate string? CellProcess(string? cellValue);
