@@ -1,13 +1,13 @@
-Custom Whatever Loader 任意のローダー
----
+## Custom Whatever Loader 任意のローダー
+
 ![Version](https://img.shields.io/badge/Version-1.13.0-R.svg)
 
 ゲームが自動的にモジュールディレクトリからモジュール制作者のカスタムリソースをロードできるようにし、モジュール制作者がさまざまなゲーム機能を利用するプロセスを簡素化し、追加の手順を必要とせず、ローカライズサポートを拡張します。
 
 新しいアイテム、キャラクター、要素、または音声を導入するモジュールに非常に適しており、CWLはDLLを使用して表をインポートする手間を省きます。
 
-サポート
----
+## サポート
+
 - ソース表（キャラクター、アイテム、種族、対話など）
 - カスタム冒険者
 - カスタム能力
@@ -26,16 +26,16 @@ Custom Whatever Loader 任意のローダー
 
 必要に応じて新機能を追加します。
 
-サンプルモジュール設定
----
+## サンプルモジュール設定
+
 CWLは、Modを**LangMod**フォルダーに配置することを要求します。**Lang**ではありません。そうしないと、ゲームは翻訳ツリー全体をあなたのモジュールフォルダーにコピーします。**LangMod**フォルダー内では、言語コードを使用してサブフォルダーを命名することで、任意の数のサポート言語を追加できます。例えば：
 
 ![img](https://i.postimg.cc/tJypn1Ys/image.png)
 
 CWLがリソースをインポートする際は、現在の言語フォルダーから優先的にインポートされ、現在のElin xlsxの翻訳問題を効果的に解決します。なぜなら、ほとんどのワークシートには通常JPとENのエントリしか含まれていないからです。
 
-カスタムソース表
----
+## カスタムソース表
+
 各言語フォルダーにxlsxファイルを単純に置くだけで、各xlsxワークシート上で**ModUtil.ImportExcel**を手動で呼び出す必要はありません。CWLは、SourceDataまたはSourceLangと一致する表名に基づいて、すべてのローカライズされたソースをインポートします。
 
 注意すべきは**表名**であり、ファイル名ではありません！例えば、これはそれぞれ**SourceThing**、**SourceChara**、**LangGeneral**をインポートします。
@@ -57,16 +57,16 @@ General, Game, List, Word, Note
 
 ![img](https://i.postimg.cc/15wF6V2L/image.png)
 
-特殊カスタム
----
+## 特殊カスタム
+
 [カスタム冒険者](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomAdventurer.md#カスタム冒険者)
 [カスタム信仰](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomReligion.md#カスタム信仰)
 [カスタム能力](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomElement.md#カスタム能力)
 [カスタムマテリアル(Material)](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomMaterial.md#カスタムマテリアル)
 [音声/BGM](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomSound.md#音声bgm)
 
-使用例
----
+## 使用例
+
 CWLの使用例をいくつか確認するには、以下のモジュール（およびその他）をご覧ください：
 
 [若葉睦](https://steamcommunity.com/sharedfiles/filedetails/?id=3380127472)  
@@ -79,24 +79,24 @@ CWLの使用例をいくつか確認するには、以下のモジュール（�
 [「オブザーバー」種族追加MOD](https://steamcommunity.com/sharedfiles/filedetails/?id=3385578698)  
 [Custom Instrument Track](https://steamcommunity.com/sharedfiles/filedetails/?id=3374708172)  
 
-API
----
+## API
+
 CustomWhateverLoader.dllを参照することで、**CWL.API**および**CWL.Helper**名前空間全体にアクセスできます。GitHubの関連ソースコードをご覧ください。
 
 dllを参照してAPIを使用する場合は、CustomWhateverLoader.dllをモジュールと一緒に配布しないでください。
 
-配置ファイル  
----  
+## 配置ファイル  
+  
 [詳細配置CWLの部分機能](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/Config.md)  
 
-コードのローカライズ
----
+## コードのローカライズ
+
 テキストエントリをGeneralテーブルにエクスポートし、Custom Whatever LoaderにLangGeneralにインポートさせることで、実行時に **"my_lang_str".lang()** を使用してコードをローカライズできます。
 
 ![img](https://i.postimg.cc/76HS3t8M/image.png)
 
-更新ログ
----
+## 更新ログ
+
 **1.13** カスタムマテリアルのインポートサポートが追加され、安全なロードの最適化が多数行われました。
 **1.12** カスタム能力のインポートサポートが追加されました。
 **1.11** CWLが他のモジュールに対して奇妙なことをしようとするバグを修正しました。  
@@ -112,8 +112,8 @@ dllを参照してAPIを使用する場合は、CustomWhateverLoader.dllをモ�
 **1.1** 書籍テキストのサポートを追加しました。  
 **1.0** ダイアログ/ストーリーのサポートを追加しました。
 
-問題がありますか？
----
+## 問題がありますか？
+
 新機能が必要な場合、フィードバックを提供したい場合、または助けが必要な場合は、気軽にコメントするか、Elona Discordで @freshcloth に連絡してください。
 
 エラーが発生した場合は、**ユーザー名/AppData/LocalLow/Lafrontier/Elin/Player.log**を確認することを忘れないでください。CWLはそこで**多くの**情報を記録します。

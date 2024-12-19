@@ -1,13 +1,13 @@
-随便加载器
----
+## 随便加载器
+
 ![Version](https://img.shields.io/badge/Version-1.13.0-R.svg)
 
 允许游戏自动从模组目录加载模组制作者的自定义资源，简化了模组制作者利用各种游戏功能的过程，无需额外步骤，并扩展了本地化支持。
 
 非常适合引入新物品、角色、元素、或音频的模组，CWL免去使用DLL只为导入表格的麻烦。
 
-使用CWL
----
+## 使用CWL
+
 - 源表（角色、物品、种族、对话等）
 - 自定义冒险者
 - 自定义能力（法术/状态/能力等）
@@ -26,16 +26,16 @@
 
 CWL由社区需求和反馈而添加新功能。
 
-示例模组设置
----
+## 示例模组设置
+
 CWL要求Mod放置在**LangMod**文件夹下，而不是**Lang**；否则，游戏将把整个翻译树复制到您的模组文件夹中。在**LangMod**文件夹中，您可以通过使用语言代码命名子文件夹来添加任意数量的支持语言，例如：
 
 ![img](https://i.postimg.cc/tJypn1Ys/image.png)
 
 当CWL导入资源时，它将优先从当前语言文件夹导入，有效解决了当前Elin xlsx的翻译问题，因为大部分工作表通常只包含JP和EN条目。
 
-自定义源表
----
+## 自定义源表
+
 您可以将 xlsx 文件简单地放置在每个语言文件夹中，而不必手动为每个 xlsx 工作表调用 **ModUtil.ImportExcel**。CWL将根据与 SourceData 或 SourceLang 匹配的表名导入所有本地化的源。
 
 请注意是 **表名**，而不是文件名！例如，这将相应地导入 **SourceThing**, **SourceChara**, **LangGeneral**。
@@ -58,16 +58,16 @@ General, Game, List, Word, Note
 
 ![img](https://i.postimg.cc/15wF6V2L/image.png)
 
-特殊导入
----
+## 特殊导入
+
 [如何导入自定义冒险者](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomAdventurer.md#自定义冒险者)  
 [如何导入自定义信仰](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomReligion.md#自定义信仰)  
 [如何导入自定义能力/法术](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomElement.md#自定义能力)  
 [如何导入自定义材质(Material)](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomMaterial.md#自定义材质)  
 [如何导入自定义音频](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomSound.md#自定义音频)  
 
-使用示例
----
+## 使用示例
+
 要查看一些CWL使用示例，请查看以下模组（以及更多）：
 
 [若葉睦](https://steamcommunity.com/sharedfiles/filedetails/?id=3380127472)  
@@ -80,24 +80,24 @@ General, Game, List, Word, Note
 [「オブザーバー」種族追加](https://steamcommunity.com/sharedfiles/filedetails/?id=3385578698)  
 [自定义演奏音乐](https://steamcommunity.com/sharedfiles/filedetails/?id=3374708172)
 
-API
----
+## API
+
 通过引用CustomWhateverLoader.dll，您可以访问整个**CWL.API**和**CWL.Helper**命名空间，请查看GitHub相关源代码。
 
 如果通过引用dll使用API，请勿将CustomWhateverLoader.dll与您的模组一同发布。
 
-代码本地化
----
+## 代码本地化
+
 您可以将文本条目导出到一个General表，并让Custom Whatever Loader将其导入到LangGeneral中，然后在运行时使用 **"my_lang_str".lang()** 进行代码本地化。
 
 ![img](https://i.postimg.cc/76HS3t8M/image.png)
 
-配置文件
----
+## 配置文件
+
 [详细配置CWL的部分功能](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/Config.md)  
 
-更新日志
----
+## 更新日志
+
 **1.13** 添加了对自定义材质导入的支持，大量安全加载的优化。  
 **1.12** 添加了对自定义能力导入的支持。  
 **1.11** 修复了CWL试图对其他模组做一些奇怪的事情的错误。  
@@ -113,8 +113,8 @@ API
 **1.1** 添加了对书籍文本的支持。  
 **1.0** 添加了对对话/剧情的支持。
 
-遇到问题了吗？
----
+## 遇到问题了吗？
+
 如果您需要新功能、提供反馈或制作帮助，请随时留言或通过 Elona Discord 联系我 @freshcloth。
 
 如果出现任何错误，请不要忘记检查 **用户名/AppData/LocalLow/Lafrontier/Elin/Player.log**，CWL 会在那里记录 **很多** 信息。

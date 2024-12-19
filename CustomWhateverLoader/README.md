@@ -1,5 +1,5 @@
-Custom Whatever Loader
----
+## Custom Whatever Loader
+
 ![Version](https://img.shields.io/badge/Version-1.13.0-R.svg)
 
 [中文](./README.CN.md)  
@@ -9,8 +9,8 @@ Allows the game to automatically load modders' custom resources from the mod dir
 
 Ideal for mods that introduce new items, characters, or audio elements, the Custom Whatever Loader eliminates the need for creating script DLLs to import Excel sheets.
 
-Using CWL
----
+## Using CWL
+
 - Source Sheets (Character, Items, Races, Talks, etc)
 - Custom Adventurer
 - Custom Element (Ability, Spell)
@@ -29,16 +29,16 @@ Using CWL
 
 CWL is made with community effort and feedback, new features are added upon request.
 
-Example Mod Setup
----
+## Example Mod Setup
+
 Custom Whatever Loader requires your resources to be placed under the **LangMod** folder instead of **Lang**; otherwise, the game will duplicate the entire translation tree into your mod folder. Within the **LangMod** folder, you can add as many supported languages as you want by naming the subfolders with the language code, for example:
 
 ![img](https://i.postimg.cc/tJypn1Ys/image.png)
 
 When Custom Whatever Loader imports the resources, it will import from the current language folder first, effectively addressing the translation issue with the current Elin xlsx implementation, which generally only has JP and EN entries.
 
-Custom Sources
----
+## Custom Sources
+
 Instead of calling **ModUtil.ImportExcel** on each xlsx worksheet manually, modders can now simply place the xlsx files within each language folder. Custom Whatever Loader will import all the localized sources according to the sheet name that matches a SourceData or SourceLang.
 
 Note that it's the **sheet name**, not the file name! For example, this will import **SourceThing**, **SourceChara**, **LangGeneral** accordingly.
@@ -61,16 +61,16 @@ If you want to browse the IDs for in game things/charas/various sources, checkou
 
 ![img](https://i.postimg.cc/15wF6V2L/image.png)
 
-Special Imports
----
+## Special Imports
+
 [How to Import Custom Adventurer](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomAdventurer.md)  
 [How to Import Custom Religion](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomReligion.md)  
 [How to Import Custom Ability/Spell](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomElement.md)  
 [How to Import Custom Material/Color](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomMaterial.md)  
 [How to Import Custom Sound](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomSound.md)  
 
-Usage Examples
----
+## Usage Examples
+
 To see some CWL usage examples, checkout the following mods (and more):
 
 [Wakaba Mutsumi](https://steamcommunity.com/sharedfiles/filedetails/?id=3380127472)  
@@ -83,24 +83,24 @@ To see some CWL usage examples, checkout the following mods (and more):
 [「オブザーバー」種族追加MOD](https://steamcommunity.com/sharedfiles/filedetails/?id=3385578698)  
 [Custom Instrument Track](https://steamcommunity.com/sharedfiles/filedetails/?id=3374708172)
 
-API
----
+## API
+
 By referencing CustomWhateverLoader.dll, you gain access to the entire **CWL.API** and **CWL.Helper** namespaces, please check out the GitHub source code down below for the specifics.
 
 Please do not ship the CustomWhateverLoader.dll with your mod if using API via referencing dll.
 
-Code Localization
----
+## Code Localization
+
 You may export the string entries to a General sheet and let Custom Whatever Loader import it to LangGeneral, then you can use **"my_lang_str".lang()** to localize in code at runtime.
 
 ![img](https://i.postimg.cc/76HS3t8M/image.png)
 
-Configuration
----
+## Configuration
+
 [Configure CWL Functions](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/Config.md)  
 
-Change Logs
----
+## Change Logs
+
 **1.13** Added support for custom material, lots of safe loading optimizations.  
 **1.12** Added support for custom abilities and spells.  
 **1.11** Fixed a cryptic bug where CWL attempts to do its funny things for other mods.  
@@ -116,8 +116,8 @@ Change Logs
 **1.1** Added support for book texts.  
 **1.0** Added support for dialogs/drama sheets.  
 
-Having a Problem?
----
+## Having a Problem?
+
 If you want to request new features, provide feedback, in need of assistance, feel free to leave comments or reach my at Elona Discord @freshcloth.
 
 Should any bug appear, don't forget to check **YourUserName/AppData/LocalLow/Lafrontier/Elin/Player.log**, Custom Whatever Loader logs **a lot** of stuff there.
