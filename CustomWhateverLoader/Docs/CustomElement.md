@@ -2,11 +2,11 @@
 
 Assumes you have setup your ability in an Element sheet already, the following entries are important:
 
-**id**: this should be a unique number, this is the ability id.
-**alias**: the actual string id of your element.
-**type**: this C# type name corresponding to this ability.
-**group**: be it **ABILITY** or **SPELL**.
-**tag**: add **addEleOnLoad** if you want your ability to be applied to player on game load.
+**id**: this should be a unique number, this is the ability id.  
+**alias**: the actual string id of your element.  
+**type**: this C# type name corresponding to this ability.  
+**group**: be it **ABILITY** or **SPELL**.  
+**tag**: add **addEleOnLoad** if you want your ability to be applied to player on game load.  
 
 The rest are up to you to define. You may take references from [Elin Modding Wiki](https://elin-modding-resources.github.io/Elin.Docs/) or Elin Sources.
 
@@ -48,7 +48,7 @@ If you do not need to utilize CWL API, then no need to reference CustomWhateverL
 **alias**：元素的别名，字符串ID。  
 **type**：与此元素对应的C#类型名称。  
 **group**：可以是**ABILITY**或**SPELL**。  
-**tag**：如果您希望在游戏加载时将元素自动赋予给玩家，请添加**addEleOnLoad**。
+**tag**：如果您希望在游戏加载时将元素自动赋予给玩家，请添加**addEleOnLoad**。  
 
 其余的由您定义。您可以参考[Elin Modding Wiki](https://elin-modding-resources.github.io/Elin.Docs/)或Elin Sources。
 
@@ -90,7 +90,7 @@ internal class ActLionDance : Act
 **alias**：要素のエイリアス、文字列ID。  
 **type**：この要素に対応するC#のタイプ名。  
 **group**：**ABILITY**または**SPELL**のいずれか。  
-**tag**：ゲームのロード時に要素を自動的にプレイヤーに付与したい場合は、**addEleOnLoad**を追加してください。
+**tag**：ゲームのロード時に要素を自動的にプレイヤーに付与したい場合は、**addEleOnLoad**を追加してください。  
 
 残りはあなたが定義します。あなたは[Elin Modding Wiki](https://elin-modding-resources.github.io/Elin.Docs/)やElin Sourcesを参考にできます。
 
