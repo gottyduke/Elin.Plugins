@@ -1,6 +1,6 @@
 ## How to Import Custom Material
 
-Assumes you already have a material row defined in your Material sheet, by default game will not be able to load custo materials due to no color mapping.
+Assumes you already have a material row defined in your Material sheet, by default game will not be able to load custom materials due to no color mapping.
 
 With CWL, you can add custom color for custom material via tagging.
 
