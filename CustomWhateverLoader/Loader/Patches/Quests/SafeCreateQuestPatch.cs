@@ -11,7 +11,7 @@ namespace Cwl.Loader.Patches.Quests;
 [HarmonyPatch]
 internal class SafeCreateQuestPatch
 {
-    private static readonly bool _cleanup = false;
+    private static bool _cleanup;
 
     internal static bool Prepare()
     {
@@ -53,13 +53,23 @@ internal class SafeCreateQuestPatch
             CwlConfig.Patches.SafeCreateClass!.Definition.Key));
 
         if (!_cleanup) {
-            CoroutineHelper.Deferred(PostLoadCleanup, () => !EClass.game.isLoading);
+            CoroutineHelper.Deferred(PostCleanup, () => EClass.game.isLoading);
         }
-
+        _cleanup = true;
+        
         return true;
     }
 
-    private static void PostLoadCleanup()
+    private static void PostCleanup()
     {
+        var list = EClass.game.quests.globalList;
+        list.ForeachReverse(q => {
+            if (EMono.sources.quests.map.ContainsKey(q.id)) {
+                return;
+            }
+
+            list.Remove(q);
+            CwlMod.Log("cwl_log_post_cleanup_quest".Loc(q.id));
+        });
     }
 }

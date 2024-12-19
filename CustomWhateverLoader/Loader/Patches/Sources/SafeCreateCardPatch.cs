@@ -16,7 +16,7 @@ internal class SafeCreateCardPatch
     }
 
     [HarmonyTranspiler]
-    [HarmonyPatch(typeof(SafeCreateCardPatch), "CreateCard")]
+    [HarmonyPatch(typeof(SourceCard), nameof(SourceCard.Init))]
     internal static IEnumerable<CodeInstruction> OnAddRowIl(IEnumerable<CodeInstruction> instructions)
     {
         return new CodeMatcher(instructions)
