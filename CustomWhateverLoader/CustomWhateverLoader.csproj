@@ -166,6 +166,7 @@
         <Compile Include="Loader\CustomWhateverLoader.cs"/>
         <Compile Include="Loader\CwlConfig.cs"/>
         <Compile Include="Loader\CwlLogger.cs"/>
+        <Compile Include="Loader\CwlStartTask.cs" />
         <Compile Include="Loader\Patches\Adv\SetCharaRowPatch.cs"/>
         <Compile Include="Loader\Patches\Conditions\SafeCreateConditionPatch.cs"/>
         <Compile Include="Loader\Patches\Conditions\SetConditionRowPatch.cs"/>
