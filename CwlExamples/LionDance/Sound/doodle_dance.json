@@ -1,0 +1,36 @@
+{
+  "type": "Default",
+  "loop": 0,
+  "minInterval": 0.0,
+  "chance": 1.0,
+  "delay": 0.0,
+  "startAt": 0.0,
+  "fadeAtStart": false,
+  "fadeLength": 0.0,
+  "volume": 0.5,
+  "volumeAsMtp": false,
+  "allowMultiple": true,
+  "skipIfPlaying": false,
+  "important": false,
+  "alwaysPlay": false,
+  "noSameSound": false,
+  "pitch": 1.0,
+  "randomPitch": 0.0,
+  "reverbMix": 1.0,
+  "spatial": 0.0,
+  "bgmDataOptional": {
+    "day": false,
+    "night": false,
+    "fadeIn": 0.1,
+    "fadeOut": 0.5,
+    "failDuration": 0.7,
+    "failPitch": 0.12,
+    "pitchDuration": 0.01,
+    "parts": [
+      {
+        "start": 0.5,
+        "duration": 1.0
+      }
+    ]
+  }
+}
