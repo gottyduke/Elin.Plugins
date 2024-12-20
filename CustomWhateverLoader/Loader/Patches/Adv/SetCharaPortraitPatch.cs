@@ -35,11 +35,12 @@ internal class SetCharaPortraitPatch
                 (int)sprite.rect.height,
                 directionY: -1);
 
+            var pos = __instance.imageChara.transform.localPosition;
             if (dist > AverageDistance) {
+                _cached[c.source.id] = pos;
                 return;
             }
 
-            var pos = __instance.imageChara.transform.localPosition;
             cached = pos with { y = pos.y - (AverageDistance - dist) / 2 };
             _cached[c.source.id] = cached;
         }
