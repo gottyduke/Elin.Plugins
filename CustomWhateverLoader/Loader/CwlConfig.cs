@@ -10,6 +10,7 @@ public class CwlConfig
     public static bool CacheSprites => Caching.Sprites?.Value is true;
 
     public static bool QualifyTypeName => Patches.QualifyTypeName?.Value is true;
+    public static bool FixBaseGameAvatar => Patches.FixBaseGameAvatar?.Value is true;
     public static bool SafeCreateClass => Patches.SafeCreateClass?.Value is true;
     public static bool VariableQuote => Dialog.VariableQuote?.Value is true;
     public static bool AllowProcessors => Source.AllowProcessors?.Value is true;
@@ -59,6 +60,12 @@ public class CwlConfig
             true,
             "When importing custom classes for class cache, let CWL qualify its type name");
 
+        Patches.FixBaseGameAvatar = config.Bind(
+            ModInfo.Name,
+            "Patches.FixBaseGameAvatar",
+            true,
+            "When fixing custom character icon positions, also fix base game characters\nE.g. fairy icons are normally clipping through upper border");
+
         Patches.SafeCreateClass = config.Bind(
             ModInfo.Name,
             "Patches.SafeCreateClass",
@@ -71,23 +78,17 @@ public class CwlConfig
             true,
             "Allow CWL to run pre/post processors for workbook, sheet, and cells.");
 
-        Source.RethrowException = config.Bind(
-            ModInfo.Name,
-            "Source.RethrowException",
-            true,
-            "Rethrow the excel exception as SourceParseException with more details attached");
-
-        Source.TrimSpaces = config.Bind(
-            ModInfo.Name,
-            "Source.TrimSpaces",
-            true,
-            "Trim all leading and trailing spaces from cell value\nRequires Source.AllowProcessors to be true");
-
         Source.NamedImport = config.Bind(
             ModInfo.Name,
             "Source.NamedImport",
             true,
             "When importing incompatible source sheets, try importing via column name instead of order");
+
+        Source.RethrowException = config.Bind(
+            ModInfo.Name,
+            "Source.RethrowException",
+            true,
+            "Rethrow the excel exception as SourceParseException with more details attached");
 
         Source.SheetInspection = config.Bind(
             ModInfo.Name,
@@ -100,6 +101,12 @@ public class CwlConfig
             "Source.SheetMigrate",
             false,
             "(Experimental)\nWhen importing incompatible source sheets, generate migrated file in the same directory");
+
+        Source.TrimSpaces = config.Bind(
+            ModInfo.Name,
+            "Source.TrimSpaces",
+            true,
+            "Trim all leading and trailing spaces from cell value\nRequires Source.AllowProcessors to be true");
     }
 
     internal class Logging
@@ -111,6 +118,7 @@ public class CwlConfig
     internal class Patches
     {
         internal static ConfigEntry<bool>? QualifyTypeName { get; set; }
+        internal static ConfigEntry<bool>? FixBaseGameAvatar { get; set; }
         internal static ConfigEntry<bool>? SafeCreateClass { get; set; }
     }
 

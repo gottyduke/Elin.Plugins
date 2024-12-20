@@ -14,6 +14,8 @@ public class CustomAdventurer
 {
     private static readonly Dictionary<string, HashSet<string>> _delayedCharaImport = [];
 
+    public static IEnumerable<string> All => _delayedCharaImport.Keys;
+
     [Time]
     public static void AddAdventurer(string charaId, params string[] tags)
     {
