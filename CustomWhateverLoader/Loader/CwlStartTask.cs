@@ -4,11 +4,13 @@ using Cwl.Helper.FileUtil;
 using Cwl.Loader.Patches;
 using Cwl.Loader.Patches.Relocation;
 using HarmonyLib;
+using MethodTimer;
 
 namespace Cwl.Loader;
 
 internal sealed partial class CwlMod
 {
+    [Time]
     private static void BuildPatches()
     {
         var harmony = new Harmony(ModInfo.Guid);
@@ -16,6 +18,7 @@ internal sealed partial class CwlMod
         harmony.PatchAll();
     }
 
+    [Time]
     private static void LoadLoc()
     {
         // load CWL own localization first
@@ -32,6 +35,7 @@ internal sealed partial class CwlMod
         yield return LoadSoundPatch.LoadAllSounds();
     }
 
+    [Time]
     private void OnStartCore()
     {
         TypeQualifier.SafeQueryTypes();

@@ -12,13 +12,13 @@ namespace Cwl.Helper;
 public class TypeQualifier
 {
     private static List<TypeInfo>? _declared;
-    
+
     public static Type? TryQualify(string unqualified, string assemblyOverride = "")
     {
         if (_declared is null) {
             SafeQueryTypes();
         }
-        
+
         var qualified = _declared.FirstOrDefault(t => t.FullName == unqualified) ??
                         _declared.FirstOrDefault(t => t.Name == unqualified);
         if (qualified?.FullName is null ||
@@ -43,6 +43,7 @@ public class TypeQualifier
                 // noexcept
             }
         }
+
         _declared = declared;
     }
 }

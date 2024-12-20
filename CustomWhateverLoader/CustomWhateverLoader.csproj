@@ -78,6 +78,10 @@
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\NPOI.OpenXmlFormats.dll</HintPath>
             <Private>False</Private>
         </Reference>
+        <Reference Include="Plugins.ActorSystem">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.ActorSystem.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
         <Reference Include="Plugins.BaseCore">
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.BaseCore.dll</HintPath>
             <Private>False</Private>
@@ -160,13 +164,15 @@
         <Compile Include="Helper\Unity\ComponentFetch.cs"/>
         <Compile Include="Helper\Unity\CoroutineHelper.cs"/>
         <Compile Include="Helper\Unity\DeferredCoroutine.cs"/>
+        <Compile Include="Helper\Unity\PixelRaycast.cs"/>
         <Compile Include="Helper\Unity\SpriteCreator.cs"/>
         <Compile Include="Helper\Unity\TextureResizer.cs"/>
         <Compile Include="LangMod\LocFormatter.cs"/>
         <Compile Include="Loader\CustomWhateverLoader.cs"/>
         <Compile Include="Loader\CwlConfig.cs"/>
         <Compile Include="Loader\CwlLogger.cs"/>
-        <Compile Include="Loader\CwlStartTask.cs" />
+        <Compile Include="Loader\CwlStartTask.cs"/>
+        <Compile Include="Loader\Patches\Adv\SetCharaPortraitPatch.cs"/>
         <Compile Include="Loader\Patches\Adv\SetCharaRowPatch.cs"/>
         <Compile Include="Loader\Patches\Conditions\SafeCreateConditionPatch.cs"/>
         <Compile Include="Loader\Patches\Conditions\SetConditionRowPatch.cs"/>
@@ -217,6 +223,9 @@
         <Content Include="LangMod\ZHTW\cwl_sources.xlsx">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Loader\Patches\Traits\"/>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

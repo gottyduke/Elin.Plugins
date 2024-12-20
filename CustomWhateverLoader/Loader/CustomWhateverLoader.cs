@@ -3,7 +3,6 @@ using BepInEx;
 using Cwl.Helper;
 using Cwl.Loader.Patches.Sources;
 using Cwl.ThirdParty;
-using MethodTimer;
 
 namespace Cwl.Loader;
 
@@ -12,7 +11,7 @@ public static class ModInfo
     // for legacy reason
     public const string Guid = "dk.elinplugins.customdialogloader";
     public const string Name = "Custom Whatever Loader";
-    public const string Version = "1.13.2";
+    public const string Version = "1.13.4";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
@@ -20,7 +19,6 @@ internal sealed partial class CwlMod : BaseUnityPlugin
 {
     internal static CwlMod? Instance { get; private set; }
 
-    [Time]
     private void Awake()
     {
         Instance = this;
@@ -37,10 +35,10 @@ internal sealed partial class CwlMod : BaseUnityPlugin
     private IEnumerator Start()
     {
         Glance.TryConnect();
-        yield return null;
 
+        yield return null;
         yield return LoadTask();
-        
+
         OnDisable();
     }
 
