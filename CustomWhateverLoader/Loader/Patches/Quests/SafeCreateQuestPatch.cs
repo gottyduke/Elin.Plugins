@@ -55,8 +55,9 @@ internal class SafeCreateQuestPatch
         if (!_cleanup) {
             CoroutineHelper.Deferred(PostCleanup, () => EClass.game.isLoading);
         }
+
         _cleanup = true;
-        
+
         return true;
     }
 

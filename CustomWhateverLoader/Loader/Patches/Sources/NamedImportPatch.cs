@@ -38,6 +38,7 @@ internal class NamedImportPatch
     internal static IEnumerable<CodeInstruction> OnCreateSourceRowIl(IEnumerable<CodeInstruction> instructions,
         MethodBase rowCreator)
     {
+        var miGetStr = AccessTools.Method(typeof(SourceData), nameof(SourceData.GetStr));
         return new CodeMatcher(instructions)
             .MatchStartForward(
                 new CodeMatch(o => o.opcode.ToString().Contains("ldc")),
@@ -47,9 +48,7 @@ internal class NamedImportPatch
             .Repeat(cm => {
                 var extraParse = false;
                 // Core.ParseElements
-                if ((MethodInfo)cm.InstructionAt(1).operand == AccessTools.Method(
-                        typeof(SourceData),
-                        nameof(SourceData.GetStr))) {
+                if ((MethodInfo)cm.InstructionAt(1).operand == miGetStr) {
                     cm.RemoveInstruction();
                     cm.Advance(-1);
                     extraParse = true;

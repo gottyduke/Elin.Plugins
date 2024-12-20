@@ -31,4 +31,9 @@ internal sealed partial class CwlMod
         yield return LoadDialogPatch.LoadAllDialogs();
         yield return LoadSoundPatch.LoadAllSounds();
     }
+
+    private void OnStartCore()
+    {
+        TypeQualifier.SafeQueryTypes();
+    }
 }
