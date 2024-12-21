@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Reflection;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
 using Cwl.Loader.Patches;
@@ -15,7 +17,15 @@ internal sealed partial class CwlMod
     {
         var harmony = new Harmony(ModInfo.Guid);
         harmony.PatchAll(typeof(CwlForwardPatch));
-        harmony.PatchAll();
+        
+        foreach (var patch in AccessTools.GetTypesFromAssembly(Assembly.GetExecutingAssembly())) {
+            try {
+                harmony.CreateClassProcessor(patch).Patch();
+            } catch (Exception ex) {
+                Error($"patch has failed: {ex.Message}");
+                // noexcept
+            }
+        }
     }
 
     [Time]
