@@ -20,11 +20,11 @@ internal class SetConditionRowPatch
             return;
         }
 
-        var qualified = TypeQualifier.TryQualify(r.type);
+        var qualified = TypeQualifier.TryQualify<Condition>(r.type);
         if (qualified?.FullName is null) {
             return;
         }
 
-        CustomCondition.AddNewCondition(r, qualified.FullName);
+        CustomCondition.AddCondition(r, qualified.FullName);
     }
 }

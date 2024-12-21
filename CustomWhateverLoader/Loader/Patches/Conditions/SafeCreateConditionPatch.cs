@@ -29,13 +29,13 @@ internal class SafeCreateConditionPatch
                                    o.operand.ToString().Contains(nameof(ClassCache.Create))))
             .InsertAndAdvance(
                 new CodeInstruction(OpCodes.Ldarg_0),
-                Transpilers.EmitDelegate(RethrowCreateInvoke))
+                Transpilers.EmitDelegate(SafeCreateInvoke))
             .RemoveInstruction()
             .InstructionEnumeration();
     }
 
     [Time]
-    private static Condition RethrowCreateInvoke(string unqualified, string assembly, string alias)
+    private static Condition SafeCreateInvoke(string unqualified, string assembly, string alias)
     {
         try {
             var condition = ClassCache.Create<Condition>(unqualified, assembly);

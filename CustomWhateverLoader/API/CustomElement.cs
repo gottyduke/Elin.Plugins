@@ -36,7 +36,7 @@ public class CustomElement : Element
 
 
     [Time]
-    internal static void AddNewElement(SourceElement.Row r, string qualified)
+    internal static void AddElement(SourceElement.Row r, string qualified)
     {
         try {
             if (!SpriteSheet.dict.ContainsKey(r.alias) &&

@@ -29,21 +29,21 @@ internal class SafeCreateElementPatch
                                    o.operand.ToString().Contains(nameof(ClassCache.Create))))
             .InsertAndAdvance(
                 new CodeInstruction(OpCodes.Ldarg_0),
-                Transpilers.EmitDelegate(RethrowCreateInvoke))
+                Transpilers.EmitDelegate(SafeCreateInvoke))
             .RemoveInstruction()
             .InstructionEnumeration();
     }
 
     [Time]
-    private static Element RethrowCreateInvoke(string unqualified, string assembly, int id)
+    private static Element SafeCreateInvoke(string unqualified, string assembly, int id)
     {
         try {
             var element = ClassCache.Create<Element>(unqualified, assembly);
-            if (element is null) {
-                throw new SourceParseException("cwl_warn_deserialize_ele");
+            if (element is not null) {
+                return element;
             }
 
-            return element;
+            throw new SourceParseException("cwl_warn_deserialize_ele");
         } catch (Exception ex) {
             CwlMod.Warn(ex.Message.Loc(id, unqualified, CwlConfig.Patches.SafeCreateClass!.Definition.Key));
             // noexcept

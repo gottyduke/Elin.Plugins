@@ -14,7 +14,7 @@ public class CustomCondition : Condition
     public static IEnumerable<SourceStat.Row> All => Managed.Values;
 
     [Time]
-    internal static void AddNewCondition(SourceStat.Row r, string qualified)
+    internal static void AddCondition(SourceStat.Row r, string qualified)
     {
         try {
             if (!SpriteSheet.dict.ContainsKey(r.alias) &&

@@ -26,11 +26,11 @@ internal class SetMaterialRowPatch
             return;
         }
 
-        AddNewMaterial(r);
+        AddMaterial(r);
     }
 
     [Time]
-    private static void AddNewMaterial(SourceMaterial.Row r)
+    private static void AddMaterial(SourceMaterial.Row r)
     {
         var matColors = Core.Instance.Colors.matColors;
         Color main = default;

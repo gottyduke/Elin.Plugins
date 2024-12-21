@@ -35,9 +35,20 @@ internal sealed partial class CwlMod
         yield return LoadSoundPatch.LoadAllSounds();
     }
 
-    [Time]
     private void OnStartCore()
     {
-        TypeQualifier.SafeQueryTypes();
+        QueryDeclTypes();
+    }
+
+    [Time]
+    private static void QueryDeclTypes()
+    {
+        if (!CwlConfig.QualifyTypeName) {
+            return;
+        }
+
+        TypeQualifier.SafeQueryTypes<Act>();
+        TypeQualifier.SafeQueryTypes<Condition>();
+        TypeQualifier.SafeQueryTypes<Trait>();
     }
 }

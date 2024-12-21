@@ -25,11 +25,11 @@ internal class SetElementRowPatch
             return;
         }
 
-        var qualified = TypeQualifier.TryQualify(r.type);
+        var qualified = TypeQualifier.TryQualify<Act>(r.type);
         if (qualified?.FullName is null) {
             return;
         }
 
-        CustomElement.AddNewElement(r, qualified.FullName);
+        CustomElement.AddElement(r, qualified.FullName);
     }
 }
