@@ -77,7 +77,7 @@ public class GameIOProcessor
     public class GameIOContext(string path)
     {
         private const string Storage = "chunks";
-        private const string Extension = ".chunk";
+        private const string Extension = "chunk";
 
         public void Save<T>(T data, string? chunkName = null)
         {
