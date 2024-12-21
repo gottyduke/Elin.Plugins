@@ -60,5 +60,6 @@ internal sealed partial class CwlMod
         TypeQualifier.SafeQueryTypes<Act>();
         TypeQualifier.SafeQueryTypes<Condition>();
         TypeQualifier.SafeQueryTypes<Trait>();
+        TypeQualifier.SafeQueryTypes<Zone>();
     }
 }

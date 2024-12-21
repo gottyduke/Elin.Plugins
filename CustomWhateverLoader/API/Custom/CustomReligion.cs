@@ -7,7 +7,7 @@ namespace Cwl.API.Custom;
 
 public class CustomReligion(string religionId) : Religion
 {
-    private static readonly Dictionary<string, CustomReligion> _cached = [];
+    internal static readonly Dictionary<string, CustomReligion> Managed = [];
     private static bool _applied;
     private bool _canJoin;
 
@@ -18,7 +18,7 @@ public class CustomReligion(string religionId) : Religion
     public override bool IsMinorGod => _isMinor;
     public override bool CanJoin => _canJoin;
 
-    public static IEnumerable<CustomReligion> All => _cached.Values;
+    public static IEnumerable<CustomReligion> All => Managed.Values;
 
     public static CustomReligion GerOrAdd(string id)
     {
@@ -29,8 +29,8 @@ public class CustomReligion(string religionId) : Religion
 
         _applied = true;
 
-        _cached.TryAdd(id, new(id));
-        return _cached[id];
+        Managed.TryAdd(id, new(id));
+        return Managed[id];
     }
 
     public CustomReligion SetMinor(bool minorGod)
