@@ -38,7 +38,7 @@ public class CustomElement : Element
 
             if (!_cleanup) {
                 GameIOProcessor.AddSave(PurgeBeforeSave, false);
-                GameIOProcessor.AddLoad(RestoreAfterSave, true);
+                GameIOProcessor.AddSave(RestoreAfterSave, true);
             }
 
             _cleanup = true;
@@ -68,6 +68,7 @@ public class CustomElement : Element
     }
 
     // credits to 105gun
+    // https://github.com/105gun/ElinInduceVomiting/blob/master/ElementMissingWorkAround.cs
     [Time]
     private static void PurgeBeforeSave(GameIOProcessor.GameIOContext context)
     {
