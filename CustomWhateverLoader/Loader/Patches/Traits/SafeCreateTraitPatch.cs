@@ -61,7 +61,3 @@ internal class SafeCreateTraitPatch
         return trait ?? new();
     }
 }
-
-internal class TraitTesterAdv : TraitAdventurer
-{
-}

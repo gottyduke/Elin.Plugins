@@ -139,8 +139,8 @@ internal class NamedImportPatch
                 : parser.Invoke(null, [readPos]);
             field.SetValue(row, parsed);
 
-            var parseDetail = readPos == id ? "cwl_import_parse" : "cwl_import_reloc";
-            CwlMod.Debug($"{parseDetail.Loc(id, readPos)}:{field.Name}:{parser.Name}");
+            //var parseDetail = readPos == id ? "cwl_import_parse" : "cwl_import_reloc";
+            //CwlMod.Debug($"{parseDetail.Loc(id, readPos)}:{field.Name}:{parser.Name}");
         } finally {
             if (id == expected.Count - 1) {
                 migrate.FinalizeMigration();
