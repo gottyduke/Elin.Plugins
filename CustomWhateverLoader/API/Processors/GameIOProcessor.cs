@@ -48,7 +48,7 @@ public class GameIOProcessor
             } catch (Exception ex) {
                 var type = save ? "save" : "load";
                 var state = post ? "post" : "pre";
-                CwlMod.Warn("cwl_warn_processor".Loc("game", type, state, ex.Message));
+                CwlMod.Warn("cwl_warn_processor".Loc(type, state, ex.Message));
                 // noexcept
             }
         }
