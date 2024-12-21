@@ -16,9 +16,13 @@ internal class SetCharaPortraitPatch
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(Portrait), nameof(Portrait.SetChara))]
-    internal static void OnSetCharaPortrait(Portrait __instance, Chara c)
+    internal static void OnSetCharaPortrait(Portrait __instance, Chara? c)
     {
-        if (c.IsPC) {
+        if (c?.IsPC is not false || c.source?.id is null) {
+            return;
+        }
+
+        if (__instance.imageChara?.sprite == null) {
             return;
         }
 
