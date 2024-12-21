@@ -12,10 +12,8 @@ public class SheetProcessor
     private static event SheetProcess OnSheetPostProcess = _ => { };
     private static event SheetProcess OnSheetPreProcess = _ => { };
 
-    public static void Add(SheetProcess sheetProcess, bool post = true)
+    public static void Add(SheetProcess sheetProcess, bool post)
     {
-        var error = post ? "cwl_book_post_process" : "cwl_book_pre_process";
-
         if (post) {
             OnSheetPostProcess += Process;
         } else {
@@ -29,7 +27,8 @@ public class SheetProcessor
             try {
                 sheetProcess(book);
             } catch (Exception ex) {
-                CwlMod.Warn(error.Loc(ex));
+                var type = post ? "post" : "pre";
+                CwlMod.Warn("cwl_warn_processor".Loc("sheet", type, ex.Message));
                 // noexcept
             }
         }

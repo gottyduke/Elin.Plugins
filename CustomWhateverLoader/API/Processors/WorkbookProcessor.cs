@@ -12,10 +12,8 @@ public class WorkbookProcessor
     private static event WorkbookProcess OnWorkbookPostProcess = _ => { };
     private static event WorkbookProcess OnWorkbookPreProcess = _ => { };
 
-    public static void Add(WorkbookProcess bookProcess, bool post = true)
+    public static void Add(WorkbookProcess bookProcess, bool post)
     {
-        var error = post ? "cwl_book_post_process" : "cwl_book_pre_process";
-
         if (post) {
             OnWorkbookPostProcess += Process;
         } else {
@@ -29,7 +27,8 @@ public class WorkbookProcessor
             try {
                 bookProcess(book);
             } catch (Exception ex) {
-                CwlMod.Warn(error.Loc(ex));
+                var type = post ? "post" : "pre";
+                CwlMod.Warn("cwl_warn_processor".Loc("book", type, ex.Message));
                 // noexcept
             }
         }
