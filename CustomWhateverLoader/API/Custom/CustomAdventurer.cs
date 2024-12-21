@@ -79,7 +79,7 @@ public class CustomAdventurer
                             zone.AddCard(chara);
                             EMono.game.cards.listAdv.Add(chara);
 
-                            CwlMod.Log("cwl_log_added_adv".Loc(id, zone.GetType().Name));
+                            CwlMod.Log("cwl_log_added_adv".Loc(chara.Name, zone.GetType().Name));
 
                             continue;
                         }
@@ -108,13 +108,13 @@ public class CustomAdventurer
                                     chara.AddThing(equip);
                                 }
 
-                                CwlMod.Log("cwl_log_added_eq".Loc(thingId, Enum.GetName(typeof(Rarity), rarity)!, id));
+                                CwlMod.Log("cwl_log_added_eq".Loc(thingId, Enum.GetName(typeof(Rarity), rarity)!, chara.Name));
                             } else {
                                 int.TryParse(@params[1], out var count);
                                 count = count is 0 ? 1 : count;
 
                                 chara.AddThing(ThingGen.Create(thingId).SetNum(count));
-                                CwlMod.Log("cwl_log_added_thing".Loc(thingId, count, id));
+                                CwlMod.Log("cwl_log_added_thing".Loc(thingId, count, chara.Name));
                             }
 
                             continue;

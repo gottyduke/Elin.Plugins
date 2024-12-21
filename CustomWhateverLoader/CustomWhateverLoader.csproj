@@ -138,10 +138,11 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="API\CustomElement.cs"/>
-        <Compile Include="API\CustomAdventurer.cs"/>
-        <Compile Include="API\CustomReligion.cs"/>
-        <Compile Include="API\CustomCondition.cs"/>
+        <Compile Include="API\Custom\CustomAdventurer.cs"/>
+        <Compile Include="API\Custom\CustomCondition.cs"/>
+        <Compile Include="API\Custom\CustomElement.cs"/>
+        <Compile Include="API\Custom\CustomReligion.cs"/>
+        <Compile Include="API\Processors\GameIOProcessor.cs"/>
         <Compile Include="API\Processors\SheetProcessor.cs"/>
         <Compile Include="API\Processors\WorkbookProcessor.cs"/>
         <Compile Include="API\WorkbookImporter.cs"/>
@@ -178,9 +179,10 @@
         <Compile Include="Loader\Patches\Conditions\SetConditionRowPatch.cs"/>
         <Compile Include="Loader\Patches\Dialogs\VariableQuotePatch.cs"/>
         <Compile Include="Loader\Patches\Elements\SafeCreateElementPatch.cs"/>
-        <Compile Include="Loader\Patches\Elements\PurgeGameSavePatch.cs"/>
         <Compile Include="Loader\Patches\Elements\MergeAttackElementPatch.cs"/>
         <Compile Include="Loader\Patches\Elements\SetElementRowPatch.cs"/>
+        <Compile Include="Loader\Patches\GameSaveLoad\GameLoadPatch.cs"/>
+        <Compile Include="Loader\Patches\GameSaveLoad\GameSavePatch.cs"/>
         <Compile Include="Loader\Patches\Materials\SetMaterialRowPatch.cs"/>
         <Compile Include="Loader\Patches\Quests\SafeCreateQuestPatch.cs"/>
         <Compile Include="Loader\Patches\Religions\SetReligionOwnerPatch.cs"/>
@@ -198,7 +200,7 @@
         <Compile Include="Loader\Patches\Sources\RethrowParsePatch.cs"/>
         <Compile Include="Loader\Patches\Sources\SafeCreateCardPatch.cs"/>
         <Compile Include="Loader\Patches\Sources\SourceInitPatch.cs"/>
-        <Compile Include="Loader\Patches\Traits\SafeCreateTraitPatch.cs" />
+        <Compile Include="Loader\Patches\Traits\SafeCreateTraitPatch.cs"/>
         <Compile Include="ThirdParty\Glance.cs"/>
     </ItemGroup>
     <ItemGroup>

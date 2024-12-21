@@ -34,12 +34,7 @@ public class Glance
     {
         var loaded = Resources.FindObjectsOfTypeAll<BaseUnityPlugin>();
         _glance = loaded.FirstOrDefault(p => p.Info.Metadata.GUID == GlanceGuid);
-
-        if (_glance == null) {
-            _unavailable = true;
-            return;
-        }
-
-        _glance.SendMessage("Register", CwlMod.Instance);
+        _glance?.SendMessage("Register", CwlMod.Instance);
+        _unavailable = _glance == null;
     }
 }

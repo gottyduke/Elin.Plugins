@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Cwl.API;
+using Cwl.API.Custom;
 using Cwl.Loader.Patches.Sources;
 using HarmonyLib;
 
