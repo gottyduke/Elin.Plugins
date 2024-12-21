@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Cwl.API;
+namespace Cwl.API.Custom;
 
 public class CustomReligion(string religionId) : Religion
 {

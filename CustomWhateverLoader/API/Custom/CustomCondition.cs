@@ -5,7 +5,7 @@ using Cwl.LangMod;
 using Cwl.Loader;
 using MethodTimer;
 
-namespace Cwl.API;
+namespace Cwl.API.Custom;
 
 public class CustomCondition : Condition
 {

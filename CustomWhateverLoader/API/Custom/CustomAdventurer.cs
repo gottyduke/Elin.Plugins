@@ -8,7 +8,7 @@ using Cwl.Loader;
 using Cwl.Loader.Patches;
 using MethodTimer;
 
-namespace Cwl.API;
+namespace Cwl.API.Custom;
 
 public class CustomAdventurer
 {
