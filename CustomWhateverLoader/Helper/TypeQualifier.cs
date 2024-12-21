@@ -28,9 +28,11 @@ public class TypeQualifier
 
         var types = _declared.Where(t => typeof(T).IsAssignableFrom(t)).ToArray();
         var qualified = types.FirstOrDefault(t => t.FullName == unqualified) ??
-                        types.FirstOrDefault(t => t.Name == unqualified) ?? 
-                        types.FirstOrDefault(t => t.FullName!.Equals(unqualified, StringComparison.InvariantCultureIgnoreCase)) ?? 
-                        types.FirstOrDefault(t => t.Name.Equals(unqualified, StringComparison.InvariantCultureIgnoreCase));
+                        types.FirstOrDefault(t => t.Name == unqualified) ??
+                        types.FirstOrDefault(t =>
+                            t.FullName!.Equals(unqualified, StringComparison.InvariantCultureIgnoreCase)) ??
+                        types.FirstOrDefault(t =>
+                            t.Name.Equals(unqualified, StringComparison.InvariantCultureIgnoreCase));
 
         if (qualified?.FullName is null ||
             (assemblyOverride is not "" && qualified.Assembly.GetName().Name != assemblyOverride)) {
@@ -45,7 +47,7 @@ public class TypeQualifier
     internal static void SafeQueryTypes<T>() where T : EClass
     {
         _plugins ??= Resources.FindObjectsOfTypeAll<BaseUnityPlugin>().ToList();
-        
+
         List<TypeInfo> declared = [];
         foreach (var plugin in _plugins.ToList()) {
             try {

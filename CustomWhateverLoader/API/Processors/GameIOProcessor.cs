@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Cwl.LangMod;
 using Cwl.Loader;
 
@@ -6,7 +7,7 @@ namespace Cwl.API.Processors;
 
 public class GameIOProcessor
 {
-    public delegate void GameIOProcess(Game game);
+    public delegate void GameIOProcess(GameIOContext context);
 
     private static event GameIOProcess OnGamePreSaveProcess = delegate { };
     private static event GameIOProcess OnGamePostSaveProcess = delegate { };
@@ -17,13 +18,13 @@ public class GameIOProcessor
     {
         Add(saveProcess, true, post);
     }
-    
+
     public static void AddLoad(GameIOProcess loadProcess, bool post)
     {
         Add(loadProcess, false, post);
     }
 
-    internal static void Add(GameIOProcess ioProcess, bool save, bool post)
+    private static void Add(GameIOProcess ioProcess, bool save, bool post)
     {
         switch (save, post) {
             case (true, true):
@@ -39,11 +40,11 @@ public class GameIOProcessor
                 OnGamePreLoadProcess += Process;
                 return;
         }
-        
-        void Process(Game game)
+
+        void Process(GameIOContext context)
         {
             try {
-                ioProcess(game);
+                ioProcess(context);
             } catch (Exception ex) {
                 var type = save ? "save" : "load";
                 var state = post ? "post" : "pre";
@@ -53,21 +54,57 @@ public class GameIOProcessor
         }
     }
 
-    internal static void Save(Game game, bool post)
+    internal static void Save(string path, bool post)
     {
+        var context = new GameIOContext(path);
         if (post) {
-            OnGamePostSaveProcess(game);
+            OnGamePostSaveProcess(context);
         } else {
-            OnGamePreSaveProcess(game);
+            OnGamePreSaveProcess(context);
         }
     }
-    
-    internal static void Load(Game game, bool post)
+
+    internal static void Load(string path, bool post)
     {
+        var context = new GameIOContext(path);
         if (post) {
-            OnGamePostLoadProcess(game);
+            OnGamePostLoadProcess(context);
         } else {
-            OnGamePreLoadProcess(game);
+            OnGamePreLoadProcess(context);
+        }
+    }
+
+    public class GameIOContext(string path)
+    {
+        private const string Storage = "chunks";
+        private const string Extension = ".chunk";
+
+        public void Save<T>(T data, string? chunkName = null)
+        {
+            if (data is null) {
+                return;
+            }
+
+            var type = typeof(T);
+            chunkName ??= $"{type.Assembly.GetName().Name}.{type.FullName ?? type.Name}";
+
+            var file = Path.Combine(path, Storage, $"{chunkName}.{Extension}");
+            IO.SaveFile(file, data, GameIO.compressSave, GameIO.jsWriteGame);
+        }
+
+        public bool Load<T>(out T? inferred, string? chunkName = null)
+        {
+            var type = typeof(T);
+            chunkName ??= $"{type.Assembly.GetName().Name}.{type.FullName ?? type.Name}";
+
+            var file = Path.Combine(path, Storage, $"{chunkName}.{Extension}");
+            if (!File.Exists(file)) {
+                inferred = default;
+                return false;
+            }
+
+            inferred = IO.LoadFile<T>(file, GameIO.compressSave, GameIO.jsReadGame);
+            return inferred is not null;
         }
     }
 }
