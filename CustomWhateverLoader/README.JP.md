@@ -1,6 +1,6 @@
 ## Custom Whatever Loader 任意のローダー
 
-![Version](https://img.shields.io/badge/Version-1.13.0-R.svg)
+![Version](https://img.shields.io/badge/Version-1.13.5-R.svg)
 
 ゲームが自動的にモジュールディレクトリからモジュール制作者のカスタムリソースをロードできるようにし、モジュール制作者がさまざまなゲーム機能を利用するプロセスを簡素化し、追加の手順を必要とせず、ローカライズサポートを拡張します。
 

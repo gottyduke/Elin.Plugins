@@ -198,6 +198,7 @@
         <Compile Include="Loader\Patches\Sources\RethrowParsePatch.cs"/>
         <Compile Include="Loader\Patches\Sources\SafeCreateCardPatch.cs"/>
         <Compile Include="Loader\Patches\Sources\SourceInitPatch.cs"/>
+        <Compile Include="Loader\Patches\Traits\SafeCreateTraitPatch.cs" />
         <Compile Include="ThirdParty\Glance.cs"/>
     </ItemGroup>
     <ItemGroup>
@@ -223,9 +224,6 @@
         <Content Include="LangMod\ZHTW\cwl_sources.xlsx">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
-    </ItemGroup>
-    <ItemGroup>
-        <Folder Include="Loader\Patches\Traits\"/>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
