@@ -342,3 +342,8 @@ healthchecksdb
 
 /packages/
 *.user
+/AutoDumpIndicator
+/ElinMuseDash
+/ModConfigurationMenu
+/ModGlance
+/MultiElin
