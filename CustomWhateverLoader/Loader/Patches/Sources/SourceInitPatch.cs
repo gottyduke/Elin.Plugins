@@ -42,10 +42,17 @@ internal class SourceInitPatch
                 }
             }
 
-            dirty.Do(s => s.Reset());
-            CwlMod.Log("cwl_log_workbook_complete".Loc());
+            foreach (var imported in dirty) {
+                try {
+                    imported.Reset();
+                } catch (Exception ex) {
+                    CwlMod.Error("cwl_error_failure".Loc(ex));
+                    // noexcept
+                }
+            }
         } finally {
             SafeToCreate = false;
+            CwlMod.Log("cwl_log_workbook_complete".Loc());
         }
     }
 }
