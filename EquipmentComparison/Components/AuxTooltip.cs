@@ -64,7 +64,7 @@ internal class AuxTooltip : MonoBehaviour
             _cached.Do(n => n.SetActive(false));
         }
 
-        EClass.pc.Say(EcLoc.TogglePrompt(IsEnabled));
+        EClass.pc?.Say(EcLoc.TogglePrompt(IsEnabled));
     }
 
     internal static void TryDrawAuxTooltip(UIButton? btn)
@@ -96,7 +96,7 @@ internal class AuxTooltip : MonoBehaviour
         }
 
         // unless checking pet inv, always compare with pc
-        var owner = grid.invOwner?.Chara?.IsPCFactionOrMinion ?? false
+        var owner = grid.invOwner?.Chara?.IsPCFactionOrMinion is true
             ? grid.invOwner.Chara
             : EClass.pc;
 

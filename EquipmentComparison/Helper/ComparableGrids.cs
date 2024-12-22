@@ -14,7 +14,7 @@ internal static class ComparableGrids
             .OfType<LayerInventory>()
             .Where(l => l.Inv?.Chara is not null)
             .FirstOrDefault(l => l.Inv.Chara.IsPCFactionOrMinion || l.Inv.Chara == owner);
-        
+
         if (petLayer is not null) {
             components = petLayer.invs
                 .SelectMany(l => l.list.buttons)

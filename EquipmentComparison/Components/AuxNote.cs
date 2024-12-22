@@ -13,7 +13,15 @@ internal class AuxNote : MonoBehaviour
         var tooltip = GetComponent<UITooltip>();
 
         if (baseNote.gameObject.activeSelf) {
-            tooltip.cg.alpha = baseNote.cg.alpha;
+            var alpha = baseNote.cg.alpha;
+            if (name != "aux_note_0") {
+                var mod = EcConfig.Modifier!.Value;
+                if (mod != KeyCode.None && Input.GetKey(mod)) {
+                    alpha = 0f;
+                }
+            }
+
+            tooltip.cg.alpha = alpha;
             return;
         }
 

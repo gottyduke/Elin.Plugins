@@ -17,8 +17,7 @@ internal class TooltipManagerPatch
                     AccessTools.Field(typeof(TooltipManager), nameof(TooltipManager.disableHide))),
                 new CodeMatch(OpCodes.Call))
             .SetInstructionAndAdvance(
-                Transpilers.EmitDelegate(DisabledOrAuxNote)
-            )
+                Transpilers.EmitDelegate(DisabledOrAuxNote))
             .InstructionEnumeration();
     }
 
