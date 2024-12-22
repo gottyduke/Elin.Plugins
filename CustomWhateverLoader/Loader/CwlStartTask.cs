@@ -12,9 +12,16 @@ namespace Cwl.Loader;
 
 internal sealed partial class CwlMod
 {
+    private static bool _duplicate;
+    
     [Time]
     private static void BuildPatches()
     {
+        _duplicate = Harmony.HasAnyPatches(ModInfo.Guid);
+        if (_duplicate) {
+            return;
+        }
+        
         var harmony = new Harmony(ModInfo.Guid);
         harmony.PatchAll(typeof(CwlForwardPatch));
         
@@ -47,6 +54,10 @@ internal sealed partial class CwlMod
 
     private void OnStartCore()
     {
+        if (_duplicate) {
+            return;
+        }
+
         QueryDeclTypes();
     }
 
