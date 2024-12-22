@@ -16,31 +16,34 @@ public class TypeQualifier
     private static readonly Dictionary<string, Type> _cached = [];
     private static List<BaseUnityPlugin>? _plugins;
 
-    public static Type? TryQualify<T>(string unqualified, string assemblyOverride = "") where T : EClass
+    public static Type? TryQualify<T>(params string[] unqualified) where T : EClass
     {
-        if (unqualified is null or "") {
-            return null;
+        foreach (var unq in unqualified) {
+            if (unq is null or "") {
+                continue;
+            }
+
+            if (_cached.TryGetValue(unq, out var cached)) {
+                return cached;
+            }
+
+            var types = _declared.Where(t => typeof(T).IsAssignableFrom(t)).ToArray();
+            var qualified = types.FirstOrDefault(t => t.FullName == unq) ??
+                            types.FirstOrDefault(t => t.Name == unq) ??
+                            types.FirstOrDefault(t =>
+                                t.FullName!.Equals(unq, StringComparison.InvariantCultureIgnoreCase)) ??
+                            types.FirstOrDefault(t =>
+                                t.Name.Equals(unq, StringComparison.InvariantCultureIgnoreCase));
+
+            if (qualified?.FullName is null) {
+                continue;
+            }
+
+            _cached[unq] = qualified;
+            return qualified;
         }
 
-        if (_cached.TryGetValue(unqualified, out var cached)) {
-            return cached;
-        }
-
-        var types = _declared.Where(t => typeof(T).IsAssignableFrom(t)).ToArray();
-        var qualified = types.FirstOrDefault(t => t.FullName == unqualified) ??
-                        types.FirstOrDefault(t => t.Name == unqualified) ??
-                        types.FirstOrDefault(t =>
-                            t.FullName!.Equals(unqualified, StringComparison.InvariantCultureIgnoreCase)) ??
-                        types.FirstOrDefault(t =>
-                            t.Name.Equals(unqualified, StringComparison.InvariantCultureIgnoreCase));
-
-        if (qualified?.FullName is null ||
-            (assemblyOverride is not "" && qualified.Assembly.GetName().Name != assemblyOverride)) {
-            return null;
-        }
-
-        _cached[unqualified] = qualified;
-        return qualified;
+        return null;
     }
 
     // cannot use linq to query due to some users might install mod without dependency...sigh

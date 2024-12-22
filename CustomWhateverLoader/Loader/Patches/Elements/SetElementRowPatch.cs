@@ -25,7 +25,7 @@ internal class SetElementRowPatch
             return;
         }
 
-        var qualified = TypeQualifier.TryQualify<Act>(r.type);
+        var qualified = TypeQualifier.TryQualify<Act>(r.type, r.alias);
         if (qualified?.FullName is null) {
             return;
         }
