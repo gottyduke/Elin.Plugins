@@ -1,4 +1,5 @@
-﻿using Cwl.API.Custom;
+﻿using System.Linq;
+using Cwl.API.Custom;
 using Cwl.Helper;
 using Cwl.Loader.Patches.Sources;
 using HarmonyLib;
@@ -8,6 +9,12 @@ namespace Cwl.Loader.Patches.Elements;
 [HarmonyPatch]
 internal class SetElementRowPatch
 {
+    private static readonly string[] _managedGroups = [
+        "FEAT",
+        "ABILITY",
+        "SPELL",
+    ];
+
     [HarmonyPrefix]
     [HarmonyPatch(typeof(SourceElement), nameof(SourceElement.SetRow))]
     internal static void OnSetRow(SourceElement.Row r)
@@ -17,7 +24,7 @@ internal class SetElementRowPatch
         }
 
         // TODO: maybe add feat/act?
-        if (r.group is not ("ABILITY" or "SPELL") || r.type is "") {
+        if (_managedGroups.All(g => g != r.group)) {
             return;
         }
 
@@ -25,7 +32,7 @@ internal class SetElementRowPatch
             return;
         }
 
-        var qualified = TypeQualifier.TryQualify<Act>(r.type, r.alias);
+        var qualified = TypeQualifier.TryQualify<Element>(r.type, r.alias);
         if (qualified?.FullName is null) {
             return;
         }

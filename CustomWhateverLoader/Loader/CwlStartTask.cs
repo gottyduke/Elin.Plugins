@@ -13,7 +13,7 @@ namespace Cwl.Loader;
 internal sealed partial class CwlMod
 {
     private static bool _duplicate;
-    
+
     [Time]
     private static void BuildPatches()
     {
@@ -21,10 +21,10 @@ internal sealed partial class CwlMod
         if (_duplicate) {
             return;
         }
-        
+
         var harmony = new Harmony(ModInfo.Guid);
         harmony.PatchAll(typeof(CwlForwardPatch));
-        
+
         foreach (var patch in AccessTools.GetTypesFromAssembly(Assembly.GetExecutingAssembly())) {
             try {
                 harmony.CreateClassProcessor(patch).Patch();
@@ -68,8 +68,8 @@ internal sealed partial class CwlMod
             return;
         }
 
-        TypeQualifier.SafeQueryTypes<Act>();
-        TypeQualifier.SafeQueryTypes<Condition>();
+        TypeQualifier.SafeQueryTypes<Element>();
+        TypeQualifier.SafeQueryTypes<BaseCondition>();
         TypeQualifier.SafeQueryTypes<Trait>();
         TypeQualifier.SafeQueryTypes<Zone>();
     }
