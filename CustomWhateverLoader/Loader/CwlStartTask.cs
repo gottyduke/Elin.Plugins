@@ -45,7 +45,7 @@ internal sealed partial class CwlMod
         }
     }
 
-    private IEnumerator LoadTask()
+    private static IEnumerator LoadTask()
     {
         yield return LoadDataPatch.LoadAllData();
         yield return LoadDialogPatch.LoadAllDialogs();

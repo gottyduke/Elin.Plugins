@@ -14,6 +14,7 @@ namespace Cwl.Loader.Patches.Sources;
 internal class SourceInitPatch
 {
     private const string Pattern = "*.xlsx";
+    private static bool _patched;
 
     internal static bool SafeToCreate;
 
@@ -21,6 +22,17 @@ internal class SourceInitPatch
     [HarmonyPatch(typeof(SourceManager), nameof(SourceManager.Init))]
     internal static void ImportAllSheets()
     {
+        if (!_patched) {
+            try {
+                Harmony.CreateAndPatchAll(typeof(NamedImportPatch), ModInfo.Guid);
+            } catch (Exception ex) {
+                CwlMod.Warn($"failed to patch Source.NamedImport, disabled\n{ex.Message.SplitNewline()[0]}");
+                // noexcept
+            }
+
+            _patched = true;
+        }
+
         SafeToCreate = true;
         try {
             var imports = PackageIterator.GetLangModFilesFromPackage()

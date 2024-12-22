@@ -11,7 +11,6 @@ using NPOI.SS.UserModel;
 
 namespace Cwl.Loader.Patches.Sources;
 
-[HarmonyPatch]
 internal class NamedImportPatch
 {
     private static readonly Dictionary<Type, List<MigrateDetail.HeaderCell>> _expected = [];
