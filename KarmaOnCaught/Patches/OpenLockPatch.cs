@@ -52,7 +52,7 @@ internal class OpenLockPatch
         if (witnesses.Count == 0) {
             return;
         }
-        
+
         var swiftUnlock = cc.Evalue("lockpicking") + cc.DEX / 2;
         var baseCost = lockLv / witnesses.Count;
         var totalCost = witnesses.Sum(w => {

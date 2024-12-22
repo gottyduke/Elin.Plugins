@@ -51,9 +51,13 @@ internal class AIStealPatch
 
         private static bool TryWitnessPickpocket(Point pos, Chara cc, Chara? target, int radius, Func<Chara, bool> func)
         {
+            if (target?.IsHostile() is true) {
+                return false;
+            }
+
             var detection = KocConfig.DetectionRadius!.Value;
             var caught = pos.TryWitnessCrime(cc, target, detection, func);
-            var witnesses = pos.ListWitnesses(cc, detection).Count;
+            var witnesses = pos.ListWitnesses(cc, detection, target: target).Count;
 
             KocMod.DoModKarma(caught, cc, -1, false, witnesses);
             return caught;
