@@ -98,7 +98,7 @@ public class GameIOProcessor
             chunkName ??= $"{type.Assembly.GetName().Name}.{type.FullName ?? type.Name}";
 
             var file = Path.Combine(path, Storage, $"{chunkName}.{Extension}");
-            inferred = File.Exists(file) 
+            inferred = File.Exists(file)
                 ? IO.LoadFile<T>(file, GameIO.compressSave, GameIO.jsReadGame)
                 : default;
             return inferred is not null;

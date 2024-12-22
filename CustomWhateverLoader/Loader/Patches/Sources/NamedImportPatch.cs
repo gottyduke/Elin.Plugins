@@ -59,7 +59,7 @@ internal class NamedImportPatch
                 var parser = cm.Instruction.operand as MethodInfo;
                 cm.RemoveInstruction();
 
-                MethodInfo? extraParser = null; 
+                MethodInfo? extraParser = null;
                 if (extraParse) {
                     extraParser = cm.Operand as MethodInfo;
                     cm.RemoveInstruction();

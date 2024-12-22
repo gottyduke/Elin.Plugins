@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"
-            Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"/>
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"/>
     <PropertyGroup>
         <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
         <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -142,7 +141,7 @@
         <Compile Include="API\Custom\CustomCondition.cs"/>
         <Compile Include="API\Custom\CustomElement.cs"/>
         <Compile Include="API\Custom\CustomReligion.cs"/>
-        <Compile Include="API\Custom\CustomZone.cs" />
+        <Compile Include="API\Custom\CustomZone.cs"/>
         <Compile Include="API\Processors\GameIOProcessor.cs"/>
         <Compile Include="API\Processors\SheetProcessor.cs"/>
         <Compile Include="API\Processors\WorkbookProcessor.cs"/>
@@ -202,20 +201,8 @@
         <Compile Include="Loader\Patches\Sources\SafeCreateCardPatch.cs"/>
         <Compile Include="Loader\Patches\Sources\SourceInitPatch.cs"/>
         <Compile Include="Loader\Patches\Traits\SafeCreateTraitPatch.cs"/>
-        <Compile Include="Loader\Patches\Zones\SetZoneRowPatch.cs" />
+        <Compile Include="Loader\Patches\Zones\SetZoneRowPatch.cs"/>
         <Compile Include="ThirdParty\Glance.cs"/>
-    </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="Fody" Version="6.9.1">
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="MethodTimer.Fody" Version="3.2.2">
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
-        <PackageReference Include="PolySharp" Version="1.15.0">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
     </ItemGroup>
     <ItemGroup>
         <Content Include="FodyWeavers.xml"/>
@@ -228,6 +215,19 @@
         <Content Include="LangMod\ZHTW\cwl_sources.xlsx">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Fody" Version="6.9.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="MethodTimer.Fody" Version="3.2.2">
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="PolySharp" Version="1.15.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -37,7 +37,7 @@ internal sealed partial class CwlMod : BaseUnityPlugin
         if (_duplicate) {
             yield break;
         }
-        
+
         Glance.TryConnect();
 
         yield return null;

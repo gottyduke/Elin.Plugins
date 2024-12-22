@@ -108,7 +108,8 @@ public class CustomAdventurer
                                     chara.AddThing(equip);
                                 }
 
-                                CwlMod.Log("cwl_log_added_eq".Loc(thingId, Enum.GetName(typeof(Rarity), rarity)!, chara.Name));
+                                CwlMod.Log("cwl_log_added_eq".Loc(thingId, Enum.GetName(typeof(Rarity), rarity)!,
+                                    chara.Name));
                             } else {
                                 int.TryParse(@params[1], out var count);
                                 count = count is 0 ? 1 : count;

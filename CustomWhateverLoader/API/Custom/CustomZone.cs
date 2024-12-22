@@ -9,7 +9,7 @@ namespace Cwl.API.Custom;
 public class CustomZone : Zone
 {
     internal static readonly Dictionary<string, SourceZone.Row> Managed = [];
-    
+
     public static IEnumerable<SourceZone.Row> All => Managed.Values;
 
     [Time]
