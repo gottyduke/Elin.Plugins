@@ -19,7 +19,7 @@ public class CustomCondition : Condition
         try {
             if (!SpriteSheet.dict.ContainsKey(r.alias) &&
                 SpriteReplacer.dictModItems.TryGetValue(r.alias, out var icon)) {
-                SpriteSheet.Add(icon.LoadSprite(name: r.alias, resizeWidth: 48, resizeHeight: 48));
+                SpriteSheet.Add(icon.LoadSprite(name: r.alias, resizeWidth: 32, resizeHeight: 32));
             }
 
             if (CwlConfig.QualifyTypeName) {
