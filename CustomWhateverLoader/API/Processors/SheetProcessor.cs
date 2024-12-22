@@ -9,8 +9,8 @@ public class SheetProcessor
 {
     public delegate void SheetProcess(ISheet sheet);
 
-    private static event SheetProcess OnSheetPostProcess = _ => { };
-    private static event SheetProcess OnSheetPreProcess = _ => { };
+    private static event SheetProcess OnSheetPostProcess = delegate { };
+    private static event SheetProcess OnSheetPreProcess = delegate { };
 
     public static void Add(SheetProcess sheetProcess, bool post)
     {

@@ -29,11 +29,18 @@ public class TypeQualifier
 
             var types = _declared.Where(t => typeof(T).IsAssignableFrom(t)).ToArray();
             var qualified = types.FirstOrDefault(t => t.FullName == unq) ??
-                            types.FirstOrDefault(t => t.Name == unq) ??
-                            types.FirstOrDefault(t =>
-                                t.FullName!.Equals(unq, StringComparison.InvariantCultureIgnoreCase)) ??
-                            types.FirstOrDefault(t =>
-                                t.Name.Equals(unq, StringComparison.InvariantCultureIgnoreCase));
+                            types.FirstOrDefault(t => t.Name == unq);
+            
+            // check if data had case typo...
+            if (qualified?.FullName is null) {
+                qualified ??= types.FirstOrDefault(t => t.FullName!.Equals(unq, 
+                                  StringComparison.InvariantCultureIgnoreCase)) ??
+                              types.FirstOrDefault(t => t.Name.Equals(unq, 
+                                  StringComparison.InvariantCultureIgnoreCase));
+                if (qualified?.FullName is not null) {
+                    CwlMod.Warn($"typo in custom type {unq}, {qualified.FullName}");
+                }
+            }
 
             if (qualified?.FullName is null) {
                 continue;

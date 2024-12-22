@@ -9,8 +9,8 @@ public class WorkbookProcessor
 {
     public delegate void WorkbookProcess(IWorkbook workbook);
 
-    private static event WorkbookProcess OnWorkbookPostProcess = _ => { };
-    private static event WorkbookProcess OnWorkbookPreProcess = _ => { };
+    private static event WorkbookProcess OnWorkbookPostProcess = delegate { };
+    private static event WorkbookProcess OnWorkbookPreProcess = delegate { };
 
     public static void Add(WorkbookProcess bookProcess, bool post)
     {

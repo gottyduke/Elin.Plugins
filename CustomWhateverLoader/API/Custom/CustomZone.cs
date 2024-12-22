@@ -6,7 +6,7 @@ using MethodTimer;
 
 namespace Cwl.API.Custom;
 
-public class CustomZone(string zoneId) : Zone
+public class CustomZone : Zone
 {
     internal static readonly Dictionary<string, SourceZone.Row> Managed = [];
     
