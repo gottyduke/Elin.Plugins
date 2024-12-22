@@ -19,6 +19,18 @@ public sealed class MigrateDetail
         Missing,
     }
 
+    private static readonly string[] _emptyDefaults = [
+        "Collectible",
+        "KeyItem",
+        "CharaText",
+        "Calc",
+        "Check",
+        "ZoneAffix",
+        "Quest",
+        "Area",
+        "HomeResource",
+    ];
+
     private static readonly Dictionary<IWorkbook, MigrateDetail> _cached = [];
 
     private MigrateSheet? CurrentSheet { get; set; }
@@ -131,6 +143,24 @@ public sealed class MigrateDetail
         } catch (Exception ex) {
             CwlMod.Warn("cwl_warn_migration_failure".Loc(ex));
             // noexcept
+        }
+    }
+
+    public void ValidateDefaults()
+    {
+        var sheet = CurrentSheet?.Sheet;
+        if (sheet is null) {
+            return;
+        }
+
+        if (_emptyDefaults.Any(s => s == sheet.SheetName)) {
+            return;
+        }
+
+        var defaults = sheet.GetRow(2)?.Cells?
+            .Where(c => c?.ToString() is not (null or ""));
+        if (defaults?.Count() is not > 0) {
+            CwlMod.Warn("cwl_warn_empty_default".Loc());
         }
     }
 
