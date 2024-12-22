@@ -58,7 +58,10 @@ internal class NamedImportPatch
 
                 var parser = cm.Instruction.operand as MethodInfo;
                 cm.RemoveInstruction();
+
+                MethodInfo? extraParser = null; 
                 if (extraParse) {
+                    extraParser = cm.Operand as MethodInfo;
                     cm.RemoveInstruction();
                 }
 
@@ -73,7 +76,7 @@ internal class NamedImportPatch
                 var rowType = rowCreator.DeclaringType!;
 
                 cm.SetInstructionAndAdvance(Transpilers.EmitDelegate<Action<object>>(
-                    row => RelaxedImport(row, id, field!, parser!, rowType, extraParse)));
+                    row => RelaxedImport(row, id, field!, parser!, rowType, extraParser)));
 
                 _expected.TryAdd(rowType, []);
                 if (_expected[rowType].All(c => c.Index != id)) {
@@ -85,11 +88,11 @@ internal class NamedImportPatch
 
     [Time]
     private static void RelaxedImport(object row, int id, FieldInfo field, MethodInfo parser, Type rowCreator,
-        bool extraParse)
+        MethodInfo? extraParser)
     {
         if (!SourceInitPatch.SafeToCreate) {
-            var parsed = extraParse
-                ? Core.ParseElements((string)parser.Invoke(null, [id, false]))
+            var parsed = extraParser is not null
+                ? extraParser.Invoke(null, [(string)parser.Invoke(null, [id, false])])
                 : parser.Invoke(null, [id]);
             field.SetValue(row, parsed);
             return;
@@ -133,8 +136,8 @@ internal class NamedImportPatch
                 migrate.SetStrategy(strategy).SetGiven(header);
             }
 
-            var parsed = extraParse
-                ? Core.ParseElements((string)parser.Invoke(null, [readPos, false]))
+            var parsed = extraParser is not null
+                ? extraParser.Invoke(null, [(string)parser.Invoke(null, [readPos, false])])
                 : parser.Invoke(null, [readPos]);
             field.SetValue(row, parsed);
 
