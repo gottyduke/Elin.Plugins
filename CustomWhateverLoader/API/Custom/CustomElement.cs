@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Cwl.API.Processors;
-using Cwl.Helper.Unity;
+using Cwl.Helper;
 using Cwl.LangMod;
 using Cwl.Loader;
 using Cwl.Loader.Patches;
@@ -24,10 +24,7 @@ public class CustomElement : Element
     public static void AddElement(SourceElement.Row r, string qualified)
     {
         try {
-            if (!SpriteSheet.dict.ContainsKey(r.alias) &&
-                SpriteReplacer.dictModItems.TryGetValue(r.alias, out var icon)) {
-                SpriteSheet.Add(icon.LoadSprite(name: r.alias, resizeWidth: 48, resizeHeight: 48));
-            }
+            ModSpriteReplacer.AppendSpriteSheet(r.alias, 48, 48);
 
             if (CwlConfig.QualifyTypeName) {
                 r.type = qualified;

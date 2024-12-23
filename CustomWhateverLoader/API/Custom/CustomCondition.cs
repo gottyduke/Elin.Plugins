@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Cwl.Helper.Unity;
+using Cwl.Helper;
 using Cwl.LangMod;
 using Cwl.Loader;
 using MethodTimer;
@@ -17,10 +17,7 @@ public class CustomCondition : Condition
     internal static void AddCondition(SourceStat.Row r, string qualified)
     {
         try {
-            if (!SpriteSheet.dict.ContainsKey(r.alias) &&
-                SpriteReplacer.dictModItems.TryGetValue(r.alias, out var icon)) {
-                SpriteSheet.Add(icon.LoadSprite(name: r.alias, resizeWidth: 32, resizeHeight: 32));
-            }
+            ModSpriteReplacer.AppendSpriteSheet(r.alias, 32, 32);
 
             if (CwlConfig.QualifyTypeName) {
                 r.type = qualified;
