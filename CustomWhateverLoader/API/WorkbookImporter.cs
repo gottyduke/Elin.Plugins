@@ -28,7 +28,7 @@ public class WorkbookImporter
             .Where(f => typeof(SourceData).IsAssignableFrom(f.FieldType))
             .ToList();
 
-        using var fs = File.OpenRead(import.FullName);
+        using var fs = File.Open(import.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         var book = new XSSFWorkbook(fs);
         MigrateDetail.GetOrAdd(book).SetFile(import.GetFullFileNameWithoutExtension());
 
