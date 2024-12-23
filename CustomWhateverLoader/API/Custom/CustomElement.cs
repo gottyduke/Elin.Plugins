@@ -20,6 +20,15 @@ public class CustomElement : Element
 
     public static IEnumerable<SourceElement.Row> All => Managed.Values;
 
+    internal void RemoveSafetyCone()
+    {
+        LayerAbility.SetDirty(this);
+        pc.PlaySoundDrop();
+
+        player.currentHotItem = null;
+        player.RefreshCurrentHotItem();
+    }
+
     [Time]
     public static void AddElement(SourceElement.Row r, string qualified)
     {

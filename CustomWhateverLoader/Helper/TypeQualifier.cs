@@ -14,7 +14,7 @@ public class TypeQualifier
 {
     private static readonly HashSet<TypeInfo> _declared = [];
     private static readonly Dictionary<string, Type> _cached = [];
-    private static List<BaseUnityPlugin>? _plugins;
+    internal static List<BaseUnityPlugin>? Plugins;
 
     public static Type? TryQualify<T>(params string[] unqualified) where T : EClass
     {
@@ -56,17 +56,17 @@ public class TypeQualifier
     // cannot use linq to query due to some users might install mod without dependency...sigh
     internal static void SafeQueryTypes<T>() where T : EClass
     {
-        _plugins ??= Resources.FindObjectsOfTypeAll<BaseUnityPlugin>().ToList();
+        Plugins ??= Resources.FindObjectsOfTypeAll<BaseUnityPlugin>().ToList();
 
         List<TypeInfo> declared = [];
-        foreach (var plugin in _plugins.ToList()) {
+        foreach (var plugin in Plugins.ToList()) {
             try {
                 var types = plugin.GetType().Assembly.DefinedTypes
                     .Where(t => typeof(T).IsAssignableFrom(t));
                 declared.AddRange(types);
             } catch {
                 CwlMod.Warn("cwl_warn_decltype_missing".Loc(plugin.Info.Metadata.GUID));
-                _plugins.Remove(plugin);
+                Plugins.Remove(plugin);
                 // noexcept
             }
         }
