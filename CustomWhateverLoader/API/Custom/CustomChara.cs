@@ -189,28 +189,34 @@ public class CustomChara : Chara
             return;
         }
 
-        Thing thing;
-        if (equip) {
-            if (!Enum.TryParse<Rarity>(payload, true, out var rarity)) {
-                rarity = Rarity.Random;
+        Thing? thing = null;
+        try {
+            if (equip) {
+                if (!Enum.TryParse<Rarity>(payload, true, out var rarity)) {
+                    rarity = Rarity.Random;
+                }
+
+                thing = chara.EQ_ID(id, r: rarity);
+                if (!thing.isDestroyed) {
+                    thing.ChangeRarity(rarity);
+                    CwlMod.Log("cwl_log_added_eq".Loc(id, thing.rarity.ToString(), chara.id));
+                    return;
+                }
             }
 
-            thing = chara.EQ_ID(id, r: rarity);
-            if (!thing.isDestroyed) {
-                thing.ChangeRarity(rarity);
-                CwlMod.Log("cwl_log_added_eq".Loc(id, thing.rarity.ToString(), chara.id));
-                return;
+            if (!int.TryParse(payload, out var count)) {
+                count = 1;
             }
+
+            thing = ThingGen.Create(id).SetNum(count);
+            chara.AddThing(thing);
+
+            CwlMod.Log("cwl_log_added_thing".Loc(id, thing.Num, chara.id));
+        } catch {
+            thing?.Destroy();
+            CwlMod.Warn("cwl_warn_thing_gen".Loc(id, chara.id));
+            // noexcept
         }
-
-        if (!int.TryParse(payload, out var count)) {
-            count = 1;
-        }
-
-        thing = ThingGen.Create(id).SetNum(count);
-        chara.AddThing(thing);
-
-        CwlMod.Log("cwl_log_added_thing".Loc(id, thing.Num, chara.id));
     }
 
     public record CharaImport(ImportType Type, string Zone, string[] Equips, string[] Things);

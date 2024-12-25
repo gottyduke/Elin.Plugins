@@ -147,7 +147,7 @@
         <Compile Include="API\Processors\SheetProcessor.cs"/>
         <Compile Include="API\Processors\TraitTransformer.cs"/>
         <Compile Include="API\Processors\WorkbookProcessor.cs"/>
-        <Compile Include="API\Serializable\SerializableSoundData.cs" />
+        <Compile Include="API\Serializable\SerializableSoundData.cs"/>
         <Compile Include="API\Serializable\SerializableStockData.cs"/>
         <Compile Include="API\WorkbookImporter.cs"/>
         <Compile Include="API\MigrateDetail.cs"/>

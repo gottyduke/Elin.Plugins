@@ -6,7 +6,6 @@ using Cwl.API.Processors;
 using Cwl.Helper;
 using Cwl.LangMod;
 using HarmonyLib;
-using NPOI.SS.Formula.Functions;
 
 namespace Cwl.Loader.Patches.Traits;
 
