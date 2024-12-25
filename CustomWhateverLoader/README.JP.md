@@ -1,6 +1,6 @@
 ## Custom Whatever Loader 任意のローダー
 
-![Version](https://img.shields.io/badge/Version-1.13.5-R.svg)
+![Version](https://img.shields.io/badge/Version-1.15.1-R.svg)
 
 ゲームが自動的にモジュールディレクトリからモジュール制作者のカスタムリソースをロードできるようにし、モジュール制作者がさまざまなゲーム機能を利用するプロセスを簡素化し、追加の手順を必要とせず、ローカライズサポートを拡張します。
 
@@ -10,6 +10,7 @@
 
 - ソース表（キャラクター、アイテム、種族、対話など）
 - カスタム冒険者
+- カスタム商人
 - カスタム能力
 - カスタム宗教
 - カスタムマテリアル (カスタムカラー)
@@ -59,11 +60,12 @@ General, Game, List, Word, Note
 
 ## 特殊カスタム
 
-[カスタム冒険者](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomAdventurer.md#カスタム冒険者)
-[カスタム信仰](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomReligion.md#カスタム信仰)
-[カスタム能力](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomElement.md#カスタム能力)
-[カスタムマテリアル(Material)](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomMaterial.md#カスタムマテリアル)
-[音声/BGM](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomSound.md#音声bgm)
+[カスタム冒険者](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomAdventurer.md#カスタム冒険者)  
+[カスタム商人](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomMerchant.md#カスタム商人)  
+[カスタム信仰](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomReligion.md#カスタム信仰)  
+[カスタム能力](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomElement.md#カスタム能力)  
+[カスタムマテリアル(Material)](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomMaterial.md#カスタムマテリアル)  
+[音声/BGM](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomSound.md#音声bgm)  
 
 ## 使用例
 

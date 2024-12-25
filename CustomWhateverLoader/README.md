@@ -1,6 +1,6 @@
 ## Custom Whatever Loader
 
-![Version](https://img.shields.io/badge/Version-1.13.5-R.svg)
+![Version](https://img.shields.io/badge/Version-1.15.1-R.svg)
 
 [中文](./README.CN.md)  
 [日本語](./README.JP.md)  
@@ -13,6 +13,7 @@ Ideal for mods that introduce new items, characters, or audio elements, the Cust
 
 - Source Sheets (Character, Items, Races, Talks, etc)
 - Custom Adventurer
+- Custom Merchant
 - Custom Element (Ability, Spell)
 - Custom Religion
 - Custom Material (New color)
@@ -64,6 +65,7 @@ If you want to browse the IDs for in game things/charas/various sources, checkou
 ## Special Imports
 
 [How to Import Custom Adventurer](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomAdventurer.md)  
+[How to Setup Custom Merchant](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomMerchant.md)  
 [How to Import Custom Religion](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomReligion.md)  
 [How to Import Custom Ability/Spell](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomElement.md)  
 [How to Import Custom Material/Color](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomMaterial.md)  

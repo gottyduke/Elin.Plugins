@@ -1,6 +1,6 @@
 ## 随便加载器
 
-![Version](https://img.shields.io/badge/Version-1.13.5-R.svg)
+![Version](https://img.shields.io/badge/Version-1.15.1-R.svg)
 
 允许游戏自动从模组目录加载模组制作者的自定义资源，简化了模组制作者利用各种游戏功能的过程，无需额外步骤，并扩展了本地化支持。
 
@@ -10,6 +10,7 @@
 
 - 源表（角色、物品、种族、对话等）
 - 自定义冒险者
+- 自定义商人
 - 自定义能力（法术/状态/能力等）
 - 自定义信仰
 - 自定义材质（自定义颜色）
@@ -61,6 +62,7 @@ General, Game, List, Word, Note
 ## 特殊导入
 
 [如何导入自定义冒险者](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomAdventurer.md#自定义冒险者)  
+[如何设置自定义商人](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomMerchant.md#自定义商人)  
 [如何导入自定义信仰](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomReligion.md#自定义信仰)  
 [如何导入自定义能力/法术](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomElement.md#自定义能力)  
 [如何导入自定义材质(Material)](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomMaterial.md#自定义材质)  

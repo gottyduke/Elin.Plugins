@@ -25,7 +25,7 @@ E.g. fairy icons are usually clipping through upper border
 
 ### Patches.QualifyTypeName = true
 When importing custom classes for class cache, let CWL qualify its type name  
-Act, Condition, Trait  
+`Act`, `Condition`, `Trait`, `Zone`  
 当为类缓存导入自定义类时，让CWL为其生成限定类型名  
 
 ### Patches.SafeCreateClass = true
