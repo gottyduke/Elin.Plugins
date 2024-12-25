@@ -5,7 +5,7 @@ using Cwl.Helper.Unity;
 using HarmonyLib;
 using UnityEngine;
 
-namespace Cwl.Loader.Patches.Adv;
+namespace Cwl.Loader.Patches.Charas;
 
 [HarmonyPatch]
 internal class SetCharaPortraitPatch
@@ -27,7 +27,7 @@ internal class SetCharaPortraitPatch
         }
 
         if (!CwlConfig.FixBaseGameAvatar &&
-            CustomAdventurer.All.All(adv => adv != c.source.id)) {
+            CustomChara.All.All(adv => adv != c.source.id)) {
             return;
         }
 

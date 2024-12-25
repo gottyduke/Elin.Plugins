@@ -73,7 +73,8 @@ internal class SafeCreateElementPatch
             if (_prompted[id] <= LogSpamMax) {
                 CwlMod.Warn(_prompted[id] == LogSpamMax
                     ? "cwl_warn_deserialize_ele_final".Loc()
-                    : "cwl_warn_deserialize_ele".Loc(id, unqualified, CwlConfig.Patches.SafeCreateClass!.Definition.Key));
+                    : "cwl_warn_deserialize_ele".Loc(id, unqualified,
+                        CwlConfig.Patches.SafeCreateClass!.Definition.Key));
             }
             // noexcept
         }

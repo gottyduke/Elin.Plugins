@@ -5,10 +5,8 @@ using HarmonyLib;
 namespace Cwl.Loader.Patches.Sources;
 
 [HarmonyPatch]
-public class CellPostProcessPatch
+internal class CellPostProcessPatch
 {
-    public delegate string? CellProcess(string? cellValue);
-
     private static event CellProcess OnCellProcess = cell => cell;
 
     internal static bool Prepare()
@@ -23,7 +21,7 @@ public class CellPostProcessPatch
         __result = OnCellProcess(__result);
     }
 
-    public static void Add(CellProcess cellProcess)
+    internal static void Add(CellProcess cellProcess)
     {
         OnCellProcess += cell => {
             try {
@@ -36,4 +34,6 @@ public class CellPostProcessPatch
             return cell;
         };
     }
+
+    internal delegate string? CellProcess(string? cellValue);
 }

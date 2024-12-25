@@ -19,7 +19,7 @@ internal class SafeSceneInitPatch
 
         SafeToCreate = true;
 
-        CoroutineHelper.Immediate(CustomAdventurer.AddDelayedChara());
+        CoroutineHelper.Immediate(CustomChara.AddDelayedChara());
         CoroutineHelper.Immediate(CustomElement.GainAbilityOnLoad());
 
         CoroutineHelper.Deferred(

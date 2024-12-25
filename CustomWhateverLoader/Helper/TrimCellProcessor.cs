@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using HarmonyLib;
-using MethodTimer;
+﻿using MethodTimer;
 
 namespace Cwl.Helper;
 

@@ -23,7 +23,6 @@ internal class SetElementRowPatch
             return;
         }
 
-        // TODO: maybe add feat/act?
         if (_managedGroups.All(g => g != r.group)) {
             return;
         }
