@@ -11,8 +11,8 @@ public record SerializableStockData : SerializableStockDataV1;
 
 public record SerializableStockDataV1
 {
-    public List<SerializableStockItem> Items = [];
     public string Owner = "";
+    public List<SerializableStockItem> Items = [];
 }
 
 public enum StockItemType

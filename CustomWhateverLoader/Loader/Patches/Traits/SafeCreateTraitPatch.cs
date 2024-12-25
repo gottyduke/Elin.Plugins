@@ -6,6 +6,7 @@ using Cwl.API.Processors;
 using Cwl.Helper;
 using Cwl.LangMod;
 using HarmonyLib;
+using NPOI.SS.Formula.Functions;
 
 namespace Cwl.Loader.Patches.Traits;
 
@@ -58,7 +59,7 @@ internal class SafeCreateTraitPatch
             }
 
             ClassCache.caches.dict[unqualified] = () => Activator.CreateInstance(qualified);
-            trait = ClassCache.Create<Trait>(qualified.FullName, assembly);
+            trait = ClassCache.caches.dict[unqualified]() as Trait;
 
             CwlMod.Log("cwl_log_custom_trait".Loc(unqualified, qualified.FullName));
         } catch (Exception ex) {

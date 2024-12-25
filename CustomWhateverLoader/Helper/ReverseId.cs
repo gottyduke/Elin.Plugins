@@ -8,7 +8,7 @@ public class ReverseId : EClass
 {
     private static readonly Dictionary<string, int> _cached = [];
 
-    public static int Material(string materialName)
+    public static int Material(string materialName, int fallback = -1)
     {
         if (_cached.TryGetValue(materialName, out var id)) {
             return id;
@@ -17,7 +17,7 @@ public class ReverseId : EClass
         id = sources.materials.map
             .Where(kv => string.Equals(kv.Value.alias, materialName.Trim(), StringComparison.CurrentCultureIgnoreCase))
             .Select(kv => (int?)kv.Key)
-            .FirstOrDefault() ?? -1;
+            .FirstOrDefault() ?? fallback;
 
         _cached[materialName] = id;
         return id;
