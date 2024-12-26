@@ -178,7 +178,6 @@
         <Compile Include="Loader\CwlConfig.cs"/>
         <Compile Include="Loader\CwlLogger.cs"/>
         <Compile Include="Loader\CwlStartTask.cs"/>
-        <Compile Include="Loader\Patches\Charas\MerchantOnBarterPatch.cs"/>
         <Compile Include="Loader\Patches\Charas\SetCharaPortraitPatch.cs"/>
         <Compile Include="Loader\Patches\Charas\SetCharaRowPatch.cs"/>
         <Compile Include="Loader\Patches\Conditions\SafeCreateConditionPatch.cs"/>
@@ -206,6 +205,8 @@
         <Compile Include="Loader\Patches\Sources\RethrowParsePatch.cs"/>
         <Compile Include="Loader\Patches\Sources\SafeCreateCardPatch.cs"/>
         <Compile Include="Loader\Patches\Sources\SourceInitPatch.cs"/>
+        <Compile Include="Loader\Patches\Things\SetThingRowPatch.cs"/>
+        <Compile Include="Loader\Patches\Traits\MerchantOnBarterPatch.cs"/>
         <Compile Include="Loader\Patches\Traits\SafeCreateTraitPatch.cs"/>
         <Compile Include="Loader\Patches\Zones\SetZoneRowPatch.cs"/>
         <Compile Include="ThirdParty\Glance.cs"/>

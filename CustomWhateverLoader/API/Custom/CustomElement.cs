@@ -78,7 +78,7 @@ public class CustomElement : Element
     [Time]
     private static void PurgeBeforeSave(GameIOProcessor.GameIOContext context)
     {
-        if (player?.currentHotItem is not HotItemAct act ||
+        if (core?.game?.player?.currentHotItem is not HotItemAct act ||
             Managed.Keys.All(r => act.id != r)) {
             return;
         }
@@ -91,8 +91,7 @@ public class CustomElement : Element
     [Time]
     private static void RestoreAfterSave(GameIOProcessor.GameIOContext context)
     {
-        if (core?.game is null ||
-            player?.chara is null ||
+        if (core?.game?.player?.chara is null ||
             _held is null) {
             return;
         }

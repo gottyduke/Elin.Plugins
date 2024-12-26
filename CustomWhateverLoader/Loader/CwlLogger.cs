@@ -9,6 +9,11 @@ internal sealed partial class CwlMod
         Instance!.Logger.LogInfo(payload);
     }
 
+    internal static void Log(object payload, string category)
+    {
+        Instance!.Logger.LogInfo($"[{category}] {payload}");
+    }
+
     internal static void Debug(object payload)
     {
         if (!CwlConfig.Logging.Verbose?.Value is true) {

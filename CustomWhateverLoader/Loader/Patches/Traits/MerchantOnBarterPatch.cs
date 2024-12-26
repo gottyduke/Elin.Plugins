@@ -3,7 +3,7 @@ using System.Reflection.Emit;
 using Cwl.API.Custom;
 using HarmonyLib;
 
-namespace Cwl.Loader.Patches.Charas;
+namespace Cwl.Loader.Patches.Traits;
 
 [HarmonyPatch]
 internal class MerchantOnBarterPatch

@@ -5,6 +5,7 @@ using Cwl.Helper;
 using Cwl.Helper.FileUtil;
 using Cwl.Loader.Patches;
 using Cwl.Loader.Patches.Relocation;
+using Cwl.Loader.Patches.Sources;
 using HarmonyLib;
 using MethodTimer;
 
@@ -32,6 +33,10 @@ internal sealed partial class CwlMod
                 Error($"patch has failed: {ex.Message.SplitNewline()[0]}");
                 // noexcept
             }
+        }
+
+        if (CwlConfig.TrimSpaces) {
+            CellPostProcessPatch.Add(TrimCellProcessor.TrimCell);
         }
     }
 
