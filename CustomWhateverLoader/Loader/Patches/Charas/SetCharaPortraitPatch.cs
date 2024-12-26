@@ -15,7 +15,8 @@ internal class SetCharaPortraitPatch
     [HarmonyPatch(typeof(Portrait), nameof(Portrait.SetChara))]
     internal static void OnSetCharaPortrait(Portrait __instance, Chara? c)
     {
-        if (c?.IsPC is not false || c.source?.id is null) {
+        if (c?.IsPC is not false || c.source?.id is null || 
+            ELayer.ui?.TopLayer is not LayerQuestBoard) {
             return;
         }
 
@@ -35,11 +36,11 @@ internal class SetCharaPortraitPatch
             (int)sprite.rect.height,
             directionY: -1);
 
-        var pos = __instance.imageChara.transform.localPosition;
-        if (dist > AverageDistance) {
+        if (dist is > AverageDistance or <= 0f) {
             return;
         }
 
+        var pos = __instance.imageChara.transform.localPosition;
         __instance.imageChara.transform.localPosition = pos with { y = pos.y - (AverageDistance - dist) / 2 };
     }
 }

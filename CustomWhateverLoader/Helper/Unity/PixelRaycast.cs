@@ -71,29 +71,36 @@ public static class PixelRaycast
     public static float NearestPerceivableMulticast(this Sprite sprite, int gap, int casts = 3,
         int fromX = 0, int fromY = 0, int directionX = 0, int directionY = 0)
     {
-        if (casts <= 0 || (directionX == 0 && directionY == 0)) {
-            return -1;
+        try {
+            if (casts <= 0 || (directionX == 0 && directionY == 0)) {
+                return -1;
+            }
+
+            var spread = (casts - 1) * gap / 2;
+            var gapX = gap;
+            var gapY = gap;
+
+            if (directionY != 0) {
+                fromX = Math.Max(0, fromX - spread);
+                gapY = 0;
+            }
+
+            if (directionX != 0) {
+                fromY = Math.Max(0, fromY - spread);
+                gapX = 0;
+            }
+
+            var dist = new int[casts];
+            for (var i = 0; i < casts; ++i) {
+                dist[i] = sprite.NearestPerceivable(fromX + gapX * i, fromY + gapY * i, directionX, directionY);
+            }
+
+            dist = dist.Where(d => d != -1).ToArray();
+            return dist.Length == 0 ? -1 : (float)dist.Average();
+        } catch {
+            // noexcept
         }
 
-        var spread = (casts - 1) * gap / 2;
-        var gapX = gap;
-        var gapY = gap;
-
-        if (directionY != 0) {
-            fromX = Math.Max(0, fromX - spread);
-            gapY = 0;
-        }
-
-        if (directionX != 0) {
-            fromY = Math.Max(0, fromY - spread);
-            gapX = 0;
-        }
-
-        var dist = new int[casts];
-        for (var i = 0; i < casts; ++i) {
-            dist[i] = sprite.NearestPerceivable(fromX + gapX * i, fromY + gapY * i, directionX, directionY);
-        }
-
-        return (float)dist.Where(d => d != -1).Average();
+        return -1;
     }
 }
