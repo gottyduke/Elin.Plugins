@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Reflection.Emit;
+using Cwl.API.Processors;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using HarmonyLib;
-using MethodTimer;
 
 namespace Cwl.Loader.Patches.Quests;
 
@@ -15,41 +13,26 @@ internal class SafeCreateQuestPatch
 
     internal static bool Prepare()
     {
+        if (CwlConfig.SafeCreateClass) {
+            TypeResolver.Add(ResolveQuest);
+        }
+
         return CwlConfig.SafeCreateClass;
     }
 
-    [HarmonyTranspiler]
-    [HarmonyPatch("JsonSerializerInternalReader", "ResolveTypeName")]
-    internal static IEnumerable<CodeInstruction> OnResolveExceptionIl(IEnumerable<CodeInstruction> instructions)
+    private static void ResolveQuest(ref bool resolved, Type objectType, ref Type readType, string qualified)
     {
-        return new CodeMatcher(instructions)
-            .MatchEndForward(
-                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(
-                    typeof(Type),
-                    nameof(Type.IsAssignableFrom))),
-                new CodeMatch(OpCodes.Brtrue))
-            .InsertAndAdvance(
-                new CodeInstruction(OpCodes.Ldarg_2),
-                new CodeInstruction(OpCodes.Ldind_Ref),
-                new CodeInstruction(OpCodes.Ldloca_S, (sbyte)5),
-                new CodeInstruction(OpCodes.Ldarg_S, (sbyte)7),
-                Transpilers.EmitDelegate(SafeResolveInvoke))
-            .InstructionEnumeration();
-    }
-
-    [Time]
-    private static bool SafeResolveInvoke(bool compatible, Type objectType, ref Type readType, string qualified)
-    {
-        if (compatible) {
-            return true;
+        if (resolved) {
+            return;
         }
 
         if (objectType != typeof(Quest) || readType != typeof(object)) {
-            return false;
+            return;
         }
 
         readType = typeof(Quest);
-        CwlMod.Warn("cwl_warn_deserialize_quest".Loc(qualified, readType.MetadataToken,
+        resolved = true;
+        CwlMod.Warn("cwl_warn_deserialize".Loc(nameof(Quest), qualified, readType.MetadataToken,
             CwlConfig.Patches.SafeCreateClass!.Definition.Key));
 
         if (!_cleanup) {
@@ -57,8 +40,6 @@ internal class SafeCreateQuestPatch
         }
 
         _cleanup = true;
-
-        return true;
     }
 
     private static void PostCleanup()
@@ -70,7 +51,7 @@ internal class SafeCreateQuestPatch
             }
 
             list.Remove(q);
-            CwlMod.Log("cwl_log_post_cleanup_quest".Loc(q.id));
+            CwlMod.Log("cwl_log_post_cleanup".Loc(nameof(Quest), q.id));
         });
     }
 }
