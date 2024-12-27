@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Cwl.LangMod;
 using Cwl.Loader;
 using MethodTimer;
@@ -18,12 +17,12 @@ public class CustomZone : Zone
         try {
             if (CwlConfig.QualifyTypeName) {
                 r.type = qualified;
-                CwlMod.Log("cwl_log_custom_ele".Loc(r.id, r.type));
+                CwlMod.Log("cwl_log_custom_type".Loc(nameof(Zone), r.id, r.type));
             }
 
             Managed[r.id] = r;
-        } catch (Exception ex) {
-            CwlMod.Error("cwl_error_qualify_ele".Loc(r.id, r.type, ex));
+        } catch {
+            CwlMod.Error("cwl_error_qualify_type".Loc(nameof(Zone), r.id, r.type));
             // noexcept
         }
     }

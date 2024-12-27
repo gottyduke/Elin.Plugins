@@ -146,6 +146,7 @@
         <Compile Include="API\Processors\GameIOProcessor.cs"/>
         <Compile Include="API\Processors\SheetProcessor.cs"/>
         <Compile Include="API\Processors\TraitTransformer.cs"/>
+        <Compile Include="API\Processors\TypeResolver.cs"/>
         <Compile Include="API\Processors\WorkbookProcessor.cs"/>
         <Compile Include="API\Serializable\SerializableSoundData.cs"/>
         <Compile Include="API\Serializable\SerializableStockData.cs"/>
@@ -188,6 +189,8 @@
         <Compile Include="Loader\Patches\Elements\SetElementRowPatch.cs"/>
         <Compile Include="Loader\Patches\GameSaveLoad\GameLoadPatch.cs"/>
         <Compile Include="Loader\Patches\GameSaveLoad\GameSavePatch.cs"/>
+        <Compile Include="Loader\Patches\GameSaveLoad\SafeResolveTypePatch.cs"/>
+        <Compile Include="Loader\Patches\Materials\SafeCreateMaterialPatch.cs"/>
         <Compile Include="Loader\Patches\Materials\SetMaterialRowPatch.cs"/>
         <Compile Include="Loader\Patches\Quests\SafeCreateQuestPatch.cs"/>
         <Compile Include="Loader\Patches\Religions\SetReligionOwnerPatch.cs"/>
@@ -205,7 +208,6 @@
         <Compile Include="Loader\Patches\Sources\RethrowParsePatch.cs"/>
         <Compile Include="Loader\Patches\Sources\SafeCreateCardPatch.cs"/>
         <Compile Include="Loader\Patches\Sources\SourceInitPatch.cs"/>
-        <Compile Include="Loader\Patches\Things\SetThingRowPatch.cs"/>
         <Compile Include="Loader\Patches\Traits\MerchantOnBarterPatch.cs"/>
         <Compile Include="Loader\Patches\Traits\SafeCreateTraitPatch.cs"/>
         <Compile Include="Loader\Patches\Zones\SetZoneRowPatch.cs"/>
@@ -234,6 +236,9 @@
         <PackageReference Include="PolySharp" Version="1.15.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="SwallowExceptions.Fody" Version="1.0.1">
+            <PrivateAssets>all</PrivateAssets>
         </PackageReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>

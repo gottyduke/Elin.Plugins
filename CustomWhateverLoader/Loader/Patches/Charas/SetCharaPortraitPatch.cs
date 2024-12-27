@@ -15,7 +15,7 @@ internal class SetCharaPortraitPatch
     [HarmonyPatch(typeof(Portrait), nameof(Portrait.SetChara))]
     internal static void OnSetCharaPortrait(Portrait __instance, Chara? c)
     {
-        if (c?.IsPC is not false || c.source?.id is null || 
+        if (c?.IsPC is not false || c.source?.id is null ||
             ELayer.ui?.TopLayer is not LayerQuestBoard) {
             return;
         }

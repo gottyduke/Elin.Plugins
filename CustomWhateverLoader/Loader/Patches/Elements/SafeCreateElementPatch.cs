@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection.Emit;
 using Cwl.API;
 using Cwl.API.Custom;
@@ -65,23 +64,23 @@ internal class SafeCreateElementPatch
                 return element;
             }
 
-            throw new SourceParseException("cwl_warn_deserialize_ele");
-        } catch (Exception) {
+            throw new SourceParseException("cwl_warn_deserialize");
+        } catch {
             _prompted.TryAdd(id, 0);
             _prompted[id]++;
 
             if (_prompted[id] <= LogSpamMax) {
                 CwlMod.Warn(_prompted[id] == LogSpamMax
-                    ? "cwl_warn_deserialize_ele_final".Loc()
-                    : "cwl_warn_deserialize_ele".Loc(id, unqualified,
+                    ? "cwl_warn_deserialize_final".Loc()
+                    : "cwl_warn_deserialize".Loc(nameof(Element), id, unqualified,
                         CwlConfig.Patches.SafeCreateClass!.Definition.Key));
             }
             // noexcept
         }
 
         var row = EMono.sources.elements.map.TryGetValue(id)!;
-        row.name = "cwl_ele_safety_cone".Loc(id, row.alias, unqualified);
-        row.detail = "cwl_ele_safety_desc".Loc();
+        row.name = "cwl_type_safety_cone".Loc(nameof(Element), id, row.alias, unqualified);
+        row.detail = "cwl_type_safety_desc".Loc();
 
         return new CustomElement();
     }

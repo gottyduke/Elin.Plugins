@@ -30,7 +30,7 @@ internal sealed partial class CwlMod
             try {
                 harmony.CreateClassProcessor(patch).Patch();
             } catch (Exception ex) {
-                Error($"patch has failed: {ex.Message.SplitNewline()[0]}");
+                Error($"patch has failed: {ex}");
                 // noexcept
             }
         }

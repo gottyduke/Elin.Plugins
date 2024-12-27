@@ -54,15 +54,15 @@ internal class SafeCreateTraitPatch
 
             var qualified = TypeQualifier.TryQualify<Trait>(unqualified);
             if (qualified?.FullName is null) {
-                throw new SourceParseException("cwl_warn_qualify_trait");
+                throw new SourceParseException("cwl_error_qualify_type");
             }
 
             ClassCache.caches.dict[unqualified] = () => Activator.CreateInstance(qualified);
             trait = ClassCache.caches.dict[unqualified]() as Trait;
 
-            CwlMod.Log("cwl_log_custom_trait".Loc(unqualified, qualified.FullName));
-        } catch (Exception ex) {
-            CwlMod.Warn(ex.Message.Loc(unqualified, owner.id));
+            CwlMod.Log("cwl_log_custom_type".Loc(nameof(Trait), unqualified, qualified.FullName));
+        } catch {
+            CwlMod.Warn("cwl_error_qualify_type".Loc(nameof(Trait), $"{unqualified} @ {owner.id}", ""));
             // noexcept
         }
 
