@@ -15,7 +15,8 @@ internal class SetCharaPortraitPatch
     [HarmonyPatch(typeof(Portrait), nameof(Portrait.SetChara))]
     internal static void OnSetCharaPortrait(Portrait __instance, Chara? c)
     {
-        if (c?.IsPC is not false || c.source?.id is null ||
+        if (c?.IsPC is not false ||
+            c.source?.id is null ||
             ELayer.ui?.TopLayer is not LayerQuestBoard) {
             return;
         }
@@ -31,6 +32,8 @@ internal class SetCharaPortraitPatch
 
         var sprite = __instance.imageChara.sprite;
 
+        // do a 4 x 4 raycasts from top to bottom to determine the distance to adjust the portrait
+        // I hate raycasts
         var dist = sprite.NearestPerceivableMulticast(4, 4,
             (int)sprite.rect.width / 2,
             (int)sprite.rect.height,

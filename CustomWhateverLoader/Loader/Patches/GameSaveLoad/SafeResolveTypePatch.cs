@@ -34,17 +34,14 @@ internal class SafeResolveTypePatch
             .InstructionEnumeration();
     }
 
-
     [Time]
-    private static bool SafeResolveInvoke(bool compatible, Type objectType, ref Type readType, string qualified)
+    private static bool SafeResolveInvoke(bool resolved, Type objectType, ref Type readType, string qualified)
     {
-        if (compatible) {
+        if (resolved) {
             return true;
         }
 
-        var resolved = false;
         TypeResolver.Resolve(ref resolved, objectType, ref readType, qualified);
-
         return resolved;
     }
 }

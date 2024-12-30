@@ -15,7 +15,8 @@ public class ReverseId : EClass
         }
 
         id = sources.materials.map
-            .Where(kv => string.Equals(kv.Value.alias, materialName.Trim(), StringComparison.CurrentCultureIgnoreCase))
+            .Where(kv =>
+                string.Equals(kv.Value.alias, materialName.Trim(), StringComparison.InvariantCultureIgnoreCase))
             .Select(kv => (int?)kv.Key)
             .FirstOrDefault() ?? fallback;
 

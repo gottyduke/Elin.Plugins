@@ -4,6 +4,9 @@ using Cwl.Loader;
 
 namespace Cwl.API.Processors;
 
+/// <summary>
+///     event raised when game instantiates a Trait
+/// </summary>
 public class TraitTransformer
 {
     // Trait should be immutable, only transform the trait name

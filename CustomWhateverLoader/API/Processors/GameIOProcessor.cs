@@ -5,6 +5,9 @@ using Cwl.Loader;
 
 namespace Cwl.API.Processors;
 
+/// <summary>
+///     event raised when game serializes and deserializes
+/// </summary>
 public class GameIOProcessor
 {
     public delegate void GameIOProcess(GameIOContext context);
@@ -74,11 +77,19 @@ public class GameIOProcessor
         }
     }
 
+    /// <summary>
+    ///     helper class given as event arg to save/load custom data to game save
+    /// </summary>
     public class GameIOContext(string path)
     {
         private const string Storage = "chunks";
         private const string Extension = "chunk";
 
+        /// <summary>
+        ///     serialize data to current save folder
+        /// </summary>
+        /// <param name="data">arbitrary data</param>
+        /// <param name="chunkName">unique identifier, omit/null will use full qualified type name</param>
         public void Save<T>(T data, string? chunkName = null)
         {
             if (data is null) {
@@ -92,6 +103,12 @@ public class GameIOProcessor
             IO.SaveFile(file, data, GameIO.compressSave, GameIO.jsWriteGame);
         }
 
+        /// <summary>
+        ///     deserialize data from current save folder
+        /// </summary>
+        /// <param name="inferred">arbitrary data, default(null) for class type and default({}) for value type</param>
+        /// <param name="chunkName">unique identifier, omit/null will use full qualified type name</param>
+        /// <returns>bool indicating success</returns>
         public bool Load<T>(out T? inferred, string? chunkName = null)
         {
             var type = typeof(T);

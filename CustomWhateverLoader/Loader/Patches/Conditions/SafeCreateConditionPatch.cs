@@ -40,6 +40,7 @@ internal class SafeCreateConditionPatch
             .InstructionEnumeration();
     }
 
+    [Time]
     [HarmonyPrefix]
     [HarmonyPatch(typeof(Chara), nameof(Chara.InitStats))]
     internal static void OnInitStats(Chara __instance)

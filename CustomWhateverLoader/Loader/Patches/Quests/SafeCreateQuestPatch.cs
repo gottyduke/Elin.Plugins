@@ -3,6 +3,7 @@ using Cwl.API.Processors;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using HarmonyLib;
+using SwallowExceptions.Fody;
 
 namespace Cwl.Loader.Patches.Quests;
 
@@ -42,6 +43,7 @@ internal class SafeCreateQuestPatch
         _cleanup = true;
     }
 
+    [SwallowExceptions]
     private static void PostCleanup()
     {
         var list = EClass.game.quests.globalList;

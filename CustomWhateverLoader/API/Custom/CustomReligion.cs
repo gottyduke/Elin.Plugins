@@ -63,8 +63,7 @@ public class CustomReligion(string religionId) : Religion
         }
 
         if (!context.Load<CustomReligion>(out var loaded) ||
-            loaded is null ||
-            loaded._id != custom.id) {
+            loaded?._id != custom.id) {
             return;
         }
 

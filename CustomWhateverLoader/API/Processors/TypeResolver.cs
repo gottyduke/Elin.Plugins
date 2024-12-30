@@ -4,6 +4,9 @@ using Cwl.Loader;
 
 namespace Cwl.API.Processors;
 
+/// <summary>
+///     event raised when json deserialization <b>failed</b> resolving types
+/// </summary>
 public class TypeResolver
 {
     // objectType should be readonly, only mutate the readType and mark it as resolved

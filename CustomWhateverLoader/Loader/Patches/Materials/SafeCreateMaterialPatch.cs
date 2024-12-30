@@ -1,5 +1,7 @@
 ﻿using Cwl.LangMod;
 using HarmonyLib;
+using MethodTimer;
+using SwallowExceptions.Fody;
 
 namespace Cwl.Loader.Patches.Materials;
 
@@ -11,20 +13,18 @@ internal class SafeCreateMaterialPatch
         return CwlConfig.SafeCreateClass;
     }
 
+    [Time]
+    [SwallowExceptions]
     [HarmonyPrefix]
     [HarmonyPatch(typeof(ElementContainer), nameof(ElementContainer.ApplyMaterialElementMap))]
     internal static void SafeApplyInvoke(ElementContainer __instance, Thing t)
     {
-        try {
-            ref var map = ref EMono.sources.materials.map;
-            if (map.ContainsKey(t.idMaterial)) {
-                return;
-            }
-
-            map.TryAdd(t.idMaterial, map[0]);
-        } catch {
-            // noexcept
+        ref var map = ref EMono.sources.materials.map;
+        if (map.ContainsKey(t.idMaterial)) {
+            return;
         }
+
+        map.TryAdd(t.idMaterial, map[0]);
 
         CwlMod.Warn("cwl_warn_deserialize".Loc(nameof(SourceMaterial), t.idMaterial, nameof(SourceMaterial.Row),
             CwlConfig.Patches.SafeCreateClass!.Definition.Key));
