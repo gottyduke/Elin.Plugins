@@ -62,6 +62,7 @@ General, Game, List, Word, Note
 
 [カスタム冒険者](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomAdventurer.md#カスタム冒険者)  
 [カスタム商人](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomMerchant.md#カスタム商人)  
+[自定義ストーリー](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomDrama.md#自定義ストーリー)  
 [カスタム信仰](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomReligion.md#カスタム信仰)  
 [カスタム能力](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomElement.md#カスタム能力)  
 [カスタムマテリアル(Material)](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomMaterial.md#カスタムマテリアル)  

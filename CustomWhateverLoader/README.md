@@ -66,6 +66,7 @@ If you want to browse the IDs for in game things/charas/various sources, checkou
 
 [How to Import Custom Adventurer](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomAdventurer.md)  
 [How to Setup Custom Merchant](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomMerchant.md)  
+[How to Assign Custom Drama](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomDrama.md)  
 [How to Import Custom Religion](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomReligion.md)  
 [How to Import Custom Ability/Spell](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomElement.md)  
 [How to Import Custom Material/Color](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomMaterial.md)  

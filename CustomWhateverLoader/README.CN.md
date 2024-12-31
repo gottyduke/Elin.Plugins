@@ -63,6 +63,7 @@ General, Game, List, Word, Note
 
 [如何导入自定义冒险者](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomAdventurer.md#自定义冒险者)  
 [如何设置自定义商人](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomMerchant.md#自定义商人)  
+[如何导入自定义剧情](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomDrama.md#自定义剧情)  
 [如何导入自定义信仰](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomReligion.md#自定义信仰)  
 [如何导入自定义能力/法术](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomElement.md#自定义能力)  
 [如何导入自定义材质(Material)](https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader/Docs/CustomMaterial.md#自定义材质)  
