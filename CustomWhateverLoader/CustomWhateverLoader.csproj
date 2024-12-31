@@ -181,8 +181,10 @@
         <Compile Include="Loader\CwlStartTask.cs"/>
         <Compile Include="Loader\Patches\Charas\SetCharaPortraitPatch.cs"/>
         <Compile Include="Loader\Patches\Charas\SetCharaRowPatch.cs"/>
+        <Compile Include="Loader\Patches\Charas\ShowDialogPatch.cs"/>
         <Compile Include="Loader\Patches\Conditions\SafeCreateConditionPatch.cs"/>
         <Compile Include="Loader\Patches\Conditions\SetConditionRowPatch.cs"/>
+        <Compile Include="Loader\Patches\Dialogs\CustomParseLinePatch.cs"/>
         <Compile Include="Loader\Patches\Dialogs\VariableQuotePatch.cs"/>
         <Compile Include="Loader\Patches\Elements\SafeCreateElementPatch.cs"/>
         <Compile Include="Loader\Patches\Elements\MergeAttackElementPatch.cs"/>

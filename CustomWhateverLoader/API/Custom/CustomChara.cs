@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using Cwl.Loader;
@@ -20,6 +21,7 @@ public class CustomChara : Chara
     }
 
     private static readonly Dictionary<string, CharaImport> _delayedCharaImport = [];
+    internal static readonly Dictionary<string, string> DramaRoute = [];
 
     public static IEnumerable<string> All => _delayedCharaImport.Keys;
 
@@ -63,6 +65,14 @@ public class CustomChara : Chara
                     break;
                 case "Stock":
                     CustomMerchant.AddStock(r.id);
+                    break;
+                case "Drama":
+                    var drama = @params[1];
+                    if (drama is not "" &&
+                        PackageIterator.GetRelocatedFilesFromPackage($"Dialog/Drama/{drama}.xlsx").Any()) {
+                        DramaRoute[r.id] = drama;
+                    }
+
                     break;
             }
         }
@@ -152,9 +162,11 @@ public class CustomChara : Chara
                     }
 
                     // credits to 105gun
-                    var towns = game.world.region.ListTowns();
-                    var homeZone = towns.FirstOrDefault(t => t.GetType().Name.Split("_")[^1] == import.Zone) ??
-                                   towns.RandomItem();
+                    var zones = game.spatials.map.Values
+                        .OfType<Zone>()
+                        .ToArray();
+                    var homeZone = zones.FirstOrDefault(t => t.GetType().Name.Split("_")[^1] == import.Zone) ??
+                                   zones.RandomItem();
 
                     chara.SetHomeZone(homeZone);
                     chara.global.transition = new() {
