@@ -10,7 +10,7 @@ namespace Cwl.Helper.Unity;
 
 public static class SpriteCreator
 {
-    private static readonly Dictionary<string, Sprite> _cached = [];
+    private static readonly Dictionary<string, Texture2D> _cached = [];
 
     public static Sprite? LoadSprite(this string path, Vector2? pivot = null, string? name = null, int resizeWidth = 0,
         int resizeHeight = 0)
@@ -24,31 +24,30 @@ public static class SpriteCreator
         var cache = $"{path}/{pivot}/{resizeWidth}/{resizeHeight}";
         name ??= cache;
 
-        if (_cached.TryGetValue(cache, out var sprite) &&
-            CwlConfig.CacheSprites) {
-            return sprite;
-        }
-
         try {
-            var tex = IO.LoadPNG(path);
-            if (resizeWidth != 0 && resizeHeight != 0 &&
-                tex.width != resizeWidth && tex.height != resizeHeight) {
-                var downscaled = tex.Downscale(resizeWidth, resizeHeight);
-                Object.Destroy(tex);
-                tex = downscaled;
+            if (!_cached.TryGetValue(cache, out var tex) ||
+                !CwlConfig.CacheSprites) {
+                tex = IO.LoadPNG(path);
+                if (resizeWidth != 0 && resizeHeight != 0 &&
+                    tex.width != resizeWidth && tex.height != resizeHeight) {
+                    var downscaled = tex.Downscale(resizeWidth, resizeHeight);
+                    Object.Destroy(tex);
+                    tex = downscaled;
+                    tex.name = cache;
+                }
             }
-
-            sprite = Sprite.Create(tex, new(0, 0, tex.width, tex.height),
-                pivot.Value, 100f, 0u, SpriteMeshType.FullRect);
-
-            sprite.name = tex.name = name;
-            _cached[cache] = sprite;
+            
+            _cached[cache] = tex;
         } catch (Exception ex) {
             CwlMod.Warn("cwl_warn_sprite_creator".Loc(path.ShortPath(), ex));
             return null;
             // noexcept
         }
 
+        var sprite = Sprite.Create(_cached[cache], new(0, 0, _cached[cache].width, _cached[cache].height),
+            pivot.Value, 100f, 0u, SpriteMeshType.FullRect);
+
+        sprite.name = name;
         return sprite;
     }
 }
