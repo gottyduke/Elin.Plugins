@@ -12,14 +12,14 @@ namespace Cwl.Loader.Patches;
 
 internal class LoadSoundPatch
 {
-    private const string Pattern = "*.wav";
+    private const string Pattern = "*.*";
 
     internal static IEnumerator LoadAllSounds()
     {
         var dirs = PackageIterator.GetSoundFilesFromPackage();
 
         foreach (var dir in dirs) {
-            foreach (var file in dir.GetFiles(Pattern, SearchOption.AllDirectories)) {
+            foreach (var file in dir.EnumerateFiles(Pattern, SearchOption.AllDirectories)) {
                 var id = file.GetFullFileNameWithoutExtension()[(dir.FullName.Length + 1)..];
                 yield return LoadSound(file, id);
             }
@@ -31,7 +31,18 @@ internal class LoadSoundPatch
     {
         var name = Path.GetFileNameWithoutExtension(file.FullName);
 
-        using var clipLoader = UnityWebRequestMultimedia.GetAudioClip($"file://{file.FullName}", AudioType.WAV);
+        var audioType = file.Extension.ToLower() switch {
+            ".acc" => AudioType.ACC,
+            ".mp3" => AudioType.MPEG,
+            ".ogg" => AudioType.OGGVORBIS,
+            ".wav" => AudioType.WAV,
+            _ => AudioType.UNKNOWN,
+        };
+        if (audioType == AudioType.UNKNOWN) {
+            yield break;
+        }
+
+        using var clipLoader = UnityWebRequestMultimedia.GetAudioClip($"file://{file.FullName}", audioType);
         yield return clipLoader.SendWebRequest();
 
         var data = ScriptableObject.CreateInstance<SoundData>();
