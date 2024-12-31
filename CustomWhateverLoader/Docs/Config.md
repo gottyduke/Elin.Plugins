@@ -14,6 +14,10 @@ Cache paths relocated by CWL instead of iterating new paths
 Cache sprites created by CWL instead of creating new from textures  
 缓存CWL生成的贴图而不是每次重新构建  
 
+### Dialog.NoOverlappingSounds = true
+During dialogs, prevent sound actions from overlapping with each other by stopping previous sound first  
+对话中的sound动作不会彼此重叠 - 上一个音源会先被停止  
+
 ### Dialog.VariableQuote = true
 For talk texts, allow both JP quote 「」 and EN quote "" with current language quote to be used as `Msg.colors.Talk` identifier  
 对话文本允许日本引号和英语引号以及当前语言的引号同时作为Talk颜色检测词  
@@ -25,7 +29,7 @@ E.g. fairy icons are usually clipping through upper border
 
 ### Patches.QualifyTypeName = true
 When importing custom classes for class cache, let CWL qualify its type name  
-`Act`, `Condition`, `Trait`, `Zone`  
+`Element`, `BaseCondition`, `Trait`, `Zone`  
 当为类缓存导入自定义类时，让CWL为其生成限定类型名  
 
 ### Patches.SafeCreateClass = true

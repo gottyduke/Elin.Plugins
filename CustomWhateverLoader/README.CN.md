@@ -1,6 +1,6 @@
 ## 随便加载器
 
-![Version](https://img.shields.io/badge/Version-1.15.6-R.svg)
+![Version](https://img.shields.io/badge/Version-1.16.0-R.svg)
 
 允许游戏自动从模组目录加载模组制作者的自定义资源，简化了模组制作者利用各种游戏功能的过程，无需额外步骤，并扩展了本地化支持。
 
