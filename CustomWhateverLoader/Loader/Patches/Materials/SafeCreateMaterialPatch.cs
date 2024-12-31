@@ -24,7 +24,7 @@ internal class SafeCreateMaterialPatch
             return;
         }
 
-        map.TryAdd(t.idMaterial, map[0]);
+        map[t.idMaterial] = map[0];
 
         CwlMod.Warn("cwl_warn_deserialize".Loc(nameof(SourceMaterial), t.idMaterial, nameof(SourceMaterial.Row),
             CwlConfig.Patches.SafeCreateClass!.Definition.Key));

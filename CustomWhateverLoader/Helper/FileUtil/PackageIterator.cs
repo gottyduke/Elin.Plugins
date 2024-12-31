@@ -83,11 +83,7 @@ public static class PackageIterator
         }
 
         var file = Path.Combine(cachedPath, relativePath);
-        if (!File.Exists(file)) {
-            return null;
-        }
-
-        return new(file);
+        return File.Exists(file) ? new(file) : null;
     }
 
     public static bool TryLoadFromPackageCache(string cacheName, out string path)

@@ -10,17 +10,22 @@ public class ReverseId : EClass
 
     public static int Material(string materialName, int fallback = -1)
     {
-        if (_cached.TryGetValue(materialName, out var id)) {
+        var cache = $"{nameof(SourceMaterial)}/{materialName}";
+        if (_cached.TryGetValue(cache, out var id)) {
             return id;
         }
 
-        id = sources.materials.map
+        var row = sources.materials.map
             .Where(kv =>
                 string.Equals(kv.Value.alias, materialName.Trim(), StringComparison.InvariantCultureIgnoreCase))
-            .Select(kv => (int?)kv.Key)
-            .FirstOrDefault() ?? fallback;
+            .Select(kv => kv.Value)
+            .FirstOrDefault();
+        id = sources.materials.rows.IndexOf(row);
+        if (id is -1) {
+            id = fallback;
+        }
 
-        _cached[materialName] = id;
+        _cached[cache] = id;
         return id;
     }
 }

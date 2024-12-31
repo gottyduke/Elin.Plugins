@@ -55,5 +55,7 @@ internal class SafeCreateQuestPatch
             list.Remove(q);
             CwlMod.Log("cwl_log_post_cleanup".Loc(nameof(Quest), q.id));
         });
+
+        _cleanup = false;
     }
 }
