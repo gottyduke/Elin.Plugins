@@ -8,7 +8,7 @@ using MethodTimer;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Cwl.Loader.Patches;
+namespace Cwl.Patches;
 
 internal class LoadSoundPatch
 {

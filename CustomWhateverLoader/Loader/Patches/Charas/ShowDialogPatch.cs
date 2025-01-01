@@ -3,7 +3,7 @@ using System.Reflection.Emit;
 using Cwl.API.Custom;
 using HarmonyLib;
 
-namespace Cwl.Loader.Patches.Charas;
+namespace Cwl.Patches.Charas;
 
 [HarmonyPatch]
 internal class ShowDialogPatch

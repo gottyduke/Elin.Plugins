@@ -7,7 +7,7 @@ using Cwl.Helper;
 using Cwl.LangMod;
 using HarmonyLib;
 
-namespace Cwl.Loader.Patches.Traits;
+namespace Cwl.Patches.Traits;
 
 [HarmonyPatch]
 internal class SafeCreateTraitPatch

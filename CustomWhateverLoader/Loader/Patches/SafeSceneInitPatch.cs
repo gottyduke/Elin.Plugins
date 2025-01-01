@@ -2,7 +2,7 @@
 using Cwl.Helper.Unity;
 using HarmonyLib;
 
-namespace Cwl.Loader.Patches;
+namespace Cwl.Patches;
 
 [HarmonyPatch]
 internal class SafeSceneInitPatch

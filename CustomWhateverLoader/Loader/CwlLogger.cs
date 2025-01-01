@@ -1,6 +1,6 @@
 ﻿using Cwl.ThirdParty;
 
-namespace Cwl.Loader;
+namespace Cwl;
 
 internal sealed partial class CwlMod
 {

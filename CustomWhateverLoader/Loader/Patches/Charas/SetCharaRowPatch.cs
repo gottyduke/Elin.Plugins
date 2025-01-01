@@ -1,8 +1,8 @@
 ﻿using Cwl.API.Custom;
-using Cwl.Loader.Patches.Sources;
+using Cwl.Patches.Sources;
 using HarmonyLib;
 
-namespace Cwl.Loader.Patches.Charas;
+namespace Cwl.Patches.Charas;
 
 [HarmonyPatch]
 internal class SetCharaRowPatch

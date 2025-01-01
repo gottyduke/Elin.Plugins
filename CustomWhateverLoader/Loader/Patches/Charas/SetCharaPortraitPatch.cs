@@ -3,7 +3,7 @@ using Cwl.API.Custom;
 using Cwl.Helper.Unity;
 using HarmonyLib;
 
-namespace Cwl.Loader.Patches.Charas;
+namespace Cwl.Patches.Charas;
 
 [HarmonyPatch]
 internal class SetCharaPortraitPatch

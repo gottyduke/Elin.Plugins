@@ -8,7 +8,7 @@ using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
 
-namespace Cwl.Loader.Patches.Conditions;
+namespace Cwl.Patches.Conditions;
 
 [HarmonyPatch]
 internal class SafeCreateConditionPatch

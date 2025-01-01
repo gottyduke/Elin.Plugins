@@ -4,7 +4,7 @@ using System.Reflection.Emit;
 using HarmonyLib;
 using MethodTimer;
 
-namespace Cwl.Loader.Patches.Dialogs;
+namespace Cwl.Patches.Dialogs;
 
 [HarmonyPatch]
 internal class VariableQuotePatch

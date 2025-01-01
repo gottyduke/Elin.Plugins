@@ -1,10 +1,10 @@
 ﻿using Cwl.API.Custom;
 using Cwl.Helper.String;
-using Cwl.Loader.Patches.Sources;
+using Cwl.Patches.Sources;
 using HarmonyLib;
 using MethodTimer;
 
-namespace Cwl.Loader.Patches.Religions;
+namespace Cwl.Patches.Religions;
 
 [HarmonyPatch]
 internal class SetReligionRowPatch

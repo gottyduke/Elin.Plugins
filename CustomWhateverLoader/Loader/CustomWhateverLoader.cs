@@ -3,7 +3,7 @@ using BepInEx;
 using Cwl.Helper;
 using Cwl.ThirdParty;
 
-namespace Cwl.Loader;
+namespace Cwl;
 
 public static class ModInfo
 {

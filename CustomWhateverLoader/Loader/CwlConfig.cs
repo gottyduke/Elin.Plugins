@@ -2,7 +2,7 @@
 
 // ReSharper disable MemberHidesStaticFromOuterClass
 
-namespace Cwl.Loader;
+namespace Cwl;
 
 public class CwlConfig
 {

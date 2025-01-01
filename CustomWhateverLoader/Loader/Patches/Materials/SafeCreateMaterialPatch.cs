@@ -3,7 +3,7 @@ using HarmonyLib;
 using MethodTimer;
 using SwallowExceptions.Fody;
 
-namespace Cwl.Loader.Patches.Materials;
+namespace Cwl.Patches.Materials;
 
 [HarmonyPatch]
 internal class SafeCreateMaterialPatch

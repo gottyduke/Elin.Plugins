@@ -5,7 +5,7 @@ using Cwl.LangMod;
 using HarmonyLib;
 using SwallowExceptions.Fody;
 
-namespace Cwl.Loader.Patches.Quests;
+namespace Cwl.Patches.Quests;
 
 [HarmonyPatch]
 internal class SafeCreateQuestPatch

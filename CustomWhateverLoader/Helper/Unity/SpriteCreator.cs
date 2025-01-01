@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Cwl.Helper.String;
 using Cwl.LangMod;
-using Cwl.Loader;
 using UnityEngine;
 using Object = UnityEngine.Object;
 

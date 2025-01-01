@@ -5,7 +5,7 @@ using Cwl.API.Processors;
 using HarmonyLib;
 using MethodTimer;
 
-namespace Cwl.Loader.Patches.GameSaveLoad;
+namespace Cwl.Patches.GameSaveLoad;
 
 [HarmonyPatch]
 internal class SafeResolveTypePatch

@@ -3,12 +3,12 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
-using Cwl.Loader.Patches.Sources;
+using Cwl.Patches.Sources;
 using HarmonyLib;
 using MethodTimer;
 using UnityEngine;
 
-namespace Cwl.Loader.Patches.Materials;
+namespace Cwl.Patches.Materials;
 
 [HarmonyPatch]
 internal class SetMaterialRowPatch

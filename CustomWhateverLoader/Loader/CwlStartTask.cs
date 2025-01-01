@@ -2,13 +2,13 @@
 using System.Reflection;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
-using Cwl.Loader.Patches;
-using Cwl.Loader.Patches.Relocation;
-using Cwl.Loader.Patches.Sources;
+using Cwl.Patches;
+using Cwl.Patches.Relocation;
+using Cwl.Patches.Sources;
 using HarmonyLib;
 using MethodTimer;
 
-namespace Cwl.Loader;
+namespace Cwl;
 
 internal sealed partial class CwlMod
 {

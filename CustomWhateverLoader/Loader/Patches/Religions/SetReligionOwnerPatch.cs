@@ -2,7 +2,7 @@
 using HarmonyLib;
 using MethodTimer;
 
-namespace Cwl.Loader.Patches.Religions;
+namespace Cwl.Patches.Religions;
 
 [HarmonyPatch]
 internal class SetReligionOwnerPatch

@@ -1,9 +1,9 @@
 ﻿using Cwl.API.Custom;
 using Cwl.Helper;
-using Cwl.Loader.Patches.Sources;
+using Cwl.Patches.Sources;
 using HarmonyLib;
 
-namespace Cwl.Loader.Patches.Conditions;
+namespace Cwl.Patches.Conditions;
 
 [HarmonyPatch]
 internal class SetConditionRowPatch

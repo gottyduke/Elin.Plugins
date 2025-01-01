@@ -8,7 +8,7 @@ using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
 
-namespace Cwl.Loader.Patches.Relocation;
+namespace Cwl.Patches.Relocation;
 
 internal class LoadDataPatch
 {

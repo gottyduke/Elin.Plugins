@@ -4,8 +4,7 @@ using System.Linq;
 using Cwl.API.Processors;
 using Cwl.Helper;
 using Cwl.LangMod;
-using Cwl.Loader;
-using Cwl.Loader.Patches;
+using Cwl.Patches;
 using MethodTimer;
 
 namespace Cwl.API.Custom;

@@ -2,7 +2,7 @@
 using Cwl.LangMod;
 using HarmonyLib;
 
-namespace Cwl.Loader.Patches.Sources;
+namespace Cwl.Patches.Sources;
 
 [HarmonyPatch]
 internal class CellPostProcessPatch

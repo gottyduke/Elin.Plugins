@@ -2,7 +2,7 @@
 using HarmonyLib;
 using SwallowExceptions.Fody;
 
-namespace Cwl.Loader.Patches.GameSaveLoad;
+namespace Cwl.Patches.GameSaveLoad;
 
 [HarmonyPatch(typeof(Game), nameof(Game.Save))]
 internal class GameSavePatch

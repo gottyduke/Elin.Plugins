@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using Cwl.Helper.String;
-using Cwl.Loader;
 
 namespace Cwl.Helper.FileUtil;
 

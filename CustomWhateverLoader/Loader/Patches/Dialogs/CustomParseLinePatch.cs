@@ -2,8 +2,9 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
+using SwallowExceptions.Fody;
 
-namespace Cwl.Loader.Patches.Dialogs;
+namespace Cwl.Patches.Dialogs;
 
 [HarmonyPatch]
 internal class CustomParseLinePatch
@@ -47,9 +48,7 @@ internal class CustomParseLinePatch
         }
 
         var harmony = new Harmony(ModInfo.Guid);
-        harmony.Patch(
-            mi,
-            transpiler: new(typeof(CustomParseLinePatch), nameof(InternalSoundStopperIl)));
+        harmony.Patch(mi, transpiler: new(typeof(CustomParseLinePatch), nameof(InternalSoundStopperIl)));
 
         return cm.InstructionEnumeration();
     }
@@ -67,6 +66,7 @@ internal class CustomParseLinePatch
             .InstructionEnumeration();
     }
 
+    [SwallowExceptions]
     private static SoundSource NoOverlappingPlay(SoundManager sm, string id)
     {
         _lastPlayed?.Stop();

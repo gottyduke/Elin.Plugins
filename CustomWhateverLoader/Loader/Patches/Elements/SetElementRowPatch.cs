@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using Cwl.API.Custom;
 using Cwl.Helper;
-using Cwl.Loader.Patches.Sources;
+using Cwl.Patches.Sources;
 using HarmonyLib;
 
-namespace Cwl.Loader.Patches.Elements;
+namespace Cwl.Patches.Elements;
 
 [HarmonyPatch]
 internal class SetElementRowPatch

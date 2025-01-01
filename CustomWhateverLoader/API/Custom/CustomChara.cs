@@ -5,8 +5,7 @@ using System.Linq;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
-using Cwl.Loader;
-using Cwl.Loader.Patches;
+using Cwl.Patches;
 using MethodTimer;
 
 namespace Cwl.API.Custom;

@@ -4,7 +4,7 @@ using HarmonyLib;
 using MethodTimer;
 using UnityEngine;
 
-namespace Cwl.Loader.Patches;
+namespace Cwl.Patches;
 
 [HarmonyPatch]
 internal class LoadSpritePatch
