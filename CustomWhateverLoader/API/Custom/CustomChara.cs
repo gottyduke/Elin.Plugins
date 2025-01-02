@@ -208,6 +208,7 @@ public class CustomChara : Chara
                 }
 
                 thing = chara.EQ_ID(id, r: rarity);
+                thing.c_IDTState = 0;
                 if (!thing.isDestroyed) {
                     thing.ChangeRarity(rarity);
                     CwlMod.Log("cwl_log_added_eq".Loc(id, thing.rarity.ToString(), chara.id));
@@ -220,6 +221,7 @@ public class CustomChara : Chara
             }
 
             thing = ThingGen.Create(id).SetNum(count);
+            thing.c_IDTState = 0;
             chara.AddThing(thing);
 
             CwlMod.Log("cwl_log_added_thing".Loc(id, thing.Num, chara.id));
