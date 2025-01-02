@@ -13,7 +13,7 @@ namespace Cwl.Patches.Traits;
 internal class SafeCreateTraitPatch
 {
     private static readonly HashSet<string> _qualifiedTraits = [];
-    
+
     internal static bool Prepare()
     {
         return CwlConfig.QualifyTypeName;

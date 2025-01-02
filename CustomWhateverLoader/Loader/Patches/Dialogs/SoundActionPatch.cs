@@ -15,7 +15,7 @@ internal class SoundActionPatch
     {
         return CwlConfig.NoOverlappingSounds;
     }
-    
+
     // patch so that sounds don't overlap in dialogs
     [HarmonyTranspiler]
     [HarmonyPatch(typeof(DramaManager), nameof(DramaManager.ParseLine))]

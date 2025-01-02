@@ -35,7 +35,7 @@ public static class SpriteCreator
                     tex.name = cache;
                 }
             }
-            
+
             _cached[cache] = tex;
         } catch (Exception ex) {
             CwlMod.Warn("cwl_warn_sprite_creator".Loc(path.ShortPath(), ex));

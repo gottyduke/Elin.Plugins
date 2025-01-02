@@ -63,6 +63,7 @@ internal sealed partial class CwlMod
         }
 
         QueryDeclTypes();
+        QueryEventDispatchers();
     }
 
     [Time]
@@ -76,5 +77,11 @@ internal sealed partial class CwlMod
         TypeQualifier.SafeQueryTypes<BaseCondition>();
         TypeQualifier.SafeQueryTypes<Trait>();
         TypeQualifier.SafeQueryTypes<Zone>();
+    }
+
+    [Time]
+    private static void QueryEventDispatchers()
+    {
+        MethodDispatcher.BuildDispatchList<Feat>("_OnApply");
     }
 }
