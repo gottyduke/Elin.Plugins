@@ -7,7 +7,7 @@ using SwallowExceptions.Fody;
 namespace Cwl.Patches.Dialogs;
 
 [HarmonyPatch]
-internal class CustomParseLinePatch
+internal class SoundActionPatch
 {
     private static SoundSource? _lastPlayed;
 
@@ -48,7 +48,7 @@ internal class CustomParseLinePatch
         }
 
         var harmony = new Harmony(ModInfo.Guid);
-        harmony.Patch(mi, transpiler: new(typeof(CustomParseLinePatch), nameof(InternalSoundStopperIl)));
+        harmony.Patch(mi, transpiler: new(typeof(SoundActionPatch), nameof(InternalSoundStopperIl)));
 
         return cm.InstructionEnumeration();
     }

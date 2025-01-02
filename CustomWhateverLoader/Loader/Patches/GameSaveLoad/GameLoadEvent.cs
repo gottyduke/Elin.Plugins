@@ -5,7 +5,7 @@ using SwallowExceptions.Fody;
 namespace Cwl.Patches.GameSaveLoad;
 
 [HarmonyPatch(typeof(Game), nameof(Game.Load))]
-internal class GameLoadPatch
+internal class GameLoadEvent
 {
     [SwallowExceptions]
     [HarmonyPrefix]
