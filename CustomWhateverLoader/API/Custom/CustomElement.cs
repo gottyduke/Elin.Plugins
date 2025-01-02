@@ -31,7 +31,11 @@ public class CustomElement : Element
     public static void AddElement(SourceElement.Row r, string qualified)
     {
         try {
-            ModSpriteReplacer.AppendSpriteSheet(r.alias, 48, 48);
+            var size = r.group switch {
+                "FEAT" => 32,
+                _ => 48,
+            };
+            ModSpriteReplacer.AppendSpriteSheet(r.alias, size, size);
 
             if (CwlConfig.QualifyTypeName) {
                 r.type = qualified;
