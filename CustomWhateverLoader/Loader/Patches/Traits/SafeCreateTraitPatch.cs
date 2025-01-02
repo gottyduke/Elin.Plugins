@@ -12,6 +12,8 @@ namespace Cwl.Patches.Traits;
 [HarmonyPatch]
 internal class SafeCreateTraitPatch
 {
+    private static readonly HashSet<string> _qualifiedTraits = [];
+    
     internal static bool Prepare()
     {
         return CwlConfig.QualifyTypeName;
@@ -60,7 +62,9 @@ internal class SafeCreateTraitPatch
             ClassCache.caches.dict[unqualified] = () => Activator.CreateInstance(qualified);
             trait = ClassCache.caches.dict[unqualified]() as Trait;
 
-            CwlMod.Log("cwl_log_custom_type".Loc(nameof(Trait), unqualified, qualified.FullName));
+            if (_qualifiedTraits.Add(qualified.FullName)) {
+                CwlMod.Log("cwl_log_custom_type".Loc(nameof(Trait), unqualified, qualified.FullName));
+            }
         } catch {
             CwlMod.Warn("cwl_error_qualify_type".Loc(nameof(Trait), $"{unqualified} @ {owner.id}", ""));
             // noexcept

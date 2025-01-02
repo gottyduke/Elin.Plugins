@@ -11,9 +11,9 @@ namespace Cwl.Helper;
 
 public class TypeQualifier
 {
-    private static readonly HashSet<TypeInfo> _declared = [];
-    private static readonly Dictionary<string, Type> _cached = [];
+    internal static readonly HashSet<TypeInfo> Declared = [];
     internal static List<BaseUnityPlugin>? Plugins;
+    private static readonly Dictionary<string, Type> _cached = [];
 
     public static Type? TryQualify<T>(params string[] unqualified) where T : EClass
     {
@@ -26,7 +26,7 @@ public class TypeQualifier
                 return cached;
             }
 
-            var types = _declared.Where(t => typeof(T).IsAssignableFrom(t)).ToArray();
+            var types = Declared.Where(t => typeof(T).IsAssignableFrom(t)).ToArray();
             var qualified = types.FirstOrDefault(t => t.FullName == unq) ??
                             types.FirstOrDefault(t => t.Name == unq);
 
@@ -70,6 +70,6 @@ public class TypeQualifier
             }
         }
 
-        declared.Do(decl => _declared.Add(decl));
+        declared.Do(decl => Declared.Add(decl));
     }
 }
