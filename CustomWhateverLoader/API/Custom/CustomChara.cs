@@ -21,6 +21,7 @@ public class CustomChara : Chara
 
     private static readonly Dictionary<string, CharaImport> _delayedCharaImport = [];
     internal static readonly Dictionary<string, string> DramaRoute = [];
+    internal static readonly Dictionary<string, string> BioOverride = [];
 
     public static IEnumerable<string> All => _delayedCharaImport.Keys;
 
@@ -48,28 +49,36 @@ public class CustomChara : Chara
 
         foreach (var tag in tags) {
             var @params = tag.Split('_');
-            var type = @params[0];
-            switch (type) {
+            var action = @params[0];
+            switch (action) {
                 case "AdvZone":
                 case "Zone":
-                    zone = tag[(type.Length + 1)..];
+                    zone = tag[(action.Length + 1)..];
                     break;
                 case "AdvEq":
                 case "Eq":
-                    equips.Add(tag[(type.Length + 1)..]);
+                    equips.Add(tag[(action.Length + 1)..]);
                     break;
                 case "AdvThing":
                 case "Thing":
-                    things.Add(tag[(type.Length + 1)..]);
+                    things.Add(tag[(action.Length + 1)..]);
                     break;
                 case "Stock":
                     CustomMerchant.AddStock(r.id);
                     break;
                 case "Drama":
-                    var drama = @params[1];
+                    var drama = tag[(action.Length + 1)..];
                     if (drama is not "" &&
                         PackageIterator.GetRelocatedFilesFromPackage($"Dialog/Drama/{drama}.xlsx").Any()) {
                         DramaRoute[r.id] = drama;
+                    }
+
+                    break;
+                case "Bio":
+                    var bio = @params[1];
+                    var data = PackageIterator.GetRelocatedFilesFromPackage($"Data/bio_{bio}.json").ToArray();
+                    if (bio is not "" && data.Length > 0) {
+                        BioOverride[r.id] = data[0].FullName;
                     }
 
                     break;
@@ -173,7 +182,7 @@ public class CustomChara : Chara
                     var zones = game.spatials.map.Values
                         .OfType<Zone>()
                         .ToArray();
-                    var homeZone = zones.FirstOrDefault(z => z is not Zone_Dungeon && 
+                    var homeZone = zones.FirstOrDefault(z => z is not Zone_Dungeon &&
                                                              z.GetType().Name.Split("_")[^1] == import.Zone) ??
                                    zones.Where(z => z.CanSpawnAdv).RandomItem();
 

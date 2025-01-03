@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Cwl.Helper;
 
-public class ReverseId : EClass
+public static class ReverseId
 {
     private static readonly Dictionary<string, int> _cached = [];
 
@@ -15,17 +15,27 @@ public class ReverseId : EClass
             return id;
         }
 
-        var row = sources.materials.map
+        var row = EClass.sources.materials.map
             .Where(kv =>
                 string.Equals(kv.Value.alias, materialName.Trim(), StringComparison.InvariantCultureIgnoreCase))
             .Select(kv => kv.Value)
             .FirstOrDefault();
-        id = sources.materials.rows.IndexOf(row);
+        id = EClass.sources.materials.rows.IndexOf(row);
         if (id is -1) {
             id = fallback;
         }
 
         _cached[cache] = id;
         return id;
+    }
+
+    public static int NextUniqueKey<T>(this Dictionary<int, T> dict, int step = -1)
+    {
+        var key = -1;
+        while (dict.ContainsKey(key)) {
+            key += step;
+        }
+
+        return key;
     }
 }

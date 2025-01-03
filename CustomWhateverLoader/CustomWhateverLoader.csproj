@@ -148,6 +148,7 @@
         <Compile Include="API\Processors\TraitTransformer.cs"/>
         <Compile Include="API\Processors\TypeResolver.cs"/>
         <Compile Include="API\Processors\WorkbookProcessor.cs"/>
+        <Compile Include="API\Serializable\SerializableBioData.cs"/>
         <Compile Include="API\Serializable\SerializableSoundData.cs"/>
         <Compile Include="API\Serializable\SerializableStockData.cs"/>
         <Compile Include="API\WorkbookImporter.cs"/>
@@ -180,6 +181,7 @@
         <Compile Include="Loader\CwlConfig.cs"/>
         <Compile Include="Loader\CwlLogger.cs"/>
         <Compile Include="Loader\CwlStartTask.cs"/>
+        <Compile Include="Loader\Patches\Charas\BioOverridePatch.cs"/>
         <Compile Include="Loader\Patches\Charas\SetCharaPortraitPatch.cs"/>
         <Compile Include="Loader\Patches\Charas\SetCharaRowPatch.cs"/>
         <Compile Include="Loader\Patches\Charas\ShowDialogPatch.cs"/>
