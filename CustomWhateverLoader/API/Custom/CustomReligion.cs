@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Cwl.API.Processors;
 using MethodTimer;
 using Newtonsoft.Json;
 
 namespace Cwl.API.Custom;
 
-public class CustomReligion(string religionId) : Religion
+public class CustomReligion(string religionId) : Religion, IChunkable
 {
     internal static readonly Dictionary<string, CustomReligion> Managed = [];
     private static bool _applied;
@@ -19,6 +20,8 @@ public class CustomReligion(string religionId) : Religion
     public override bool CanJoin => _canJoin;
 
     public static IEnumerable<CustomReligion> All => Managed.Values;
+
+    public string ChunkName => $"{typeof(CustomReligion).FullName}.{id}";
 
     public static CustomReligion GerOrAdd(string id)
     {
@@ -45,30 +48,40 @@ public class CustomReligion(string religionId) : Religion
         return this;
     }
 
-    [Time]
-    internal static void SaveCustomReligion(GameIOProcessor.GameIOContext context)
+    public void Reset()
     {
-        if (player?.chara?.faith is not CustomReligion custom) {
+        giftRank = 0;
+        mood = 0;
+    }
+    
+    [Time]
+    internal static void SaveCustomReligion(GameIOProcessor.GameIOContext? context)
+    {
+        if (context is null) {
             return;
         }
 
-        context.Save(custom);
+        foreach (var custom in game.religions.list.OfType<CustomReligion>()) {
+            context.Save(custom);
+        }
     }
 
     [Time]
-    internal static void LoadCustomReligion(GameIOProcessor.GameIOContext context)
+    internal static void LoadCustomReligion(GameIOProcessor.GameIOContext? context)
     {
-        if (player?.chara?.faith is not CustomReligion custom) {
+        if (context is null) {
             return;
         }
 
-        if (!context.Load<CustomReligion>(out var loaded) ||
-            loaded?._id != custom.id) {
-            return;
-        }
+        foreach (var custom in game.religions.list.OfType<CustomReligion>()) {
+            if (!context.Load<CustomReligion>(out var loaded, custom.ChunkName) ||
+                loaded?._id != custom.id) {
+                continue;
+            }
 
-        custom.giftRank = loaded.giftRank;
-        custom.mood = loaded.mood;
-        custom.relation = loaded.relation;
+            custom.giftRank = loaded.giftRank;
+            custom.mood = loaded.mood;
+            custom.relation = loaded.relation;
+        }
     }
 }

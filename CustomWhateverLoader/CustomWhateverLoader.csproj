@@ -148,7 +148,7 @@
         <Compile Include="API\Processors\TraitTransformer.cs"/>
         <Compile Include="API\Processors\TypeResolver.cs"/>
         <Compile Include="API\Processors\WorkbookProcessor.cs"/>
-        <Compile Include="API\Serializable\IChunkable.cs" />
+        <Compile Include="API\Serializable\IChunkable.cs"/>
         <Compile Include="API\Serializable\SerializableBioData.cs"/>
         <Compile Include="API\Serializable\SerializableSoundData.cs"/>
         <Compile Include="API\Serializable\SerializableStockData.cs"/>
@@ -200,7 +200,7 @@
         <Compile Include="Loader\Patches\Materials\SafeCreateMaterialPatch.cs"/>
         <Compile Include="Loader\Patches\Materials\SetMaterialRowPatch.cs"/>
         <Compile Include="Loader\Patches\Quests\SafeCreateQuestPatch.cs"/>
-        <Compile Include="Loader\Patches\Religions\RefreshFaithPatch.cs" />
+        <Compile Include="Loader\Patches\Religions\RefreshFaithPatch.cs"/>
         <Compile Include="Loader\Patches\Religions\SetReligionOwnerPatch.cs"/>
         <Compile Include="Loader\Patches\Religions\SetReligionPortraitPatch.cs"/>
         <Compile Include="Loader\Patches\Religions\SetReligionRowPatch.cs"/>

@@ -15,6 +15,7 @@ internal class SetReligionOwnerPatch
         foreach (var custom in CustomReligion.All) {
             __instance.list.Add(custom);
             __instance.dictAll.Add(custom.id, custom);
+            custom.Reset();
             custom.Init();
         }
     }
