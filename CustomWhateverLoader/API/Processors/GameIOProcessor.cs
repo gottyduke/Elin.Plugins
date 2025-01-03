@@ -11,6 +11,8 @@ public class GameIOProcessor
 {
     public delegate void GameIOProcess(GameIOContext context);
 
+    public static GameIOContext? LastUsedContext { get; private set; }
+
     private static event GameIOProcess OnGamePreSaveProcess = delegate { };
     private static event GameIOProcess OnGamePostSaveProcess = delegate { };
     private static event GameIOProcess OnGamePreLoadProcess = delegate { };
@@ -58,21 +60,21 @@ public class GameIOProcessor
 
     internal static void Save(string path, bool post)
     {
-        var context = new GameIOContext(path);
+        LastUsedContext = new(path);
         if (post) {
-            OnGamePostSaveProcess(context);
+            OnGamePostSaveProcess(LastUsedContext);
         } else {
-            OnGamePreSaveProcess(context);
+            OnGamePreSaveProcess(LastUsedContext);
         }
     }
 
     internal static void Load(string path, bool post)
     {
-        var context = new GameIOContext(path);
+        LastUsedContext = new(path);
         if (post) {
-            OnGamePostLoadProcess(context);
+            OnGamePostLoadProcess(LastUsedContext);
         } else {
-            OnGamePreLoadProcess(context);
+            OnGamePreLoadProcess(LastUsedContext);
         }
     }
 
@@ -96,6 +98,10 @@ public class GameIOProcessor
             }
 
             var type = typeof(T);
+            if (data is IChunkable chunk) {
+                chunkName = chunk.ChunkName;
+            }
+
             chunkName ??= $"{type.Assembly.GetName().Name}.{type.FullName ?? type.Name}";
 
             var file = Path.Combine(path, Storage, $"{chunkName}.{Extension}");

@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Cwl.API.Custom;
+﻿using Cwl.API.Custom;
 using Cwl.Helper;
 using HarmonyLib;
 using MethodTimer;
@@ -14,7 +13,7 @@ internal class FeatApplyEvent
     [SwallowExceptions]
     [HarmonyPostfix]
     [HarmonyPatch(typeof(Feat), nameof(Feat.Apply))]
-    internal static void OnApply(Feat __instance, int a, ElementContainer owner, bool hint, MethodInfo __originalMethod)
+    internal static void OnApply(Feat __instance, int a, ElementContainer owner, bool hint)
     {
         if (!CustomElement.Managed.ContainsKey(__instance.id)) {
             return;

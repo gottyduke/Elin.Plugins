@@ -10,9 +10,9 @@ public static class IntrospectCopy
 {
     private static readonly Dictionary<Type, FieldInfo[]> _cached = [];
 
-    public static void IntrospectCopyTo<T, TU>(this T source, TU target)
+    public static void IntrospectCopyTo<T, TU>(this T source, TU target, BindingFlags? flags = null)
     {
-        var access = AccessTools.all & ~BindingFlags.Static;
+        var access = flags ?? AccessTools.all & ~BindingFlags.Static;
 
         if (!_cached.TryGetValue(typeof(T), out var srcFields)) {
             _cached[typeof(T)] = srcFields = typeof(T).GetFields(access);
