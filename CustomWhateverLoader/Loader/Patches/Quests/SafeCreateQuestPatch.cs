@@ -20,7 +20,7 @@ internal class SafeCreateQuestPatch
 
         return CwlConfig.SafeCreateClass;
     }
-    
+
     // 23.73 fixed
     // https://elin-modding-resources.github.io/Elin.Docs/diff/424dbab1c12832c2e79eb2d9f3c9fd4d8cf56696
     private static void ResolveQuest(ref bool resolved, Type objectType, ref Type readType, string qualified)
