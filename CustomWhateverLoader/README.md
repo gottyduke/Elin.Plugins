@@ -1,6 +1,6 @@
 ## Custom Whatever Loader
 
-![Version](https://img.shields.io/badge/Version-1.16.0-R.svg)
+![Version](./assets/CWL_banner.png)
 
 [中文](./README.CN.md)  
 [日本語](./README.JP.md)  
