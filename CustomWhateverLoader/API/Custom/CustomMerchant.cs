@@ -86,8 +86,7 @@ public class CustomMerchant : TraitMerchant
 
     private static void TransformMerchant(ref string traitName, Card traitOwner)
     {
-        if (traitName == nameof(TraitMerchant) &&
-            Managed.Keys.Contains(traitOwner.id)) {
+        if (traitName == nameof(TraitMerchant) && Managed.Keys.Contains(traitOwner.id)) {
             traitName = nameof(CustomMerchant);
         }
     }

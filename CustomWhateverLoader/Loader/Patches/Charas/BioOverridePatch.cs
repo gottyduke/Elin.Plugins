@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Reflection.Emit;
 using Cwl.API;
 using Cwl.API.Custom;
@@ -16,12 +17,19 @@ internal class BioOverridePatch
     private const int FallbackRowId = -1;
     private static readonly Dictionary<Chara, SerializableBioData> _cached = [];
 
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(Biography), nameof(Biography.Generate))]
-    internal static void OnGenerate(Biography __instance, Chara c)
+    internal static IEnumerable<MethodInfo> TargetMethods()
     {
-        if (!CustomChara.BioOverride.TryGetValue(c.id, out var file) ||
-            _cached.ContainsKey(c)) {
+        return [
+            AccessTools.Method(typeof(Chara), "OnDeserialized"),
+            AccessTools.Method(typeof(Chara), nameof(Chara.OnCreate)),
+        ];
+    }
+
+    [HarmonyPostfix]
+    internal static void OnCharaInstantiation(Chara __instance)
+    {
+        if (!CustomChara.BioOverride.TryGetValue(__instance.id, out var file) ||
+            _cached.ContainsKey(__instance)) {
             return;
         }
 
@@ -31,15 +39,15 @@ internal class BioOverridePatch
             }
 
             if (bio.Birthday != FallbackRowId) {
-                __instance.birthDay = bio.Birthday;
+                __instance.bio.birthDay = bio.Birthday;
             }
 
             if (bio.Birthmonth != FallbackRowId) {
-                __instance.birthMonth = bio.Birthmonth;
+                __instance.bio.birthMonth = bio.Birthmonth;
             }
 
             if (bio.Birthyear != FallbackRowId) {
-                __instance.birthYear = bio.Birthyear;
+                __instance.bio.birthYear = bio.Birthyear;
             }
 
             ref var langWord = ref EMono.sources.langWord.map;
@@ -49,68 +57,72 @@ internal class BioOverridePatch
                 name = "",
             });
 
-            __instance.idAdvDad = FallbackRowId;
-            __instance.idDad = langWord.NextUniqueKey();
-            langWord[__instance.idDad] = new() {
-                id = __instance.idDad,
+            __instance.bio.idAdvDad = FallbackRowId;
+            __instance.bio.idDad = langWord.NextUniqueKey();
+            langWord[__instance.bio.idDad] = new() {
+                id = __instance.bio.idDad,
                 name_JP = bio.Dad_JP,
                 name = bio.Dad,
             };
 
-            __instance.idAdvMom = FallbackRowId;
-            __instance.idMom = langWord.NextUniqueKey();
-            langWord[__instance.idMom] = new() {
-                id = __instance.idMom,
+            __instance.bio.idAdvMom = FallbackRowId;
+            __instance.bio.idMom = langWord.NextUniqueKey();
+            langWord[__instance.bio.idMom] = new() {
+                id = __instance.bio.idMom,
                 name_JP = bio.Mom_JP,
                 name = bio.Mom,
             };
 
-            __instance.idHome = langWord.NextUniqueKey();
-            langWord[__instance.idHome] = new() {
-                id = __instance.idHome,
+            __instance.bio.idHome = langWord.NextUniqueKey();
+            langWord[__instance.bio.idHome] = new() {
+                id = __instance.bio.idHome,
                 name_JP = bio.Birthplace_JP,
                 name = bio.Birthplace,
             };
 
-            __instance.idLoc = langWord.NextUniqueKey();
-            langWord[__instance.idLoc] = new() {
-                id = __instance.idLoc,
+            __instance.bio.idLoc = langWord.NextUniqueKey();
+            langWord[__instance.bio.idLoc] = new() {
+                id = __instance.bio.idLoc,
                 name_JP = bio.Birthlocation_JP,
                 name = bio.Birthlocation,
             };
 
-            _cached[c] = bio;
+            _cached[__instance] = bio;
         } catch (Exception ex) {
             CwlMod.Warn("cwl_error_failure".Loc(ex));
             // noexcept
         }
     }
 
-    [HarmonyTranspiler]
-    [HarmonyPatch(typeof(WindowChara), nameof(WindowChara.RefreshNote))]
-    internal static IEnumerable<CodeInstruction> OnSetNpcBackgroundIl(IEnumerable<CodeInstruction> instructions)
+    [HarmonyPatch]
+    internal class WindowBioSubPatch
     {
-        return new CodeMatcher(instructions)
-            .MatchEndForward(
-                new CodeMatch(OpCodes.Ldstr, "???"),
-                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(
-                    typeof(UIText),
-                    nameof(UIText.SetText),
-                    [typeof(string)])))
-            .InsertAndAdvance(
-                new CodeInstruction(OpCodes.Ldarg_0),
-                Transpilers.EmitDelegate(GetNpcBackground))
-            .InstructionEnumeration();
-    }
-
-    private static string GetNpcBackground(string fallback, Chara c)
-    {
-        if (!_cached.TryGetValue(c, out var bio)) {
-            return fallback;
+        [HarmonyTranspiler]
+        [HarmonyPatch(typeof(WindowChara), nameof(WindowChara.RefreshNote))]
+        internal static IEnumerable<CodeInstruction> OnSetNpcBackgroundIl(IEnumerable<CodeInstruction> instructions)
+        {
+            return new CodeMatcher(instructions)
+                .MatchEndForward(
+                    new CodeMatch(OpCodes.Ldstr, "???"),
+                    new CodeMatch(OpCodes.Callvirt, AccessTools.Method(
+                        typeof(UIText),
+                        nameof(UIText.SetText),
+                        [typeof(string)])))
+                .InsertAndAdvance(
+                    new CodeInstruction(OpCodes.Ldarg_0),
+                    Transpilers.EmitDelegate(GetNpcBackground))
+                .InstructionEnumeration();
         }
 
-        return Lang.isJP
-            ? bio.Background_JP
-            : bio.Background;
+        private static string GetNpcBackground(string fallback, Chara c)
+        {
+            if (!_cached.TryGetValue(c, out var bio)) {
+                return fallback;
+            }
+
+            return Lang.isJP
+                ? bio.Background_JP
+                : bio.Background;
+        }
     }
 }

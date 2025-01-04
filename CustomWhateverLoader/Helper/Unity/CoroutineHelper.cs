@@ -26,6 +26,11 @@ public class CoroutineHelper : MonoBehaviour
         return Instance.StartCoroutine(co);
     }
 
+    public static void Immediate(Action action)
+    {
+        Instance.StartDeferredCoroutine(action, 0);
+    }
+
     /// <summary>
     ///     Defer for frames
     /// </summary>

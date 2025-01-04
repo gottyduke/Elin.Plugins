@@ -53,7 +53,7 @@ public class CustomReligion(string religionId) : Religion, IChunkable
         giftRank = 0;
         mood = 0;
     }
-    
+
     [Time]
     internal static void SaveCustomReligion(GameIOProcessor.GameIOContext? context)
     {

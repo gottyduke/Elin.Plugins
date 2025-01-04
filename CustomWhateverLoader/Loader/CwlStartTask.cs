@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Reflection;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
@@ -28,8 +29,8 @@ internal sealed partial class CwlMod
         foreach (var patch in AccessTools.GetTypesFromAssembly(Assembly.GetExecutingAssembly())) {
             try {
                 harmony.CreateClassProcessor(patch).Patch();
-            } catch {
-                Error("failed to apply patch");
+            } catch (Exception ex) {
+                Error($"failed to apply patch {ex}");
                 // noexcept
             }
         }
@@ -76,6 +77,7 @@ internal sealed partial class CwlMod
         TypeQualifier.SafeQueryTypes<Element>();
         TypeQualifier.SafeQueryTypes<BaseCondition>();
         TypeQualifier.SafeQueryTypes<Trait>();
+        TypeQualifier.SafeQueryTypes<Quest>();
         TypeQualifier.SafeQueryTypes<Zone>();
     }
 
