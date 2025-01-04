@@ -21,9 +21,9 @@ internal class Donakoko : BaseUnityPlugin
     private void Awake()
     {
         Instance = this;
-        
+
         DonaConfig.Load(Config);
-        
+
         var harmony = new Harmony(ModInfo.Guid);
         harmony.PatchAll();
     }
@@ -32,7 +32,7 @@ internal class Donakoko : BaseUnityPlugin
     {
         GameIOProcessor.AddLoad(PostLoadEvent.AddItemIfMissing, true);
     }
-    
+
     internal static void Log(object payload)
     {
         Instance!.Logger.LogInfo(payload);

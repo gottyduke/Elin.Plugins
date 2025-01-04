@@ -63,11 +63,11 @@
             <Private>False</Private>
         </Reference>
         <Reference Include="Plugins.Sound">
-          <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.Sound.dll</HintPath>
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.Sound.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Plugins.UI">
-          <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.UI.dll</HintPath>
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.UI.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="System"/>
@@ -81,34 +81,34 @@
             <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.InputLegacyModule">
-          <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
             <Private>False</Private>
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="Common\Constants.cs" />
-        <Compile Include="DonaConfig.cs" />
+        <Compile Include="Common\Constants.cs"/>
+        <Compile Include="DonaConfig.cs"/>
         <Compile Include="Donakoko.cs"/>
-        <Compile Include="Patches\DonaHitEvent.cs" />
-        <Compile Include="Feats\FeatDonaTrueSelf.cs" />
-        <Compile Include="Patches\PostLoadEvent.cs" />
-        <Compile Include="Stats\ConDonaAfterImage.cs" />
-        <Compile Include="Traits\TraitDonaCamera.cs" />
-        <Compile Include="Traits\TraitDonaSummon.cs" />
-        <Compile Include="Traits\TraitDonakoko.cs" />
+        <Compile Include="Patches\DonaHitEvent.cs"/>
+        <Compile Include="Feats\FeatDonaTrueSelf.cs"/>
+        <Compile Include="Patches\PostLoadEvent.cs"/>
+        <Compile Include="Stats\ConDonaAfterImage.cs"/>
+        <Compile Include="Traits\TraitDonaCamera.cs"/>
+        <Compile Include="Traits\TraitDonaSummon.cs"/>
+        <Compile Include="Traits\TraitDonakoko.cs"/>
     </ItemGroup>
     <ItemGroup>
-      <PackageReference Include="PolySharp" Version="1.15.0">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
+        <PackageReference Include="PolySharp" Version="1.15.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\..\..\CustomWhateverLoader\CustomWhateverLoader.csproj">
-        <Project>{a504bee4-ad1f-4657-81fa-bbddbbddaabb}</Project>
-        <Name>CustomWhateverLoader</Name>
-          <Private>False</Private>
-      </ProjectReference>
+        <ProjectReference Include="..\..\..\CustomWhateverLoader\CustomWhateverLoader.csproj">
+            <Project>{a504bee4-ad1f-4657-81fa-bbddbbddaabb}</Project>
+            <Name>CustomWhateverLoader</Name>
+            <Private>False</Private>
+        </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

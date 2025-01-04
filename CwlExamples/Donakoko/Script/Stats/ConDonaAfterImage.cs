@@ -1,14 +1,13 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using Dona.Common;
+using UnityEngine;
 
 namespace Dona.Stats;
 
-// は隣接した敵の複製体を中立仲間として作り出す能力。
-// 複製体はオリジナルよりもLvが低く、ドナココ本人よりも敵に優先的に狙われる。
-// 200回
-// デジカメ, あちこち擦り切れているが、レンズは丁寧に手入れがされている。
-// ステータスを上昇、首は他の装備をつけれない
 internal class ConDonaAfterImage : Condition
 {
+    private Coroutine? _effectRenderer;
+
     public override bool CanManualRemove => false;
 
     public override void OnStart()
@@ -22,6 +21,7 @@ internal class ConDonaAfterImage : Condition
     public override void OnValueChanged()
     {
         if (value > 0) {
+            _effectRenderer ??= core.StartCoroutine(RenderPartialEffects());
             owner.SetSummon(value + 1);
             return;
         }
@@ -36,5 +36,34 @@ internal class ConDonaAfterImage : Condition
         owner.PlayEffect("vanish");
         owner.PlaySound("vanish");
         owner.Destroy();
+
+        core.StopCoroutine(_effectRenderer);
+    }
+
+    private IEnumerator RenderPartialEffects()
+    {
+        yield return new WaitForSeconds(rndf(Constants.EffectFrameSkip));
+
+        while (owner is { isDestroyed: false, ExistsOnMap: true }) {
+            if (pc.CanSee(owner)) {
+                try {
+                    var effect = Effect.Get("rod");
+                    effect.speed *= 0.5f;
+
+                    var pos = owner.isSynced
+                        ? owner.GetRootCard().renderer.position
+                        : owner.GetRootCard().pos.Position();
+                    effect._Play(owner.GetRootCard().pos, pos, sprite: effect.sprites[5]);
+                } catch {
+                    yield break;
+                }
+            }
+
+            yield return new WaitForSeconds(Constants.EffectFrameSkip);
+        }
+
+        if (owner is { isDestroyed: false, ExistsOnMap: false }) {
+            owner.RemoveCondition<ConDonaAfterImage>();
+        }
     }
 }

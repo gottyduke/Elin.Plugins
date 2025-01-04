@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using Cwl.Helper.Unity;
-using Dona.Common;
+﻿using Dona.Common;
 using Dona.Feats;
 using Dona.Stats;
 using UnityEngine;
@@ -9,20 +7,39 @@ namespace Dona.Traits;
 
 internal class TraitDonakoko : TraitUniqueChara
 {
-    // デジカメ, あちこち擦り切れているが、レンズは丁寧に手入れがされている。
-    // ステータスを上昇、首は他の装備をつけれない
+    // は隣接した敵の複製体を中立仲間として作り出す能力。
+    // 複製体はオリジナルよりもLvが低く、ドナココ本人よりも敵に優先的に狙われる。
     internal void TakePhoto(Chara target)
     {
+        if (target.hp == 0) {
+            return;
+        }
+
         var feat = owner.elements.GetOrCreateElement(Constants.FeatId) as FeatDonaTrueSelf;
         feat?.SyncLv();
-        
+
         var featBonus = Mathf.Max((feat?.vBase ?? 1) - 1, 0) * 0.1f;
-        var targetLv = target.LV * 0.5f;
         var donaLv = owner.LV * (0.5f + featBonus);
+        var targetLv = target.LV * 0.5f;
+
+        var image = target.Duplicate();
+        image.bio = target.bio;
+        image._hobbies = target._hobbies;
+        image._ability = target._ability;
+        image._tactics = target._tactics;
+        image.elements = target.elements;
         
-        var image = CharaGen.Create(target.id, Mathf.RoundToInt(donaLv + targetLv));
-        image.MakeMinion(owner);
+        image.CalculateMaxStamina();
+        image.stamina.value = Mathf.Min(image._maxStamina, target.stamina.value);
+        image.mana.value = Mathf.Min(image.mana.value, image.mana.max);
+        image.hp = Mathf.Min(image.hp, image.MaxHP);
         
+        image.SetLv(Mathf.RoundToInt(donaLv + targetLv));
+        image.c_altName = target.Name;
+        image._alias = "dona_image_prefix".lang();
+
+        image.MakeMinion(pc);
+
         _zone.AddCard(image, target.pos.GetNearestPoint(allowChara: false));
         image.PlaySound("identify");
         image.PlayEffect("teleport");
@@ -30,27 +47,5 @@ internal class TraitDonakoko : TraitUniqueChara
         image.AddCondition<ConDonaAfterImage>();
         image.AddCondition<StanceTaunt>();
         image.tactics.source.taunt = 1;
-
-        core.StartCoroutine(RenderPartialEffects(image));
-    }
-
-    private static IEnumerator RenderPartialEffects(Chara? target)
-    {
-        while (target is { isDestroyed: false, ExistsOnMap: true }) {
-            if (pc.CanSee(target)) {
-                try {
-                    var effect = Effect.Get("rod");
-
-                    var pos = target.isSynced
-                        ? target.GetRootCard().renderer.position
-                        : target.GetRootCard().pos.Position();
-                    effect._Play(target.GetRootCard().pos, pos, sprite: effect.sprites[5]);
-                } catch {
-                    yield break;
-                }
-            }
-            
-            yield return new WaitForSeconds(Constants.EffectFrameSkip);
-        }
     }
 }

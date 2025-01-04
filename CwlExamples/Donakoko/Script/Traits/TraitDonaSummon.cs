@@ -12,21 +12,23 @@ internal class TraitDonaSummon : TraitItem
             c.SayNothingHappans();
             return false;
         }
-        
+
         var dona = game.cards.globalCharas.Values.FirstOrDefault(gc => gc.id == Constants.CharaId);
         if (dona is not null) {
             c.Say("dona_duplicate");
+            owner.ModNum(-1);
             return false;
         }
-        
-        if (!CustomChara.CreateTaggedChara(Constants.CharaId, out dona, [$"{Constants.CameraId}#Artifact"]) || 
+
+        if (!CustomChara.CreateTaggedChara(Constants.CharaId, out dona, [$"{Constants.CameraId}#Artifact"]) ||
             dona is null) {
             c.Say("dona_failed");
+            owner.ModNum(-1);
             return false;
         }
-        
+
         _zone.AddCard(dona, c.pos.GetNearestPoint(allowChara: false));
-        
+
         dona.SetFeat(Constants.FeatId);
         dona.MakeAlly();
         dona.PlaySound("identify");

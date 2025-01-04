@@ -21,6 +21,10 @@ internal class PostLoadEvent : EClass
             return;
         }
 
+        if (pc.things.Find(Constants.CameraSummonId) is not null) {
+            return;
+        }
+
         pc.Add(Constants.CameraSummonId);
         Msg.Say("dona_camera_given");
     }
