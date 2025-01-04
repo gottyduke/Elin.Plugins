@@ -19,6 +19,7 @@ internal class PostLoadEvent : EClass
                 // but not in player party, then add to party
                 dona.MakeAlly();
             }
+
             return;
         }
 

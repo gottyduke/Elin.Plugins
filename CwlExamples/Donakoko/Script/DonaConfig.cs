@@ -7,6 +7,7 @@ internal class DonaConfig
     internal static ConfigEntry<int>? ImageChance { get; private set; }
     internal static ConfigEntry<int>? ImageDuration { get; private set; }
     internal static ConfigEntry<int>? ImageLimit { get; private set; }
+    internal static ConfigEntry<int>? ImageLevelRatioCap { get; private set; }
 
     internal static void Load(ConfigFile config)
     {
@@ -27,5 +28,11 @@ internal class DonaConfig
             "ImageLimit",
             2,
             "Max amount of image at the same time\n最大同时存在的过往镜像数量");
+
+        ImageLevelRatioCap = config.Bind(
+            ModInfo.Name,
+            "ImageLevelRatioCap",
+            20,
+            "Multiplier of Coco's own level as the max level of image\n镜像等级最高限定为可可自身等级的倍率");
     }
 }

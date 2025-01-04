@@ -19,7 +19,7 @@ internal class TraitDonaSummon : TraitItem
         var dona = game.cards.globalCharas.Values.FirstOrDefault(gc => gc.id == Constants.CharaId);
         if (dona is not null) {
             c.Say("dona_duplicate");
-            
+
             // consume the camera
             owner.ModNum(-1);
             return false;
@@ -30,7 +30,7 @@ internal class TraitDonaSummon : TraitItem
             dona is null) {
             c.Say("dona_failed");
             dona?.Destroy();
-            
+
             // consume the camera
             owner.ModNum(-1);
             return false;
@@ -41,12 +41,12 @@ internal class TraitDonaSummon : TraitItem
 
         // give dona own feat
         dona.SetFeat(Constants.FeatId);
-        
+
         // add dona to pc party
         dona.MakeAlly();
         dona.PlaySound("identify");
         dona.PlayEffect("teleport");
-        
+
         // consume the camera
         owner.ModNum(-1);
         return true;

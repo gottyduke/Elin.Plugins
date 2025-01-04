@@ -18,7 +18,7 @@ internal class FeatDonaTrueSelf : Feat
     public override void OnWriteNote(UINote n, ElementContainer eleOwner)
     {
         base.OnWriteNote(n, eleOwner);
-        
+
         n.AddText("_bullet".lang() + "dona_feat_base".lang());
         if (vBase > 0) {
             n.AddText("_bullet".lang() + "dona_feat_bonus".Loc(vBase * 10));
