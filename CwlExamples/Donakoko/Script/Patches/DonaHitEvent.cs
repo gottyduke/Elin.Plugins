@@ -8,34 +8,33 @@ namespace Dona.Patches;
 [HarmonyPatch]
 internal class DonaHitEvent : EClass
 {
-    private static bool _skip;
-
     [HarmonyPostfix]
     [HarmonyPatch(typeof(AttackProcess), nameof(AttackProcess.Perform))]
     internal static void OnDonaAttack(AttackProcess __instance)
     {
+        // if not hit or target is not Chara
         if (!__instance.hit || __instance.TC is not Chara target) {
             return;
         }
 
+        // if attacker is not dona
         if (__instance.CC.trait is not TraitDonakoko dona) {
             return;
         }
 
+        // if existing images already at limit
         var images = _map.Cards.Where(c => c.HasCondition<ConDonaAfterImage>());
         if (images.Count() >= (DonaConfig.ImageLimit?.Value ?? 2)) {
             return;
         }
 
+        // chance of taking a photo
         var chance = DonaConfig.ImageChance?.Value ?? 10;
         if (chance < rnd(30)) {
             return;
         }
 
-        if (!_skip) {
-            dona.TakePhoto(target);
-        }
-
-        _skip = !_skip;
+        // take photo image
+        dona.TakePhoto(target);
     }
 }

@@ -28,8 +28,9 @@ internal class Donakoko : BaseUnityPlugin
         harmony.PatchAll();
     }
 
-    private void OnStartCore()
+    private void Start()
     {
+        // register post load event with CWL
         GameIOProcessor.AddLoad(PostLoadEvent.AddItemIfMissing, true);
     }
 
