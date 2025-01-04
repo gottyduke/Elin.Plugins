@@ -30,7 +30,7 @@ internal class DonaHitEvent : EClass
 
         // chance of taking a photo
         var chance = DonaConfig.ImageChance?.Value ?? 10;
-        if (chance < rnd(30)) {
+        if (chance < rnd(100)) {
             return;
         }
 

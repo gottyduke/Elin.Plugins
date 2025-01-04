@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Meta>
 	<title>可可的异界大冒险</title>
-	<id>kekeGreatAdventure</id>
-	<author>hsyy</author>
+	<id>KokoGreatAdventure</id>
+	<author>红伞沅业</author>
 	<loadPriority>100</loadPriority>
 	<version>0.23.65</version>
 	<tags>NPC,Ally,Skill</tags>
