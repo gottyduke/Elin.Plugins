@@ -6,8 +6,10 @@ using Cwl.API;
 using Cwl.API.Custom;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
+using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using HarmonyLib;
+using SwallowExceptions.Fody;
 
 namespace Cwl.Patches.Charas;
 
@@ -61,16 +63,16 @@ internal class BioOverridePatch
             __instance.bio.idDad = langWord.NextUniqueKey();
             langWord[__instance.bio.idDad] = new() {
                 id = __instance.bio.idDad,
-                name_JP = bio.Dad_JP,
-                name = bio.Dad,
+                name_JP = bio.Dad_JP.Split("@")[0],
+                name = bio.Dad.Split("@")[0],
             };
 
             __instance.bio.idAdvMom = FallbackRowId;
             __instance.bio.idMom = langWord.NextUniqueKey();
             langWord[__instance.bio.idMom] = new() {
                 id = __instance.bio.idMom,
-                name_JP = bio.Mom_JP,
-                name = bio.Mom,
+                name_JP = bio.Mom_JP.Split("@")[0],
+                name = bio.Mom.Split("@")[0],
             };
 
             __instance.bio.idHome = langWord.NextUniqueKey();
@@ -112,6 +114,28 @@ internal class BioOverridePatch
                     new CodeInstruction(OpCodes.Ldarg_0),
                     Transpilers.EmitDelegate(GetNpcBackground))
                 .InstructionEnumeration();
+        }
+
+        [SwallowExceptions]
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(WindowChara), nameof(WindowChara.RefreshInfo))]
+        internal static void OnRefreshInfo(WindowChara __instance)
+        {
+            if (!_cached.TryGetValue(__instance.chara, out var bio)) {
+                return;
+            }
+
+            var mom = (Lang.isJP ? bio.Mom_JP : bio.Mom).Split("@");
+            var dad = (Lang.isJP ? bio.Dad_JP : bio.Dad).Split("@");
+
+            var info = __instance.transform.GetFirstNestedChildWithName("Content View/Profile/info");
+            if (mom.Length > 1) {
+                info?.GetFirstChildWithName("mom")?.GetComponent<UIText>()?.SetText(mom[1]);
+            }
+            
+            if (dad.Length > 1) {
+                info?.GetFirstChildWithName("dad")?.GetComponent<UIText>()?.SetText(dad[1]);
+            }
         }
 
         private static string GetNpcBackground(string fallback, Chara c)
