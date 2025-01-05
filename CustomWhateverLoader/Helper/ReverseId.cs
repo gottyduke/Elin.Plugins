@@ -38,4 +38,9 @@ public static class ReverseId
 
         return key;
     }
+
+    public static string HashKey(this Card card)
+    {
+        return $"{card.id}/{card.uid}";
+    }
 }

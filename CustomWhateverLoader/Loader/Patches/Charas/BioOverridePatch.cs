@@ -17,7 +17,7 @@ namespace Cwl.Patches.Charas;
 internal class BioOverridePatch
 {
     private const int FallbackRowId = -1;
-    private static readonly Dictionary<Chara, SerializableBioData> _cached = [];
+    private static readonly Dictionary<string, SerializableBioData> _cached = [];
 
     internal static IEnumerable<MethodInfo> TargetMethods()
     {
@@ -31,7 +31,7 @@ internal class BioOverridePatch
     internal static void OnCharaInstantiation(Chara __instance)
     {
         if (!CustomChara.BioOverride.TryGetValue(__instance.id, out var file) ||
-            _cached.ContainsKey(__instance)) {
+            _cached.ContainsKey(__instance.HashKey())) {
             return;
         }
 
@@ -89,7 +89,7 @@ internal class BioOverridePatch
                 name = bio.Birthlocation,
             };
 
-            _cached[__instance] = bio;
+            _cached[__instance.HashKey()] = bio;
         } catch (Exception ex) {
             CwlMod.Warn("cwl_error_failure".Loc(ex));
             // noexcept
@@ -121,7 +121,7 @@ internal class BioOverridePatch
         [HarmonyPatch(typeof(WindowChara), nameof(WindowChara.RefreshInfo))]
         internal static void OnRefreshInfo(WindowChara __instance)
         {
-            if (!_cached.TryGetValue(__instance.chara, out var bio)) {
+            if (!_cached.TryGetValue(__instance.chara.HashKey(), out var bio)) {
                 return;
             }
 
@@ -140,7 +140,7 @@ internal class BioOverridePatch
 
         private static string GetNpcBackground(string fallback, Chara c)
         {
-            if (!_cached.TryGetValue(c, out var bio)) {
+            if (!_cached.TryGetValue(c.HashKey(), out var bio)) {
                 return fallback;
             }
 
