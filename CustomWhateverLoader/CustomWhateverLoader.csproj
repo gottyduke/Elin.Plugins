@@ -218,6 +218,7 @@
         <Compile Include="Loader\Patches\Sources\SourceInitPatch.cs"/>
         <Compile Include="Loader\Patches\Traits\MerchantOnBarterPatch.cs"/>
         <Compile Include="Loader\Patches\Traits\SafeCreateTraitPatch.cs"/>
+        <Compile Include="Loader\Patches\Zones\SafeCreateZonePatch.cs"/>
         <Compile Include="Loader\Patches\Zones\SetZoneRowPatch.cs"/>
         <Compile Include="ThirdParty\Glance.cs"/>
     </ItemGroup>
