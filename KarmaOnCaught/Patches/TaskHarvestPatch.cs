@@ -9,95 +9,96 @@ namespace KoC.Patches;
 [HarmonyPatch]
 internal class TaskHarvestPatch
 {
-    private static Type? _closures;
+    private static bool _applied;
 
-    private static bool PatchEnabled => (KocConfig.PatchHarvest?.Value ?? false) && _closures is not null;
+    private static KocConfig.Patch Config => KocConfig.Managed["Harvest"];
 
-    [HarmonyPrepare]
-    internal static void DefineType()
+    internal static bool Prepare()
     {
-        _closures = AccessTools.FirstInner(typeof(TaskHarvest), t => t.Name.Contains("DisplayClass23_0"));
+        return Config.Enabled!.Value;
     }
 
-    [HarmonyPatch]
-    internal class OnCrimeWitnessSubPatch
+    [HarmonyTranspiler]
+    [HarmonyPatch(typeof(TaskHarvest), nameof(TaskHarvest.OnCreateProgress))]
+    internal static IEnumerable<CodeInstruction> OnCreateProgressIl(IEnumerable<CodeInstruction> instructions)
     {
-        private const string OnCrimeWitnessClosure = $"<{nameof(TaskHarvest.OnCreateProgress)}>b__1";
-
-        internal static bool Prepare()
-        {
-            return PatchEnabled;
+        if (_applied) {
+            return instructions;
         }
 
-        internal static MethodInfo TargetMethod()
-        {
-            return AccessTools.Method(_closures, OnCrimeWitnessClosure);
+        _applied = true;
+
+        var cm = new CodeMatcher(instructions);
+        var harmony = new Harmony(ModInfo.Guid);
+
+        CodeMatch[] onProgressFunctor = [
+            new(OpCodes.Ldftn),
+            new(OpCodes.Newobj),
+            new(OpCodes.Stfld, AccessTools.Field(
+                typeof(Progress_Custom),
+                nameof(Progress_Custom.onProgress))),
+        ];
+
+        if (cm.MatchStartForward(onProgressFunctor).IsValid && cm.Operand is MethodInfo onProgress) {
+            harmony.Patch(onProgress, transpiler: new(typeof(TaskHarvestPatch), nameof(OnCrimeWitnessIl)));
+            KocMod.Log("patched TaskHarvest.OnCreateProgress/onProgressFunctor");
+        } else {
+            KocMod.Log("failed to apply TaskHarvest.OnCreateProgress/onProgressFunctor");
         }
 
-        [HarmonyTranspiler]
-        internal static IEnumerable<CodeInstruction> OnCrimeWitnessIl(IEnumerable<CodeInstruction> instructions)
-        {
-            return new CodeMatcher(instructions)
-                .End()
-                .MatchEndBackwards(
-                    new CodeMatch(OpCodes.Callvirt, AccessTools.Method(
-                        typeof(Point),
-                        nameof(Point.TryWitnessCrime))))
-                .SetInstruction(
-                    Transpilers.EmitDelegate(TryWitnessHarvest))
-                .InstructionEnumeration();
+        CodeMatch[] onProgressCompleteFunctor = [
+            new(OpCodes.Ldftn),
+            new(OpCodes.Newobj),
+            new(OpCodes.Stfld, AccessTools.Field(
+                typeof(Progress_Custom),
+                nameof(Progress_Custom.onProgressComplete))),
+        ];
+
+        if (cm.MatchStartForward(onProgressCompleteFunctor).IsValid && cm.Operand is MethodInfo onProgressComplete) {
+            OnModKarmaPatch.ToRemove.Add(onProgressComplete);
+        } else {
+            KocMod.Log("failed to apply TaskHarvest.OnProgressComplete/onProgressCompleteFunctor");
         }
 
-        private static bool TryWitnessHarvest(Point pos, Chara cc, Chara? target, int radius, Func<Chara, bool>? func)
-        {
-            var difficulty = 0;
-            var detection = KocConfig.DetectionRadius!.Value;
-            var witnesses = pos.ListWitnesses(cc, detection).Count;
-
-            var caught = pos.TryWitnessCrime(cc, radius: detection, funcWitness: w => {
-                var los = w.CanSee(cc) ? 0.5f : 0f;
-                var perception = w.PER / (2f - los);
-
-                var randomCost = EClass.rnd((int)perception);
-                difficulty += randomCost;
-
-                return randomCost > cc.DEX;
-            });
-
-            var suspicion = (float)difficulty / (cc.DEX * witnesses);
-            KocMod.DoModKarma(caught, cc, -1, suspicion >= 0.9f, witnesses);
-            return caught;
-        }
+        return cm.InstructionEnumeration();
     }
 
-    [HarmonyPatch]
-    internal class OnProgressCompleteSubPatch
+    internal static IEnumerable<CodeInstruction> OnCrimeWitnessIl(IEnumerable<CodeInstruction> instructions)
     {
-        private const string OnProgressCompleteClosure = $"<{nameof(TaskHarvest.OnCreateProgress)}>b__2";
+        return new CodeMatcher(instructions)
+            .End()
+            .MatchEndBackwards(
+                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(
+                    typeof(Point),
+                    nameof(Point.TryWitnessCrime))))
+            .SetInstruction(
+                Transpilers.EmitDelegate(TryWitnessHarvest))
+            .InstructionEnumeration();
+    }
 
-        internal static bool Prepare()
-        {
-            return PatchEnabled;
+    private static bool TryWitnessHarvest(Point pos, Chara cc, Chara? target, int radius, Func<Chara, bool>? func)
+    {
+        if (KocMod.SkipNext()) {
+            return false;
         }
+        
+        var difficulty = 0f;
+        var detection = Config.DetectionRadius!.Value;
+        var mod = Config.DifficultyModifier!.Value;
 
-        internal static MethodInfo TargetMethod()
-        {
-            return AccessTools.Method(_closures, OnProgressCompleteClosure);
-        }
+        var witnesses = pos.ListWitnesses(cc, detection).Count;
+        var caught = pos.TryWitnessCrime(cc, radius: detection, funcWitness: w => {
+            var los = w.CanSee(cc) ? 50 : 0;
+            var perception = w.PER * (150 + los) / 100;
 
-        [HarmonyTranspiler]
-        internal static IEnumerable<CodeInstruction> OnProgressCompleteIl(IEnumerable<CodeInstruction> instructions)
-        {
-            return new CodeMatcher(instructions)
-                .MatchEndForward(
-                    new CodeMatch(OpCodes.Callvirt, AccessTools.Method(
-                        typeof(Zone),
-                        nameof(Zone.IsCrime))),
-                    new CodeMatch(OpCodes.Brfalse))
-                .InsertAndAdvance(
-                    new CodeInstruction(OpCodes.Pop))
-                .SetOpcodeAndAdvance(OpCodes.Br)
-                .InstructionEnumeration();
-        }
+            var randomCost = EClass.rndf(perception + mod);
+            difficulty += randomCost;
+
+            return randomCost > cc.DEX;
+        });
+
+        var suspicion = difficulty / (cc.DEX * witnesses + 1f);
+        KocMod.DoModKarma(caught, cc, -1, suspicion >= 0.65f, witnesses);
+        return caught;
     }
 }

@@ -9,102 +9,83 @@ namespace KoC.Patches;
 [HarmonyPatch]
 internal class AIStealPatch
 {
-    private static Type? _closures;
+    private static bool _applied;
 
-    private static bool PatchEnabled => (KocConfig.PatchSteal?.Value ?? false) && _closures is not null;
+    private static KocConfig.Patch Config => KocConfig.Managed["Steal"];
 
-    [HarmonyPrepare]
-    internal static void DefineType()
+    internal static bool Prepare()
     {
-        _closures = AccessTools.FirstInner(typeof(AI_Steal), t => t.Name.Contains("DisplayClass9_0"));
+        return Config.Enabled?.Value ?? false;
     }
 
-    [HarmonyPatch]
-    internal class OnCrimeWitnessSubPatch
+    [HarmonyTranspiler]
+    [HarmonyPatch(typeof(AI_Steal), nameof(AI_Steal.Run), MethodType.Enumerator)]
+    internal static IEnumerable<CodeInstruction> OnCreateProgressIl(IEnumerable<CodeInstruction> instructions)
     {
-        private const string OnCrimeWitnessClosure = $"<{nameof(AI_Steal.Run)}>b__2";
-
-        internal static bool Prepare()
-        {
-            return PatchEnabled;
+        if (_applied) {
+            return instructions;
         }
 
-        internal static MethodInfo TargetMethod()
-        {
-            return AccessTools.Method(_closures, OnCrimeWitnessClosure);
+        _applied = true;
+
+        var cm = new CodeMatcher(instructions);
+        var harmony = new Harmony(ModInfo.Guid);
+
+        CodeMatch[] onProgressFunctor = [
+            new(OpCodes.Ldftn),
+            new(OpCodes.Newobj),
+            new(OpCodes.Stfld, AccessTools.Field(
+                typeof(Progress_Custom),
+                nameof(Progress_Custom.onProgress))),
+        ];
+
+        if (cm.MatchStartForward(onProgressFunctor).IsValid && cm.Operand is MethodInfo onProgress) {
+            harmony.Patch(onProgress, transpiler: new(typeof(AIStealPatch), nameof(OnCrimeWitnessIl)));
+            KocMod.Log("patched AI_Steal.Run/onProgressFunctor");
+        } else {
+            KocMod.Log("failed to apply AI_Steal.Run/onProgressFunctor");
         }
 
-        [HarmonyTranspiler]
-        internal static IEnumerable<CodeInstruction> OnCrimeWitnessIl(IEnumerable<CodeInstruction> instructions)
-        {
-            return new CodeMatcher(instructions)
-                .End()
-                .MatchEndBackwards(
-                    new CodeMatch(OpCodes.Callvirt, AccessTools.Method(
-                        typeof(Point),
-                        nameof(Point.TryWitnessCrime))))
-                .SetAndAdvance(OpCodes.Call, AccessTools.Method(
-                    typeof(OnCrimeWitnessSubPatch),
-                    nameof(TryWitnessPickpocket)))
-                .InstructionEnumeration();
+        CodeMatch[] onProgressCompleteFunctor = [
+            new(OpCodes.Ldftn),
+            new(OpCodes.Newobj),
+            new(OpCodes.Stfld, AccessTools.Field(
+                typeof(Progress_Custom),
+                nameof(Progress_Custom.onProgressComplete))),
+        ];
+
+        if (cm.MatchStartForward(onProgressCompleteFunctor).IsValid && cm.Operand is MethodInfo onProgressComplete) {
+            OnModKarmaPatch.ToRemove.Add(onProgressComplete);
         }
 
-        private static bool TryWitnessPickpocket(Point pos, Chara cc, Chara? target, int radius, Func<Chara, bool> func)
-        {
-            if (target?.IsHostile() is true) {
-                return false;
-            }
-
-            var detection = KocConfig.DetectionRadius!.Value;
-            var caught = pos.TryWitnessCrime(cc, target, detection, func);
-            var witnesses = pos.ListWitnesses(cc, detection, target: target).Count;
-
-            KocMod.DoModKarma(caught, cc, -1, false, witnesses);
-            return caught;
-        }
+        return cm.InstructionEnumeration();
     }
 
-    [HarmonyPatch]
-    internal class OnProgressCompleteSubPatch
+    internal static IEnumerable<CodeInstruction> OnCrimeWitnessIl(IEnumerable<CodeInstruction> instructions)
     {
-        private const string OnProgressCompleteClosure = $"<{nameof(AI_Steal.Run)}>b__3";
+        return new CodeMatcher(instructions)
+            .End()
+            .MatchEndBackwards(
+                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(
+                    typeof(Point),
+                    nameof(Point.TryWitnessCrime))))
+            .SetAndAdvance(OpCodes.Call, AccessTools.Method(
+                typeof(AIStealPatch),
+                nameof(TryWitnessPickpocket)))
+            .InstructionEnumeration();
+    }
 
-        internal static bool Prepare()
-        {
-            return PatchEnabled;
+    private static bool TryWitnessPickpocket(Point pos, Chara cc, Chara? target, int _, Func<Chara, bool> func)
+    {
+        if (KocMod.SkipNext()) {
+            return false;
         }
+        
+        var detection = Config.DetectionRadius!.Value;
+        var witnesses = pos.ListWitnesses(cc, detection, target: target).Count;
+        var caught = pos.TryWitnessCrime(cc, target?.Chara, detection, func);
 
-        internal static MethodInfo TargetMethod()
-        {
-            return AccessTools.Method(_closures, OnProgressCompleteClosure);
-        }
-
-        [HarmonyTranspiler]
-        internal static IEnumerable<CodeInstruction> OnProgressCompleteIl(IEnumerable<CodeInstruction> instructions,
-            ILGenerator generator)
-        {
-            return new CodeMatcher(instructions, generator)
-                .MatchStartForward(
-                    new CodeMatch(OpCodes.Ldarg_0),
-                    new CodeMatch(OpCodes.Ldfld),
-                    new CodeMatch(OpCodes.Ldfld),
-                    new CodeMatch(OpCodes.Ldc_I4_0),
-                    new CodeMatch(OpCodes.Callvirt, AccessTools.PropertySetter(
-                        typeof(Card),
-                        nameof(Card.isNPCProperty))))
-                .CreateLabel(out var jmp)
-                .Start()
-                .MatchEndForward(
-                    new CodeMatch(OpCodes.Ldnull),
-                    new CodeMatch(OpCodes.Ldnull),
-                    new CodeMatch(OpCodes.Callvirt, AccessTools.Method(
-                        typeof(Card),
-                        nameof(Card.Say),
-                        [typeof(string), typeof(Card), typeof(Card), typeof(string), typeof(string)])))
-                .Advance(1)
-                .InsertAndAdvance(
-                    new CodeInstruction(OpCodes.Br, jmp))
-                .InstructionEnumeration();
-        }
+        KocMod.DoModKarma(caught, cc, -1, false, witnesses);
+        return caught;
     }
 }

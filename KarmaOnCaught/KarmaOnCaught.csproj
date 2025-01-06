@@ -79,9 +79,16 @@
         <Compile Include="KocLoc.cs"/>
         <Compile Include="KocMod.cs"/>
         <Compile Include="Patches\AIStealPatch.cs"/>
+        <Compile Include="Patches\OnModKarmaPatch.cs" />
         <Compile Include="Patches\OpenLockPatch.cs"/>
         <Compile Include="Patches\TaskDwarfPatch.cs"/>
         <Compile Include="Patches\TaskHarvestPatch.cs"/>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="PolySharp" Version="1.15.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

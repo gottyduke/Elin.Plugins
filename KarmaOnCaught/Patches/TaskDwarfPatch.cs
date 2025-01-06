@@ -9,97 +9,99 @@ namespace KoC.Patches;
 [HarmonyPatch]
 internal class TaskDwarfPatch
 {
-    private static bool PatchEnabled => KocConfig.PatchDwarf?.Value ?? false;
+    private static bool _applied;
 
-    [HarmonyPatch]
-    internal class OnCrimeWitnessSubPatch
+    private static KocConfig.Patch Config => KocConfig.Managed["Dwarf"];
+
+    internal static bool Prepare()
     {
-        private const string OnCrimeWitnessClosure = $"<{nameof(TaskDig.OnCreateProgress)}>b__1";
-
-        private static Type? _closureDig;
-        private static Type? _closureMine;
-
-        internal static bool Prepare()
-        {
-            _closureDig = AccessTools.FirstInner(typeof(TaskDig), t => t.Name.Contains("DisplayClass18_0"));
-            _closureMine = AccessTools.FirstInner(typeof(TaskMine), t => t.Name.Contains("DisplayClass22_0"));
-            return PatchEnabled && _closureDig is not null && _closureMine is not null;
+        if (!Config.Enabled!.Value) {
+            return Config.Enabled!.Value;
         }
 
-        internal static IEnumerable<MethodInfo> TargetMethods()
-        {
-            return [
-                AccessTools.Method(_closureDig, OnCrimeWitnessClosure),
-                AccessTools.Method(_closureMine, OnCrimeWitnessClosure),
-            ];
-        }
+        OnModKarmaPatch.ToRemove.Add(
+            AccessTools.Method(typeof(TaskDig), nameof(TaskDig.OnProgressComplete)));
+        OnModKarmaPatch.ToRemove.Add(
+            AccessTools.Method(typeof(TaskMine), nameof(TaskMine.OnProgressComplete)));
 
-        [HarmonyTranspiler]
-        internal static IEnumerable<CodeInstruction> OnCrimeWitnessIl(IEnumerable<CodeInstruction> instructions)
-        {
-            return new CodeMatcher(instructions)
-                .End()
-                .MatchEndBackwards(
-                    new CodeMatch(OpCodes.Callvirt, AccessTools.Method(
-                        typeof(Point),
-                        nameof(Point.TryWitnessCrime))))
-                .SetInstruction(
-                    Transpilers.EmitDelegate(TryWitnessDwarf))
-                .InstructionEnumeration();
-        }
-
-        private static bool TryWitnessDwarf(Point pos, Chara cc, Chara? target, int radius, Func<Chara, bool>? func)
-        {
-            var difficulty = 0;
-            var detection = KocConfig.DetectionRadius!.Value;
-            var witnesses = pos.ListWitnesses(cc, detection).Count;
-
-            var skill = (cc.Evalue("mining") + cc.DEX) / 2;
-            var caught = pos.TryWitnessCrime(cc, radius: detection, funcWitness: w => {
-                var los = w.CanSee(cc) ? 0.5f : 0f;
-                var perception = w.PER / (2f - los);
-
-                var randomCost = EClass.rnd((int)perception);
-                difficulty += randomCost;
-
-                return randomCost > skill;
-            });
-
-            var suspicion = (float)difficulty / (cc.DEX * witnesses);
-            KocMod.DoModKarma(caught, cc, -1, suspicion >= 0.9f, witnesses);
-            return caught;
-        }
+        return true;
     }
 
-    [HarmonyPatch]
-    internal class OnProgressCompleteSubPatch
+    internal static IEnumerable<MethodInfo> TargetMethods()
     {
-        internal static bool Prepare()
-        {
-            return PatchEnabled;
+        return [
+            AccessTools.Method(typeof(TaskDig), nameof(TaskDig.OnCreateProgress)),
+            AccessTools.Method(typeof(TaskMine), nameof(TaskDig.OnCreateProgress)),
+        ];
+    }
+
+    [HarmonyTranspiler]
+    internal static IEnumerable<CodeInstruction> OnCreateProgressIl(IEnumerable<CodeInstruction> instructions)
+    {
+        if (_applied) {
+            return instructions;
         }
 
-        internal static IEnumerable<MethodInfo> TargetMethods()
-        {
-            return [
-                AccessTools.Method(typeof(TaskDig), nameof(TaskDig.OnProgressComplete)),
-                AccessTools.Method(typeof(TaskMine), nameof(TaskMine.OnProgressComplete)),
-            ];
+        _applied = true;
+
+        var cm = new CodeMatcher(instructions);
+        var harmony = new Harmony(ModInfo.Guid);
+
+        CodeMatch[] onProgressFunctor = [
+            new(OpCodes.Ldftn),
+            new(OpCodes.Newobj),
+            new(OpCodes.Stfld, AccessTools.Field(
+                typeof(Progress_Custom),
+                nameof(Progress_Custom.onProgress))),
+        ];
+
+        if (cm.MatchStartForward(onProgressFunctor).IsValid && cm.Operand is MethodInfo onProgress) {
+            harmony.Patch(onProgress, transpiler: new(typeof(TaskDwarfPatch), nameof(OnCrimeWitnessIl)));
+            KocMod.Log("patched TaskDwarf.OnCreateProgress/onProgressFunctor");
+        } else {
+            KocMod.Log("failed to apply TaskDwarf.OnCreateProgress/onProgressFunctor");
         }
 
-        [HarmonyTranspiler]
-        internal static IEnumerable<CodeInstruction> OnProgressCompleteIl(IEnumerable<CodeInstruction> instructions)
-        {
-            return new CodeMatcher(instructions)
-                .MatchEndForward(
-                    new CodeMatch(OpCodes.Callvirt, AccessTools.Method(
-                        typeof(Zone),
-                        nameof(Zone.IsCrime))),
-                    new CodeMatch(OpCodes.Brfalse))
-                .InsertAndAdvance(
-                    new CodeInstruction(OpCodes.Pop))
-                .SetOpcodeAndAdvance(OpCodes.Br)
-                .InstructionEnumeration();
+        return cm.InstructionEnumeration();
+    }
+
+    internal static IEnumerable<CodeInstruction> OnCrimeWitnessIl(IEnumerable<CodeInstruction> instructions)
+    {
+        return new CodeMatcher(instructions)
+            .End()
+            .MatchEndBackwards(
+                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(
+                    typeof(Point),
+                    nameof(Point.TryWitnessCrime))))
+            .SetInstruction(
+                Transpilers.EmitDelegate(TryWitnessDwarf))
+            .InstructionEnumeration();
+    }
+
+    private static bool TryWitnessDwarf(Point pos, Chara cc, Chara? target, int radius, Func<Chara, bool>? func)
+    {
+        if (KocMod.SkipNext()) {
+            return false;
         }
+
+        var difficulty = 0f;
+        var detection = Config.DetectionRadius!.Value;
+        var mod = Config.DifficultyModifier!.Value;
+        var skill = (cc.Evalue("mining") + cc.DEX) / 2f;
+
+        var witnesses = pos.ListWitnesses(cc, detection).Count;
+        var caught = pos.TryWitnessCrime(cc, radius: detection, funcWitness: w => {
+            var los = w.CanSee(cc) ? 50 : 0;
+            var perception = w.PER * (150 + los) / 100;
+
+            var randomCost = EClass.rndf(perception + mod);
+            difficulty += randomCost;
+
+            return randomCost > skill;
+        });
+
+        var suspicion = difficulty / (cc.DEX * witnesses + 1f);
+        KocMod.DoModKarma(caught, cc, -1, suspicion >= 0.65f, witnesses);
+        return caught;
     }
 }

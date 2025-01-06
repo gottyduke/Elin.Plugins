@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using HarmonyLib;
+using KoC.Patches;
 
 namespace KoC;
 
@@ -7,7 +8,7 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.karmaoncaught";
     internal const string Name = "Lose Karma On Caught";
-    internal const string Version = "1.3";
+    internal const string Version = "1.4";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
@@ -22,6 +23,7 @@ internal partial class KocMod : BaseUnityPlugin
 
         var harmony = new Harmony(ModInfo.Guid);
         harmony.PatchAll();
+        harmony.PatchAll(typeof(OnModKarmaPatch));
     }
 
     internal static void Log(object payload)
