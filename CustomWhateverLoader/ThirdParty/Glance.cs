@@ -32,7 +32,7 @@ internal class Glance
     internal static void TryConnect()
     {
         _glance = TypeQualifier.Plugins?.FirstOrDefault(p => p.Info.Metadata.GUID == GlanceGuid);
-        _glance?.SendMessage("Register", CwlMod.Instance);
+        _glance?.SendMessage("RegisterGlance");
         _unavailable = _glance == null;
     }
 }

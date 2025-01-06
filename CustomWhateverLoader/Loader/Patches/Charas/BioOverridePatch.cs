@@ -132,7 +132,7 @@ internal class BioOverridePatch
             if (mom.Length > 1) {
                 info?.GetFirstChildWithName("mom")?.GetComponent<UIText>()?.SetText(mom[1]);
             }
-            
+
             if (dad.Length > 1) {
                 info?.GetFirstChildWithName("dad")?.GetComponent<UIText>()?.SetText(dad[1]);
             }

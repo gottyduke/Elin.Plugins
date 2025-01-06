@@ -1,6 +1,5 @@
 ﻿using System;
 using Cwl.API.Processors;
-using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using HarmonyLib;
 using SwallowExceptions.Fody;
@@ -39,7 +38,7 @@ internal class SafeCreateQuestPatch
             CwlConfig.Patches.SafeCreateClass!.Definition.Key));
 
         if (!_cleanup) {
-            CoroutineHelper.Deferred(PostCleanup, () => EClass.game.isLoading);
+            SafeSceneInitPatch.Cleanups.Enqueue(PostCleanup);
         }
 
         _cleanup = true;
@@ -48,6 +47,10 @@ internal class SafeCreateQuestPatch
     [SwallowExceptions]
     private static void PostCleanup()
     {
+        if (!_cleanup) {
+            return;
+        }
+
         var list = EClass.game.quests.globalList;
         list.ForeachReverse(q => {
             if (EMono.sources.quests.map.ContainsKey(q.id)) {
@@ -57,7 +60,5 @@ internal class SafeCreateQuestPatch
             list.Remove(q);
             CwlMod.Log("cwl_log_post_cleanup".Loc(nameof(Quest), q.id));
         });
-
-        _cleanup = false;
     }
 }
