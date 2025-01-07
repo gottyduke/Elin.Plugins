@@ -9,6 +9,7 @@ namespace Cwl.Patches.Dialogs;
 [HarmonyPatch]
 internal class SoundActionPatch
 {
+    private static bool _applied;
     private static SoundSource? _lastPlayed;
 
     internal static bool Prepare()
@@ -21,6 +22,11 @@ internal class SoundActionPatch
     [HarmonyPatch(typeof(DramaManager), nameof(DramaManager.ParseLine))]
     internal static IEnumerable<CodeInstruction> OnSoundPlayIl(IEnumerable<CodeInstruction> instructions)
     {
+        if (_applied) {
+            return instructions;
+        }
+        _applied = true;
+        
         var cm = new CodeMatcher(instructions);
         CodeMatch[] soundSwitch = [
             new(OpCodes.Ldloc_S),
