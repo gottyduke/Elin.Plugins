@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using BepInEx;
 using Cwl.API;
+using Cwl.Helper.Runtime;
 using HarmonyLib;
 using MethodTimer;
 using NPOI.SS.UserModel;
@@ -21,13 +22,11 @@ internal class NamedImportPatch
         return CwlConfig.NamedImport;
     }
 
-    [HarmonyTargetMethods]
-    internal static IEnumerable<MethodInfo> SourcesCreateRow()
+    internal static IEnumerable<MethodInfo> TargetMethods()
     {
-        return typeof(SourceManager)
-            .GetFields(AccessTools.all)
-            .Where(f => typeof(SourceData).IsAssignableFrom(f.FieldType))
+        return typeof(SourceManager).GetFields(AccessTools.all)
             .Select(f => f.FieldType)
+            .OfDerived(typeof(SourceData))
             .Where(s => AccessTools.GetMethodNames(s).Any(mi => mi.Contains("CreateRow")))
             .Select(s => AccessTools.Method(s, "CreateRow"));
     }
@@ -40,9 +39,8 @@ internal class NamedImportPatch
         return new CodeMatcher(instructions)
             .MatchStartForward(
                 new CodeMatch(o => o.opcode.ToString().Contains("ldc")),
-                new CodeMatch(o => o.opcode == OpCodes.Call &&
-                                   o.operand is MethodInfo mi &&
-                                   mi.DeclaringType == typeof(SourceData)))
+                new OperandMatch(OpCodes.Call, o => o.operand is MethodInfo mi &&
+                                                    mi.DeclaringType == typeof(SourceData)))
             .Repeat(cm => {
                 var extraParse = false;
                 // Core.ParseElements

@@ -2,6 +2,7 @@
 using System.Reflection.Emit;
 using Cwl.API;
 using Cwl.API.Custom;
+using Cwl.Helper.Runtime;
 using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
@@ -28,8 +29,7 @@ internal class SafeCreateElementPatch
                 new CodeMatch(OpCodes.Ldstr, nameof(Element)),
                 new CodeMatch(OpCodes.Call),
                 new CodeMatch(OpCodes.Ldstr, "Elin"),
-                new CodeMatch(o => o.opcode == OpCodes.Call &&
-                                   o.operand.ToString().Contains(nameof(ClassCache.Create))))
+                new OperandContains(OpCodes.Call, nameof(ClassCache.Create)))
             .InsertAndAdvance(
                 new CodeInstruction(OpCodes.Ldarg_0),
                 Transpilers.EmitDelegate(SafeCreateInvoke))

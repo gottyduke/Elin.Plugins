@@ -6,6 +6,7 @@ using Cwl.Helper.String;
 using Cwl.LangMod;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
+using UnityEngine;
 
 namespace Cwl.API;
 
@@ -192,7 +193,7 @@ public sealed class MigrateDetail
             var givenName = givenCell is not null ? givenCell.Name : "cwl_cell_missing".Loc();
             givenName = givenName.PadRight(maxNameWidth + 3);
 
-            CwlMod.Warn($"{header.Index,2}: {expectedName} -> {givenName} {guessName}");
+            Debug.Log($"{header.Index,2}: {expectedName} -> {givenName} {guessName}");
         }
     }
 

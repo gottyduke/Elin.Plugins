@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Cwl.Helper;
+using Cwl.Helper.Runtime;
 using UnityEngine;
 
 namespace Cwl.ThirdParty;
@@ -22,17 +22,17 @@ internal class Glance
         _queued.Add((string)message);
     }
 
-    internal static IEnumerable<string> PopAll()
+    internal static void TryConnect()
+    {
+        _glance = TypeQualifier.Plugins?.FirstOrDefault(p => p.Info.Metadata.GUID == GlanceGuid);
+        _glance?.SendMessage("RegisterGlance", "CWL");
+        _unavailable = _glance == null;
+    }
+
+    private static IEnumerable<string> PopAll()
     {
         var current = _queued.ToList();
         _queued.Clear();
         return current;
-    }
-
-    internal static void TryConnect()
-    {
-        _glance = TypeQualifier.Plugins?.FirstOrDefault(p => p.Info.Metadata.GUID == GlanceGuid);
-        _glance?.SendMessage("RegisterGlance");
-        _unavailable = _glance == null;
     }
 }

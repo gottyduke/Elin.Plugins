@@ -7,7 +7,7 @@ using Cwl.LangMod;
 using HarmonyLib;
 using UnityEngine;
 
-namespace Cwl.Helper;
+namespace Cwl.Helper.Runtime;
 
 public class TypeQualifier
 {
@@ -60,8 +60,7 @@ public class TypeQualifier
         List<TypeInfo> declared = [];
         foreach (var plugin in Plugins.ToList()) {
             try {
-                var types = plugin.GetType().Assembly.DefinedTypes
-                    .Where(t => typeof(T).IsAssignableFrom(t));
+                var types = plugin.GetType().Assembly.DefinedTypes.OfDerived(typeof(T));
                 declared.AddRange(types);
             } catch {
                 CwlMod.Warn("cwl_warn_decltype_missing".Loc(plugin.Info.Metadata.GUID));

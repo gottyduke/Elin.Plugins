@@ -1,5 +1,5 @@
 ﻿using Cwl.API.Custom;
-using Cwl.Helper;
+using Cwl.Helper.Runtime;
 using HarmonyLib;
 using MethodTimer;
 using SwallowExceptions.Fody;
@@ -9,7 +9,6 @@ namespace Cwl.Patches.Elements;
 [HarmonyPatch]
 internal class FeatApplyEvent
 {
-    [Time]
     [SwallowExceptions]
     [HarmonyPostfix]
     [HarmonyPatch(typeof(Feat), nameof(Feat.Apply))]

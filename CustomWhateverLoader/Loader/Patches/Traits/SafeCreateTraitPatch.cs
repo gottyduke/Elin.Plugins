@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using Cwl.API;
 using Cwl.API.Processors;
-using Cwl.Helper;
+using Cwl.Helper.Runtime;
 using Cwl.LangMod;
 using HarmonyLib;
 
@@ -26,11 +26,9 @@ internal class SafeCreateTraitPatch
         return new CodeMatcher(instructions)
             .MatchEndForward(
                 new CodeMatch(OpCodes.Ldelem_Ref),
-                new CodeMatch(o => o.opcode == OpCodes.Call &&
-                                   o.operand.ToString().Contains(nameof(string.Concat))),
+                new OperandContains(OpCodes.Call, nameof(string.Concat)),
                 new CodeMatch(OpCodes.Ldstr, "Elin"),
-                new CodeMatch(o => o.opcode == OpCodes.Call &&
-                                   o.operand.ToString().Contains(nameof(ClassCache.Create))))
+                new OperandContains(OpCodes.Call, nameof(ClassCache.Create)))
             .InsertAndAdvance(
                 new CodeInstruction(OpCodes.Ldarg_0),
                 new CodeInstruction(OpCodes.Ldc_I4_0),

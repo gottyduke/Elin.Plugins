@@ -32,7 +32,7 @@ public class CustomElement : Element
     {
         try {
             var size = r.group switch {
-                "FEAT" => 32,
+                nameof(FEAT) => 32,
                 _ => 48,
             };
             ModSpriteReplacer.AppendSpriteSheet(r.alias, size, size);
@@ -65,12 +65,21 @@ public class CustomElement : Element
         }
 
         foreach (var element in All) {
-            if (!element.tag.Contains("addEleOnLoad") ||
-                player?.chara?.HasElement(element.id) is not false) {
+            if (!element.tag.Contains("addEleOnLoad") || player?.chara?.HasElement(element.id) is not false) {
                 continue;
             }
 
-            player.chara.GainAbility(element.id);
+            switch (element.group) {
+                case nameof(FEAT):
+                    player.chara.SetFeat(element.id);
+                    break;
+                case nameof(ABILITY) or nameof(SPELL):
+                    player.chara.GainAbility(element.id);
+                    break;
+                default:
+                    continue;
+            }
+            
             CwlMod.Log("cwl_log_ele_gain".Loc(element.id, player.chara.Name));
         }
     }

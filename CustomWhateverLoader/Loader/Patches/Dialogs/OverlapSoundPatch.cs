@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using Cwl.Helper.Runtime;
 using HarmonyLib;
 using SwallowExceptions.Fody;
 
 namespace Cwl.Patches.Dialogs;
 
 [HarmonyPatch]
-internal class SoundActionPatch
+internal class OverlapSoundPatch
 {
     private static bool _applied;
     private static SoundSource? _lastPlayed;
@@ -25,8 +26,9 @@ internal class SoundActionPatch
         if (_applied) {
             return instructions;
         }
+
         _applied = true;
-        
+
         var cm = new CodeMatcher(instructions);
         CodeMatch[] soundSwitch = [
             new(OpCodes.Ldloc_S),
@@ -35,26 +37,23 @@ internal class SoundActionPatch
             new(OpCodes.Brtrue),
         ];
 
-        var soundPlay = cm.MatchEndForward(soundSwitch);
-        if (!soundPlay.IsValid || soundPlay.Operand is not Label label) {
+        if (!cm.MatchEndForward(soundSwitch).IsValid || cm.Operand is not Label label) {
             return cm.InstructionEnumeration();
         }
 
         CodeMatch[] soundPlayFunctor = [
-            new(o => o.opcode == OpCodes.Ldarg_0 &&
-                     o.labels.Contains(label)),
+            new OperandMatch(OpCodes.Ldarg_0, o => o.labels.Contains(label)),
             new(OpCodes.Ldloc_S),
             new(OpCodes.Ldfld),
             new(OpCodes.Ldftn),
         ];
 
-        var soundFunctor = cm.MatchEndForward(soundPlayFunctor);
-        if (!soundFunctor.IsValid || soundFunctor.Operand is not MethodInfo mi) {
+        if (!cm.MatchEndForward(soundPlayFunctor).IsValid || cm.Operand is not MethodInfo mi) {
             return cm.InstructionEnumeration();
         }
 
         var harmony = new Harmony(ModInfo.Guid);
-        harmony.Patch(mi, transpiler: new(typeof(SoundActionPatch), nameof(InternalSoundStopperIl)));
+        harmony.Patch(mi, transpiler: new(typeof(OverlapSoundPatch), nameof(InternalSoundStopperIl)));
 
         return cm.InstructionEnumeration();
     }
@@ -64,8 +63,7 @@ internal class SoundActionPatch
         return new CodeMatcher(instructions)
             .End()
             .MatchStartBackwards(
-                new CodeMatch(o => o.opcode == OpCodes.Callvirt &&
-                                   o.operand.ToString().Contains(nameof(SoundManager.Play))),
+                new OperandContains(OpCodes.Callvirt, nameof(SoundManager.Play)),
                 new CodeMatch(OpCodes.Pop))
             .SetInstruction(
                 Transpilers.EmitDelegate(NoOverlappingPlay))

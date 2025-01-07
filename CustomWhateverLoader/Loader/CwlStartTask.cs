@@ -3,6 +3,7 @@ using System.Collections;
 using System.Reflection;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
+using Cwl.Helper.Runtime;
 using Cwl.Patches;
 using Cwl.Patches.Relocation;
 using Cwl.Patches.Sources;
@@ -64,7 +65,7 @@ internal sealed partial class CwlMod
         }
 
         QueryDeclTypes();
-        QueryEventDispatchers();
+        PrebuildDispatchers();
     }
 
     [Time]
@@ -82,7 +83,7 @@ internal sealed partial class CwlMod
     }
 
     [Time]
-    private static void QueryEventDispatchers()
+    private static void PrebuildDispatchers()
     {
         MethodDispatcher.BuildDispatchList<Feat>("_OnApply");
     }

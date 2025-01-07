@@ -26,10 +26,10 @@ public static class ColorParser
         var bits = hex.Trim().Replace("0x", "").Replace("#", "").ToCharArray();
         Array.Resize(ref bits, 8);
 
-        var r = byte.Parse(hex[..2], NumberStyles.HexNumber);
-        var g = byte.Parse(hex[2..4], NumberStyles.HexNumber);
-        var b = byte.Parse(hex[4..6], NumberStyles.HexNumber);
-        var a = byte.Parse(hex[6..8], NumberStyles.HexNumber);
+        var r = byte.Parse(bits[..2], NumberStyles.HexNumber);
+        var g = byte.Parse(bits[2..4], NumberStyles.HexNumber);
+        var b = byte.Parse(bits[4..6], NumberStyles.HexNumber);
+        var a = byte.Parse(bits[6..8], NumberStyles.HexNumber);
 
         const float byteMax = byte.MaxValue;
         return new(r / byteMax, g / byteMax, b / byteMax, a / byteMax);
