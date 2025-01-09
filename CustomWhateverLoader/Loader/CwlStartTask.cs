@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Reflection;
-using Cwl.Helper;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.Runtime;
 using Cwl.Patches;
@@ -37,7 +36,7 @@ internal sealed partial class CwlMod
         }
 
         if (CwlConfig.TrimSpaces) {
-            CellPostProcessPatch.Add(TrimCellProcessor.TrimCell);
+            CellPostProcessPatch.Add(c => c?.Trim());
         }
     }
 

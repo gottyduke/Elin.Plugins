@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cwl.Helper.Extensions;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
@@ -45,7 +46,7 @@ internal class LoadDataPatch
     private static void MergeGodTalk()
     {
         var godTalk = EMono.sources.dataGodTalk;
-        var map = godTalk.sheets[DefaultSheet].map.ToArray();
+        ref var map = ref godTalk.sheets[DefaultSheet].map;
 
         foreach (var talk in PackageIterator.GetRelocatedExcelsFromPackage("Data/god_talk.xlsx", 3)) {
             try {
@@ -56,7 +57,7 @@ internal class LoadDataPatch
 
                     talk.sheets[DefaultSheet].map.GetValueOrDefault(topic)?
                         .Where(kv => kv.Key != "id")
-                        .Do(kv => godTalk.sheets[DefaultSheet].map[topic].TryAdd(kv.Key, kv.Value));
+                        .Do(map[topic].TryAdd);
                 }
 
                 CwlMod.Log("cwl_preload_god_talk".Loc(talk.path.ShortPath()));

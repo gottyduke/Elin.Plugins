@@ -23,11 +23,14 @@ public static class PackageIterator
 
     public static IEnumerable<DirectoryInfo> GetLangModFilesFromPackage(string? modGuid = null)
     {
+        var lang = Core.Instance.config.lang;
         return GetLoadedPackages(modGuid)
             .SelectMany(d => d.GetDirectories("LangMod"))
             .Select(d => {
                 var dirs = d.GetDirectories();
-                return dirs.FirstOrDefault(sd => sd.Name == Core.Instance.config.lang) ??
+                return dirs.FirstOrDefault(sd => sd.Name == lang) ??
+                       // 1.17 use CN as ZHTW fallback
+                       dirs.FirstOrDefault(sd => lang == "ZHTW" && sd.Name == "CN") ??
                        // 1.7 use EN as 1st fallback
                        dirs.FirstOrDefault(sd => sd.Name == "EN") ??
                        dirs.First();

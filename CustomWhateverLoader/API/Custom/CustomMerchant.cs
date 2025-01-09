@@ -32,7 +32,8 @@ public class CustomMerchant : TraitMerchant
         }
 
         Managed[id] = stock;
-        ConfigCereal.WriteConfig(stock, file!.FullName);
+        // disabled due to changing hashes
+        //ConfigCereal.WriteConfig(stock, file!.FullName);
     }
 
     [Time]

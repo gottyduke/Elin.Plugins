@@ -1,7 +1,6 @@
 ﻿using Cwl.API.Custom;
 using Cwl.API.Processors;
 using HarmonyLib;
-using SwallowExceptions.Fody;
 
 namespace Cwl.Patches.Religions;
 

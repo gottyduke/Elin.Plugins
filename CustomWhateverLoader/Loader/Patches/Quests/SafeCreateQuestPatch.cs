@@ -2,7 +2,6 @@
 using Cwl.API.Processors;
 using Cwl.LangMod;
 using HarmonyLib;
-using SwallowExceptions.Fody;
 
 namespace Cwl.Patches.Quests;
 

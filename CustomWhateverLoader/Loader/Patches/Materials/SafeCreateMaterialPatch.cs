@@ -1,7 +1,6 @@
 ﻿using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
-using SwallowExceptions.Fody;
 
 namespace Cwl.Patches.Materials;
 

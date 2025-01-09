@@ -12,6 +12,7 @@ public class CwlConfig
     public static bool QualifyTypeName => Patches.QualifyTypeName?.Value is true;
     public static bool FixBaseGameAvatar => Patches.FixBaseGameAvatar?.Value is true;
     public static bool SafeCreateClass => Patches.SafeCreateClass?.Value is true;
+    public static bool ExpandedActions => Dialog.ExpandedActions?.Value is true;
     public static bool NoOverlappingSounds => Dialog.NoOverlappingSounds?.Value is true;
     public static bool VariableQuote => Dialog.VariableQuote?.Value is true;
     public static bool AllowProcessors => Source.AllowProcessors?.Value is true;
@@ -52,6 +53,13 @@ public class CwlConfig
             true,
             "Cache sprites created by CWL instead of creating new from textures\n" +
             "缓存CWL生成的贴图而不是每次重新构建");
+
+        Dialog.ExpandedActions = config.Bind(
+            ModInfo.Name,
+            "Dialog.ExpandedActions",
+            true,
+            "During dialogs, prevent sound actions from overlapping with each other by stopping previous sound first\n" +
+            "对话中的sound动作不会彼此重叠 - 上一个音源会先被停止");
 
         Dialog.NoOverlappingSounds = config.Bind(
             ModInfo.Name,
@@ -154,6 +162,7 @@ public class CwlConfig
 
     internal class Dialog
     {
+        internal static ConfigEntry<bool>? ExpandedActions { get; set; }
         internal static ConfigEntry<bool>? NoOverlappingSounds { get; set; }
         internal static ConfigEntry<bool>? VariableQuote { get; set; }
     }

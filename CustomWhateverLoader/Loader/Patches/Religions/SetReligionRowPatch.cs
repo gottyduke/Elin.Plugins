@@ -19,9 +19,9 @@ internal class SetReligionRowPatch
         }
 
         var @params = r.id.Parse("#", 3);
-        r.id = @params[0];
+        r.id = @params[0]!;
 
-        if (!r.id.Contains("cwl_")) {
+        if (!r.id.StartsWith("cwl_")) {
             return;
         }
 

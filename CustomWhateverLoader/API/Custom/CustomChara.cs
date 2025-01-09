@@ -32,8 +32,8 @@ public class CustomChara : Chara
             .Select(t => t.Trim())
             .Where(t => t.StartsWith("add"))
             .Select(t => t[3..])
-            .ToList();
-        if (tags.Count == 0) {
+            .ToArray();
+        if (tags.Length == 0) {
             return;
         }
 
@@ -114,7 +114,7 @@ public class CustomChara : Chara
                 var @params = things[i].Parse("#", 2);
                 var doEquip = i < equips.Length;
 
-                AddEqOrThing(chara, @params[0], @params[1], doEquip);
+                AddEqOrThing(chara, @params[0]!, @params[1], doEquip);
             }
 
             return true;
@@ -212,7 +212,7 @@ public class CustomChara : Chara
         }
     }
 
-    private static void AddEqOrThing(Chara chara, string id, string payload, bool equip = false)
+    private static void AddEqOrThing(Chara chara, string id, string? payload, bool equip = false)
     {
         if (sources.cards.map.TryGetValue(id) is null) {
             CwlMod.Warn("cwl_warn_thing_gen".Loc(id, chara.id));

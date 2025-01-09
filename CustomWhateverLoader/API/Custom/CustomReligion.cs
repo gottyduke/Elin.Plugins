@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Cwl.API.Processors;
+using Cwl.Patches.Elements;
 using MethodTimer;
 using Newtonsoft.Json;
 
@@ -11,6 +12,7 @@ public class CustomReligion(string religionId) : Religion, IChunkable
     internal static readonly Dictionary<string, CustomReligion> Managed = [];
     private static bool _applied;
     private bool _canJoin;
+
 
     [JsonProperty] private string _id = religionId;
     private bool _isMinor;
@@ -28,6 +30,7 @@ public class CustomReligion(string religionId) : Religion, IChunkable
         if (!_applied) {
             GameIOProcessor.AddSave(SaveCustomReligion, false);
             GameIOProcessor.AddLoad(LoadCustomReligion, true);
+            ActPerformEvent.Add(ProcGodTalk);
         }
 
         _applied = true;
@@ -82,6 +85,19 @@ public class CustomReligion(string religionId) : Religion, IChunkable
             custom.giftRank = loaded.giftRank;
             custom.mood = loaded.mood;
             custom.relation = loaded.relation;
+        }
+    }
+
+    private static void ProcGodTalk(Act act)
+    {
+        if (!CustomElement.Managed.ContainsKey(act.id)) {
+            return;
+        }
+
+        foreach (var (id, religion) in Managed) {
+            if (act.HasTag(id)) {
+                religion.Talk("ability");
+            }
         }
     }
 }

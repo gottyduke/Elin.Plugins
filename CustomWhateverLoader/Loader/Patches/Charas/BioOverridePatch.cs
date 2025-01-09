@@ -5,11 +5,11 @@ using System.Reflection.Emit;
 using Cwl.API;
 using Cwl.API.Custom;
 using Cwl.Helper;
+using Cwl.Helper.Extensions;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using HarmonyLib;
-using SwallowExceptions.Fody;
 
 namespace Cwl.Patches.Charas;
 

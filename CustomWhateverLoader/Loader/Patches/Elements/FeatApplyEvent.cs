@@ -1,8 +1,6 @@
 ﻿using Cwl.API.Custom;
 using Cwl.Helper.Runtime;
 using HarmonyLib;
-using MethodTimer;
-using SwallowExceptions.Fody;
 
 namespace Cwl.Patches.Elements;
 

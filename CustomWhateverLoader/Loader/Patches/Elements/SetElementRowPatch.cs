@@ -10,9 +10,9 @@ namespace Cwl.Patches.Elements;
 internal class SetElementRowPatch
 {
     private static readonly string[] _managedGroups = [
-        "FEAT",
-        "ABILITY",
-        "SPELL",
+        nameof(FEAT),
+        nameof(ABILITY),
+        nameof(SPELL),
     ];
 
     [HarmonyPrefix]

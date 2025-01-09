@@ -21,22 +21,12 @@ public static class ReverseId
             .Select(kv => kv.Value)
             .FirstOrDefault();
         id = EClass.sources.materials.rows.IndexOf(row);
-        if (id is -1) {
+        if (id == -1) {
             id = fallback;
         }
 
         _cached[cache] = id;
         return id;
-    }
-
-    public static int NextUniqueKey<T>(this Dictionary<int, T> dict, int step = -1)
-    {
-        var key = -1;
-        while (dict.ContainsKey(key)) {
-            key += step;
-        }
-
-        return key;
     }
 
     public static string HashKey(this Card card)

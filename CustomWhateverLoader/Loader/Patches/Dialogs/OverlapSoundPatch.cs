@@ -3,7 +3,6 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Cwl.Helper.Runtime;
 using HarmonyLib;
-using SwallowExceptions.Fody;
 
 namespace Cwl.Patches.Dialogs;
 
