@@ -56,7 +56,6 @@ public class ActPerformEvent
                 continue;
             }
 
-            CwlMod.Log($"patching {method.DeclaringType!.FullName}/{method.FullDescription()}");
             yield return method;
         }
     }
