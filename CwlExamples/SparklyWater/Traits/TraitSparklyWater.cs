@@ -15,7 +15,7 @@ internal class TraitSparklyWater : TraitDrink
     public override void OnDrink(Chara c)
     {
         base.OnDrink(c);
-        
+
         c.AddCondition<ConCarbonated>(Power);
         c.Say($"sparkly_love_{rnd(9)}", c);
     }

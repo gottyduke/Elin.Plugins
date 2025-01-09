@@ -75,7 +75,7 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="SparklyWaterMod.cs"/>
-        <Compile Include="Stats\ConCarbonated.cs" />
+        <Compile Include="Stats\ConCarbonated.cs"/>
         <Compile Include="Traits\TraitSparklyWater.cs"/>
     </ItemGroup>
     <ItemGroup>

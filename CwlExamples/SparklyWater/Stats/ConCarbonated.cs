@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
-
-namespace Sparkly.Stats;
+﻿namespace Sparkly.Stats;
 
 internal class ConCarbonated : ConDrunk
 {
