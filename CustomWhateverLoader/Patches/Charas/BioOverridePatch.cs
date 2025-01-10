@@ -52,7 +52,7 @@ internal class BioOverridePatch
                 __instance.bio.birthYear = bio.Birthyear;
             }
 
-            ref var langWord = ref EMono.sources.langWord.map;
+            var langWord = EMono.sources.langWord.map;
             langWord.TryAdd(FallbackRowId, new() {
                 id = FallbackRowId,
                 name_JP = "",

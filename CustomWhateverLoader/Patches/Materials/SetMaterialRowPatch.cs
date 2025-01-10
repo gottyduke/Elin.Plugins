@@ -21,7 +21,7 @@ internal class SetMaterialRowPatch
             return;
         }
 
-        ref var matColors = ref Core.Instance.Colors.matColors;
+        var matColors = Core.Instance.Colors.matColors;
         if (matColors.ContainsKey(r.alias)) {
             return;
         }
@@ -32,7 +32,7 @@ internal class SetMaterialRowPatch
     [Time]
     private static void AddMaterial(SourceMaterial.Row r)
     {
-        ref var matColors = ref Core.Instance.Colors.matColors;
+        var matColors = Core.Instance.Colors.matColors;
         Color main = default;
         Color alt = default;
 

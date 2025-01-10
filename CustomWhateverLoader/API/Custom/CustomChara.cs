@@ -148,7 +148,7 @@ public class CustomChara : Chara
                         continue;
                     }
 
-                    ref var listAdv = ref game.cards.listAdv;
+                    var listAdv = game.cards.listAdv;
                     var duplicate = game.cards.globalCharas.Values.FirstOrDefault(c => c.id == id);
                     if (duplicate is not null) {
                         if (import.Type == ImportType.Adventurer) {

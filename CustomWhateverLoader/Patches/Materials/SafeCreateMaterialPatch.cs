@@ -18,7 +18,7 @@ internal class SafeCreateMaterialPatch
     [HarmonyPatch(typeof(ElementContainer), nameof(ElementContainer.ApplyMaterialElementMap))]
     internal static void SafeApplyInvoke(ElementContainer __instance, Thing t)
     {
-        ref var map = ref EMono.sources.materials.map;
+        var map = EMono.sources.materials.map;
         if (map.ContainsKey(t.idMaterial)) {
             return;
         }

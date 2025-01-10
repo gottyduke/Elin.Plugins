@@ -69,7 +69,7 @@ internal class SafeCreateZonePatch
             return;
         }
 
-        ref var map = ref EClass.game.spatials.map;
+        var map = EClass.game.spatials.map;
         foreach (var (id, zone) in map.ToList()) {
             if (EMono.sources.zones.map.ContainsKey(zone.id)) {
                 continue;

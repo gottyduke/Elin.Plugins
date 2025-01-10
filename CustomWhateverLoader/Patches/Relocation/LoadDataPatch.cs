@@ -46,7 +46,7 @@ internal class LoadDataPatch
     private static void MergeGodTalk()
     {
         var godTalk = EMono.sources.dataGodTalk;
-        ref var map = ref godTalk.sheets[DefaultSheet].map;
+        var map = godTalk.sheets[DefaultSheet].map;
 
         foreach (var talk in PackageIterator.GetRelocatedExcelsFromPackage("Data/god_talk.xlsx", 3)) {
             try {

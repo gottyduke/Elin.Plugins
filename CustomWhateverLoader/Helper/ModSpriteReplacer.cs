@@ -12,7 +12,7 @@ public class ModSpriteReplacer
             return tile;
         }
 
-        ref var replacers = ref SpriteReplacer.dictModItems;
+        var replacers = SpriteReplacer.dictModItems;
         if (!replacers.TryGetValue(id, out var file) && pattern != "") {
             var matched = replacers
                 .Where(kv => kv.Key.StartsWith(pattern))
