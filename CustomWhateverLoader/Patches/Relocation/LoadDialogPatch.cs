@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using Cwl.Helper.FileUtil;
+using Cwl.Helper.Runtime;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;
@@ -32,9 +33,7 @@ internal class LoadDialogPatch
     {
         return new CodeMatcher(instructions)
             .MatchEndForward(
-                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(
-                    typeof(ExcelData),
-                    nameof(ExcelData.BuildMap))))
+                new OperandContains(OpCodes.Callvirt, nameof(ExcelData.BuildMap)))
             .SetInstructionAndAdvance(
                 Transpilers.EmitDelegate(BuildRelocatedMap))
             .InstructionEnumeration();

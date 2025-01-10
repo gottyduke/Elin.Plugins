@@ -63,7 +63,7 @@ internal class OverlapSoundPatch
             .End()
             .MatchStartBackwards(
                 new OperandContains(OpCodes.Callvirt, nameof(SoundManager.Play)),
-                new CodeMatch(OpCodes.Pop))
+                new(OpCodes.Pop))
             .SetInstruction(
                 Transpilers.EmitDelegate(NoOverlappingPlay))
             .InstructionEnumeration();

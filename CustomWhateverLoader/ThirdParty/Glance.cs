@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Cwl.Helper.Runtime;
 using UnityEngine;
@@ -29,9 +30,9 @@ internal class Glance
         _unavailable = _glance == null;
     }
 
-    private static IEnumerable<string> PopAll()
+    private static ReadOnlySpan<string> PopAll()
     {
-        var current = _queued.ToList();
+        var current = _queued.ToArray();
         _queued.Clear();
         return current;
     }

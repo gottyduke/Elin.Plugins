@@ -21,15 +21,15 @@ internal class SafeResolveTypePatch
     {
         return new CodeMatcher(instructions)
             .MatchEndForward(
-                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(
+                new(OpCodes.Callvirt, AccessTools.Method(
                     typeof(Type),
                     nameof(Type.IsAssignableFrom))),
-                new CodeMatch(OpCodes.Brtrue))
+                new(OpCodes.Brtrue))
             .InsertAndAdvance(
-                new CodeInstruction(OpCodes.Ldarg_2),
-                new CodeInstruction(OpCodes.Ldind_Ref),
-                new CodeInstruction(OpCodes.Ldloca_S, (sbyte)5),
-                new CodeInstruction(OpCodes.Ldarg_S, (sbyte)7),
+                new(OpCodes.Ldarg_2),
+                new(OpCodes.Ldind_Ref),
+                new(OpCodes.Ldloca_S, (sbyte)5),
+                new(OpCodes.Ldarg_S, (sbyte)7),
                 Transpilers.EmitDelegate(SafeResolveInvoke))
             .InstructionEnumeration();
     }
@@ -37,11 +37,10 @@ internal class SafeResolveTypePatch
     [Time]
     private static bool SafeResolveInvoke(bool resolved, Type objectType, ref Type readType, string qualified)
     {
-        if (resolved) {
-            return true;
+        if (!resolved) {
+            TypeResolver.Resolve(ref resolved, objectType, ref readType, qualified);
         }
 
-        TypeResolver.Resolve(ref resolved, objectType, ref readType, qualified);
         return resolved;
     }
 }

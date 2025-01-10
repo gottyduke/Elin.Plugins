@@ -61,10 +61,10 @@ internal class LoadBookPatch
                 new CodeMatch(OpCodes.Newobj, AccessTools.Constructor(
                     typeof(UIBook.Page))))
             .InsertAndAdvance(
-                new CodeInstruction(OpCodes.Ldloc_0),
-                new CodeInstruction(OpCodes.Ldarg_0),
+                new(OpCodes.Ldloc_0),
+                new(OpCodes.Ldarg_0),
                 Transpilers.EmitDelegate(BuildRelocatedPages),
-                new CodeInstruction(OpCodes.Stloc_0))
+                new(OpCodes.Stloc_0))
             .InstructionEnumeration();
     }
 

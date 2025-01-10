@@ -13,7 +13,7 @@ public class CustomMerchant : TraitMerchant
     private static bool _transform;
     internal static readonly Dictionary<string, SerializableStockData> Managed = [];
 
-    public static IEnumerable<SerializableStockData> All => Managed.Values;
+    public static IReadOnlyCollection<SerializableStockData> All => Managed.Values;
 
     public override ShopType ShopType => ShopType.Specific;
 

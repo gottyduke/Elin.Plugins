@@ -14,12 +14,12 @@ internal class MerchantOnBarterPatch
     {
         return new CodeMatcher(instructions)
             .MatchEndForward(
-                new CodeMatch(OpCodes.Ldarg_0),
-                new CodeMatch(OpCodes.Callvirt, AccessTools.PropertyGetter(
+                new(OpCodes.Ldarg_0),
+                new(OpCodes.Callvirt, AccessTools.PropertyGetter(
                     typeof(Trait),
                     nameof(Trait.ShopType))))
             .InsertAndAdvance(
-                new CodeInstruction(OpCodes.Dup),
+                new(OpCodes.Dup),
                 Transpilers.EmitDelegate(ShouldGenerate))
             .InstructionEnumeration();
     }

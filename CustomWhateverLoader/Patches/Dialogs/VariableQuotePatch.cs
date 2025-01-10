@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
+using Cwl.Helper.Runtime;
 using HarmonyLib;
 using MethodTimer;
 
@@ -20,10 +21,7 @@ internal class VariableQuotePatch
     {
         return new CodeMatcher(instructions)
             .MatchEndForward(
-                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(
-                    typeof(string),
-                    nameof(string.StartsWith),
-                    [typeof(string)])))
+                new OperandContains(OpCodes.Callvirt, nameof(string.StartsWith)))
             .SetInstruction(
                 Transpilers.EmitDelegate(VariantStartsWith))
             .InstructionEnumeration();

@@ -3,10 +3,10 @@ using System.Reflection.Emit;
 using Cwl.API.Custom;
 using HarmonyLib;
 
-namespace Cwl.Patches.Charas;
+namespace Cwl.Patches.Dialogs;
 
 [HarmonyPatch]
-internal class ShowDialogPatch
+internal class RerouteDramaPatch
 {
     [HarmonyTranspiler]
     [HarmonyPatch(typeof(Chara), nameof(Chara.ShowDialog), [])]
@@ -15,21 +15,23 @@ internal class ShowDialogPatch
     {
         return new CodeMatcher(instructions, generator)
             .MatchEndForward(
-                new CodeMatch(OpCodes.Ldarg_0),
-                new CodeMatch(OpCodes.Ldfld, AccessTools.Field(
+                new(OpCodes.Ldarg_0),
+                new(OpCodes.Ldfld, AccessTools.Field(
                     typeof(Card),
                     nameof(Card.id))),
-                new CodeMatch(OpCodes.Stloc_S),
-                new CodeMatch(OpCodes.Ldloc_S))
+                new(OpCodes.Stloc_S),
+                new(OpCodes.Ldloc_S))
             .CreateLabel(out var label)
             .InsertAndAdvance(
-                new CodeInstruction(OpCodes.Ldarg_0),
+                new(OpCodes.Ldarg_0),
                 Transpilers.EmitDelegate(TryRerouteDialog),
-                new CodeInstruction(OpCodes.Brfalse, label),
-                new CodeInstruction(OpCodes.Ret))
+                new(OpCodes.Brfalse, label),
+                new(OpCodes.Ret))
             .InstructionEnumeration();
     }
 
+    // TODO: this only reroutes if it's actually going to show
+    // subject to change for dialog expansion
     private static bool TryRerouteDialog(Chara chara)
     {
         if (!CustomChara.DramaRoute.TryGetValue(chara.id, out var drama)) {

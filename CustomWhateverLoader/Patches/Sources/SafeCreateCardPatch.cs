@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
+using Cwl.Helper.Runtime;
 using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
@@ -21,9 +22,7 @@ internal class SafeCreateCardPatch
     {
         return new CodeMatcher(instructions)
             .MatchEndForward(
-                new CodeMatch(OpCodes.Call, AccessTools.Method(
-                    typeof(SourceCard),
-                    nameof(SourceCard.AddRow))))
+                new OperandContains(OpCodes.Call, nameof(SourceCard.AddRow)))
             .Repeat(cm => cm
                 .SetInstruction(Transpilers.EmitDelegate(RethrowCreateInvoke)))
             .InstructionEnumeration();

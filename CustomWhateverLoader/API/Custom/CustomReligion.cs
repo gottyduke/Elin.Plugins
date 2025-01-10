@@ -13,7 +13,6 @@ public class CustomReligion(string religionId) : Religion, IChunkable
     private static bool _applied;
     private bool _canJoin;
 
-
     [JsonProperty] private string _id = religionId;
     private bool _isMinor;
 
@@ -21,7 +20,7 @@ public class CustomReligion(string religionId) : Religion, IChunkable
     public override bool IsMinorGod => _isMinor;
     public override bool CanJoin => _canJoin;
 
-    public static IEnumerable<CustomReligion> All => Managed.Values;
+    public static IReadOnlyCollection<CustomReligion> All => Managed.Values;
 
     public string ChunkName => $"{typeof(CustomReligion).FullName}.{id}";
 

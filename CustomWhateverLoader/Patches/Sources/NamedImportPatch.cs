@@ -38,7 +38,7 @@ internal class NamedImportPatch
         var miGetStr = AccessTools.Method(typeof(SourceData), nameof(SourceData.GetStr));
         return new CodeMatcher(instructions)
             .MatchStartForward(
-                new CodeMatch(o => o.opcode.ToString().Contains("ldc")),
+                new(o => o.opcode.ToString().Contains("ldc")),
                 new OperandMatch(OpCodes.Call, o => o.operand is MethodInfo mi &&
                                                     mi.DeclaringType == typeof(SourceData)))
             .Repeat(cm => {

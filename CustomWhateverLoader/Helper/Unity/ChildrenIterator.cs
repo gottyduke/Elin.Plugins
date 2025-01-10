@@ -23,7 +23,7 @@ public static class ChildrenIterator
         var children = parent
             .GetAllChildren()
             .Where(t => t.name == name);
-        var transforms = children.ToList();
+        var transforms = children.ToArray();
         return transforms.Any() ? transforms.First() : null;
     }
 

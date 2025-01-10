@@ -8,7 +8,7 @@ public class CustomZone : Zone
 {
     internal static readonly Dictionary<string, SourceZone.Row> Managed = [];
 
-    public static IEnumerable<SourceZone.Row> All => Managed.Values;
+    public static IReadOnlyCollection<SourceZone.Row> All => Managed.Values;
 
     [Time]
     public static void AddZone(SourceZone.Row r, string qualified)

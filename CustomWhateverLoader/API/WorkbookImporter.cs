@@ -13,7 +13,7 @@ namespace Cwl.API;
 
 public class WorkbookImporter
 {
-    private static List<FieldInfo>? _sources;
+    private static FieldInfo[]? _sources;
 
     [Time]
     public static IEnumerable<SourceData?> BySheetName(FileInfo? import)
@@ -25,7 +25,7 @@ public class WorkbookImporter
         _sources ??= typeof(SourceManager)
             .GetFields(AccessTools.all)
             .Where(f => typeof(SourceData).IsAssignableFrom(f.FieldType))
-            .ToList();
+            .ToArray();
 
         using var fs = File.Open(import.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         var book = new XSSFWorkbook(fs);

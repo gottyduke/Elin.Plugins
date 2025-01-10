@@ -9,7 +9,7 @@ public class CustomCondition : Condition
 {
     internal static readonly Dictionary<int, SourceStat.Row> Managed = [];
 
-    public static IEnumerable<SourceStat.Row> All => Managed.Values;
+    public static IReadOnlyCollection<SourceStat.Row> All => Managed.Values;
 
     [Time]
     internal static void AddCondition(SourceStat.Row r, string qualified)

@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
 using Cwl.Helper.FileUtil;
+using Cwl.Helper.Runtime;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;
@@ -22,15 +23,12 @@ internal class LoadDramaPatch
     {
         return new CodeMatcher(instructions)
             .MatchEndForward(
-                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(
-                    typeof(ExcelData),
-                    nameof(ExcelData.BuildList),
-                    [typeof(string)])))
+                new OperandContains(OpCodes.Callvirt, nameof(ExcelData.BuildList)))
             .Repeat(cm => cm
                 .InsertAndAdvance(
-                    new CodeInstruction(OpCodes.Pop),
-                    new CodeInstruction(OpCodes.Ldloc_0),
-                    new CodeInstruction(OpCodes.Ldarg_0),
+                    new(OpCodes.Pop),
+                    new(OpCodes.Ldloc_0),
+                    new(OpCodes.Ldarg_0),
                     Transpilers.EmitDelegate(BuildRelocatedList))
                 .RemoveInstruction())
             .InstructionEnumeration();

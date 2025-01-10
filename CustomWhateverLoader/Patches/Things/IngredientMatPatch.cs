@@ -19,9 +19,9 @@ internal class IngredientMatPatch
                     typeof(Recipe.Ingredient))))
             .Advance(1)
             .InsertAndAdvance(
-                new CodeInstruction(OpCodes.Ldloc_0),
-                new CodeInstruction(OpCodes.Ldloc_2),
-                new CodeInstruction(OpCodes.Ldelem_Ref),
+                new(OpCodes.Ldloc_0),
+                new(OpCodes.Ldloc_2),
+                new(OpCodes.Ldelem_Ref),
                 Transpilers.EmitDelegate(MutateIngredient))
             .InstructionEnumeration();
     }

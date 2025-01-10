@@ -25,13 +25,13 @@ internal class SafeCreateTraitPatch
     {
         return new CodeMatcher(instructions)
             .MatchEndForward(
-                new CodeMatch(OpCodes.Ldelem_Ref),
+                new(OpCodes.Ldelem_Ref),
                 new OperandContains(OpCodes.Call, nameof(string.Concat)),
-                new CodeMatch(OpCodes.Ldstr, "Elin"),
+                new(OpCodes.Ldstr, "Elin"),
                 new OperandContains(OpCodes.Call, nameof(ClassCache.Create)))
             .InsertAndAdvance(
-                new CodeInstruction(OpCodes.Ldarg_0),
-                new CodeInstruction(OpCodes.Ldc_I4_0),
+                new(OpCodes.Ldarg_0),
+                new(OpCodes.Ldc_I4_0),
                 Transpilers.EmitDelegate(SafeCreateInvoke))
             .RemoveInstruction()
             .InstructionEnumeration();

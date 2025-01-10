@@ -23,7 +23,7 @@ public class CustomChara : Chara
     internal static readonly Dictionary<string, string> DramaRoute = [];
     internal static readonly Dictionary<string, string> BioOverride = [];
 
-    public static IEnumerable<string> All => _delayedCharaImport.Keys;
+    public static IReadOnlyCollection<string> All => _delayedCharaImport.Keys;
 
     [Time]
     public static void AddChara(SourceChara.Row r)

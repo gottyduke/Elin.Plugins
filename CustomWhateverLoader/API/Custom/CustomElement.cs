@@ -16,7 +16,7 @@ public class CustomElement : Element
 
     internal static readonly Dictionary<int, SourceElement.Row> Managed = [];
 
-    public static IEnumerable<SourceElement.Row> All => Managed.Values;
+    public static IReadOnlyCollection<SourceElement.Row> All => Managed.Values;
 
     [Time]
     public static void AddElement(SourceElement.Row r, string qualified)

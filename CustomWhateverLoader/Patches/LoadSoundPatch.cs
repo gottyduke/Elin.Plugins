@@ -3,6 +3,7 @@ using System.IO;
 using Cwl.API;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
+using Cwl.Helper.String;
 using Cwl.LangMod;
 using MethodTimer;
 using UnityEngine;
@@ -20,7 +21,7 @@ internal class LoadSoundPatch
 
         foreach (var dir in dirs) {
             foreach (var file in dir.EnumerateFiles(Pattern, SearchOption.AllDirectories)) {
-                var id = file.GetFullFileNameWithoutExtension()[(dir.FullName.Length + 1)..];
+                var id = file.GetFullFileNameWithoutExtension()[(dir.FullName.Length + 1)..].NormalizePath();
                 yield return LoadSound(file, id);
             }
         }
@@ -55,7 +56,7 @@ internal class LoadSoundPatch
                 bgm.song = new();
 
                 meta.bgmDataOptional.IntrospectCopyTo(bgm);
-                meta.bgmDataOptional.parts.RemoveAt(0);
+                meta.bgmDataOptional.parts.Clear();
                 meta.bgmDataOptional.IntrospectCopyTo(bgm.song);
 
                 Object.Destroy(data);

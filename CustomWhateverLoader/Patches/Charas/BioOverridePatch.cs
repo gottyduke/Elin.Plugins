@@ -105,13 +105,13 @@ internal class BioOverridePatch
         {
             return new CodeMatcher(instructions)
                 .MatchEndForward(
-                    new CodeMatch(OpCodes.Ldstr, "???"),
-                    new CodeMatch(OpCodes.Callvirt, AccessTools.Method(
+                    new(OpCodes.Ldstr, "???"),
+                    new(OpCodes.Callvirt, AccessTools.Method(
                         typeof(UIText),
                         nameof(UIText.SetText),
                         [typeof(string)])))
                 .InsertAndAdvance(
-                    new CodeInstruction(OpCodes.Ldarg_0),
+                    new(OpCodes.Ldarg_0),
                     Transpilers.EmitDelegate(GetNpcBackground))
                 .InstructionEnumeration();
         }

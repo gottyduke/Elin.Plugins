@@ -58,7 +58,7 @@ public class TypeQualifier
         Plugins ??= Resources.FindObjectsOfTypeAll<BaseUnityPlugin>().ToList();
 
         List<TypeInfo> declared = [];
-        foreach (var plugin in Plugins.ToList()) {
+        foreach (var plugin in Plugins.ToArray()) {
             try {
                 var types = plugin.GetType().Assembly.DefinedTypes.OfDerived(typeof(T));
                 declared.AddRange(types);

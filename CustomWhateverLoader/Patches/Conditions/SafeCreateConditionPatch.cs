@@ -29,12 +29,12 @@ internal class SafeCreateConditionPatch
     {
         return new CodeMatcher(instructions)
             .MatchEndForward(
-                new CodeMatch(OpCodes.Ldarg_0),
-                new CodeMatch(OpCodes.Call),
-                new CodeMatch(OpCodes.Ldstr, "Elin"),
+                new(OpCodes.Ldarg_0),
+                new(OpCodes.Call),
+                new(OpCodes.Ldstr, "Elin"),
                 new OperandContains(OpCodes.Call, nameof(ClassCache.Create)))
             .InsertAndAdvance(
-                new CodeInstruction(OpCodes.Ldarg_0),
+                new(OpCodes.Ldarg_0),
                 Transpilers.EmitDelegate(SafeCreateInvoke))
             .RemoveInstruction()
             .InstructionEnumeration();
