@@ -25,4 +25,4 @@
 
 CWL由社区需求和反馈而添加新功能。
 
-查阅CWL文档, 请转至 [Elin Modding Wiki](https://elin-modding-resources.github.io/Elin.Docs/articles/100_Mod%20Documentation/Custom%20Whatever%20Loader/0_README)
+查阅CWL文档, 请转至 [Elin Modding Wiki](https://elin-modding-resources.github.io/Elin.Docs/articles/100_Mod%20Documentation/Custom%20Whatever%20Loader/CN/0_README)

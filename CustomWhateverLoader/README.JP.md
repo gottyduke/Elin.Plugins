@@ -25,4 +25,4 @@
 
 必要に応じて新機能を追加します。
 
-For the full documentation, visit [Elin Modding Wiki](https://elin-modding-resources.github.io/Elin.Docs/articles/100_Mod%20Documentation/Custom%20Whatever%20Loader/0_README)
+For the full documentation, visit [Elin Modding Wiki](https://elin-modding-resources.github.io/Elin.Docs/articles/100_Mod%20Documentation/Custom%20Whatever%20Loader/JP/0_README)
