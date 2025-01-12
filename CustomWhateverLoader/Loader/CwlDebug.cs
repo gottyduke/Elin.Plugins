@@ -2,15 +2,14 @@
 global using SwallowExceptions.Fody;
 #endif
 
-using System;
+#if DEBUG
 using Cwl.ThirdParty;
 using UnityEngine;
+using System;
 
 namespace Cwl;
 
-#if DEBUG
 internal class SwallowExceptions : Attribute;
-#endif
 
 internal partial class CwlMod
 {
@@ -27,7 +26,8 @@ internal partial class CwlMod
             return;
         }
 
-        if (message is null or "" || stackTrace is null or "") {
+        if (message.IsEmpty() || stackTrace.IsEmpty()) {
         }
     }
 }
+#endif

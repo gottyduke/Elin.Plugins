@@ -47,7 +47,7 @@ internal class LoadDialogPatch
         foreach (var cache in _cached) {
             cache.BuildMap(sheetName);
             foreach (var (topic, cells) in cache.sheets[sheetName].map) {
-                if (topic is null or "") {
+                if (topic.IsEmpty()) {
                     continue;
                 }
 

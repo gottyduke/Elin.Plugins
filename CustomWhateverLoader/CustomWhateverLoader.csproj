@@ -143,6 +143,7 @@
         <Compile Include="API\Custom\CustomMerchant.cs"/>
         <Compile Include="API\Custom\CustomReligion.cs"/>
         <Compile Include="API\Custom\CustomZone.cs"/>
+        <Compile Include="API\Drama\DramaExpansion.cs"/>
         <Compile Include="API\Processors\GameIOProcessor.cs"/>
         <Compile Include="API\Processors\SheetProcessor.cs"/>
         <Compile Include="API\Processors\TraitTransformer.cs"/>
@@ -150,6 +151,7 @@
         <Compile Include="API\Processors\WorkbookProcessor.cs"/>
         <Compile Include="API\Serializable\IChunkable.cs"/>
         <Compile Include="API\Serializable\SerializableBioData.cs"/>
+        <Compile Include="API\Serializable\SerializableModPackage.cs"/>
         <Compile Include="API\Serializable\SerializableSoundData.cs"/>
         <Compile Include="API\Serializable\SerializableStockData.cs"/>
         <Compile Include="API\WorkbookImporter.cs"/>
@@ -192,6 +194,7 @@
         <Compile Include="Patches\Conditions\SafeCreateConditionPatch.cs"/>
         <Compile Include="Patches\Conditions\SetConditionRowPatch.cs"/>
         <Compile Include="Patches\Dialogs\ExpandedActionPatch.cs"/>
+        <Compile Include="Patches\Dialogs\ExpandedConditionPatch.cs"/>
         <Compile Include="Patches\Dialogs\OverlapSoundPatch.cs"/>
         <Compile Include="Patches\Dialogs\RerouteDramaPatch.cs"/>
         <Compile Include="Patches\Dialogs\VariableQuotePatch.cs"/>
@@ -207,8 +210,8 @@
         <Compile Include="Patches\LoadSpritePatch.cs"/>
         <Compile Include="Patches\Materials\SafeCreateMaterialPatch.cs"/>
         <Compile Include="Patches\Materials\SetMaterialRowPatch.cs"/>
+        <Compile Include="Patches\ModIntegrityCheck.cs"/>
         <Compile Include="Patches\Quests\SafeCreateQuestPatch.cs"/>
-        <Compile Include="Patches\Religions\RefreshFaithPatch.cs"/>
         <Compile Include="Patches\Religions\SetReligionOwnerPatch.cs"/>
         <Compile Include="Patches\Religions\SetReligionPortraitPatch.cs"/>
         <Compile Include="Patches\Religions\SetReligionRowPatch.cs"/>

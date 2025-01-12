@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using BepInEx;
 using Cwl.API;
 using Cwl.Helper.Runtime;
 using HarmonyLib;
@@ -102,7 +101,7 @@ internal class NamedImportPatch
         try {
             if (!_cached.TryGetValue(sheet, out var header)) {
                 header = sheet.GetRow(sheet.FirstRowNum).Cells
-                    .Where(c => !c.StringCellValue.IsNullOrWhiteSpace())
+                    .Where(c => !c.StringCellValue.IsEmpty())
                     .Select(c => new MigrateDetail.HeaderCell(c.ColumnIndex, c.StringCellValue.Trim()))
                     .ToList();
 
