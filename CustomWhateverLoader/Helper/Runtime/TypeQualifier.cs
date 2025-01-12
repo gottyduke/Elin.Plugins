@@ -18,7 +18,7 @@ public class TypeQualifier
     public static Type? TryQualify<T>(params string[] unqualified) where T : EClass
     {
         foreach (var unq in unqualified) {
-            if (unq is null or "") {
+            if (unq.IsEmpty()) {
                 continue;
             }
 
@@ -53,7 +53,7 @@ public class TypeQualifier
     }
 
     // cannot use linq to query due to some users might install mod without dependency...sigh
-    internal static void SafeQueryTypes<T>() where T : EClass
+    internal static void SafeQueryTypes<T>() where T : notnull
     {
         Plugins ??= Resources.FindObjectsOfTypeAll<BaseUnityPlugin>().ToList();
 

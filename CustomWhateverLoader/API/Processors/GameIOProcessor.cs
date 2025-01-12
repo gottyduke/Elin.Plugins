@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using Cwl.Helper.FileUtil;
+using Cwl.Helper.String;
 using Cwl.LangMod;
 
 namespace Cwl.API.Processors;
@@ -105,7 +107,9 @@ public class GameIOProcessor
             chunkName ??= $"{type.Assembly.GetName().Name}.{type.FullName ?? type.Name}";
 
             var file = Path.Combine(path, Storage, $"{chunkName}.{Extension}");
-            IO.SaveFile(file, data, GameIO.compressSave, GameIO.jsWriteGame);
+            ConfigCereal.WriteConfig(data, file);
+
+            CwlMod.Log($"save chunk {file.ShortPath()}");
         }
 
         /// <summary>
@@ -120,9 +124,9 @@ public class GameIOProcessor
             chunkName ??= $"{type.Assembly.GetName().Name}.{type.FullName ?? type.Name}";
 
             var file = Path.Combine(path, Storage, $"{chunkName}.{Extension}");
-            inferred = File.Exists(file)
-                ? IO.LoadFile<T>(file, GameIO.compressSave, GameIO.jsReadGame)
-                : default;
+            ConfigCereal.ReadConfig(file, out inferred);
+
+            CwlMod.Log($"load chunk {file.ShortPath()}");
             return inferred is not null;
         }
     }

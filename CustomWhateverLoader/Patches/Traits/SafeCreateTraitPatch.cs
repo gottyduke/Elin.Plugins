@@ -57,7 +57,7 @@ internal class SafeCreateTraitPatch
                 throw new SourceParseException("cwl_error_qualify_type");
             }
 
-            ClassCache.caches.dict[unqualified] = () => Activator.CreateInstance(qualified);
+            ClassCache.caches.dict[unqualified] = () => Activator.CreateInstance(qualified, false);
             trait = ClassCache.caches.dict[unqualified]() as Trait;
 
             if (_qualifiedTraits.Add(qualified.FullName)) {

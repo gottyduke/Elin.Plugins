@@ -74,11 +74,15 @@ internal sealed partial class CwlMod
             return;
         }
 
+        // sources
         TypeQualifier.SafeQueryTypes<Element>();
         TypeQualifier.SafeQueryTypes<BaseCondition>();
         TypeQualifier.SafeQueryTypes<Trait>();
         TypeQualifier.SafeQueryTypes<Quest>();
         TypeQualifier.SafeQueryTypes<Zone>();
+
+        // extensions
+        TypeQualifier.SafeQueryTypes<DramaOutcome>();
     }
 
     [Time]

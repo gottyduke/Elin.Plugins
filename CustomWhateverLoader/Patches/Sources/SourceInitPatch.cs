@@ -44,8 +44,7 @@ internal class SourceInitPatch
                 try {
                     CwlMod.Log("cwl_log_workbook".Loc(import.ShortPath()));
 
-                    WorkbookImporter
-                        .BySheetName(import)
+                    WorkbookImporter.BySheetName(import)
                         .OfType<SourceData>()
                         .Do(s => dirty.Add(s));
                 } catch (Exception ex) {

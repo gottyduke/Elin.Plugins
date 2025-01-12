@@ -10,7 +10,7 @@ public static class CachedMethods
 {
     private static readonly Dictionary<TypeInfo, MethodInfo[]> _cached = [];
 
-    public static IEnumerable<MethodInfo> GetCachedMethods(this TypeInfo type)
+    public static MethodInfo[] GetCachedMethods(this TypeInfo type)
     {
         if (_cached.TryGetValue(type, out var methods)) {
             return methods;

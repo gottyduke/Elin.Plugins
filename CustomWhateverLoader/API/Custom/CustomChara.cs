@@ -149,10 +149,10 @@ public class CustomChara : Chara
                     }
 
                     var listAdv = game.cards.listAdv;
-                    var duplicate = game.cards.globalCharas.Values.FirstOrDefault(c => c.id == id);
+                    var duplicate = game.cards.globalCharas.Find(id);
                     if (duplicate is not null) {
                         if (import.Type == ImportType.Adventurer) {
-                            if (listAdv.FirstOrDefault(c => c.id == id) is not null) {
+                            if (listAdv.Find(c => c.id == id) is not null) {
                                 CwlMod.Log("cwl_log_skipped_adv".Loc(id));
                                 // regression as of 1.16.5
                                 if (duplicate.homeZone is Zone_Dungeon) {
@@ -182,9 +182,9 @@ public class CustomChara : Chara
                     var zones = game.spatials.map.Values
                         .OfType<Zone>()
                         .ToArray();
-                    var homeZone = zones.FirstOrDefault(z => z is not Zone_Dungeon &&
-                                                             z.GetType().Name.Split("_")[^1] == import.Zone) ??
-                                   zones.Where(z => z.CanSpawnAdv).RandomItem();
+                    var homeZone = Array.Find(zones, z => z is not Zone_Dungeon &&
+                                                          z.GetType().Name.Split("_")[^1] == import.Zone) ??
+                                   Array.FindAll(zones, z => z.CanSpawnAdv).RandomItem();
 
                     chara.SetHomeZone(homeZone);
                     chara.global.transition = new() {
