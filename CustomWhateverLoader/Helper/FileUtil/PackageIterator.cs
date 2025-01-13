@@ -23,7 +23,7 @@ public static class PackageIterator
 
     public static IEnumerable<DirectoryInfo> GetLangModFilesFromPackage(string? modGuid = null)
     {
-        var lang = Core.Instance.config.lang;
+        var lang = Core.Instance.config?.lang ?? "EN";
         return GetLoadedPackages(modGuid)
             .SelectMany(d => d.GetDirectories("LangMod"))
             .Select(d => {

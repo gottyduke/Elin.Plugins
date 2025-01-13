@@ -30,7 +30,7 @@ public class CustomElement : Element
 
             if (CwlConfig.QualifyTypeName) {
                 r.type = qualified;
-                CwlMod.Log("cwl_log_custom_type".Loc(nameof(Element), r.id, r.type));
+                CwlMod.Log<CustomElement>("cwl_log_custom_type".Loc(nameof(Element), r.id, r.type));
             }
 
             Managed[r.id] = r;
@@ -42,7 +42,7 @@ public class CustomElement : Element
 
             _cleanup = true;
         } catch {
-            CwlMod.Error("cwl_error_qualify_type".Loc(nameof(Element), r.id, r.type));
+            CwlMod.Error<CustomElement>("cwl_error_qualify_type".Loc(nameof(Element), r.id, r.type));
             // noexcept
         }
     }
@@ -71,7 +71,7 @@ public class CustomElement : Element
                     continue;
             }
 
-            CwlMod.Log("cwl_log_ele_gain".Loc(element.id, player.chara.Name));
+            CwlMod.Log<CustomElement>("cwl_log_ele_gain".Loc(element.id, player.chara.Name));
         }
     }
 

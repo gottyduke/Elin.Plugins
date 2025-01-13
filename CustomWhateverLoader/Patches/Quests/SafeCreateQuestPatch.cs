@@ -33,7 +33,7 @@ internal class SafeCreateQuestPatch
 
         readType = typeof(Quest);
         resolved = true;
-        CwlMod.Warn("cwl_warn_deserialize".Loc(nameof(Quest), qualified, readType.MetadataToken,
+        CwlMod.Warn<Quest>("cwl_warn_deserialize".Loc(nameof(Quest), qualified, readType.MetadataToken,
             CwlConfig.Patches.SafeCreateClass!.Definition.Key));
 
         if (!_cleanup) {
@@ -57,7 +57,7 @@ internal class SafeCreateQuestPatch
             }
 
             list.Remove(q);
-            CwlMod.Log("cwl_log_post_cleanup".Loc(nameof(Quest), q.id));
+            CwlMod.Log<Quest>("cwl_log_post_cleanup".Loc(nameof(Quest), q.id));
         });
     }
 }

@@ -32,7 +32,7 @@ internal class SafeCreateZonePatch
 
         readType = typeof(Zone);
         resolved = true;
-        CwlMod.Warn("cwl_warn_deserialize".Loc(nameof(Zone), qualified, readType.MetadataToken,
+        CwlMod.Warn<Zone>("cwl_warn_deserialize".Loc(nameof(Zone), qualified, readType.MetadataToken,
             CwlConfig.Patches.SafeCreateClass!.Definition.Key));
 
         if (!_cleanup) {
@@ -58,7 +58,7 @@ internal class SafeCreateZonePatch
             }
 
             list.Remove(z);
-            CwlMod.Log("cwl_log_post_cleanup".Loc(nameof(Spatial), z.id));
+            CwlMod.Log<Zone>("cwl_log_post_cleanup".Loc(nameof(Spatial), z.id));
         });
     }
 
@@ -76,7 +76,7 @@ internal class SafeCreateZonePatch
             }
 
             map.Remove(id);
-            CwlMod.Log("cwl_log_post_cleanup".Loc(nameof(Zone), zone.id));
+            CwlMod.Log<Zone>("cwl_log_post_cleanup".Loc(nameof(Zone), zone.id));
         }
     }
 }

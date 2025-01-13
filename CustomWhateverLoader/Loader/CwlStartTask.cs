@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Reflection;
+using Cwl.API.Drama;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.Runtime;
 using Cwl.Patches;
@@ -65,6 +66,7 @@ internal sealed partial class CwlMod
 
         QueryDeclTypes();
         PrebuildDispatchers();
+        DramaExpansion.BuildActionList();
     }
 
     [Time]

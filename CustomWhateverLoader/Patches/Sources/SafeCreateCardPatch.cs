@@ -34,7 +34,7 @@ internal class SafeCreateCardPatch
         try {
             card.AddRow(row, isChara);
         } catch (Exception ex) {
-            CwlMod.Warn("cwl_warn_card_create".Loc(row.GetType().Name, row.id, row.name, ex));
+            CwlMod.Warn<SourceCard>("cwl_warn_card_create".Loc(row.GetType().Name, row.id, row.name, ex));
             // noexcept
         }
     }

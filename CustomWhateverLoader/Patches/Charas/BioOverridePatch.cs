@@ -91,7 +91,7 @@ internal class BioOverridePatch
 
             _cached[__instance.HashKey()] = bio;
         } catch (Exception ex) {
-            CwlMod.Warn("cwl_error_failure".Loc(ex));
+            CwlMod.Error<CustomChara>("cwl_error_failure".Loc(ex));
             // noexcept
         }
     }

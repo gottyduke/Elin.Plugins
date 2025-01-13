@@ -1,6 +1,7 @@
 ﻿using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
+using UnityEngine;
 
 namespace Cwl.Patches.Materials;
 
@@ -25,7 +26,7 @@ internal class SafeCreateMaterialPatch
 
         map[t.idMaterial] = map[0];
 
-        CwlMod.Warn("cwl_warn_deserialize".Loc(nameof(SourceMaterial), t.idMaterial, nameof(SourceMaterial.Row),
+        CwlMod.Warn<Material>("cwl_warn_deserialize".Loc(nameof(SourceMaterial), t.idMaterial, nameof(SourceMaterial.Row),
             CwlConfig.Patches.SafeCreateClass!.Definition.Key));
     }
 }

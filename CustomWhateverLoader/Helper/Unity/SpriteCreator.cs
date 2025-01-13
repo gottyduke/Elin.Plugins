@@ -30,7 +30,7 @@ public static class SpriteCreator
                 if (tex == null) {
                     return null;
                 }
-                
+
                 if (resizeWidth != 0 && resizeHeight != 0 &&
                     tex.width != resizeWidth && tex.height != resizeHeight) {
                     var downscaled = tex.Downscale(resizeWidth, resizeHeight);
@@ -42,7 +42,7 @@ public static class SpriteCreator
 
             _cached[cache] = tex;
         } catch (Exception ex) {
-            CwlMod.Warn("cwl_warn_sprite_creator".Loc(path.ShortPath(), ex));
+            CwlMod.Warn<Sprite>("cwl_warn_sprite_creator".Loc(path.ShortPath(), ex));
             return null;
             // noexcept
         }

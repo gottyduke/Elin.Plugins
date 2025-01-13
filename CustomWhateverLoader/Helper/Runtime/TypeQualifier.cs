@@ -37,7 +37,7 @@ public class TypeQualifier
                               types.FirstOrDefault(t => t.Name.Equals(unq,
                                   StringComparison.InvariantCultureIgnoreCase));
                 if (qualified?.FullName is not null) {
-                    CwlMod.Warn($"typo in custom type {unq}, {qualified.FullName}");
+                    CwlMod.Warn<TypeQualifier>($"typo in custom type {unq}, {qualified.FullName}");
                 }
             }
 
@@ -63,7 +63,7 @@ public class TypeQualifier
                 var types = plugin.GetType().Assembly.DefinedTypes.OfDerived(typeof(T));
                 declared.AddRange(types);
             } catch {
-                CwlMod.Warn("cwl_warn_decltype_missing".Loc(plugin.Info.Metadata.GUID));
+                CwlMod.Warn<TypeQualifier>("cwl_warn_decltype_missing".Loc(plugin.Info.Metadata.GUID));
                 Plugins.Remove(plugin);
                 // noexcept
             }

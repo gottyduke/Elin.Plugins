@@ -32,6 +32,9 @@
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
+    <Target Name="CopyBanner" AfterTargets="AfterBuild">
+        <Copy SourceFiles="$(MSBuildProjectDirectory)\assets\CWL_banner.png" DestinationFolder="$(OutputPath)Texture\" />
+    </Target>
     <ItemGroup>
         <Reference Include="0Harmony">
             <HintPath>$(ElinGamePath)\BepInEx\core\0Harmony.dll</HintPath>
@@ -143,7 +146,9 @@
         <Compile Include="API\Custom\CustomMerchant.cs"/>
         <Compile Include="API\Custom\CustomReligion.cs"/>
         <Compile Include="API\Custom\CustomZone.cs"/>
-        <Compile Include="API\Drama\DramaExpansion.cs"/>
+        <Compile Include="API\Drama\ActionBuilder.cs" />
+        <Compile Include="API\Drama\DramaExpansion.cs" />
+        <Compile Include="API\Drama\ActionHelper.cs" />
         <Compile Include="API\Processors\GameIOProcessor.cs"/>
         <Compile Include="API\Processors\SheetProcessor.cs"/>
         <Compile Include="API\Processors\TraitTransformer.cs"/>
@@ -193,8 +198,7 @@
         <Compile Include="Patches\Charas\SetCharaRowPatch.cs"/>
         <Compile Include="Patches\Conditions\SafeCreateConditionPatch.cs"/>
         <Compile Include="Patches\Conditions\SetConditionRowPatch.cs"/>
-        <Compile Include="Patches\Dialogs\ExpandedActionPatch.cs"/>
-        <Compile Include="Patches\Dialogs\ExpandedConditionPatch.cs"/>
+        <Compile Include="Patches\Dialogs\DramaExpansionPatch.cs" />
         <Compile Include="Patches\Dialogs\OverlapSoundPatch.cs"/>
         <Compile Include="Patches\Dialogs\RerouteDramaPatch.cs"/>
         <Compile Include="Patches\Dialogs\VariableQuotePatch.cs"/>
@@ -230,6 +234,7 @@
         <Compile Include="Patches\Traits\SafeCreateTraitPatch.cs"/>
         <Compile Include="Patches\Zones\SafeCreateZonePatch.cs"/>
         <Compile Include="Patches\Zones\SetZoneRowPatch.cs"/>
+        <Compile Include="ThirdParty\EfficientInvoker.cs" />
         <Compile Include="ThirdParty\Glance.cs"/>
     </ItemGroup>
     <ItemGroup>

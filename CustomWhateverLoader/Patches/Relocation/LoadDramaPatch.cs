@@ -59,7 +59,7 @@ internal class LoadDramaPatch
         var localized = books.FirstOrDefault(b => b.Contains($"/{lang}/")) ?? fallback;
 
         if (data.path.NormalizePath() != localized) {
-            CwlMod.Log("cwl_relocate_drama".Loc(cachedBookName, Pattern, localized.ShortPath()));
+            CwlMod.Log<DramaManager>("cwl_relocate_drama".Loc(cachedBookName, Pattern, localized.ShortPath()));
         }
 
         PackageIterator.AddCachedPath(cachedBookName, localized);

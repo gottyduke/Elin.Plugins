@@ -17,7 +17,7 @@ internal class ExecutionAnalysis
             return;
         }
 
-        CwlMod.Log("cwl_log_execution_analysis".Loc());
+        CwlMod.Log<ExecutionAnalysis>("cwl_log_execution_analysis".Loc());
 
         var methodNameWidth = _cached.Keys.Max(mi => (mi.DeclaringType?.Name.Length ?? 0) + mi.Name.Length);
         var total = 0d;

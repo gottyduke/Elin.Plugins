@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Cwl.API;
+using Cwl.Helper.Runtime;
 using HarmonyLib;
 using MethodTimer;
 
@@ -32,11 +33,11 @@ internal class RethrowParsePatch
 
     [Time]
     [HarmonyPrefix]
-    internal static bool RethrowParseInvoke(int id, ref object __result, MethodInfo __originalMethod)
+    internal static bool RethrowParseInvoke(int id, ref object? __result, MethodInfo __originalMethod)
     {
         var parser = AccessTools.FirstMethod(typeof(ExcelParser), mi => mi.Name == __originalMethod.Name);
         try {
-            __result = parser.Invoke(null, [id]);
+            __result = parser.FastInvokeStatic(id);
         } catch (Exception ex) {
             var row = ExcelParser.row;
             var details = $"row#{row.RowNum}, cell#{id}, expected:{parser.ReturnType.Name}, raw:{row.Cells[id]}";

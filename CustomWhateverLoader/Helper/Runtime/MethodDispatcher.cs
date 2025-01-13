@@ -30,15 +30,9 @@ public static class MethodDispatcher
         }
 
         foreach (var method in cachedMethods) {
-            method.SafeInvoke(instance, args);
+            Array.Resize(ref args, method.GetParameters().Length);
+            method.FastInvoke(instance, args);
         }
-    }
-
-    [SwallowExceptions]
-    public static object? SafeInvoke(this MethodInfo method, object instance, params object[] args)
-    {
-        Array.Resize(ref args, method.GetParameters().Length);
-        return method.Invoke(instance, args);
     }
 
     internal static void BuildDispatchList<T>(string methodName)

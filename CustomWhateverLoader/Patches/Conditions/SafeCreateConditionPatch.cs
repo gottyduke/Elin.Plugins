@@ -51,7 +51,7 @@ internal class SafeCreateConditionPatch
             }
 
             __instance.conditions.Remove(customCondition);
-            CwlMod.Log("cwl_log_post_cleanup".Loc(nameof(Condition), $"{customCondition.id} @ {__instance.id}"));
+            CwlMod.Log<CustomCondition>("cwl_log_post_cleanup".Loc(nameof(Condition), $"{customCondition.id} @ {__instance.id}"));
         });
     }
 
@@ -69,7 +69,7 @@ internal class SafeCreateConditionPatch
             // noexcept
         }
 
-        CwlMod.Warn("cwl_warn_deserialize".Loc(nameof(Condition), alias, unqualified,
+        CwlMod.Warn<CustomCondition>("cwl_warn_deserialize".Loc(nameof(Condition), alias, unqualified,
             CwlConfig.Patches.SafeCreateClass!.Definition.Key));
 
         var row = EMono.sources.stats.alias.TryGetValue(alias)!;
@@ -91,7 +91,7 @@ internal class SafeCreateConditionPatch
 
         readType = typeof(CustomCondition);
         resolved = true;
-        CwlMod.Warn("cwl_warn_deserialize".Loc(nameof(Condition), qualified, readType.MetadataToken,
+        CwlMod.Warn<CustomCondition>("cwl_warn_deserialize".Loc(nameof(Condition), qualified, readType.MetadataToken,
             CwlConfig.Patches.SafeCreateClass!.Definition.Key));
     }
 }

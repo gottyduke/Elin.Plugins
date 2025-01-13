@@ -1,4 +1,5 @@
-﻿using Cwl.ThirdParty;
+﻿using System.Runtime.CompilerServices;
+using Cwl.ThirdParty;
 
 namespace Cwl;
 
@@ -6,32 +7,51 @@ internal sealed partial class CwlMod
 {
     internal static void Log(object payload)
     {
-        Instance!.Logger.LogInfo(payload);
+        UnityEngine.Debug.Log($"[CWL][INFO] {payload}");
     }
 
-    internal static void Log(object payload, string category)
+    internal static void Log<T>(object payload)
     {
-        Instance!.Logger.LogInfo($"[{category}] {payload}");
+        Log($"[{typeof(T).Name}] {payload}");
     }
 
-    internal static void Debug(object payload)
+    internal static void Debug(object payload, [CallerMemberName] string caller = "")
     {
         if (!CwlConfig.Logging.Verbose?.Value is true) {
             return;
         }
 
-        Instance!.Logger.LogInfo(payload);
+        UnityEngine.Debug.Log($"[CWL][DEBUG] [{caller}] {payload}");
+    }
+
+    internal static void Debug<T>(object payload, [CallerMemberName] string caller = "")
+    {
+        if (!CwlConfig.Logging.Verbose?.Value is true) {
+            return;
+        }
+
+        Debug($"[{typeof(T).Name}] {payload}", caller);
     }
 
     internal static void Warn(object payload)
     {
-        Instance!.Logger.LogWarning(payload);
+        UnityEngine.Debug.Log($"[CWL][WARN] {payload}");
         Glance.Dispatch(payload);
     }
 
-    internal static void Error(object payload)
+    internal static void Warn<T>(object payload)
     {
-        Instance!.Logger.LogError(payload);
+        Warn($"[{typeof(T).Name}] {payload}");
+    }
+
+    internal static void Error(object payload, [CallerMemberName] string caller = "")
+    {
+        UnityEngine.Debug.Log($"[CWL][ERROR] [{caller}] {payload}");
         Glance.Dispatch(payload);
+    }
+
+    internal static void Error<T>(object payload, [CallerMemberName] string caller = "")
+    {
+        Error($"[{typeof(T).Name}] {payload}", caller);
     }
 }

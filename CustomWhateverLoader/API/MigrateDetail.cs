@@ -6,7 +6,6 @@ using Cwl.Helper.String;
 using Cwl.LangMod;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
-using UnityEngine;
 
 namespace Cwl.API;
 
@@ -80,7 +79,7 @@ public sealed class MigrateDetail
     {
         switch (CurrentSheet?.MigrateStrategy) {
             case Strategy.Reorder: {
-                CwlMod.Warn("cwl_warn_misaligned_sheet".Loc(CwlConfig.Source.NamedImport!.Definition.Key));
+                CwlMod.Warn<MigrateDetail>("cwl_warn_misaligned_sheet".Loc(CwlConfig.Source.NamedImport!.Definition.Key));
                 DumpHeaders();
 
                 if (CwlConfig.SheetMigrate) {
@@ -90,7 +89,7 @@ public sealed class MigrateDetail
                 break;
             }
             case Strategy.Missing: {
-                CwlMod.Warn("cwl_warn_missing_header".Loc());
+                CwlMod.Warn<MigrateDetail>("cwl_warn_missing_header".Loc());
                 DumpHeaders();
                 break;
             }
@@ -108,7 +107,7 @@ public sealed class MigrateDetail
         var sheet = CurrentSheet.Sheet;
         var migratedFile = $"{SheetFile}_{sheet.SheetName}_{GameVersion.Normalized}_cwl_migrated.xlsx";
         if (File.Exists(migratedFile)) {
-            CwlMod.Warn("cwl_log_migration_cancel".Loc(GameVersion.Normalized));
+            CwlMod.Warn<MigrateDetail>("cwl_log_migration_cancel".Loc(GameVersion.Normalized));
             return;
         }
 
@@ -139,9 +138,9 @@ public sealed class MigrateDetail
             using var fs = File.OpenWrite(migratedFile);
             book.Write(fs);
 
-            CwlMod.Log("cwl_log_migration_complete".Loc(migratedFile));
+            CwlMod.Log<MigrateDetail>("cwl_log_migration_complete".Loc(migratedFile));
         } catch (Exception ex) {
-            CwlMod.Warn("cwl_warn_migration_failure".Loc(ex));
+            CwlMod.Warn<MigrateDetail>("cwl_warn_migration_failure".Loc(ex));
             // noexcept
         }
     }
@@ -160,7 +159,7 @@ public sealed class MigrateDetail
         var defaults = sheet.GetRow(2)?.Cells?
             .Where(c => c?.ToString() is not (null or ""));
         if (defaults?.Count() is not > 0) {
-            CwlMod.Warn("cwl_warn_empty_default".Loc());
+            CwlMod.Warn<MigrateDetail>("cwl_warn_empty_default".Loc());
         }
     }
 
@@ -175,7 +174,7 @@ public sealed class MigrateDetail
         }
 
         var file = new FileInfo(SheetFile);
-        CwlMod.Warn(file.ShortPath());
+        CwlMod.Warn<MigrateDetail>(file.ShortPath());
 
         var expected = CurrentSheet.Expected.OrderBy(c => c.Index).ToList();
         var given = CurrentSheet.Given.OrderBy(c => c.Index).ToList();
@@ -193,7 +192,7 @@ public sealed class MigrateDetail
             var givenName = givenCell is not null ? givenCell.Name : "cwl_cell_missing".Loc();
             givenName = givenName.PadRight(maxNameWidth + 3);
 
-            Debug.Log($"{header.Index,2}: {expectedName} -> {givenName} {guessName}");
+            CwlMod.Debug($"{header.Index,2}: {expectedName} -> {givenName} {guessName}");
         }
     }
 

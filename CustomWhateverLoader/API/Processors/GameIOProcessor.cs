@@ -54,7 +54,7 @@ public class GameIOProcessor
             } catch (Exception ex) {
                 var type = save ? "save" : "load";
                 var state = post ? "post" : "pre";
-                CwlMod.Warn("cwl_warn_processor".Loc(type, state, ex.Message));
+                CwlMod.Warn<GameIOProcessor>("cwl_warn_processor".Loc(type, state, ex.Message));
                 // noexcept
             }
         }
@@ -109,7 +109,7 @@ public class GameIOProcessor
             var file = Path.Combine(path, Storage, $"{chunkName}.{Extension}");
             ConfigCereal.WriteConfig(data, file);
 
-            CwlMod.Log($"save chunk {file.ShortPath()}");
+            CwlMod.Log<GameIOContext>($"save chunk {file.ShortPath()}");
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ public class GameIOProcessor
             var file = Path.Combine(path, Storage, $"{chunkName}.{Extension}");
             ConfigCereal.ReadConfig(file, out inferred);
 
-            CwlMod.Log($"load chunk {file.ShortPath()}");
+            CwlMod.Log<GameIOContext>($"load chunk {file.ShortPath()}");
             return inferred is not null;
         }
     }

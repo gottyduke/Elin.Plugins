@@ -19,12 +19,12 @@ public class CustomCondition : Condition
 
             if (CwlConfig.QualifyTypeName) {
                 r.type = qualified;
-                CwlMod.Log("cwl_log_custom_type".Loc(nameof(Condition), r.id, r.type));
+                CwlMod.Log<CustomCondition>("cwl_log_custom_type".Loc(nameof(Condition), r.id, r.type));
             }
 
             Managed[r.id] = r;
         } catch {
-            CwlMod.Error("cwl_error_qualify_type".Loc(nameof(Condition), r.id, r.type));
+            CwlMod.Error<CustomCondition>("cwl_error_qualify_type".Loc(nameof(Condition), r.id, r.type));
             // noexcept
         }
     }

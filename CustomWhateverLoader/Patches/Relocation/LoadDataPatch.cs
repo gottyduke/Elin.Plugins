@@ -29,7 +29,7 @@ internal class LoadDataPatch
     {
         foreach (var charaTalk in PackageIterator.GetRelocatedExcelsFromPackage("Data/chara_talk.xlsx")) {
             MOD.listTalk.items.Add(charaTalk);
-            CwlMod.Log("cwl_preload_chara_talk".Loc(charaTalk.path.ShortPath()));
+            CwlMod.Log<TalkDataList>("cwl_preload_chara_talk".Loc(charaTalk.path.ShortPath()));
         }
     }
 
@@ -38,7 +38,7 @@ internal class LoadDataPatch
     {
         foreach (var charaTone in PackageIterator.GetRelocatedExcelsFromPackage("Data/chara_tone.xlsx")) {
             MOD.tones.items.Add(charaTone);
-            CwlMod.Log("cwl_preload_chara_tone".Loc(charaTone.path.ShortPath()));
+            CwlMod.Log<ToneDataList>("cwl_preload_chara_tone".Loc(charaTone.path.ShortPath()));
         }
     }
 
@@ -60,9 +60,9 @@ internal class LoadDataPatch
                         .Do(map[topic].TryAdd);
                 }
 
-                CwlMod.Log("cwl_preload_god_talk".Loc(talk.path.ShortPath()));
+                CwlMod.Log<ExcelData>("cwl_preload_god_talk".Loc(talk.path.ShortPath()));
             } catch (Exception ex) {
-                CwlMod.Error("cwl_error_merge_god_talk".Loc(talk.path.ShortPath(), ex));
+                CwlMod.Error<ExcelData>("cwl_error_merge_god_talk".Loc(talk.path.ShortPath(), ex));
                 // noexcept
             }
         }

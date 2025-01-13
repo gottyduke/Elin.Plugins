@@ -47,7 +47,7 @@ internal class LoadBookPatch
                 BookList.dict[category][item.id] = item;
                 PackageIterator.AddCachedPath($"{category}/{item.id}", book.FullName);
 
-                CwlMod.Log($"{category}: {book.Name}|{book.Directory?.Parent?.Parent?.Name}");
+                CwlMod.Log<BookList>($"{category}: {book.Name}|{book.Directory?.Parent?.Parent?.Name}");
             }
         }
     }
@@ -80,7 +80,7 @@ internal class LoadBookPatch
             return [];
         }
 
-        CwlMod.Log("cwl_relocate_book".Loc(id, Pattern, cachedPath.ShortPath()));
+        CwlMod.Log<BookList>("cwl_relocate_book".Loc(id, Pattern, cachedPath.ShortPath()));
         return IO.LoadTextArray(cachedPath);
     }
 }

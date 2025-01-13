@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Cwl.Helper.FileUtil;
 
-public static class ConfigCereal
+public class ConfigCereal
 {
     public static void WriteConfig<T>(T data, string path)
     {
@@ -14,7 +14,7 @@ public static class ConfigCereal
             using var sw = new StreamWriter(path);
             sw.Write(JsonConvert.SerializeObject(data, Formatting.Indented));
         } catch (Exception ex) {
-            CwlMod.Error($"internal failure: {ex.Message}");
+            CwlMod.Error<ConfigCereal>($"internal failure: {ex.Message}");
             // noexcept
         }
     }
@@ -28,7 +28,7 @@ public static class ConfigCereal
                 return true;
             }
         } catch (Exception ex) {
-            CwlMod.Error($"failed to read config: {ex.Message}");
+            CwlMod.Error<ConfigCereal>($"failed to read config: {ex.Message}");
             throw;
         }
 

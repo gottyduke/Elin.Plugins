@@ -27,7 +27,7 @@ internal class CellPostProcessPatch
             try {
                 return cellProcess(cell);
             } catch (Exception ex) {
-                CwlMod.Warn("cwl_cell_post_process".Loc(ex));
+                CwlMod.Warn<CellProcess>("cwl_cell_post_process".Loc(ex));
                 // noexcept
             }
 

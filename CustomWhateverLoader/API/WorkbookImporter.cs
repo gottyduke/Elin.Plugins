@@ -41,14 +41,14 @@ public class WorkbookImporter
                 var sourceField = _sources.FirstOrDefault(f => f.FieldType.Name == $"Source{sheet.SheetName}" ||
                                                                f.FieldType.Name == $"Lang{sheet.SheetName}");
                 if (sourceField is null) {
-                    CwlMod.Log("cwl_log_sheet_skip".Loc(sheet.SheetName));
+                    CwlMod.Log<WorkbookImporter>("cwl_log_sheet_skip".Loc(sheet.SheetName));
                     continue;
                 }
 
                 SheetProcessor.PreProcess(sheet);
 
                 var sheetName = $"{sourceField.Name}:{import.Name}/{sheet.SheetName}";
-                CwlMod.Log("cwl_log_sheet".Loc(sheet.SheetName));
+                CwlMod.Log<WorkbookImporter>("cwl_log_sheet".Loc(sheet.SheetName));
 
                 if (sourceField.GetValue(EMono.sources) is not SourceData source ||
                     !source.ImportData(sheet, import.Name, true)) {
@@ -59,7 +59,7 @@ public class WorkbookImporter
 
                 dirty.Add(source);
             } catch (Exception ex) {
-                CwlMod.Error("cwl_error_failure".Loc(ex));
+                CwlMod.Error<WorkbookImporter>("cwl_error_failure".Loc(ex));
                 // noexcept
             }
         }

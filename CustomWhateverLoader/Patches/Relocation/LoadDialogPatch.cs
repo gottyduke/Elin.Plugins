@@ -63,7 +63,7 @@ internal class LoadDialogPatch
 
         foreach (var book in dialogs) {
             _cached.Add(new(book.FullName));
-            CwlMod.Log("cwl_preload_dialog".Loc(book.ShortPath()));
+            CwlMod.Log<ExcelData>("cwl_preload_dialog".Loc(book.ShortPath()));
         }
 
         yield break;

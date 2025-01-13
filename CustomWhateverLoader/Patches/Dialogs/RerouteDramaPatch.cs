@@ -10,8 +10,7 @@ internal class RerouteDramaPatch
 {
     [HarmonyTranspiler]
     [HarmonyPatch(typeof(Chara), nameof(Chara.ShowDialog), [])]
-    internal static IEnumerable<CodeInstruction> OnSwitchIdIl(IEnumerable<CodeInstruction> instructions,
-        ILGenerator generator)
+    internal static IEnumerable<CodeInstruction> OnSwitchIdIl(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
         return new CodeMatcher(instructions, generator)
             .MatchEndForward(

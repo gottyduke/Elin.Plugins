@@ -27,7 +27,7 @@ public class SheetProcessor
                 sheetProcess(book);
             } catch (Exception ex) {
                 var type = post ? "post" : "pre";
-                CwlMod.Warn("cwl_warn_processor".Loc("sheet", type, ex.Message));
+                CwlMod.Warn<SheetProcessor>("cwl_warn_processor".Loc("sheet", type, ex.Message));
                 // noexcept
             }
         }

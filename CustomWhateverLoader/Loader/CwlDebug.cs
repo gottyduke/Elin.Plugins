@@ -1,11 +1,11 @@
 ﻿#if !DEBUG
 global using SwallowExceptions.Fody;
-#endif
 
-#if DEBUG
+#else
+
+using System;
 using Cwl.ThirdParty;
 using UnityEngine;
-using System;
 
 namespace Cwl;
 

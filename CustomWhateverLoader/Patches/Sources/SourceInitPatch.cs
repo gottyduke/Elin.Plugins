@@ -26,7 +26,8 @@ internal class SourceInitPatch
             try {
                 Harmony.CreateAndPatchAll(typeof(NamedImportPatch), ModInfo.Guid);
             } catch (Exception ex) {
-                CwlMod.Warn($"failed to patch Source.NamedImport, disabled\n{ex.Message.SplitNewline()[0]}");
+                CwlMod.Warn<SourceManager>($"failed to patch Source.NamedImport, disabled\n" +
+                                           $"{ex.Message.SplitNewline()[0]}");
                 // noexcept
             }
 
@@ -42,13 +43,13 @@ internal class SourceInitPatch
 
             foreach (var import in imports) {
                 try {
-                    CwlMod.Log("cwl_log_workbook".Loc(import.ShortPath()));
+                    CwlMod.Log<SourceManager>("cwl_log_workbook".Loc(import.ShortPath()));
 
                     WorkbookImporter.BySheetName(import)
                         .OfType<SourceData>()
                         .Do(s => dirty.Add(s));
                 } catch (Exception ex) {
-                    CwlMod.Error("cwl_error_failure".Loc(ex));
+                    CwlMod.Error<SourceManager>("cwl_error_failure".Loc(ex));
                     // noexcept
                 }
             }
@@ -57,13 +58,13 @@ internal class SourceInitPatch
                 try {
                     imported.Reset();
                 } catch (Exception ex) {
-                    CwlMod.Error("cwl_error_failure".Loc(ex));
+                    CwlMod.Error<SourceManager>("cwl_error_failure".Loc(ex));
                     // noexcept
                 }
             }
         } finally {
             SafeToCreate = false;
-            CwlMod.Log("cwl_log_workbook_complete".Loc());
+            CwlMod.Log<SourceManager>("cwl_log_workbook_complete".Loc());
         }
     }
 }

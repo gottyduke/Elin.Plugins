@@ -61,10 +61,10 @@ internal class SafeCreateTraitPatch
             trait = ClassCache.caches.dict[unqualified]() as Trait;
 
             if (_qualifiedTraits.Add(qualified.FullName)) {
-                CwlMod.Log("cwl_log_custom_type".Loc(nameof(Trait), unqualified, qualified.FullName));
+                CwlMod.Log<Trait>("cwl_log_custom_type".Loc(nameof(Trait), unqualified, qualified.FullName));
             }
         } catch {
-            CwlMod.Warn("cwl_error_qualify_type".Loc(nameof(Trait), $"{unqualified} @ {owner.id}", ""));
+            CwlMod.Warn<Trait>("cwl_error_qualify_type".Loc(nameof(Trait), $"{unqualified} @ {owner.id}", ""));
             // noexcept
         }
 

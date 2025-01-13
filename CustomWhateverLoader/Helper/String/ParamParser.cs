@@ -5,16 +5,17 @@ namespace Cwl.Helper.String;
 
 public static class ParamParser
 {
-    public static string?[] Parse(this string payload, string delimiter, int expected = 0)
+    public static string?[] Parse(this string payload, string delimiter, int expected = 0, bool useNull = true)
     {
-        var parsed = payload.Split(delimiter)
+        string?[]? parsed = payload.Split(delimiter)
             .Select(s => s.Trim())
             .ToArray();
-        if (parsed.Length >= expected) {
-            return parsed;
-        }
 
         Array.Resize(ref parsed, expected);
+        for (var i = 0; i < parsed.Length; ++i) {
+            parsed[i] ??= useNull ? null : string.Empty;
+        }
+
         return parsed;
     }
 }

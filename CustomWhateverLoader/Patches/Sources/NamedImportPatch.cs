@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Cwl.API;
 using Cwl.Helper.Runtime;
+using Cwl.ThirdParty;
 using HarmonyLib;
 using MethodTimer;
 using NPOI.SS.UserModel;
@@ -54,6 +55,7 @@ internal class NamedImportPatch
 
                 var parser = cm.Instruction.operand as MethodInfo;
                 cm.RemoveInstruction();
+                EfficientInvoker.ForMethod(parser!);
 
                 MethodInfo? extraParser = null;
                 if (extraParse) {
@@ -88,8 +90,8 @@ internal class NamedImportPatch
     {
         if (!SourceInitPatch.SafeToCreate) {
             var parsed = extraParser is not null
-                ? extraParser.Invoke(null, [(string)parser.Invoke(null, [id, false])])
-                : parser.Invoke(null, [id]);
+                ? extraParser.FastInvokeStatic(parser.FastInvokeStatic(id, false)!)
+                : parser.FastInvokeStatic(id);
             field.SetValue(row, parsed);
             return;
         }
@@ -133,8 +135,8 @@ internal class NamedImportPatch
             }
 
             var parsed = extraParser is not null
-                ? extraParser.Invoke(null, [(string)parser.Invoke(null, [readPos, false])])
-                : parser.Invoke(null, [readPos]);
+                ? extraParser.FastInvokeStatic(parser.FastInvokeStatic(readPos, false)!)
+                : parser.FastInvokeStatic(readPos);
             field.SetValue(row, parsed);
 
             //var parseDetail = readPos == id ? "cwl_import_parse" : "cwl_import_reloc";

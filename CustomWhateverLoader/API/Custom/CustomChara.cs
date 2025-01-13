@@ -119,20 +119,36 @@ public class CustomChara : Chara
 
             return true;
         } catch (Exception ex) {
-            CwlMod.Error(ex);
+            CwlMod.Error<CustomChara>(ex);
             // noexcept
         }
 
         chara?.Destroy();
         chara = null;
 
-        CwlMod.Error("cwl_error_chara_gen".Loc(id));
+        CwlMod.Error<CustomChara>("cwl_error_chara_gen".Loc(id));
         return false;
     }
 
     public static bool CreateTaggedChara(string id, out Chara? chara, CharaImport import)
     {
         return CreateTaggedChara(id, out chara, import.Equips, import.Things);
+    }
+
+    public static void SpawnAtZone(Chara chara, string zonePartialName)
+    {
+        // credits to 105gun
+        var zones = game.spatials.map.Values
+            .OfType<Zone>()
+            .ToArray();
+        var destZone = Array.Find(zones, z => z is not Zone_Dungeon && z.GetType().Name[5..] == zonePartialName) ??
+                       Array.FindAll(zones, z => z.CanSpawnAdv).RandomItem();
+
+        chara.SetHomeZone(destZone);
+        chara.global.transition = new() {
+            state = ZoneTransition.EnterState.RandomVisit,
+        };
+        destZone.AddCard(chara);
     }
 
     [Time]
@@ -153,7 +169,7 @@ public class CustomChara : Chara
                     if (duplicate is not null) {
                         if (import.Type == ImportType.Adventurer) {
                             if (listAdv.Find(c => c.id == id) is not null) {
-                                CwlMod.Log("cwl_log_skipped_adv".Loc(id));
+                                CwlMod.Log<CustomChara>("cwl_log_skipped_adv".Loc(id));
                                 // regression as of 1.16.5
                                 if (duplicate.homeZone is Zone_Dungeon) {
                                     var newHome = game.world.region.ListTowns().RandomItem();
@@ -165,10 +181,10 @@ public class CustomChara : Chara
                                 }
                             } else {
                                 listAdv.Add(duplicate);
-                                CwlMod.Log("cwl_log_added_adv".Loc(id, duplicate.homeZone.Name));
+                                CwlMod.Log<CustomChara>("cwl_log_added_adv".Loc(id, duplicate.homeZone.Name));
                             }
                         } else {
-                            CwlMod.Log("cwl_log_skipped_cm".Loc(id));
+                            CwlMod.Log<CustomChara>("cwl_log_skipped_cm".Loc(id));
                         }
 
                         continue;
@@ -178,29 +194,17 @@ public class CustomChara : Chara
                         continue;
                     }
 
-                    // credits to 105gun
-                    var zones = game.spatials.map.Values
-                        .OfType<Zone>()
-                        .ToArray();
-                    var homeZone = Array.Find(zones, z => z is not Zone_Dungeon &&
-                                                          z.GetType().Name.Split("_")[^1] == import.Zone) ??
-                                   Array.FindAll(zones, z => z.CanSpawnAdv).RandomItem();
-
-                    chara.SetHomeZone(homeZone);
-                    chara.global.transition = new() {
-                        state = ZoneTransition.EnterState.RandomVisit,
-                    };
-                    homeZone.AddCard(chara);
+                    SpawnAtZone(chara, import.Zone);
 
                     switch (import.Type) {
                         case ImportType.Adventurer:
                             listAdv.Add(chara);
-                            CwlMod.Log("cwl_log_added_adv".Loc(id, homeZone.Name));
+                            CwlMod.Log<CustomChara>("cwl_log_added_adv".Loc(id, chara.homeZone.Name));
                             break;
                         case ImportType.Merchant:
                         case ImportType.Commoner:
                         default:
-                            CwlMod.Log("cwl_log_added_cm".Loc(id, homeZone.Name));
+                            CwlMod.Log<CustomChara>("cwl_log_added_cm".Loc(id, chara.homeZone.Name));
                             break;
                     }
                 } catch {
@@ -215,7 +219,7 @@ public class CustomChara : Chara
     private static void AddEqOrThing(Chara chara, string id, string? payload, bool equip = false)
     {
         if (sources.cards.map.TryGetValue(id) is null) {
-            CwlMod.Warn("cwl_warn_thing_gen".Loc(id, chara.id));
+            CwlMod.Warn<CustomChara>("cwl_warn_thing_gen".Loc(id, chara.id));
             return;
         }
 
@@ -230,7 +234,7 @@ public class CustomChara : Chara
                 thing.c_IDTState = 0;
                 if (!thing.isDestroyed) {
                     thing.ChangeRarity(rarity);
-                    CwlMod.Log("cwl_log_added_eq".Loc(id, thing.rarity.ToString(), chara.id));
+                    CwlMod.Log<CustomChara>("cwl_log_added_eq".Loc(id, thing.rarity.ToString(), chara.id));
                     return;
                 }
             }
@@ -243,10 +247,10 @@ public class CustomChara : Chara
             thing.c_IDTState = 0;
             chara.AddThing(thing);
 
-            CwlMod.Log("cwl_log_added_thing".Loc(id, thing.Num, chara.id));
+            CwlMod.Log<CustomChara>("cwl_log_added_thing".Loc(id, thing.Num, chara.id));
         } catch {
             thing?.Destroy();
-            CwlMod.Warn("cwl_warn_thing_gen".Loc(id, chara.id));
+            CwlMod.Warn<CustomChara>("cwl_warn_thing_gen".Loc(id, chara.id));
             // noexcept
         }
     }
