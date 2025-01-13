@@ -98,4 +98,9 @@ public static class PackageIterator
     {
         _cachedPaths[cacheName] = path;
     }
+
+    internal static void ClearCache()
+    {
+        _cachedPaths.Clear();
+    }
 }
