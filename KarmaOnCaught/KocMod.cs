@@ -8,7 +8,7 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.karmaoncaught";
     internal const string Name = "Lose Karma On Caught";
-    internal const string Version = "1.4";
+    internal const string Version = "1.5";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
@@ -82,10 +83,22 @@ internal class AIStealPatch
         }
         
         var detection = Config.DetectionRadius!.Value;
-        var witnesses = pos.ListWitnesses(cc, detection, target: target).Count;
-        var caught = pos.TryWitnessCrime(cc, target?.Chara, detection, func);
+        var witnesses = pos.ListWitnesses(cc, detection, target: target);
+        var witness = witnesses.Find(witness => !witness.IsHostile() && func(witness));
+        if (witness is null) {
+            return false;
+        }
 
-        KocMod.DoModKarma(caught, cc, -1, false, witnesses);
-        return caught;
+        if (!cc.currentZone.AllowCriminal) {
+            pos.CallGuard(cc, witness);
+            KocMod.DoModKarma(true, cc, -1, false, witnesses.Count);
+        }
+
+        target?.DoHostileAction(cc);
+        if (witness != target) {
+            witness.DoHostileAction(cc);
+        }
+
+        return false;
     }
 }
