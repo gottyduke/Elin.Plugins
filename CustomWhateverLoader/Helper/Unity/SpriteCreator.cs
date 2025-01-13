@@ -27,6 +27,10 @@ public static class SpriteCreator
             if (!_cached.TryGetValue(cache, out var tex) ||
                 !CwlConfig.CacheSprites) {
                 tex = IO.LoadPNG(path);
+                if (tex == null) {
+                    return null;
+                }
+                
                 if (resizeWidth != 0 && resizeHeight != 0 &&
                     tex.width != resizeWidth && tex.height != resizeHeight) {
                     var downscaled = tex.Downscale(resizeWidth, resizeHeight);
