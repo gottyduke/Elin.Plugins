@@ -109,7 +109,7 @@ public class GameIOProcessor
             var file = Path.Combine(path, Storage, $"{chunkName}.{Extension}");
             ConfigCereal.WriteConfig(data, file);
 
-            CwlMod.Log<GameIOContext>($"save chunk {file.ShortPath()}");
+            CwlMod.Log<GameIOContext>($"save {file.ShortPath()}");
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ public class GameIOProcessor
             var file = Path.Combine(path, Storage, $"{chunkName}.{Extension}");
             ConfigCereal.ReadConfig(file, out inferred);
 
-            CwlMod.Log<GameIOContext>($"load chunk {file.ShortPath()}");
+            CwlMod.Log<GameIOContext>($"load {file.ShortPath()}");
             return inferred is not null;
         }
     }

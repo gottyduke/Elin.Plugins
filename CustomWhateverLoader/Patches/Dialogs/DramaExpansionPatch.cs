@@ -40,7 +40,7 @@ internal class DramaExpansionPatch
             return false;
         }
 
-        if (!item.TryGetValue("param", out var expr) || expr.IsEmpty()) {
+        if (!item.TryGetValue("param", out var expr)) {
             return false;
         }
 
