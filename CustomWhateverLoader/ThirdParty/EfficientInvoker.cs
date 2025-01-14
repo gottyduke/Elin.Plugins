@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Cwl.ThirdParty;
 
@@ -40,10 +41,7 @@ internal class EfficientInvoker(Func<object?, object[], object?> func)
         }
 
         var type = del.GetType();
-        return _typeToWrapperMap.GetOrAdd(type, t => {
-            var method = del.GetMethodInfo();
-            return new(CreateMethodWrapper(t, method, true));
-        });
+        return _typeToWrapperMap.GetOrAdd(type, t => new(CreateMethodWrapper(t, del.Method, true)));
     }
 
     public static EfficientInvoker ForMethod(MethodInfo method)
@@ -53,10 +51,7 @@ internal class EfficientInvoker(Func<object?, object[], object?> func)
         }
 
         var key = new MethodKey(method.DeclaringType!, method.Name);
-        return _methodToWrapperMap.GetOrAdd(key, k => {
-            var wrapper = CreateMethodWrapper(k.Type, method, false);
-            return new(wrapper);
-        });
+        return _methodToWrapperMap.GetOrAdd(key, k => new(CreateMethodWrapper(k.Type, method, false)));
     }
 
     public static EfficientInvoker ForProperty(Type type, string propertyName)
@@ -73,6 +68,7 @@ internal class EfficientInvoker(Func<object?, object[], object?> func)
         return _methodToWrapperMap.GetOrAdd(key, _ => new(CreatePropertyWrapper(type, propertyName)));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public object? Invoke(object? instance, params object[] args)
     {
         return func(instance, args);

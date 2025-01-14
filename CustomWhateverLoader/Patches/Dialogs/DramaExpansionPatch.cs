@@ -32,7 +32,7 @@ internal class DramaExpansionPatch
                 new(OpCodes.Ret))
             .InstructionEnumeration();
     }
-    
+
     [SwallowExceptions]
     private static bool ExternalInvoke(DramaManager __instance, Dictionary<string, string> item)
     {
@@ -44,11 +44,13 @@ internal class DramaExpansionPatch
             return false;
         }
 
-        var action = DramaExpansion.BuildAction(expr);
+        var action = DramaExpansion.BuildExpression(expr);
         if (action is null) {
             return false;
         }
-        
+
+        DramaExpansion.Cookie = new(__instance, item);
+
         var step = new DramaEventMethod(() => action(__instance, item));
         if (item.TryGetValue("jump", out var jump)) {
             step.action = null;

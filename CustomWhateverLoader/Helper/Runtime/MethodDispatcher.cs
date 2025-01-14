@@ -31,7 +31,12 @@ public static class MethodDispatcher
 
         foreach (var method in cachedMethods) {
             Array.Resize(ref args, method.GetParameters().Length);
-            method.FastInvoke(instance, args);
+            try {
+                method.FastInvoke(instance, args);
+            } catch (Exception ex) {
+                CwlMod.Warn($"failed invoking {method.Name}\n{ex}");
+                // noexcept
+            }
         }
     }
 
