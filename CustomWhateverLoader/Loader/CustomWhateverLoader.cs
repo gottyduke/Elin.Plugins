@@ -40,7 +40,7 @@ internal sealed partial class CwlMod : BaseUnityPlugin
 
         PrebuildDispatchers();
         DramaExpansion.BuildActionList();
-        TypeResolver.RegisterFallbacks();
+        //TypeResolver.RegisterFallbacks();
 
         OnDisable();
     }

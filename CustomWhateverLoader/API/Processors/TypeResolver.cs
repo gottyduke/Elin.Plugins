@@ -38,6 +38,7 @@ public class TypeResolver
 
     /// <summary>
     ///     New stuff added in EA 23.76 Nightly
+    ///     Actually it doesn't really work
     /// </summary>
     [Time]
     internal static void RegisterFallbacks()
