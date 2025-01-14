@@ -1,5 +1,7 @@
 ﻿using System;
+using Cwl.Helper.Runtime;
 using Cwl.LangMod;
+using MethodTimer;
 
 namespace Cwl.API.Processors;
 
@@ -31,8 +33,21 @@ public class TypeResolver
 
     internal static void Resolve(ref bool resolved, Type objectType, ref Type readType, string qualified)
     {
-        if (CwlConfig.AllowProcessors) {
-            OnTypeResolve(ref resolved, objectType, ref readType, qualified);
+        OnTypeResolve(ref resolved, objectType, ref readType, qualified);
+    }
+
+    /// <summary>
+    ///     New stuff added in EA 23.76 Nightly
+    /// </summary>
+    [Time]
+    internal static void RegisterFallbacks()
+    {
+        foreach (var (declared, fallback) in TypeQualifier.Declared) {
+            // assembly name is unused. NOA!!!!!
+            var asm = declared.Assembly.FullName;
+            var aqn = fallback.AssemblyQualifiedName;
+            ModUtil.RegisterSerializedTypeFallback(asm, declared.Name, aqn);
+            ModUtil.RegisterSerializedTypeFallback(asm, declared.FullName, aqn);
         }
     }
 }

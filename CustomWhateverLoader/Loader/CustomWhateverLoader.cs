@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using BepInEx;
+using Cwl.API.Drama;
+using Cwl.API.Processors;
 using Cwl.Helper;
 
 namespace Cwl;
@@ -35,6 +37,10 @@ internal sealed partial class CwlMod : BaseUnityPlugin
 
         yield return null;
         yield return LoadTask();
+
+        PrebuildDispatchers();
+        DramaExpansion.BuildActionList();
+        TypeResolver.RegisterFallbacks();
 
         OnDisable();
     }

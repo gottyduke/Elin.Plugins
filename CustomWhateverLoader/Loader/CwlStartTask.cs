@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Reflection;
-using Cwl.API.Drama;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.Runtime;
 using Cwl.Patches;
@@ -65,8 +64,6 @@ internal sealed partial class CwlMod
         }
 
         QueryDeclTypes();
-        PrebuildDispatchers();
-        DramaExpansion.BuildActionList();
     }
 
     [Time]
@@ -78,9 +75,9 @@ internal sealed partial class CwlMod
 
         // sources
         TypeQualifier.SafeQueryTypes<Element>();
-        TypeQualifier.SafeQueryTypes<BaseCondition>();
+        TypeQualifier.SafeQueryTypes<BaseCondition>(typeof(Condition));
         TypeQualifier.SafeQueryTypes<Trait>();
-        TypeQualifier.SafeQueryTypes<Quest>();
+        TypeQualifier.SafeQueryTypes<Quest>(typeof(QuestDummy));
         TypeQualifier.SafeQueryTypes<Zone>();
 
         // extensions

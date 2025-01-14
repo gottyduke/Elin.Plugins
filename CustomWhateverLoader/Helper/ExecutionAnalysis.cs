@@ -33,7 +33,7 @@ internal class ExecutionAnalysis
 
             var plural = count == 1 ? " " : "s";
             var elapsed = counted.Sum(e => e.TotalMilliseconds);
-            
+
             total += elapsed;
 
             Debug.Log("cwl_log_execution_detail".Loc(method, count, plural, elapsed));

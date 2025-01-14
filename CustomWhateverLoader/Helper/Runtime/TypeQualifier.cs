@@ -11,9 +11,12 @@ namespace Cwl.Helper.Runtime;
 
 public class TypeQualifier
 {
-    internal static readonly HashSet<TypeInfo> Declared = [];
+    internal static readonly Dictionary<TypeInfo, Type> Declared = [];
     internal static List<BaseUnityPlugin>? Plugins;
     private static readonly Dictionary<string, Type> _cached = [];
+
+    // a reverse lookup of base: derived[]
+    public static ILookup<Type, TypeInfo> TypeLookup => Declared.ToLookup(kv => kv.Value, kv => kv.Key);
 
     public static Type? TryQualify<T>(params string[] unqualified) where T : EClass
     {
@@ -26,7 +29,7 @@ public class TypeQualifier
                 return cached;
             }
 
-            var types = Declared.Where(t => typeof(T).IsAssignableFrom(t)).ToArray();
+            var types = Declared.Keys.Where(t => typeof(T).IsAssignableFrom(t)).ToArray();
             var qualified = types.FirstOrDefault(t => t.FullName == unq) ??
                             types.FirstOrDefault(t => t.Name == unq);
 
@@ -53,22 +56,20 @@ public class TypeQualifier
     }
 
     // cannot use linq to query due to some users might install mod without dependency...sigh
-    internal static void SafeQueryTypes<T>() where T : notnull
+    internal static void SafeQueryTypes<T>(Type? fallback = null) where T : notnull
     {
         Plugins ??= Resources.FindObjectsOfTypeAll<BaseUnityPlugin>().ToList();
 
-        List<TypeInfo> declared = [];
         foreach (var plugin in Plugins.ToArray()) {
             try {
-                var types = plugin.GetType().Assembly.DefinedTypes.OfDerived(typeof(T));
-                declared.AddRange(types);
+                plugin.GetType().Assembly.DefinedTypes
+                    .OfDerived(typeof(T))
+                    .Do(t => Declared.TryAdd(t, fallback ?? typeof(T)));
             } catch {
                 CwlMod.Warn<TypeQualifier>("cwl_warn_decltype_missing".Loc(plugin.Info.Metadata.GUID));
                 Plugins.Remove(plugin);
                 // noexcept
             }
         }
-
-        declared.Do(decl => Declared.Add(decl));
     }
 }

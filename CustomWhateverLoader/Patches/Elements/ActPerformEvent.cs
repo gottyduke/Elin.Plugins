@@ -39,7 +39,7 @@ public class ActPerformEvent
     {
         var acts = typeof(Act).Assembly.GetTypes()
             .OfDerived(typeof(Act))
-            .Concat(TypeQualifier.Declared.OfDerived(typeof(Act)));
+            .Concat(TypeQualifier.TypeLookup[typeof(Act)]);
 
         HashSet<string> cached = [];
         foreach (var act in acts) {
