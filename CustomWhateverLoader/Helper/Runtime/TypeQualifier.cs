@@ -29,7 +29,7 @@ public class TypeQualifier
                 return cached;
             }
 
-            var types = Declared.Keys.Where(t => typeof(T).IsAssignableFrom(t)).ToArray();
+            var types = TypeLookup[typeof(T)].ToArray();
             var qualified = types.FirstOrDefault(t => t.FullName == unq) ??
                             types.FirstOrDefault(t => t.Name == unq);
 
