@@ -140,6 +140,9 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="API\Attributes\CwlForwardPatch.cs"/>
+        <Compile Include="API\Attributes\CwlLoadEvent.cs"/>
+        <Compile Include="API\Attributes\CwlSaveEvent.cs"/>
         <Compile Include="API\Custom\Character\CharaImporter.cs"/>
         <Compile Include="API\Custom\Character\AddEqOrThing.cs"/>
         <Compile Include="API\Custom\Character\CustomChara.cs"/>
@@ -175,7 +178,6 @@
         <Compile Include="Helper\ReverseId.cs"/>
         <Compile Include="Helper\Runtime\CachedMethods.cs"/>
         <Compile Include="Helper\Runtime\CodeMatchExt.cs"/>
-        <Compile Include="Helper\Runtime\CwlForwardPatch.cs"/>
         <Compile Include="Helper\Runtime\MethodDispatcher.cs"/>
         <Compile Include="Helper\Runtime\TypeQualifier.cs"/>
         <Compile Include="Helper\String\GameVersion.cs"/>
@@ -216,9 +218,11 @@
         <Compile Include="Patches\GameSaveLoad\SafeResolveTypePatch.cs"/>
         <Compile Include="Patches\LoadSoundPatch.cs"/>
         <Compile Include="Patches\LoadSpritePatch.cs"/>
+        <Compile Include="Patches\Materials\ReverseIdMapper.cs"/>
         <Compile Include="Patches\Materials\SafeCreateMaterialPatch.cs"/>
         <Compile Include="Patches\Materials\SetMaterialRowPatch.cs"/>
         <Compile Include="Patches\ModIntegrityCheck.cs"/>
+        <Compile Include="Patches\Objs\ReverseIdMapper.cs"/>
         <Compile Include="Patches\Quests\InventoryChangeEvent.cs"/>
         <Compile Include="Patches\Quests\SafeCreateQuestPatch.cs"/>
         <Compile Include="Patches\Religions\SetReligionOwnerPatch.cs"/>

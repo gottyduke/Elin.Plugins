@@ -3,7 +3,7 @@ using System.Reflection;
 using Cwl.Helper.String;
 using HarmonyLib;
 
-namespace Cwl.Helper.Runtime;
+namespace Cwl.API;
 
 /// <summary>
 ///     Because Harmony X bundled with BIE6pre1 doesn't have HarmonyOptional

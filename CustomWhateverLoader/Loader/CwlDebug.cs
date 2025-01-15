@@ -2,7 +2,6 @@
 global using SwallowExceptions.Fody;
 
 #else
-
 using System;
 using Cwl.ThirdParty;
 using UnityEngine;

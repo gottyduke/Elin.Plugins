@@ -20,13 +20,12 @@ public class ModSpriteReplacer
             file ??= matched.Value;
         }
 
-        if (file is null) {
+        tile = file?.LoadSprite(name: id, resizeWidth: resizeWidth, resizeHeight: resizeHeight);
+        if (tile == null) {
             return null;
         }
 
-        tile = file.LoadSprite(name: id, resizeWidth: resizeWidth, resizeHeight: resizeHeight);
         SpriteSheet.Add(tile);
-
         return tile;
     }
 }
