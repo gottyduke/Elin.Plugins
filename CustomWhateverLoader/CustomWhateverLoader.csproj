@@ -140,7 +140,9 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="API\Custom\CustomChara.cs"/>
+        <Compile Include="API\Custom\Character\CharaImporter.cs"/>
+        <Compile Include="API\Custom\Character\AddEqOrThing.cs"/>
+        <Compile Include="API\Custom\Character\CustomChara.cs"/>
         <Compile Include="API\Custom\CustomCondition.cs"/>
         <Compile Include="API\Custom\CustomElement.cs"/>
         <Compile Include="API\Custom\CustomMerchant.cs"/>
@@ -165,6 +167,7 @@
         <Compile Include="API\SourceParseException.cs"/>
         <Compile Include="Helper\ExecutionAnalysis.cs"/>
         <Compile Include="Helper\Extensions\DictExt.cs"/>
+        <Compile Include="Helper\Extensions\LinqExt.cs"/>
         <Compile Include="Helper\FileUtil\ConfigCereal.cs"/>
         <Compile Include="Helper\FileUtil\PackageIterator.cs"/>
         <Compile Include="Helper\IntrospectCopy.cs"/>
