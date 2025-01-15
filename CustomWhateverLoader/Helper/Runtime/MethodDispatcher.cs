@@ -42,7 +42,7 @@ public static class MethodDispatcher
 
     internal static void BuildDispatchList<T>(string methodName)
     {
-        foreach (var type in TypeQualifier.TypeLookup[typeof(T)]) {
+        foreach (var type in TypeQualifier.Declared.Keys.OfDerived(typeof(T))) {
             try {
                 var cache = $"{type.FullName}::{methodName}";
                 _cached.TryAdd(cache, []);

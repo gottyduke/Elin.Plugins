@@ -41,7 +41,7 @@ public partial class DramaExpansion : DramaOutcome
                 .SelectMany(AccessTools.GetDeclaredMethods)
                 .Where(mi => mi is { IsStatic: true, IsGenericMethod: false, IsSpecialName: false });
         } else {
-            methods = TypeQualifier.TypeLookup[typeof(DramaOutcome)]
+            methods = TypeQualifier.Declared.Keys.OfDerived(typeof(DramaOutcome))
                 .SelectMany(AccessTools.GetDeclaredMethods)
                 .Where(mi => mi is { IsStatic: true, IsGenericMethod: false, IsSpecialName: false })
                 .Where(mi => Delegate.CreateDelegate(typeof(DramaAction), mi, false) is not null);

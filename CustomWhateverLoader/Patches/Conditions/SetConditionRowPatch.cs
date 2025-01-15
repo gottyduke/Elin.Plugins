@@ -20,7 +20,7 @@ internal class SetConditionRowPatch
             return;
         }
 
-        var qualified = TypeQualifier.TryQualify<BaseCondition>(r.type, r.alias);
+        var qualified = TypeQualifier.TryQualify<Condition>(r.type, r.alias);
         if (qualified?.FullName is null) {
             return;
         }

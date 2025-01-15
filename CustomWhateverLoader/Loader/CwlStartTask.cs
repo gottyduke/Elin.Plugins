@@ -75,9 +75,9 @@ internal sealed partial class CwlMod
 
         // sources
         TypeQualifier.SafeQueryTypes<Element>();
-        TypeQualifier.SafeQueryTypes<BaseCondition>(typeof(Condition));
+        TypeQualifier.SafeQueryTypes<Condition>();
         TypeQualifier.SafeQueryTypes<Trait>();
-        TypeQualifier.SafeQueryTypes<Quest>(typeof(QuestDummy));
+        TypeQualifier.SafeQueryTypes<Quest>();
         TypeQualifier.SafeQueryTypes<Zone>();
 
         // extensions

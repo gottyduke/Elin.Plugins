@@ -29,7 +29,7 @@ public class TypeQualifier
                 return cached;
             }
 
-            var types = TypeLookup[typeof(T)].ToArray();
+            var types = Declared.Keys.OfDerived(typeof(T)).ToArray();
             var qualified = types.FirstOrDefault(t => t.FullName == unq) ??
                             types.FirstOrDefault(t => t.Name == unq);
 
@@ -64,7 +64,7 @@ public class TypeQualifier
             try {
                 plugin.GetType().Assembly.DefinedTypes
                     .OfDerived(typeof(T))
-                    .Do(t => Declared.TryAdd(t, fallback ?? typeof(T)));
+                    .Do(t => Declared.TryAdd(t, typeof(T)));
             } catch {
                 CwlMod.Warn<TypeQualifier>("cwl_warn_decltype_missing".Loc(plugin.Info.Metadata.GUID));
                 Plugins.Remove(plugin);
