@@ -22,6 +22,8 @@ internal class LoadSoundPatch
         foreach (var dir in dirs) {
             foreach (var file in dir.EnumerateFiles(Pattern, SearchOption.AllDirectories)) {
                 var id = file.GetFullFileNameWithoutExtension()[(dir.FullName.Length + 1)..].NormalizePath();
+                CwlMod.CurrentLoading = $"[CWL] loading sound {id}";
+
                 yield return LoadSound(file, id);
             }
         }
