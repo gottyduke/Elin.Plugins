@@ -58,7 +58,7 @@ internal class LoadSoundPatch
                 bgm.song = new();
 
                 meta.bgmDataOptional.IntrospectCopyTo(bgm);
-                meta.bgmDataOptional.parts.Clear();
+                meta.bgmDataOptional.parts.RemoveAt(0);
                 meta.bgmDataOptional.IntrospectCopyTo(bgm.song);
 
                 Object.Destroy(data);
