@@ -39,7 +39,7 @@ internal class SourceInitPatch
             var imports = PackageIterator.GetLangModFilesFromPackage()
                 .SelectMany(d => d.GetFiles(Pattern, SearchOption.TopDirectoryOnly))
                 .Where(f => !f.Name.Contains("cwl_migrated") && !f.Name.Contains("~$"));
-            HashSet<SourceData> dirty = [EMono.sources.elements, EMono.sources.materials];
+            HashSet<SourceData> dirty = [EMono.sources.elements, EMono.sources.materials, EMono.sources.things];
 
             foreach (var import in imports) {
                 try {
