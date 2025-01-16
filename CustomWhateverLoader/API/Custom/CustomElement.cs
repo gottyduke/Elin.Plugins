@@ -11,7 +11,6 @@ namespace Cwl.API.Custom;
 
 public class CustomElement : Element
 {
-    private static bool _cleanup;
     private static HotItem? _held;
 
     internal static readonly Dictionary<int, SourceElement.Row> Managed = [];
@@ -34,13 +33,6 @@ public class CustomElement : Element
             }
 
             Managed[r.id] = r;
-
-            if (!_cleanup) {
-                GameIOProcessor.AddSave(PurgeBeforeSave, false);
-                GameIOProcessor.AddSave(RestoreAfterSave, true);
-            }
-
-            _cleanup = true;
         } catch {
             CwlMod.Error<CustomElement>("cwl_error_qualify_type".Loc(nameof(Element), r.id, r.type));
             // noexcept
@@ -87,6 +79,7 @@ public class CustomElement : Element
     // credits to 105gun
     // https://github.com/105gun/ElinInduceVomiting/blob/master/ElementMissingWorkAround.cs
     [Time]
+    [CwlPreSave]
     private static void PurgeBeforeSave(GameIOProcessor.GameIOContext context)
     {
         if (core?.game?.player?.currentHotItem is not HotItemAct act ||
@@ -100,6 +93,7 @@ public class CustomElement : Element
     }
 
     [Time]
+    [CwlPostSave]
     private static void RestoreAfterSave(GameIOProcessor.GameIOContext context)
     {
         if (core?.game?.player?.chara is null ||

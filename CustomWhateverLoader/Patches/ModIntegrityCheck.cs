@@ -8,7 +8,6 @@ using HarmonyLib;
 
 namespace Cwl.Patches;
 
-[HarmonyPatch]
 internal class ModIntegrityCheck
 {
     private static SerializableModPackage[] CurrentActivated => BaseModManager.Instance.packages
@@ -19,12 +18,7 @@ internal class ModIntegrityCheck
         })
         .ToArray();
 
-    internal static void Prepare()
-    {
-        GameIOProcessor.AddLoad(CheckModList, true);
-        GameIOProcessor.AddSave(SaveModList, true);
-    }
-
+    [CwlPostLoad]
     private static void CheckModList(GameIOProcessor.GameIOContext context)
     {
         if (!context.Load<SerializableModPackage[]>(out var mods, "active_mods") || mods is null) {
@@ -46,6 +40,7 @@ internal class ModIntegrityCheck
             () => EClass.core.IsGameStarted);
     }
 
+    [CwlPostSave]
     private static void SaveModList(GameIOProcessor.GameIOContext context)
     {
         context.Save(CurrentActivated, "active_mods");

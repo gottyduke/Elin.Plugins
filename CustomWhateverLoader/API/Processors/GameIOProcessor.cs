@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using Cwl.Helper.FileUtil;
+using Cwl.Helper.Runtime;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 
@@ -77,6 +80,28 @@ public class GameIOProcessor
             OnGamePostLoadProcess(LastUsedContext);
         } else {
             OnGamePreLoadProcess(LastUsedContext);
+        }
+    }
+
+    internal static void RegisterEvents()
+    {
+        var methods = (TypeQualifier.Plugins ?? [])
+            .SelectMany(p => p.GetType().Assembly.DefinedTypes)
+            .SelectMany(CachedMethods.GetCachedMethods)
+            .Where(mi => mi.IsStatic && !mi.IsGenericMethod);
+
+        foreach (var method in methods) {
+            foreach (var attr in method.GetCustomAttributes<CwlGameIOEvent>(true)) {
+                var (save, post) = attr switch {
+                    CwlPreLoad => (false, false),
+                    CwlPostLoad => (false, true),
+                    CwlPreSave => (true, false),
+                    CwlPostSave => (true, true),
+                    _ => throw new NotImplementedException(attr.GetType().Name),
+                };
+
+                Add(ctx => method.FastInvokeStatic(ctx), save, post);
+            }
         }
     }
 

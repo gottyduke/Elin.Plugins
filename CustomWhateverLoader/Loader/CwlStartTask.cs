@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
-using System.Reflection;
-using Cwl.API;
+using Cwl.API.Processors;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.Runtime;
+using Cwl.Helper.Unity;
 using Cwl.Patches;
 using Cwl.Patches.Relocation;
 using Cwl.Patches.Sources;
@@ -14,6 +14,7 @@ namespace Cwl;
 
 internal sealed partial class CwlMod
 {
+    internal static string CurrentLoading = "";
     private static bool _duplicate;
 
     [Time]
@@ -25,9 +26,7 @@ internal sealed partial class CwlMod
         }
 
         var harmony = new Harmony(ModInfo.Guid);
-        harmony.PatchAll(typeof(CwlForwardPatch));
-
-        foreach (var patch in AccessTools.GetTypesFromAssembly(Assembly.GetExecutingAssembly())) {
+        foreach (var patch in typeof(CwlMod).Assembly.DefinedTypes) {
             try {
                 harmony.CreateClassProcessor(patch).Patch();
             } catch (Exception ex) {
@@ -53,9 +52,13 @@ internal sealed partial class CwlMod
 
     private static IEnumerator LoadTask()
     {
+        using var progress = ProgressIndicator.CreateProgressScoped(() => new(CurrentLoading));
+
         yield return LoadDataPatch.LoadAllData();
         yield return LoadDialogPatch.LoadAllDialogs();
         yield return LoadSoundPatch.LoadAllSounds();
+
+        CurrentLoading = $"[CWL] {ModInfo.Version} Has Loaded!";
     }
 
     private void OnStartCore()
@@ -65,6 +68,13 @@ internal sealed partial class CwlMod
         }
 
         QueryDeclTypes();
+        GameIOProcessor.RegisterEvents();
+    }
+
+    [Time]
+    private static void PrebuildDispatchers()
+    {
+        MethodDispatcher.BuildDispatchList<Feat>("_OnApply");
     }
 
     [Time]
@@ -83,11 +93,5 @@ internal sealed partial class CwlMod
 
         // extensions
         TypeQualifier.SafeQueryTypes<DramaOutcome>();
-    }
-
-    [Time]
-    private static void PrebuildDispatchers()
-    {
-        MethodDispatcher.BuildDispatchList<Feat>("_OnApply");
     }
 }

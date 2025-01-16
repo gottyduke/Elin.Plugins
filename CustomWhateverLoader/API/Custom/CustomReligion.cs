@@ -27,12 +27,9 @@ public class CustomReligion(string religionId) : Religion, IChunkable
     public static CustomReligion GerOrAdd(string id)
     {
         if (!_applied) {
-            GameIOProcessor.AddSave(SaveCustomReligion, false);
-            GameIOProcessor.AddLoad(LoadCustomReligion, true);
             ActPerformEvent.Add(ProcGodTalk);
+            _applied = true;
         }
-
-        _applied = true;
 
         Managed.TryAdd(id, new(id));
         return Managed[id];
@@ -57,6 +54,7 @@ public class CustomReligion(string religionId) : Religion, IChunkable
     }
 
     [Time]
+    [CwlPreSave]
     internal static void SaveCustomReligion(GameIOProcessor.GameIOContext? context)
     {
         if (context is null) {
@@ -69,6 +67,7 @@ public class CustomReligion(string religionId) : Religion, IChunkable
     }
 
     [Time]
+    [CwlPostLoad]
     internal static void LoadCustomReligion(GameIOProcessor.GameIOContext? context)
     {
         if (context is null) {
