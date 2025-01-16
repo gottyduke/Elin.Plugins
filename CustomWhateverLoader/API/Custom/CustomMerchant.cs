@@ -4,7 +4,6 @@ using Cwl.API.Processors;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
 using Cwl.LangMod;
-using MethodTimer;
 
 namespace Cwl.API.Custom;
 
@@ -36,7 +35,6 @@ public class CustomMerchant : TraitMerchant
         //ConfigCereal.WriteConfig(stock, file!.FullName);
     }
 
-    [Time]
     public void Generate()
     {
         if (!Managed.TryGetValue(owner.id, out var stock)) {

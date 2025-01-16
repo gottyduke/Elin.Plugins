@@ -16,6 +16,7 @@ internal class ReverseIdMapper
         ];
     }
 
+    [SwallowExceptions]
     [HarmonyPrefix]
     internal static void OnSetObjId(ref int id)
     {

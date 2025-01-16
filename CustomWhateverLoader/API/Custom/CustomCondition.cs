@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Cwl.Helper;
 using Cwl.LangMod;
-using MethodTimer;
 
 namespace Cwl.API.Custom;
 
@@ -11,7 +10,6 @@ public class CustomCondition : Condition
 
     public static IReadOnlyCollection<SourceStat.Row> All => Managed.Values;
 
-    [Time]
     internal static void AddCondition(SourceStat.Row r, string qualified)
     {
         try {

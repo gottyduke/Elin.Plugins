@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
-using Cwl.API;
 using Cwl.API.Custom;
 using Cwl.API.Processors;
 using Cwl.Helper.Runtime;

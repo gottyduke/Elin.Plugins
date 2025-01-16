@@ -18,8 +18,7 @@ public static class CachedMethods
             return methods;
         }
 
-        methods = type.GetMethods(AccessTools.all);
-        return _cached[type] = methods;
+        return _cached[type] = AccessTools.GetDeclaredMethods(type).ToArray();
     }
 
     public static IEnumerable<T> OfDerived<T>(this IEnumerable<T> source, Type baseType) where T : Type
