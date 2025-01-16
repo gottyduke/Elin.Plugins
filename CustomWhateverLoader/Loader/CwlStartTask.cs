@@ -4,6 +4,7 @@ using Cwl.API.Processors;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.Runtime;
 using Cwl.Helper.Unity;
+using Cwl.LangMod;
 using Cwl.Patches;
 using Cwl.Patches.Relocation;
 using Cwl.Patches.Sources;
@@ -58,7 +59,7 @@ internal sealed partial class CwlMod
         yield return LoadDialogPatch.LoadAllDialogs();
         yield return LoadSoundPatch.LoadAllSounds();
 
-        CurrentLoading = $"[CWL] {ModInfo.Version} Has Loaded!";
+        CurrentLoading = "cwl_log_finished_loading".Loc(ModInfo.Version);
     }
 
     private void OnStartCore()

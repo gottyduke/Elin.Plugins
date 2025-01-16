@@ -30,7 +30,7 @@ public class ProgressIndicator : EMono
         StartCoroutine(DeferredKill(pop, onUpdate, linger));
     }
 
-    public static ProgressIndicator? CreateProgress(Func<UpdateInfo> onUpdate, Func<bool> shouldKill, float lingerDuration = 5f)
+    public static ProgressIndicator? CreateProgress(Func<UpdateInfo> onUpdate, Func<bool> shouldKill, float lingerDuration = 10f)
     {
         var (text, sprite, color) = onUpdate();
 
@@ -48,7 +48,7 @@ public class ProgressIndicator : EMono
         return progress;
     }
 
-    public static KillOnScopeExit CreateProgressScoped(Func<UpdateInfo> onUpdate, float lingerDuration = 5f)
+    public static KillOnScopeExit CreateProgressScoped(Func<UpdateInfo> onUpdate, float lingerDuration = 10f)
     {
         var scopedExit = new KillOnScopeExit();
         CreateProgress(onUpdate, () => !scopedExit.Alive, lingerDuration);
