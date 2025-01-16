@@ -13,6 +13,7 @@ public class CwlConfig
     public static bool FixBaseGameAvatar => Patches.FixBaseGameAvatar?.Value is true;
     public static bool SafeCreateClass => Patches.SafeCreateClass?.Value is true;
     public static bool ExpandedActions => Dialog.ExpandedActions?.Value is true;
+    public static bool ExpandedActionsExternal => Dialog.ExpandedActionsAllowExternal?.Value is true;
     public static bool NoOverlappingSounds => Dialog.NoOverlappingSounds?.Value is true;
     public static bool VariableQuote => Dialog.VariableQuote?.Value is true;
     public static bool AllowProcessors => Source.AllowProcessors?.Value is true;
@@ -58,8 +59,15 @@ public class CwlConfig
             ModInfo.Name,
             "Dialog.ExpandedActions",
             true,
-            "During dialogs, prevent sound actions from overlapping with each other by stopping previous sound first\n" +
-            "对话中的sound动作不会彼此重叠 - 上一个音源会先被停止");
+            "Expand the actions table for drama sheets for mod authors to utilize\n" +
+            "为剧情表启用action拓展，Mod作者能够利用更多功能设计剧情表");
+
+        Dialog.ExpandedActionsAllowExternal = config.Bind(
+            ModInfo.Name,
+            "Dialog.ExpandedActionsAllowExternal",
+            true,
+            "Allow invoking external methods from other assemblies within the drama sheet, this may be unstable\n" +
+            "为剧情表启用action拓展时同时允许调用外部程序集的方法，这可能不稳定");
 
         Dialog.NoOverlappingSounds = config.Bind(
             ModInfo.Name,
@@ -163,6 +171,7 @@ public class CwlConfig
     internal class Dialog
     {
         internal static ConfigEntry<bool>? ExpandedActions { get; set; }
+        internal static ConfigEntry<bool>? ExpandedActionsAllowExternal { get; set; }
         internal static ConfigEntry<bool>? NoOverlappingSounds { get; set; }
         internal static ConfigEntry<bool>? VariableQuote { get; set; }
     }

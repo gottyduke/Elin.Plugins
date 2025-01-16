@@ -33,4 +33,24 @@ public partial class DramaExpansion
             _ => false,
         };
     }
+
+    private static float ArithmeticModOrSet(float lhs, string expr)
+    {
+        return expr.Trim() switch {
+            ['+', .. { } raw] when float.TryParse(raw, out var rhs) => lhs + rhs,
+            ['+', '+'] => lhs + 1,
+            ['-', .. { } raw] when float.TryParse(raw, out var rhs) => lhs - rhs,
+            ['-', '-'] => lhs - 1,
+            ['*', .. { } raw] when float.TryParse(raw, out var rhs) => lhs * rhs,
+            ['x', .. { } raw] when float.TryParse(raw, out var rhs) => lhs * rhs,
+            ['/', .. { } raw] when float.TryParse(raw, out var rhs) => lhs / rhs,
+            { } raw when float.TryParse(raw, out var rhs) => rhs,
+            _ => lhs,
+        };
+    }
+
+    private static int ArithmeticModOrSet(int lhs, string expr)
+    {
+        return (int)ArithmeticModOrSet((float)lhs, expr);
+    }
 }

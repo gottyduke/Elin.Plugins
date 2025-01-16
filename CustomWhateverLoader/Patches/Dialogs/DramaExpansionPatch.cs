@@ -40,24 +40,28 @@ internal class DramaExpansionPatch
             return false;
         }
 
-        if (!item.TryGetValue("param", out var expr)) {
+        if (!item.TryGetValue("param", out var rawExpr)) {
             return false;
         }
 
-        var action = DramaExpansion.BuildExpression(expr);
-        if (action is null) {
-            return false;
-        }
-
+        // default actor
+        item.TryAdd("actor", "tg");
         DramaExpansion.Cookie = new(__instance, item);
 
-        var step = new DramaEventMethod(() => action(__instance, item));
-        if (item.TryGetValue("jump", out var jump)) {
-            step.action = null;
-            step.jumpFunc = () => action(__instance, item) ? jump : "";
-        }
+        foreach (var expr in rawExpr.SplitNewline()) {
+            var action = DramaExpansion.BuildExpression(expr);
+            if (action is null) {
+                continue;
+            }
 
-        __instance.AddEvent(step);
+            var step = new DramaEventMethod(() => action(__instance, item));
+            if (item.TryGetValue("jump", out var jump) && !jump.IsEmpty()) {
+                step.action = null;
+                step.jumpFunc = () => action(__instance, item) ? jump : "";
+            }
+
+            __instance.AddEvent(step);
+        }
 
         return true;
     }

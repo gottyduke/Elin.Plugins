@@ -14,30 +14,30 @@ namespace Cwl.API.Drama;
 /// </summary>
 public partial class DramaExpansion : DramaOutcome
 {
-    private static bool _externalBuilt;
-    private static readonly Dictionary<string, ActionWrapper> _built = [];
+    private static readonly Dictionary<string, ActionWrapper?> _built = [];
     private static readonly Dictionary<string, Func<DramaManager, Dictionary<string, string>, bool>> _expressions = [];
 
-    public static IReadOnlyDictionary<string, MethodInfo> Actions => _built.ToDictionary(kv => kv.Key, kv => kv.Value.Method);
+    public static IReadOnlyDictionary<string, MethodInfo> Actions => _built.ToDictionary(kv => kv.Key, kv => kv.Value!.Method);
 
     [Time]
-    internal static void BuildActionList(bool external = false)
+    internal static void BuildActionList(string assemblyName = "")
     {
         IEnumerable<MethodInfo> methods;
 
+        var external = assemblyName != "";
         if (external) {
-            if (_externalBuilt) {
+            if (!_built.TryAdd($"ext.cwl_stub_{assemblyName}", null)) {
                 return;
             }
 
-            _externalBuilt = true;
+            var asm = Array.Find(AppDomain.CurrentDomain.GetAssemblies(), a => a.GetName().Name == assemblyName);
+            if (asm is null) {
+                return;
+            }
 
-            methods = (TypeQualifier.Plugins ?? [])
-                .Select(p => p.GetType().Assembly)
-                // include Elin as well
-                .Append(typeof(DramaOutcome).Assembly)
-                // with no type restriction
-                .SelectMany(p => p.GetTypes())
+            CwlMod.Log<DramaExpansion>($"building external methods from {assemblyName}");
+
+            methods = AccessTools.GetTypesFromAssembly(asm)
                 .SelectMany(AccessTools.GetDeclaredMethods)
                 .Where(mi => mi is { IsStatic: true, IsGenericMethod: false, IsSpecialName: false });
         } else {
@@ -47,12 +47,14 @@ public partial class DramaExpansion : DramaOutcome
                 .Where(mi => Delegate.CreateDelegate(typeof(DramaAction), mi, false) is not null);
         }
 
+        var count = 0;
         foreach (var method in methods) {
             var entry = external ? $"ext.{method.DeclaringType!.Name}.{method.Name}" : method.Name;
             _built[entry] = new(method, method.GetParameters().Length, method.DeclaringType!);
+            count++;
         }
 
-        CwlMod.Log<DramaExpansion>($"rebuilt {_built.Count} methods");
+        CwlMod.Log<DramaExpansion>($"rebuilt {count} methods");
     }
 
     internal static Func<DramaManager, Dictionary<string, string>, bool>? BuildExpression(string? expression)
@@ -71,7 +73,7 @@ public partial class DramaExpansion : DramaOutcome
         }
 
         var funcName = parse.Groups["func"].Value;
-        if (!_built.TryGetValue(funcName, out var func)) {
+        if (!_built.TryGetValue(funcName, out var func) || func is null) {
             return null;
         }
 
