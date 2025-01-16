@@ -32,9 +32,6 @@
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
-    <Target Name="CopyBanner" AfterTargets="AfterBuild">
-        <Copy SourceFiles="$(MSBuildProjectDirectory)\assets\CWL_banner.png" DestinationFolder="$(OutputPath)Texture\"/>
-    </Target>
     <ItemGroup>
         <Reference Include="0Harmony">
             <HintPath>$(ElinGamePath)\BepInEx\core\0Harmony.dll</HintPath>
@@ -46,6 +43,10 @@
         </Reference>
         <Reference Include="BepInEx.Unity">
             <HintPath>$(ElinGamePath)\BepInEx\core\BepInEx.Unity.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="DOTween">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\DOTween.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Elin">
@@ -140,19 +141,20 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="API\Attributes\CwlEvent.cs"/>
         <Compile Include="API\Attributes\CwlForwardPatch.cs"/>
-        <Compile Include="API\Attributes\CwlLoadEvent.cs"/>
-        <Compile Include="API\Attributes\CwlSaveEvent.cs"/>
+        <Compile Include="API\Attributes\CwlGameIOEvent.cs"/>
         <Compile Include="API\Custom\Character\CharaImporter.cs"/>
         <Compile Include="API\Custom\Character\AddEqOrThing.cs"/>
         <Compile Include="API\Custom\Character\CustomChara.cs"/>
         <Compile Include="API\Custom\CustomCondition.cs"/>
         <Compile Include="API\Custom\CustomElement.cs"/>
         <Compile Include="API\Custom\CustomMerchant.cs"/>
-        <Compile Include="API\Custom\CustomQuest.cs"/>
         <Compile Include="API\Custom\CustomReligion.cs"/>
         <Compile Include="API\Custom\CustomZone.cs"/>
+        <Compile Include="API\Custom\Quest\CustomQuest.cs"/>
         <Compile Include="API\Drama\ActionBuilder.cs"/>
+        <Compile Include="API\Drama\ActionCookie.cs"/>
         <Compile Include="API\Drama\DramaExpansion.cs"/>
         <Compile Include="API\Drama\ActionHelper.cs"/>
         <Compile Include="API\Processors\GameIOProcessor.cs"/>
@@ -167,7 +169,6 @@
         <Compile Include="API\Serializable\SerializableStockData.cs"/>
         <Compile Include="API\WorkbookImporter.cs"/>
         <Compile Include="API\MigrateDetail.cs"/>
-        <Compile Include="API\SourceParseException.cs"/>
         <Compile Include="Helper\ExecutionAnalysis.cs"/>
         <Compile Include="Helper\Extensions\DictExt.cs"/>
         <Compile Include="Helper\Extensions\LinqExt.cs"/>
@@ -178,7 +179,9 @@
         <Compile Include="Helper\ReverseId.cs"/>
         <Compile Include="Helper\Runtime\CachedMethods.cs"/>
         <Compile Include="Helper\Runtime\CodeMatchExt.cs"/>
+        <Compile Include="Helper\Runtime\DramaActionException.cs"/>
         <Compile Include="Helper\Runtime\MethodDispatcher.cs"/>
+        <Compile Include="Helper\Runtime\SourceParseException.cs"/>
         <Compile Include="Helper\Runtime\TypeQualifier.cs"/>
         <Compile Include="Helper\String\GameVersion.cs"/>
         <Compile Include="Helper\String\Hashing.cs"/>
@@ -191,6 +194,7 @@
         <Compile Include="Helper\Unity\CoroutineHelper.cs"/>
         <Compile Include="Helper\Unity\DeferredCoroutine.cs"/>
         <Compile Include="Helper\Unity\PixelRaycast.cs"/>
+        <Compile Include="Helper\Unity\ProgressIndicator.cs"/>
         <Compile Include="Helper\Unity\SpriteCreator.cs"/>
         <Compile Include="Helper\Unity\TextureResizer.cs"/>
         <Compile Include="LangMod\LocFormatter.cs"/>
@@ -205,6 +209,7 @@
         <Compile Include="Patches\Conditions\SafeCreateConditionPatch.cs"/>
         <Compile Include="Patches\Conditions\SetConditionRowPatch.cs"/>
         <Compile Include="Patches\Dialogs\DramaExpansionPatch.cs"/>
+        <Compile Include="Patches\Dialogs\DramaPortraitOverride.cs"/>
         <Compile Include="Patches\Dialogs\OverlapSoundPatch.cs"/>
         <Compile Include="Patches\Dialogs\RerouteDramaPatch.cs"/>
         <Compile Include="Patches\Dialogs\VariableQuotePatch.cs"/>
@@ -225,6 +230,7 @@
         <Compile Include="Patches\Objs\ReverseIdMapper.cs"/>
         <Compile Include="Patches\Quests\InventoryChangeEvent.cs"/>
         <Compile Include="Patches\Quests\SafeCreateQuestPatch.cs"/>
+        <Compile Include="Patches\Quests\SetQuestRowPatch.cs"/>
         <Compile Include="Patches\Religions\SetReligionOwnerPatch.cs"/>
         <Compile Include="Patches\Religions\SetReligionPortraitPatch.cs"/>
         <Compile Include="Patches\Religions\SetReligionRowPatch.cs"/>
@@ -253,9 +259,6 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
         <Content Include="LangMod\EN\cwl_sources.xlsx">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-        <Content Include="LangMod\ZHTW\cwl_sources.xlsx">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
