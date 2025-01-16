@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Cwl.API;
+namespace Cwl.Helper.Runtime;
 
 public sealed class SourceParseException(string detail, Exception? innerException = null)
     : Exception(detail, innerException ?? new());

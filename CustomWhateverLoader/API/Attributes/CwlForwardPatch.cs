@@ -11,6 +11,7 @@ namespace Cwl.API;
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
 public class CwlForwardPatch : HarmonyPatch
 {
+    private static bool _patched;
     private static bool _compatible = true;
     private static HarmonyMethod? _lastPatch;
 
@@ -18,7 +19,7 @@ public class CwlForwardPatch : HarmonyPatch
     {
     }
 
-    public CwlForwardPatch(int enableAfter)
+    private CwlForwardPatch(int enableAfter)
     {
         _compatible = enableAfter <= GameVersion.Int();
     }
@@ -62,6 +63,11 @@ public class CwlForwardPatch : HarmonyPatch
 
     private void EnableIfCompatible()
     {
+        if (!_patched) {
+            Harmony.CreateAndPatchAll(typeof(CwlForwardPatch), ModInfo.Guid);
+            _patched = true;
+        }
+
         if (_compatible) {
             _lastPatch = info;
         } else {
