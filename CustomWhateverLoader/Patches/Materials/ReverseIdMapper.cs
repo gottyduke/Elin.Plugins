@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using System.Collections.Generic;
+using HarmonyLib;
 
 namespace Cwl.Patches.Materials;
 
@@ -11,7 +12,7 @@ internal class ReverseIdMapper
     internal static void OnGetIdMat(Card __instance, ref int __result)
     {
         var mat = EMono.sources.materials;
-        __result = mat.rows.IndexOf(mat.map[__result]);
+        __result = mat.rows.IndexOf(mat.map.GetValueOrDefault(__result));
     }
 
     [SwallowExceptions]
@@ -24,6 +25,6 @@ internal class ReverseIdMapper
         }
 
         var mat = EMono.sources.materials;
-        _idMat = mat.rows.IndexOf(mat.map[_idMat]);
+        _idMat = mat.rows.IndexOf(mat.map.GetValueOrDefault(_idMat));
     }
 }

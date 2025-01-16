@@ -21,6 +21,6 @@ internal class ReverseIdMapper
     internal static void OnSetObjId(ref int id)
     {
         var objs = EMono.sources.objs;
-        id = objs.rows.IndexOf(objs.map[id]);
+        id = objs.rows.IndexOf(objs.map.GetValueOrDefault(id));
     }
 }
