@@ -7,7 +7,13 @@ namespace Cwl.API;
 #pragma warning disable CS0649
 #pragma warning disable CS0414
 // ReSharper disable All 
-public sealed record SerializableStockData : SerializableStockDataV1;
+public sealed record SerializableStockData : SerializableStockDataV2;
+public sealed record SerializableStockItem : SerializableStockItemV2;
+
+public record SerializableStockDataV2
+{
+    public List<SerializableStockItem> Items = [];
+}
 
 public record SerializableStockDataV1
 {
@@ -22,7 +28,11 @@ public enum StockItemType
     Spell,
 }
 
-public record SerializableStockItem : SerializableStockItemV1;
+public record SerializableStockItemV2 : SerializableStockItemV1
+{
+    [JsonConverter(typeof(StringEnumConverter))]
+    public Rarity Rarity = Rarity.Random;
+}
 
 public record SerializableStockItemV1
 {

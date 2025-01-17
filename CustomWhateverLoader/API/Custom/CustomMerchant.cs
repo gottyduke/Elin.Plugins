@@ -16,23 +16,27 @@ public class CustomMerchant : TraitMerchant
 
     public override ShopType ShopType => ShopType.Specific;
 
-    public static void AddStock(string id)
+    public static void AddStock(string charaId, string stockId)
     {
         if (!_transform) {
             TraitTransformer.Add(TransformMerchant);
+            _transform = true;
         }
 
-        _transform = true;
+        stockId = stockId.IsEmpty() ? $"stock_{charaId}" : $"stock{stockId}";
 
-        var file = PackageIterator.GetRelocatedFilesFromPackage($"Data/stock_{id}.json").FirstOrDefault();
+        var file = PackageIterator.GetRelocatedFilesFromPackage($"Data/{stockId}.json").FirstOrDefault();
         if (!ConfigCereal.ReadConfig(file?.FullName, out SerializableStockData? stock) || stock is null) {
-            CwlMod.Warn<CustomMerchant>("cwl_warn_stock_file".Loc(id));
+            CwlMod.Warn<CustomMerchant>("cwl_warn_stock_file".Loc(stockId));
             return;
         }
 
-        Managed[id] = stock;
-        // disabled due to changing hashes
-        //ConfigCereal.WriteConfig(stock, file!.FullName);
+        if (!Managed.TryAdd(charaId, stock)) {
+            Managed[charaId].Items.AddRange(stock.Items);
+            CwlMod.Log<CustomMerchant>($"merge {stockId} >> {charaId}");
+        } else {
+            CwlMod.Log<CustomMerchant>($"added {stockId} >> {charaId}");
+        }
     }
 
     public void Generate()
@@ -56,18 +60,18 @@ public class CustomMerchant : TraitMerchant
                     continue;
                 }
 
+                if (!item.Restock && noRestocks.Contains(item.Id)) {
+                    continue;
+                }
+
                 var thing = item.Type switch {
-                    StockItemType.Item => ThingGen.Create(item.Id, ReverseId.Material(item.Material), ShopLv)
-                        .SetNum(item.Num),
+                    StockItemType.Item => ThingGen.Create(item.Id, ReverseId.Material(item.Material), ShopLv).SetNum(item.Num),
                     StockItemType.Recipe => ThingGen.CreateRecipe(item.Id),
                     StockItemType.Spell => ThingGen.CreateSpellbook(item.Id, item.Num),
                     _ => ThingGen.Create(item.Id),
                 };
 
-                if (!item.Restock && noRestocks.Contains(item.Id)) {
-                    thing.Destroy();
-                    continue;
-                }
+                thing.ChangeRarity(item.Rarity);
 
                 inv.AddThing(thing);
 

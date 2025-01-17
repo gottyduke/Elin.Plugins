@@ -17,7 +17,7 @@ public partial class CustomChara : Chara
     }
 
     private static readonly Dictionary<string, CharaImport> _delayedCharaImport = [];
-    internal static readonly Dictionary<string, string> DramaRoute = [];
+    internal static readonly Dictionary<string, string> DramaRoutes = [];
     internal static readonly Dictionary<string, string> BioOverride = [];
 
     public static IReadOnlyCollection<string> All => _delayedCharaImport.Keys;
@@ -53,27 +53,41 @@ public partial class CustomChara : Chara
                     zones.Add(sanitized);
                     break;
                 case "Eq":
-                    equips.Add(sanitized[(action.Length + 1)..]);
+                    if (@params.Length > 1) {
+                        equips.Add(sanitized[(action.Length + 1)..]);
+                    }
+
                     break;
                 case "Thing":
-                    things.Add(sanitized[(action.Length + 1)..]);
+                    if (@params.Length > 1) {
+                        things.Add(sanitized[(action.Length + 1)..]);
+                    }
+
                     break;
                 case "Stock":
-                    CustomMerchant.AddStock(r.id);
+                    CustomMerchant.AddStock(r.id, sanitized[action.Length..]);
                     break;
                 case "Drama":
+                    if (@params.Length <= 1) {
+                        break;
+                    }
+
                     var drama = sanitized[(action.Length + 1)..];
                     if (drama is not "" &&
                         PackageIterator.GetRelocatedFilesFromPackage($"Dialog/Drama/{drama}.xlsx").Any()) {
-                        DramaRoute[r.id] = drama;
+                        DramaRoutes[r.id] = drama;
                     }
 
                     break;
                 case "Bio":
-                    var bio = @params[1];
+                    if (@params.Length <= 1) {
+                        break;
+                    }
+
+                    var bio = sanitized[(action.Length + 1)..];
                     var data = PackageIterator.GetRelocatedFilesFromPackage($"Data/bio_{bio}.json").ToArray();
                     if (bio is not "" && data.Length > 0) {
-                        BioOverride[r.id] = data[0].FullName;
+                        BioOverride[r.id] = data[^1].FullName;
                     }
 
                     break;
@@ -111,6 +125,7 @@ public partial class CustomChara : Chara
 
                 AddEqOrThing(chara, @params[0]!, @params[1], doEquip);
             }
+
 
             return true;
         } catch {
