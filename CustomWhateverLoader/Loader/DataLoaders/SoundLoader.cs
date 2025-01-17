@@ -9,9 +9,9 @@ using MethodTimer;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Cwl.Patches;
+namespace Cwl;
 
-internal class LoadSoundPatch
+internal partial class DataLoader
 {
     private const string Pattern = "*.*";
 
@@ -69,11 +69,11 @@ internal class LoadSoundPatch
         } else {
             meta = new();
             ConfigCereal.WriteConfig(meta, metafile);
-            CwlMod.Log<SoundData>("cwl_log_sound_default_meta".Loc(id));
+            CwlMod.Log<DataLoader>("cwl_log_sound_default_meta".Loc(id));
         }
 
         if (clipLoader.result != UnityWebRequest.Result.Success) {
-            CwlMod.Error<SoundData>("cwl_error_sound_loader".Loc(id, clipLoader.error));
+            CwlMod.Error<DataLoader>("cwl_error_sound_loader".Loc(id, clipLoader.error));
             yield return null;
         }
 
@@ -84,6 +84,6 @@ internal class LoadSoundPatch
         data.name = id;
 
         SoundManager.current.dictData[id] = data;
-        CwlMod.Log<SoundData>("cwl_log_sound_loaded".Loc(meta.type, id, clip.frequency, clip.channels, clip.length));
+        CwlMod.Log<DataLoader>("cwl_log_sound_loaded".Loc(meta.type, id, clip.frequency, clip.channels, clip.length));
     }
 }

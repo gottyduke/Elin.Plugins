@@ -5,8 +5,6 @@ using Cwl.Helper.FileUtil;
 using Cwl.Helper.Runtime;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
-using Cwl.Patches;
-using Cwl.Patches.Relocation;
 using Cwl.Patches.Sources;
 using HarmonyLib;
 using MethodTimer;
@@ -55,9 +53,13 @@ internal sealed partial class CwlMod
     {
         using var progress = ProgressIndicator.CreateProgressScoped(() => new(CurrentLoading));
 
-        yield return LoadDataPatch.LoadAllData();
-        yield return LoadDialogPatch.LoadAllDialogs();
-        yield return LoadSoundPatch.LoadAllSounds();
+        DataLoader.MergeCharaTalk();
+        DataLoader.MergeCharaTone();
+
+        yield return DataLoader.MergeEffectSetting();
+        yield return DataLoader.MergeGodTalk();
+        yield return DataLoader.PreloadDialog();
+        yield return DataLoader.LoadAllSounds();
 
         CurrentLoading = "cwl_log_finished_loading".Loc(ModInfo.Version);
     }

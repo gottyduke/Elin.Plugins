@@ -164,6 +164,7 @@
         <Compile Include="API\Processors\WorkbookProcessor.cs"/>
         <Compile Include="API\Serializable\IChunkable.cs"/>
         <Compile Include="API\Serializable\SerializableBioData.cs"/>
+        <Compile Include="API\Serializable\SerializableEffectSetting.cs"/>
         <Compile Include="API\Serializable\SerializableModPackage.cs"/>
         <Compile Include="API\Serializable\SerializableSoundData.cs"/>
         <Compile Include="API\Serializable\SerializableStockData.cs"/>
@@ -199,10 +200,16 @@
         <Compile Include="Helper\Unity\TextureResizer.cs"/>
         <Compile Include="LangMod\LocFormatter.cs"/>
         <Compile Include="Loader\CustomWhateverLoader.cs"/>
+        <Compile Include="Loader\CwlAsmInfo.cs"/>
         <Compile Include="Loader\CwlConfig.cs"/>
         <Compile Include="Loader\CwlLogger.cs"/>
         <Compile Include="Loader\CwlStartTask.cs"/>
         <Compile Include="Loader\CwlDebug.cs"/>
+        <Compile Include="Loader\DataLoaders\CharaTalkLoader.cs"/>
+        <Compile Include="Loader\DataLoaders\DialogPreloader.cs"/>
+        <Compile Include="Loader\DataLoaders\EffectSettingLoader.cs"/>
+        <Compile Include="Loader\DataLoaders\GodTalkLoader.cs"/>
+        <Compile Include="Loader\DataLoaders\SoundLoader.cs"/>
         <Compile Include="Patches\Charas\BioOverridePatch.cs"/>
         <Compile Include="Patches\Charas\SetCharaPortraitPatch.cs"/>
         <Compile Include="Patches\Charas\SetCharaRowPatch.cs"/>
@@ -221,7 +228,6 @@
         <Compile Include="Patches\GameSaveLoad\GameLoadEvent.cs"/>
         <Compile Include="Patches\GameSaveLoad\GameSaveEvent.cs"/>
         <Compile Include="Patches\GameSaveLoad\SafeResolveTypePatch.cs"/>
-        <Compile Include="Patches\LoadSoundPatch.cs"/>
         <Compile Include="Patches\LoadSpritePatch.cs"/>
         <Compile Include="Patches\Materials\ReverseIdMapper.cs"/>
         <Compile Include="Patches\Materials\SafeCreateMaterialPatch.cs"/>
@@ -236,7 +242,6 @@
         <Compile Include="Patches\Religions\SetReligionRowPatch.cs"/>
         <Compile Include="Patches\ReloadLangPatch.cs"/>
         <Compile Include="Patches\Relocation\LoadBookPatch.cs"/>
-        <Compile Include="Patches\Relocation\LoadDataPatch.cs"/>
         <Compile Include="Patches\Relocation\LoadDialogPatch.cs"/>
         <Compile Include="Patches\Relocation\LoadDramaPatch.cs"/>
         <Compile Include="Patches\SafeSceneInitPatch.cs"/>

@@ -1,11 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using Cwl.Helper.FileUtil;
 using Cwl.Helper.Runtime;
-using Cwl.Helper.String;
-using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
 
@@ -14,10 +10,7 @@ namespace Cwl.Patches.Relocation;
 [HarmonyPatch]
 internal class LoadDialogPatch
 {
-    private const string CacheEntry = "Dialog";
-    private const string Pattern = "*.xlsx";
-
-    private static readonly List<ExcelData> _cached = [];
+    internal static readonly List<ExcelData> Cached = [];
 
     [HarmonyTargetMethods]
     internal static IEnumerable<MethodInfo> DialogBuildMap()
@@ -44,7 +37,7 @@ internal class LoadDialogPatch
     {
         data.BuildMap(sheetName);
 
-        foreach (var cache in _cached) {
+        foreach (var cache in Cached) {
             cache.BuildMap(sheetName);
             foreach (var (topic, cells) in cache.sheets[sheetName].map) {
                 if (topic.IsEmpty()) {
@@ -54,18 +47,5 @@ internal class LoadDialogPatch
                 data.sheets[sheetName].map.TryAdd(topic, cells);
             }
         }
-    }
-
-    [Time]
-    internal static IEnumerator LoadAllDialogs()
-    {
-        var dialogs = PackageIterator.GetRelocatedFilesFromPackage("Dialog/dialog.xlsx");
-
-        foreach (var book in dialogs) {
-            _cached.Add(new(book.FullName));
-            CwlMod.Log<ExcelData>("cwl_preload_dialog".Loc(book.ShortPath()));
-        }
-
-        yield break;
     }
 }
