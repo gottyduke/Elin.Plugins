@@ -1,10 +1,10 @@
 ﻿namespace Cwl.Helper.String;
 
-internal static class GameVersion
+public static class GameVersion
 {
-    internal static string Normalized => Int().ToString();
+    public static string Normalized => Int().ToString();
 
-    internal static int Int()
+    public static int Int()
     {
         return BaseCore.Instance.version.GetInt();
     }

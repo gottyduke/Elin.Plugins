@@ -21,7 +21,7 @@ public class ProgressIndicator : EMono
         }
 
         var update = onUpdate();
-        pop.SetText(update.Text, update.Sprite, update.Color ?? default(Color));
+        Sync(pop, update);
 
         if (!shouldKill()) {
             return;
@@ -57,14 +57,19 @@ public class ProgressIndicator : EMono
 
     private IEnumerator DeferredKill(PopItemText pop, Func<UpdateInfo> onUpdate, float linger)
     {
-        var update = onUpdate();
-        pop.SetText(update.Text, update.Sprite, update.Color ?? default(Color));
+        Sync(pop, onUpdate());
 
         yield return new WaitForSecondsRealtime(linger);
 
         pop.important = false;
         ui.popSystem.Kill(pop);
         _updater = null;
+    }
+
+    private static void Sync(PopItemText pop, UpdateInfo info)
+    {
+        pop.SetText(info.Text, info.Sprite, info.Color ?? default(Color));
+        pop.RebuildLayout();
     }
 
     public class KillOnScopeExit : IDisposable
