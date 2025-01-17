@@ -10,6 +10,7 @@ public sealed class SerializableEffectSetting : Dictionary<string, SerializableE
 
 public sealed record SerializableEffectData : SerializableEffectDataV1;
 
+// use lowercase naming for introspect copy
 public record SerializableEffectDataV1
 {
     public float delay = 0.1f;

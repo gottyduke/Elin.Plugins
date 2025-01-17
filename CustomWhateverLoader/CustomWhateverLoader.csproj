@@ -99,6 +99,14 @@
         </Reference>
         <Reference Include="System"/>
         <Reference Include="System.Core"/>
+        <Reference Include="UniTask">
+          <HintPath>$(ElinGamePath)\Elin_Data\Managed\UniTask.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UniTask.Linq">
+          <HintPath>$(ElinGamePath)\Elin_Data\Managed\UniTask.Linq.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
         <Reference Include="UnityEngine">
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.dll</HintPath>
             <Private>False</Private>
@@ -144,6 +152,7 @@
         <Compile Include="API\Attributes\CwlEvent.cs"/>
         <Compile Include="API\Attributes\CwlForwardPatch.cs"/>
         <Compile Include="API\Attributes\CwlGameIOEvent.cs"/>
+        <Compile Include="API\Attributes\CwlLangEvent.cs" />
         <Compile Include="API\Custom\Character\CharaImporter.cs"/>
         <Compile Include="API\Custom\Character\AddEqOrThing.cs"/>
         <Compile Include="API\Custom\Character\CustomChara.cs"/>

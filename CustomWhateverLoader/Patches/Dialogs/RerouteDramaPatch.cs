@@ -33,7 +33,7 @@ internal class RerouteDramaPatch
     // subject to change for dialog expansion
     private static bool TryRerouteDialog(Chara chara)
     {
-        if (!CustomChara.DramaRoute.TryGetValue(chara.id, out var drama)) {
+        if (!CustomChara.DramaRoutes.TryGetValue(chara.id, out var drama)) {
             return false;
         }
 

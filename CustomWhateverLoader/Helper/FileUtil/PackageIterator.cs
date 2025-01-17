@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Cwl.API;
 using Cwl.Helper.String;
 
 namespace Cwl.Helper.FileUtil;
@@ -99,6 +100,7 @@ public static class PackageIterator
         _cachedPaths[cacheName] = path;
     }
 
+    [CwlLangReload]
     internal static void ClearCache()
     {
         _cachedPaths.Clear();
