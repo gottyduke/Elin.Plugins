@@ -7,7 +7,7 @@ namespace Cwl.API;
 #pragma warning disable CS0649
 #pragma warning disable CS0414
 // ReSharper disable All 
-public record SerializableStockData : SerializableStockDataV1;
+public sealed record SerializableStockData : SerializableStockDataV1;
 
 public record SerializableStockDataV1
 {

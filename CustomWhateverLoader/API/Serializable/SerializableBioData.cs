@@ -1,6 +1,6 @@
 ﻿namespace Cwl.API;
 
-public record SerializableBioData : SerializableBioDataV1;
+public sealed record SerializableBioData : SerializableBioDataV1;
 
 #pragma warning disable CS0649
 #pragma warning disable CS0414

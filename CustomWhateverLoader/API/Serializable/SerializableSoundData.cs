@@ -29,7 +29,7 @@ public static class SerializableSoundDataHelper
     }
 }
 
-public record SerializableSoundData : SerializableSoundDataV1;
+public sealed record SerializableSoundData : SerializableSoundDataV1;
 
 public record SerializableSoundDataV1
 {
