@@ -202,7 +202,8 @@
         <Compile Include="Helper\String\GameVersion.cs"/>
         <Compile Include="Helper\String\Hashing.cs"/>
         <Compile Include="Helper\String\ParamParser.cs"/>
-        <Compile Include="Helper\String\PathExt.cs"/>
+        <Compile Include="Helper\String\PathNormalizer.cs" />
+        <Compile Include="Helper\String\PathTruncation.cs" />
         <Compile Include="Helper\Unity\ChildrenIterator.cs"/>
         <Compile Include="Helper\Unity\ColorParser.cs"/>
         <Compile Include="Helper\Unity\ComponentFetch.cs"/>
