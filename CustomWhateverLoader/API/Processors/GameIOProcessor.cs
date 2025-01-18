@@ -101,6 +101,7 @@ public class GameIOProcessor
                 };
 
                 Add(ctx => method.FastInvokeStatic(ctx), save, post);
+                CwlMod.Log<GameIOProcess>($"added process {method.Name}");
             }
         }
     }
@@ -111,7 +112,8 @@ public class GameIOProcessor
     public class GameIOContext(string path)
     {
         private const string Storage = "chunks";
-        private const string Extension = "chunk";
+        private const string ChunkExt = "chunk";
+        private const string CompressedChunkExt = "chunkc";
 
         /// <summary>
         ///     serialize data to current save folder
@@ -131,8 +133,38 @@ public class GameIOProcessor
 
             chunkName ??= $"{type.Assembly.GetName().Name}.{type.FullName ?? type.Name}";
 
-            var file = Path.Combine(path, Storage, $"{chunkName}.{Extension}");
-            ConfigCereal.WriteConfig(data, file);
+            var file = Path.Combine(path, Storage, $"{chunkName}.{CompressedChunkExt}");
+            ConfigCereal.WriteDataCompressed(data, file);
+
+            CwlMod.Log<GameIOContext>($"save {file.ShortPath()}");
+
+            // migration
+            var legacy = file[..^1];
+            if (File.Exists(legacy)) {
+                File.Delete(legacy);
+            }
+        }
+
+        /// <summary>
+        ///     serialize data to current save folder, uncompressed
+        /// </summary>
+        /// <param name="data">arbitrary data</param>
+        /// <param name="chunkName">unique identifier, omit/null will use full qualified type name</param>
+        public void SaveUncompressed<T>(T data, string? chunkName = null)
+        {
+            if (data is null) {
+                return;
+            }
+
+            var type = typeof(T);
+            if (data is IChunkable chunk) {
+                chunkName = chunk.ChunkName;
+            }
+
+            chunkName ??= $"{type.Assembly.GetName().Name}.{type.FullName ?? type.Name}";
+
+            var file = Path.Combine(path, Storage, $"{chunkName}.{ChunkExt}");
+            ConfigCereal.WriteData(data, file);
 
             CwlMod.Log<GameIOContext>($"save {file.ShortPath()}");
         }
@@ -148,10 +180,18 @@ public class GameIOProcessor
             var type = typeof(T);
             chunkName ??= $"{type.Assembly.GetName().Name}.{type.FullName ?? type.Name}";
 
-            var file = Path.Combine(path, Storage, $"{chunkName}.{Extension}");
-            ConfigCereal.ReadConfig(file, out inferred);
+            var baseFile = Path.Combine(path, Storage, $"{chunkName}");
+            var chunkc = new FileInfo($"{baseFile}.{CompressedChunkExt}");
+            var legacy = new FileInfo($"{baseFile}.{ChunkExt}");
 
-            CwlMod.Log<GameIOContext>($"load {file.ShortPath()}");
+            if (!chunkc.Exists || !ConfigCereal.ReadData(chunkc.FullName, out inferred)) {
+                ConfigCereal.ReadConfig(legacy.FullName, out inferred);
+            }
+
+            if (inferred is not null) {
+                CwlMod.Log<GameIOContext>($"load {baseFile.ShortPath()}");
+            }
+
             return inferred is not null;
         }
     }
