@@ -31,12 +31,12 @@ public class CustomMerchant : TraitMerchant
             return;
         }
 
-        if (!Managed.TryAdd(charaId, stock)) {
+        var merge = !Managed.TryAdd(charaId, stock);
+        if (merge) {
             Managed[charaId].Items.AddRange(stock.Items);
-            CwlMod.Log<CustomMerchant>($"merge {stockId} >> {charaId}");
-        } else {
-            CwlMod.Log<CustomMerchant>($"added {stockId} >> {charaId}");
         }
+
+        CwlMod.Log<CustomMerchant>($"{(merge ? "merge" : "added")} {stockId} >> {charaId}");
     }
 
     public void Generate()

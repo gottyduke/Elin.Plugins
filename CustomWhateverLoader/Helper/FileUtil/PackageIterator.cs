@@ -19,7 +19,7 @@ public static class PackageIterator
             .SelectMany(d => d.GetDirectories("Lang*"))
             .SelectMany(d => d.GetFiles(pattern, SearchOption.AllDirectories))
             .Select(f => f.FullName)
-            .Select(PathNormalizer.NormalizePath);
+            .Select(PathExt.NormalizePath);
     }
 
     public static IEnumerable<DirectoryInfo> GetLangModFilesFromPackage(string? modGuid = null)
@@ -34,7 +34,7 @@ public static class PackageIterator
                        dirs.FirstOrDefault(sd => lang == "ZHTW" && sd.Name == "CN") ??
                        // 1.7 use EN as 1st fallback
                        dirs.FirstOrDefault(sd => sd.Name == "EN") ??
-                       dirs.First();
+                       dirs.FirstOrDefault();
             });
     }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using Cwl.API.Drama;
 using Cwl.API.Processors;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.Runtime;
@@ -14,6 +15,7 @@ namespace Cwl;
 internal sealed partial class CwlMod
 {
     internal static string CurrentLoading = "";
+    internal static string CanContinue = "cwl_log_loading_critical";
     private static bool _duplicate;
 
     [Time]
@@ -49,19 +51,27 @@ internal sealed partial class CwlMod
         }
     }
 
-    private static IEnumerator LoadTask()
+    private IEnumerator LoadTask()
     {
-        using var progress = ProgressIndicator.CreateProgressScoped(() => new(CurrentLoading));
+        using var progress = ProgressIndicator.CreateProgressScoped(
+            () => new("cwl_log_loading".Loc(ModInfo.Version, CurrentLoading, CanContinue.Loc())));
+
+        PrebuildDispatchers();
+        DramaExpansion.BuildActionList();
 
         DataLoader.MergeCharaTalk();
         DataLoader.MergeCharaTone();
-
-        yield return DataLoader.MergeEffectSetting();
-        yield return DataLoader.MergeGodTalk();
         yield return DataLoader.PreloadDialog();
-        yield return DataLoader.LoadAllSounds();
+        yield return DataLoader.MergeGodTalk();
 
-        CurrentLoading = "cwl_log_finished_loading".Loc(ModInfo.Version);
+        CanContinue = "";
+
+        yield return DataLoader.LoadAllSounds();
+        yield return DataLoader.MergeEffectSetting();
+
+        CurrentLoading = "cwl_log_finished_loading".Loc();
+
+        OnDisable();
     }
 
     private void OnStartCore()
@@ -72,6 +82,7 @@ internal sealed partial class CwlMod
 
         QueryDeclTypes();
         GameIOProcessor.RegisterEvents();
+        StartCoroutine(LoadTask());
     }
 
     [Time]

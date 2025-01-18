@@ -7,9 +7,9 @@ using Cwl.LangMod;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 
-namespace Cwl.API;
+namespace Cwl.API.Migration;
 
-public sealed class MigrateDetail
+public sealed partial class MigrateDetail
 {
     public enum Strategy
     {

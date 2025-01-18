@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Cwl.Helper;
 using Cwl.LangMod;
 
@@ -20,10 +21,24 @@ public class CustomCondition : Condition
                 CwlMod.Log<CustomCondition>("cwl_log_custom_type".Loc(nameof(Condition), r.id, r.type));
             }
 
+            SanitizePhase(r);
+
             Managed[r.id] = r;
         } catch {
             CwlMod.Error<CustomCondition>("cwl_error_qualify_type".Loc(nameof(Condition), r.id, r.type));
             // noexcept
         }
+    }
+
+    private static void SanitizePhase(SourceStat.Row r)
+    {
+        if (r.phase.Length >= 10) {
+            return;
+        }
+
+        var sanitized = new int[10];
+        Array.Copy(r.phase, sanitized, r.phase.Length);
+        Array.Fill(sanitized, r.phase[^1], r.phase.Length, 10 - r.phase.Length);
+        r.phase = sanitized;
     }
 }

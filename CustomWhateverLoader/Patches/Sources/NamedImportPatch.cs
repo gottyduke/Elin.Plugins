@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using Cwl.API;
+using Cwl.API.Migration;
 using Cwl.Helper.Runtime;
 using Cwl.ThirdParty;
 using HarmonyLib;
@@ -24,11 +25,10 @@ internal class NamedImportPatch
 
     internal static IEnumerable<MethodInfo> TargetMethods()
     {
-        return typeof(SourceManager).GetFields(AccessTools.all)
-            .Select(f => f.FieldType)
-            .OfDerived(typeof(SourceData))
-            .Where(s => AccessTools.GetMethodNames(s).Any(mi => mi.Contains("CreateRow")))
-            .Select(s => AccessTools.Method(s, "CreateRow"));
+        return WorkbookImporter.Sources
+            .Select(MethodInfo? (sf) => sf.FieldType.GetRuntimeMethod("CreateRow", []))
+            .OfType<MethodInfo>()
+            .Distinct(new OverrideMethodComparer());
     }
 
     [HarmonyTranspiler]

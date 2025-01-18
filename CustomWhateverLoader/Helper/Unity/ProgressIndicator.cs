@@ -32,18 +32,24 @@ public class ProgressIndicator : EMono
 
     public static ProgressIndicator? CreateProgress(Func<UpdateInfo> onUpdate, Func<bool> shouldKill, float lingerDuration = 10f)
     {
+        if (ui?.popSystem == null) {
+            return null;
+        }
+
         var (text, sprite, color) = onUpdate();
 
-        var pop = ui?.popSystem?.PopText(text, sprite, "PopAchievement", color ?? default(Color), duration: 1f);
+        var pop = ui.popSystem.PopText(text, sprite, "PopAchievement", color ?? default(Color), duration: 1f);
         if (pop == null) {
             return null;
         }
 
         pop.important = true;
-        pop.Rect().pivot = Vector2.one;
+        pop.Rect().SetPivot(0.75f, 0.2f);
 
         var progress = pop.gameObject.GetOrAddComponent<ProgressIndicator>();
         progress._updater = new(pop, onUpdate, shouldKill, lingerDuration);
+
+        ui.popSystem.maxLines++;
 
         return progress;
     }
@@ -62,14 +68,16 @@ public class ProgressIndicator : EMono
         yield return new WaitForSecondsRealtime(linger);
 
         pop.important = false;
-        ui.popSystem.Kill(pop);
         _updater = null;
+
+        ui.popSystem.Kill(pop);
+        ui.popSystem.maxLines--;
     }
 
     private static void Sync(PopItemText pop, UpdateInfo info)
     {
         pop.SetText(info.Text, info.Sprite, info.Color ?? default(Color));
-        pop.RebuildLayout();
+        pop.RebuildLayout(true);
     }
 
     public class KillOnScopeExit : IDisposable

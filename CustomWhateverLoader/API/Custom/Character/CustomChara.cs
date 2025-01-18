@@ -126,7 +126,6 @@ public partial class CustomChara : Chara
                 AddEqOrThing(chara, @params[0]!, @params[1], doEquip);
             }
 
-
             return true;
         } catch {
             // noexcept
