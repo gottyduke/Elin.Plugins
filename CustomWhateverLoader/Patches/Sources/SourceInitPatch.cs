@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Cwl.API;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
@@ -18,8 +19,12 @@ internal class SourceInitPatch
 
     internal static bool SafeToCreate;
 
+    internal static MethodInfo TargetMethod()
+    {
+        return AccessTools.Method(typeof(SourceManager), nameof(SourceManager.Init));
+    }
+
     [HarmonyPrefix]
-    [HarmonyPatch(typeof(SourceManager), nameof(SourceManager.Init))]
     internal static void ImportAllSheets()
     {
         if (!_patched) {
@@ -63,8 +68,14 @@ internal class SourceInitPatch
                 }
             }
         } finally {
-            SafeToCreate = false;
             CwlMod.Log<SourceManager>("cwl_log_workbook_complete".Loc());
         }
+    }
+
+    // 1.18.12 new AllowHotInitialization prevents setting rows before Init...
+    [HarmonyPostfix]
+    internal static void OnFinishImport()
+    {
+        SafeToCreate = false;
     }
 }
