@@ -4,7 +4,7 @@ using Cwl.Helper;
 using Cwl.Helper.String;
 using HarmonyLib;
 
-namespace Cwl.Patches.Things;
+namespace Cwl.Patches.Recipes;
 
 //[HarmonyPatch]
 internal class IngredientMatPatch

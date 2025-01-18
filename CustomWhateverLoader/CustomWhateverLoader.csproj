@@ -246,6 +246,8 @@
         <Compile Include="Patches\Quests\InventoryChangeEvent.cs"/>
         <Compile Include="Patches\Quests\SafeCreateQuestPatch.cs"/>
         <Compile Include="Patches\Quests\SetQuestRowPatch.cs"/>
+        <Compile Include="Patches\Recipes\IngredientMatPatch.cs" />
+        <Compile Include="Patches\Recipes\SetRecipeRowPatch.cs" />
         <Compile Include="Patches\Religions\SetReligionOwnerPatch.cs"/>
         <Compile Include="Patches\Religions\SetReligionPortraitPatch.cs"/>
         <Compile Include="Patches\Religions\SetReligionRowPatch.cs"/>
@@ -259,7 +261,6 @@
         <Compile Include="Patches\Sources\RethrowParsePatch.cs"/>
         <Compile Include="Patches\Sources\SafeCreateCardPatch.cs"/>
         <Compile Include="Patches\Sources\SourceInitPatch.cs"/>
-        <Compile Include="Patches\Things\IngredientMatPatch.cs"/>
         <Compile Include="Patches\Traits\MerchantOnBarterPatch.cs"/>
         <Compile Include="Patches\Traits\SafeCreateTraitPatch.cs"/>
         <Compile Include="Patches\Zones\SafeCreateZonePatch.cs"/>
