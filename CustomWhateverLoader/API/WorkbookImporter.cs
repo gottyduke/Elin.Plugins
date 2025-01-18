@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Cwl.API.Migration;
 using Cwl.API.Processors;
 using Cwl.Helper.Runtime;
 using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
+using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 
 namespace Cwl.API;
@@ -16,17 +18,17 @@ public class WorkbookImporter
 {
     private static FieldInfo[]? _sources;
 
+    internal static FieldInfo[] Sources => _sources ??= typeof(SourceManager)
+        .GetFields(AccessTools.all)
+        .Where(f => typeof(SourceData).IsAssignableFrom(f.FieldType))
+        .ToArray();
+
     [Time]
     public static IEnumerable<SourceData?> BySheetName(FileInfo? import)
     {
         if (import?.FullName is null or "") {
             return [];
         }
-
-        _sources ??= typeof(SourceManager)
-            .GetFields(AccessTools.all)
-            .Where(f => typeof(SourceData).IsAssignableFrom(f.FieldType))
-            .ToArray();
 
         using var fs = File.Open(import.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         var book = new XSSFWorkbook(fs);
@@ -36,11 +38,20 @@ public class WorkbookImporter
 
         WorkbookProcessor.PreProcess(book);
 
+        List<ISheet> orderedSheets = [];
         for (var i = 0; i < book.NumberOfSheets; ++i) {
+            var sheet = book.GetSheetAt(i);
+            if (sheet.SheetName is "Element" or "Material") {
+                orderedSheets.Insert(0, sheet);
+            } else {
+                orderedSheets.Add(sheet);
+            }
+        }
+
+        foreach (var sheet in orderedSheets) {
             try {
-                var sheet = book.GetSheetAt(i);
-                var sourceField = _sources.FirstOrDefault(f => f.FieldType.Name == $"Source{sheet.SheetName}" ||
-                                                               f.FieldType.Name == $"Lang{sheet.SheetName}");
+                var sourceField = Sources.FirstOrDefault(f => f.FieldType.Name == $"Source{sheet.SheetName}" ||
+                                                              f.FieldType.Name == $"Lang{sheet.SheetName}");
                 if (sourceField is null) {
                     CwlMod.Log<WorkbookImporter>("cwl_log_sheet_skip".Loc(sheet.SheetName));
                     continue;
@@ -68,5 +79,9 @@ public class WorkbookImporter
         WorkbookProcessor.PostProcess(book);
 
         return dirty;
+    }
+
+    public static void CacheSheet()
+    {
     }
 }

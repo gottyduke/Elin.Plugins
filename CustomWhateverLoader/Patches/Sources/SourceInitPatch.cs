@@ -57,6 +57,8 @@ internal class SourceInitPatch
             foreach (var imported in dirty) {
                 try {
                     imported.Reset();
+                    // 1.18.12 new AllowHotInitialization prevents setting rows before Init...
+                    imported.Init();
                 } catch (Exception ex) {
                     CwlMod.Error<SourceManager>("cwl_error_failure".Loc(ex));
                     // noexcept
