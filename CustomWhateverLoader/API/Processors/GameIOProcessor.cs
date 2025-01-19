@@ -91,17 +91,21 @@ public class GameIOProcessor
             .Where(mi => mi.IsStatic && !mi.IsGenericMethod);
 
         foreach (var method in methods) {
-            foreach (var attr in method.GetCustomAttributes<CwlGameIOEvent>(true)) {
-                var (save, post) = attr switch {
-                    CwlPreLoad => (false, false),
-                    CwlPostLoad => (false, true),
-                    CwlPreSave => (true, false),
-                    CwlPostSave => (true, true),
-                    _ => throw new NotImplementedException(attr.GetType().Name),
-                };
+            try {
+                foreach (var attr in method.GetCustomAttributes<CwlGameIOEvent>(true)) {
+                    var (save, post) = attr switch {
+                        CwlPreLoad => (false, false),
+                        CwlPostLoad => (false, true),
+                        CwlPreSave => (true, false),
+                        CwlPostSave => (true, true),
+                        _ => throw new NotImplementedException(attr.GetType().Name),
+                    };
 
-                Add(ctx => method.FastInvokeStatic(ctx), save, post);
-                CwlMod.Log<GameIOProcess>($"added process {method.Name}");
+                    Add(ctx => method.FastInvokeStatic(ctx), save, post);
+                    CwlMod.Log<GameIOProcess>($"added process {method.Name}");
+                }
+            } catch {
+                // noexcept
             }
         }
     }

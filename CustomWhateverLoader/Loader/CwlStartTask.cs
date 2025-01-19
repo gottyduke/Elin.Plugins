@@ -82,6 +82,7 @@ internal sealed partial class CwlMod
 
         QueryDeclTypes();
         GameIOProcessor.RegisterEvents();
+        
         StartCoroutine(LoadTask());
     }
 

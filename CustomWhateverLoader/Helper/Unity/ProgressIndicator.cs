@@ -61,6 +61,7 @@ public class ProgressIndicator : EMono
         return scopedExit;
     }
 
+    [SwallowExceptions]
     private IEnumerator DeferredKill(PopItemText pop, Func<UpdateInfo> onUpdate, float linger)
     {
         Sync(pop, onUpdate());
@@ -70,8 +71,8 @@ public class ProgressIndicator : EMono
         pop.important = false;
         _updater = null;
 
-        ui.popSystem.Kill(pop);
         ui.popSystem.maxLines--;
+        ui.popSystem.Kill(pop);
     }
 
     private static void Sync(PopItemText pop, UpdateInfo info)
