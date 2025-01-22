@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using Cwl.Helper.Runtime;
+using Cwl.Helper.Extensions;
 using HarmonyLib;
 using MethodTimer;
 
@@ -12,8 +12,7 @@ internal class LoadDialogPatch
 {
     internal static readonly List<ExcelData> Cached = [];
 
-    [HarmonyTargetMethods]
-    internal static IEnumerable<MethodInfo> DialogBuildMap()
+    internal static IEnumerable<MethodInfo> TargetMethods()
     {
         return [
             AccessTools.Method(typeof(DramaCustomSequence), nameof(DramaCustomSequence.HasTopic)),

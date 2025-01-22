@@ -8,7 +8,7 @@ public static class PathTruncation
     {
         return ShortPath(new FileInfo(path));
     }
-    
+
     public static string ShortPath(this FileInfo file)
     {
         var owner = file.Directory!.Parent!.Parent!.Parent;

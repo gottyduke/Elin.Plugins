@@ -37,27 +37,8 @@ public class ActPerformEvent
 
     internal static IEnumerable<MethodInfo> TargetMethods()
     {
-        var acts = typeof(Act).Assembly.GetTypes()
-            .OfDerived(typeof(Act))
-            .Concat(TypeQualifier.Declared.Keys.OfDerived(typeof(Act)));
-
-        HashSet<string> cached = [];
-        foreach (var act in acts) {
-            if (act == typeof(DynamicAct) || act == typeof(DynamicAIAct)) {
-                continue;
-            }
-
-            var method = act.GetRuntimeMethod(nameof(Act.Perform), []);
-            if (method is null) {
-                continue;
-            }
-
-            if (!cached.Add($"{method.DeclaringType!.FullName}/{method.FullDescription()}")) {
-                continue;
-            }
-
-            yield return method;
-        }
+        return OverrideMethodComparer.FindAllOverrides(typeof(Act), nameof(Act.Perform))
+            .Where(mi => mi.DeclaringType != typeof(DynamicAct) && mi.DeclaringType != typeof(DynamicAIAct));
     }
 
     [HarmonyPostfix]

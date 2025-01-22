@@ -101,8 +101,9 @@ public class GameIOProcessor
                         _ => throw new NotImplementedException(attr.GetType().Name),
                     };
 
+                    // TODO loc
                     Add(ctx => method.FastInvokeStatic(ctx), save, post);
-                    CwlMod.Log<GameIOProcess>($"added process {method.Name}");
+                    CwlMod.Log<GameIOProcess>($"added process {method.DeclaringType!.Name}.{method.Name}");
                 }
             } catch {
                 // noexcept
@@ -143,6 +144,7 @@ public class GameIOProcessor
             CwlMod.Log<GameIOContext>($"save {file.ShortPath()}");
 
             // migration
+            // TODO Remove after 5 versions
             var legacy = file[..^1];
             if (File.Exists(legacy)) {
                 File.Delete(legacy);
@@ -188,7 +190,8 @@ public class GameIOProcessor
             var chunkc = new FileInfo($"{baseFile}.{CompressedChunkExt}");
             var legacy = new FileInfo($"{baseFile}.{ChunkExt}");
 
-            if (!chunkc.Exists || !ConfigCereal.ReadData(chunkc.FullName, out inferred)) {
+            if (!chunkc.Exists || chunkc.LastWriteTime < legacy.LastWriteTime ||
+                !ConfigCereal.ReadData(chunkc.FullName, out inferred)) {
                 ConfigCereal.ReadConfig(legacy.FullName, out inferred);
             }
 

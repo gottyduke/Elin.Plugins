@@ -2,7 +2,7 @@
 using System.Reflection.Emit;
 using HarmonyLib;
 
-namespace Cwl.Helper.Runtime;
+namespace Cwl.Helper.Extensions;
 
 public class OperandMatch(OpCode op, Func<CodeInstruction, bool> pred) : CodeMatch(o => o.opcode == op && pred(o));
 

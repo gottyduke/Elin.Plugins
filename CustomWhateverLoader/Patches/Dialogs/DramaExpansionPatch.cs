@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection.Emit;
 using Cwl.API.Drama;
-using Cwl.Helper.Runtime;
+using Cwl.Helper.Extensions;
 using HarmonyLib;
 
 namespace Cwl.Patches.Dialogs;

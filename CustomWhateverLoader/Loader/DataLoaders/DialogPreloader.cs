@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using Cwl.Helper.FileUtil;
+﻿using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using Cwl.Patches.Relocation;
@@ -10,7 +9,7 @@ namespace Cwl;
 internal partial class DataLoader
 {
     [Time]
-    internal static IEnumerator PreloadDialog()
+    internal static void PreloadDialog()
     {
         LoadDialogPatch.Cached.Clear();
 
@@ -22,7 +21,5 @@ internal partial class DataLoader
             LoadDialogPatch.Cached.Add(new(book.FullName));
             CwlMod.Log<DataLoader>("cwl_preload_dialog".Loc(book.ShortPath()));
         }
-
-        yield break;
     }
 }

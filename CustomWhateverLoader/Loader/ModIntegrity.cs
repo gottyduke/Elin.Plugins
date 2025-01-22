@@ -1,14 +1,13 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Cwl.API;
 using Cwl.API.Processors;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using HarmonyLib;
 
-namespace Cwl.Patches;
+namespace Cwl;
 
-internal class ModIntegrityCheck
+internal class ModIntegrity
 {
     private static SerializableModPackage[] CurrentActivated => BaseModManager.Instance.packages
         .Where(p => p.activated && !p.builtin)
@@ -32,7 +31,7 @@ internal class ModIntegrityCheck
 
         CoroutineHelper.Deferred(
             () => Dialog.YesNo(
-                "cwl_warn_missing_mods".Loc(missing.Join(m => $"{m.modName}, {m.modId}", Environment.NewLine)),
+                "cwl_warn_missing_mods".Loc(missing.Join(m => $"{m.modName}, {m.modId}", "\n")),
                 () => EClass.scene.Init(Scene.Mode.Title),
                 null,
                 "cwl_warn_missing_mods_yes",

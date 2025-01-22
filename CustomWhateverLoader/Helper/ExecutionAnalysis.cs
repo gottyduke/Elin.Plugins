@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Cwl.LangMod;
-using UnityEngine;
 
 namespace Cwl.Helper;
 
@@ -18,7 +18,8 @@ internal class ExecutionAnalysis
             return;
         }
 
-        CwlMod.Log<ExecutionAnalysis>("cwl_log_execution_analysis".Loc());
+        var sb = new StringBuilder(2048);
+        sb.AppendLine("cwl_log_execution_analysis".Loc());
 
         var methodNameWidth = _cached.Keys.Max(mi => (mi.DeclaringType?.Name.Length ?? 0) + mi.Name.Length + 7);
         var total = 0d;
@@ -36,10 +37,12 @@ internal class ExecutionAnalysis
 
             total += elapsed;
 
-            Debug.Log("cwl_log_execution_detail".Loc(method, count, plural, elapsed));
+            sb.AppendLine("cwl_log_execution_detail".Loc(method, count, plural, elapsed));
         }
 
-        Debug.Log("cwl_log_execution_tally".Loc(total));
+        sb.AppendLine("cwl_log_execution_tally".Loc(total));
+        CwlMod.Log<ExecutionAnalysis>(sb);
+
         _cached.Clear();
     }
 

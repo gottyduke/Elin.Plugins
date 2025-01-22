@@ -14,15 +14,17 @@ public static class IntrospectCopy
     {
         var access = flags ?? AccessTools.all & ~BindingFlags.Static;
 
-        if (!_cached.TryGetValue(typeof(T), out var srcFields)) {
-            _cached[typeof(T)] = srcFields = typeof(T).GetFields(access);
+        var srcType = source!.GetType();
+        if (!_cached.TryGetValue(srcType, out var srcFields)) {
+            _cached[srcType] = srcFields = srcType.GetFields(access);
         }
 
-        if (!_cached.TryGetValue(typeof(TU), out var destFields)) {
-            _cached[typeof(TU)] = destFields = typeof(TU).GetFields(access);
+        var dstType = target!.GetType();
+        if (!_cached.TryGetValue(dstType, out var dstFields)) {
+            _cached[dstType] = dstFields = dstType.GetFields(access);
         }
 
-        foreach (var dest in destFields) {
+        foreach (var dest in dstFields) {
             var field = srcFields.FirstOrDefault(f => f.Name == dest.Name &&
                                                       f.FieldType == dest.FieldType);
             if (field is null) {

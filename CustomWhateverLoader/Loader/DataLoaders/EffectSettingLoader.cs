@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using Cwl.API;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
@@ -14,7 +13,7 @@ namespace Cwl;
 internal partial class DataLoader
 {
     [Time]
-    internal static IEnumerator MergeEffectSetting()
+    internal static void MergeEffectSetting()
     {
         var sprites = Resources.FindObjectsOfTypeAll<Sprite>();
         var guns = Core.Instance.gameSetting.effect.guns;
@@ -49,8 +48,6 @@ internal partial class DataLoader
                     // noexcept
                 }
             }
-
-            yield return null;
         }
     }
 }

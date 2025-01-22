@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Cwl.Helper.Extensions;
@@ -16,7 +15,7 @@ internal partial class DataLoader
     private const string DefaultSheet = "_default";
 
     [Time]
-    internal static IEnumerator MergeGodTalk()
+    internal static void MergeGodTalk()
     {
         var godTalk = EMono.sources.dataGodTalk;
         var map = godTalk.sheets[DefaultSheet].map;
@@ -40,8 +39,6 @@ internal partial class DataLoader
                 CwlMod.Error<DataLoader>("cwl_error_merge_god_talk".Loc(talk.path.ShortPath(), ex));
                 // noexcept
             }
-
-            yield return null;
         }
     }
 }

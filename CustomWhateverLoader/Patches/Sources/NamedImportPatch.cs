@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Cwl.API;
 using Cwl.API.Migration;
+using Cwl.Helper.Extensions;
 using Cwl.Helper.Runtime;
 using Cwl.ThirdParty;
 using HarmonyLib;
@@ -28,7 +29,7 @@ internal class NamedImportPatch
         return WorkbookImporter.Sources
             .Select(MethodInfo? (sf) => sf.FieldType.GetRuntimeMethod("CreateRow", []))
             .OfType<MethodInfo>()
-            .Distinct(new OverrideMethodComparer());
+            .Distinct(OverrideMethodComparer.Default);
     }
 
     [HarmonyTranspiler]

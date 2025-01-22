@@ -8,6 +8,7 @@ namespace Cwl.API;
 #pragma warning disable CS0414
 // ReSharper disable All 
 public sealed record SerializableStockData : SerializableStockDataV2;
+
 public sealed record SerializableStockItem : SerializableStockItemV2;
 
 public record SerializableStockDataV2
@@ -17,8 +18,8 @@ public record SerializableStockDataV2
 
 public record SerializableStockDataV1
 {
-    public string Owner = "";
     public List<SerializableStockItem> Items = [];
+    public string Owner = "";
 }
 
 public enum StockItemType

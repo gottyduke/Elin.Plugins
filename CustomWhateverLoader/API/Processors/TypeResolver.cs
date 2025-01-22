@@ -1,5 +1,4 @@
 ﻿using System;
-using Cwl.Helper.Runtime;
 using Cwl.LangMod;
 using MethodTimer;
 
@@ -43,6 +42,7 @@ public class TypeResolver
     [Time]
     internal static void RegisterFallbacks()
     {
+        /*
         foreach (var (declared, fallback) in TypeQualifier.Declared) {
             // assembly name is unused. NOA!!!!!
             var asm = declared.Assembly.FullName;
@@ -50,5 +50,6 @@ public class TypeResolver
             ModUtil.RegisterSerializedTypeFallback(asm, declared.Name, aqn);
             ModUtil.RegisterSerializedTypeFallback(asm, declared.FullName, aqn);
         }
+        /**/
     }
 }

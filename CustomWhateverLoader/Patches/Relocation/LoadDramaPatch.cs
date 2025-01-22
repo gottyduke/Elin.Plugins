@@ -2,8 +2,8 @@
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
+using Cwl.Helper.Extensions;
 using Cwl.Helper.FileUtil;
-using Cwl.Helper.Runtime;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;

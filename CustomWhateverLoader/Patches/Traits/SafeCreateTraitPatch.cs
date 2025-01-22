@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using Cwl.API.Processors;
+using Cwl.Helper.Extensions;
 using Cwl.Helper.Runtime;
 using Cwl.LangMod;
 using HarmonyLib;
