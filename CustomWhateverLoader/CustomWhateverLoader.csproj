@@ -101,6 +101,10 @@
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.UI.dll</HintPath>
             <Private>False</Private>
         </Reference>
+        <Reference Include="Reflex">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Reflex.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
         <Reference Include="System"/>
         <Reference Include="System.Core"/>
         <Reference Include="UniTask">
@@ -113,6 +117,10 @@
         </Reference>
         <Reference Include="UnityEngine">
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.AssetBundleModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.AudioModule">
@@ -185,6 +193,7 @@
         <Compile Include="API\Serializable\SerializableStockData.cs"/>
         <Compile Include="API\WorkbookImporter.cs"/>
         <Compile Include="Helper\ExecutionAnalysis.cs"/>
+        <Compile Include="Helper\Extensions\CodeMatchExt.cs"/>
         <Compile Include="Helper\Extensions\DictExt.cs"/>
         <Compile Include="Helper\Extensions\LinqExt.cs"/>
         <Compile Include="Helper\FileUtil\ConfigCereal.cs"/>
@@ -193,17 +202,17 @@
         <Compile Include="Helper\ModSpriteReplacer.cs"/>
         <Compile Include="Helper\ReverseId.cs"/>
         <Compile Include="Helper\Runtime\CachedMethods.cs"/>
-        <Compile Include="Helper\Runtime\CodeMatchExt.cs"/>
         <Compile Include="Helper\Runtime\DramaActionException.cs"/>
         <Compile Include="Helper\Runtime\MethodDispatcher.cs"/>
         <Compile Include="Helper\Runtime\OverrideMethodComparer.cs"/>
         <Compile Include="Helper\Runtime\SourceParseException.cs"/>
         <Compile Include="Helper\Runtime\TypeQualifier.cs"/>
+        <Compile Include="Helper\String\Capitalizer.cs"/>
         <Compile Include="Helper\String\GameVersion.cs"/>
         <Compile Include="Helper\String\Hashing.cs"/>
         <Compile Include="Helper\String\ParamParser.cs"/>
-        <Compile Include="Helper\String\PathNormalizer.cs" />
-        <Compile Include="Helper\String\PathTruncation.cs" />
+        <Compile Include="Helper\String\PathNormalizer.cs"/>
+        <Compile Include="Helper\String\PathTruncation.cs"/>
         <Compile Include="Helper\Unity\ChildrenIterator.cs"/>
         <Compile Include="Helper\Unity\ColorParser.cs"/>
         <Compile Include="Helper\Unity\ComponentFetch.cs"/>
@@ -217,6 +226,7 @@
         <Compile Include="Loader\CustomWhateverLoader.cs"/>
         <Compile Include="Loader\CwlAsmInfo.cs"/>
         <Compile Include="Loader\CwlConfig.cs"/>
+        <Compile Include="Loader\CwlConsole.cs"/>
         <Compile Include="Loader\CwlLogger.cs"/>
         <Compile Include="Loader\CwlStartTask.cs"/>
         <Compile Include="Loader\CwlDebug.cs"/>
@@ -225,6 +235,7 @@
         <Compile Include="Loader\DataLoaders\EffectSettingLoader.cs"/>
         <Compile Include="Loader\DataLoaders\GodTalkLoader.cs"/>
         <Compile Include="Loader\DataLoaders\SoundLoader.cs"/>
+        <Compile Include="Loader\ModIntegrity.cs"/>
         <Compile Include="Patches\Charas\BioOverridePatch.cs"/>
         <Compile Include="Patches\Charas\SetCharaPortraitPatch.cs"/>
         <Compile Include="Patches\Charas\SetCharaRowPatch.cs"/>
@@ -237,6 +248,7 @@
         <Compile Include="Patches\Dialogs\VariableQuotePatch.cs"/>
         <Compile Include="Patches\Elements\ActPerformEvent.cs"/>
         <Compile Include="Patches\Elements\FeatApplyEvent.cs"/>
+        <Compile Include="Patches\Elements\FuzzyLookupPatch.cs"/>
         <Compile Include="Patches\Elements\MergeAttackElementPatch.cs"/>
         <Compile Include="Patches\Elements\SafeCreateElementPatch.cs"/>
         <Compile Include="Patches\Elements\SetElementRowPatch.cs"/>
@@ -247,13 +259,12 @@
         <Compile Include="Patches\Materials\ReverseIdMapper.cs"/>
         <Compile Include="Patches\Materials\SafeCreateMaterialPatch.cs"/>
         <Compile Include="Patches\Materials\SetMaterialRowPatch.cs"/>
-        <Compile Include="Patches\ModIntegrityCheck.cs"/>
         <Compile Include="Patches\Objs\ReverseIdMapper.cs"/>
         <Compile Include="Patches\Quests\InventoryChangeEvent.cs"/>
         <Compile Include="Patches\Quests\SafeCreateQuestPatch.cs"/>
         <Compile Include="Patches\Quests\SetQuestRowPatch.cs"/>
-        <Compile Include="Patches\Recipes\IngredientMatPatch.cs" />
-        <Compile Include="Patches\Recipes\SetRecipeRowPatch.cs" />
+        <Compile Include="Patches\Recipes\IngredientMatPatch.cs"/>
+        <Compile Include="Patches\Recipes\SetRecipeRowPatch.cs"/>
         <Compile Include="Patches\Religions\SetReligionOwnerPatch.cs"/>
         <Compile Include="Patches\Religions\SetReligionPortraitPatch.cs"/>
         <Compile Include="Patches\Religions\SetReligionRowPatch.cs"/>
@@ -261,7 +272,10 @@
         <Compile Include="Patches\Relocation\LoadBookPatch.cs"/>
         <Compile Include="Patches\Relocation\LoadDialogPatch.cs"/>
         <Compile Include="Patches\Relocation\LoadDramaPatch.cs"/>
+        <Compile Include="Patches\Relocation\LoadResourcesPatch.cs"/>
         <Compile Include="Patches\SafeSceneInitPatch.cs"/>
+        <Compile Include="Patches\Sounds\MergePlaylistPatch.cs"/>
+        <Compile Include="Patches\Sounds\RestorePlaylistPatch.cs"/>
         <Compile Include="Patches\Sources\CacheImportPatch.cs"/>
         <Compile Include="Patches\Sources\CellPostProcessPatch.cs"/>
         <Compile Include="Patches\Sources\NamedImportPatch.cs"/>

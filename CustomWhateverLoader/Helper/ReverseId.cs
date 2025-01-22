@@ -7,6 +7,7 @@ namespace Cwl.Helper;
 public static class ReverseId
 {
     private static readonly Dictionary<string, int> _cached = [];
+    private static Dictionary<string, BGMData> _lookup = [];
 
     public static int Material(string materialName, int fallback = -1)
     {
@@ -26,6 +27,21 @@ public static class ReverseId
         }
 
         _cached[cache] = id;
+        return id;
+    }
+
+    public static int BGM(string bgmName, int fallback = -1)
+    {
+        var id = fallback;
+
+        if (_lookup.Count != Core.Instance.refs.bgms.Count) {
+            _lookup = Core.Instance.refs.bgms.ToDictionary(kv => kv.name, kv => kv);
+        }
+
+        if (_lookup.TryGetValue(bgmName, out var data)) {
+            id = data.id;
+        }
+
         return id;
     }
 

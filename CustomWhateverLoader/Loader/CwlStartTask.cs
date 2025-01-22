@@ -61,13 +61,17 @@ internal sealed partial class CwlMod
 
         DataLoader.MergeCharaTalk();
         DataLoader.MergeCharaTone();
-        yield return DataLoader.PreloadDialog();
-        yield return DataLoader.MergeGodTalk();
+        DataLoader.PreloadDialog();
+        DataLoader.MergeEffectSetting();
+
+        DataLoader.LoadAllSounds();
+        DataLoader.RebuildBGM();
+
+        yield return null;
+
+        DataLoader.MergeGodTalk();
 
         CanContinue = "";
-
-        yield return DataLoader.LoadAllSounds();
-        yield return DataLoader.MergeEffectSetting();
 
         CurrentLoading = "cwl_log_finished_loading".Loc();
 
@@ -82,7 +86,7 @@ internal sealed partial class CwlMod
 
         QueryDeclTypes();
         GameIOProcessor.RegisterEvents();
-        
+
         StartCoroutine(LoadTask());
     }
 
@@ -100,13 +104,6 @@ internal sealed partial class CwlMod
         }
 
         // sources
-        TypeQualifier.SafeQueryTypes<Element>();
-        TypeQualifier.SafeQueryTypes<Condition>();
-        TypeQualifier.SafeQueryTypes<Trait>();
-        TypeQualifier.SafeQueryTypes<Quest>();
-        TypeQualifier.SafeQueryTypes<Zone>();
-
-        // extensions
-        TypeQualifier.SafeQueryTypes<DramaOutcome>();
+        TypeQualifier.SafeQueryTypesOfAll();
     }
 }
