@@ -32,8 +32,14 @@ public sealed partial class MigrateDetail
 
     private static readonly Dictionary<IWorkbook, MigrateDetail> _cached = [];
 
-    private MigrateSheet? CurrentSheet { get; set; }
-    private string SheetFile { get; set; } = "";
+    public MigrateSheet? CurrentSheet { get; private set; }
+    public BaseModPackage? Mod { get; private set; }
+    public string SheetFile { get; private set; } = "";
+    public long LoadingTime { get; internal set; }
+
+    internal static ILookup<BaseModPackage?, MigrateDetail> Details => _cached
+        .OrderByDescending(kv => kv.Value.LoadingTime)
+        .ToLookup(kv => kv.Value.Mod, kv => kv.Value);
 
     public static MigrateDetail GetOrAdd(IWorkbook book)
     {
@@ -73,6 +79,17 @@ public sealed partial class MigrateDetail
     {
         SheetFile = filePath;
         return this;
+    }
+
+    public MigrateDetail SetMod(BaseModPackage? mod)
+    {
+        Mod = mod;
+        return this;
+    }
+
+    public static void Clear()
+    {
+        _cached.Clear();
     }
 
     public void FinalizeMigration()

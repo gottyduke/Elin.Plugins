@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using Cwl.API.Migration;
 using Cwl.API.Processors;
+using Cwl.Helper;
 using Cwl.Helper.Runtime;
 using Cwl.LangMod;
 using HarmonyLib;
-using MethodTimer;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 
@@ -16,6 +17,7 @@ namespace Cwl.API;
 
 public class WorkbookImporter
 {
+    private static readonly MethodBase _importer = AccessTools.Method(typeof(WorkbookImporter), nameof(BySheetName));
     private static FieldInfo[]? _sources;
 
     internal static FieldInfo[] Sources => _sources ??= typeof(SourceManager)
@@ -23,16 +25,20 @@ public class WorkbookImporter
         .Where(f => typeof(SourceData).IsAssignableFrom(f.FieldType))
         .ToArray();
 
-    [Time]
     public static IEnumerable<SourceData?> BySheetName(FileInfo? import)
     {
         if (import?.FullName is null or "") {
             return [];
         }
 
-        using var fs = File.Open(import.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        var sw = new Stopwatch();
+        sw.Start();
+
+        using var fs = import.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
         var book = new XSSFWorkbook(fs);
-        MigrateDetail.GetOrAdd(book).SetFile(import.GetFullFileNameWithoutExtension());
+        var migration = MigrateDetail.GetOrAdd(book)
+            .SetFile(import.GetFullFileNameWithoutExtension())
+            .SetMod(BaseModManager.Instance.packages.FirstOrDefault(p => import.FullName.StartsWith(p.dirInfo.FullName)));
 
         List<SourceData> dirty = [];
 
@@ -69,6 +75,12 @@ public class WorkbookImporter
 
                 SheetProcessor.PostProcess(sheet);
 
+                if (source is SourceElement element) {
+                    // hot init so it can be parsed by other sheets
+                    element.Reset();
+                    element.Init();
+                }
+
                 dirty.Add(source);
             } catch (Exception ex) {
                 CwlMod.Error<WorkbookImporter>("cwl_error_failure".Loc(ex));
@@ -77,6 +89,11 @@ public class WorkbookImporter
         }
 
         WorkbookProcessor.PostProcess(book);
+
+        sw.Stop();
+        migration.LoadingTime = sw.ElapsedMilliseconds;
+
+        ExecutionAnalysis.MethodTimeLogger.Log(_importer, sw.Elapsed, "");
 
         return dirty;
     }

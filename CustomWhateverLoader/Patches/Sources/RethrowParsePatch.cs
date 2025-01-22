@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Text;
 using Cwl.Helper.Runtime;
 using HarmonyLib;
 using MethodTimer;
@@ -10,41 +12,71 @@ namespace Cwl.Patches.Sources;
 [HarmonyPatch]
 internal class RethrowParsePatch
 {
+    private static readonly Dictionary<int, MethodInfo> _cached = [];
+
+    private static readonly string[] _methodNames = [
+        nameof(SourceData.GetInt),
+        nameof(SourceData.GetIntArray),
+        nameof(SourceData.GetBool),
+        nameof(SourceData.GetDouble),
+        nameof(SourceData.GetFloat),
+        nameof(SourceData.GetFloatArray),
+        nameof(SourceData.GetString),
+        nameof(SourceData.GetStringArray),
+    ];
+
     internal static bool Prepare()
     {
         return CwlConfig.RethrowException;
     }
 
-    [HarmonyTargetMethods]
-    internal static IEnumerable<MethodInfo> SourceDataCellParsers()
+    internal static IEnumerable<MethodInfo> TargetMethods()
     {
-        return [
-            AccessTools.Method(typeof(SourceData), nameof(SourceData.GetInt), [typeof(int)]),
-            AccessTools.Method(typeof(SourceData), nameof(SourceData.GetIntArray), [typeof(int)]),
-            AccessTools.Method(typeof(SourceData), nameof(SourceData.GetBool), [typeof(int)]),
-            AccessTools.Method(typeof(SourceData), nameof(SourceData.GetDouble), [typeof(int)]),
-            AccessTools.Method(typeof(SourceData), nameof(SourceData.GetFloat), [typeof(int)]),
-            AccessTools.Method(typeof(SourceData), nameof(SourceData.GetFloatArray), [typeof(int)]),
-            AccessTools.Method(typeof(SourceData), nameof(SourceData.GetString), [typeof(int)]),
-            AccessTools.Method(typeof(SourceData), nameof(SourceData.GetStringArray), [typeof(int)]),
-        ];
+        var mi = typeof(SourceData).GetTypeInfo().GetCachedMethods()
+            .Where(mi => mi.IsStatic && _methodNames.Contains(mi.Name))
+            .Where(mi => mi.GetParameters().Select(p => p.ParameterType).SequenceEqual([typeof(int)]));
+        return mi;
     }
 
     [Time]
     [HarmonyPrefix]
     internal static bool RethrowParseInvoke(int id, ref object? __result, MethodInfo __originalMethod)
     {
-        var parser = AccessTools.FirstMethod(typeof(ExcelParser), mi => mi.Name == __originalMethod.Name);
         try {
+            if (!_cached.TryGetValue(__originalMethod.MetadataToken, out var parser)) {
+                parser = AccessTools.FirstMethod(typeof(ExcelParser), mi => mi.Name == __originalMethod.Name);
+                _cached[__originalMethod.MetadataToken] = parser;
+            }
+
             __result = parser.FastInvokeStatic(id);
         } catch (Exception ex) {
             var row = ExcelParser.row;
-            var details = $"row#{row.RowNum}, cell#{id}, expected:{parser.ReturnType.Name}, raw:{row.Cells[id]}";
-            var message = ex.InnerException?.Message.SplitNewline()[0];
+            var sb = new StringBuilder();
 
-            throw new SourceParseException($"{message}\n{details}", ex);
+            var expected = __originalMethod.ReturnType;
+            sb.Append($"\nrow#{row.RowNum}, cell#{id}/{ToLetterId(id)}, expected:{expected.Name}, raw:{row.Cells[id]}");
+
+            sb.AppendLine(row.RowNum < 4
+                ? ", SourceData begins at the 4th row. 3rd row is expected to be the default value row."
+                : $", default:{ExcelParser.rowDefault.Cells[id]}");
+
+            sb.AppendLine(ex.InnerException?.Message.SplitNewline()[0]);
+
+            throw new SourceParseException(sb.ToString(), ex);
         }
 
         return false;
+    }
+
+    private static string ToLetterId(int columnId)
+    {
+        var name = "";
+        while (columnId >= 0) {
+            name = (char)(columnId % 26 + 'A') + name;
+            columnId /= 26;
+            columnId--;
+        }
+
+        return name;
     }
 }
