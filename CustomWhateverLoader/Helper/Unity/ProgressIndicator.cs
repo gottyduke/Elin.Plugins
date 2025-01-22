@@ -38,7 +38,7 @@ public class ProgressIndicator : EMono
 
         var (text, sprite, color) = onUpdate();
 
-        var pop = ui.popSystem.PopText(text, sprite, "PopAchievement", color ?? default(Color), duration: 1f);
+        var pop = ui.popSystem.PopText(text, sprite, "PopAchievement", color ?? default(Color), duration: 999f);
         if (pop == null) {
             return null;
         }
@@ -61,7 +61,6 @@ public class ProgressIndicator : EMono
         return scopedExit;
     }
 
-    [SwallowExceptions]
     private IEnumerator DeferredKill(PopItemText pop, Func<UpdateInfo> onUpdate, float linger)
     {
         Sync(pop, onUpdate());
