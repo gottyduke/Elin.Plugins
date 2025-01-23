@@ -115,7 +115,7 @@ public partial class CustomPlaylist
 
         foreach (var bgm in pl.list) {
             var marker = bgm == current ? "=>" : "   ";
-            sb.AppendLine($"{marker} {bgm.data._name}");
+            sb.AppendLine($"{marker} {bgm.data._name,30} {bgm.data.name}");
         }
 
         sb.AppendLine();

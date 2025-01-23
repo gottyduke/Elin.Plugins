@@ -7,13 +7,12 @@ namespace Cwl.API.Custom;
 
 public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool shuffle = true)
 {
-    internal static readonly List<CustomPlaylist> _loaded = [];
-
-    private static readonly Dictionary<string, CustomPlaylist> _mergeCache = [];
+    private static readonly List<CustomPlaylist> _loaded = [];
+    private static readonly Dictionary<string, CustomPlaylist> _cached = [];
     private static ILookup<string, CustomPlaylist>? _lut;
     private static bool _dirty;
 
-    internal static ILookup<string, CustomPlaylist> Lut
+    public static ILookup<string, CustomPlaylist> Lut
     {
         get
         {
@@ -45,7 +44,7 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
             ..Lut["Global"],
             ..Lut[baseName],
             ..Lut[zoneName],
-        ]);
+        ], zoneName);
 
         var list = playlist.ToInts();
         playlist.list.Clear();
@@ -67,21 +66,22 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
             playlist.list.Add(new() { data = bgm, isLoading = false });
         }
 
-        playlist.shuffle = @override.Shuffle;
         playlist.name = @override.Name;
-
+        playlist.shuffle = @override.Shuffle;
+        
         return playlist;
     }
 
-    public static CustomPlaylist MergeOverrides(CustomPlaylist[] overrides)
+    public static CustomPlaylist MergeOverrides(CustomPlaylist[] overrides, string zoneName)
     {
         List<string> names = ["CWL_Merged"];
         foreach (var pl in overrides) {
             names.Add(pl.Name);
         }
+        names.Add(zoneName);
 
         var cacheName = $"{string.Join("_", names)}/{overrides.Length}";
-        if (_mergeCache.TryGetValue(cacheName, out var playlist)) {
+        if (_cached.TryGetValue(cacheName, out var playlist)) {
             return playlist;
         }
         
@@ -101,7 +101,7 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
         remove.RemoveWhere(id => !dict.ContainsKey(id));
 
         playlist = new(string.Join("_", names.Distinct()), merges.ToArray(), remove.ToArray(), shuffle);
-        return _mergeCache[cacheName] = playlist;
+        return _cached[cacheName] = playlist;
     }
 
     private static string GetBasePlaylistName(string fullName, string zoneName)
