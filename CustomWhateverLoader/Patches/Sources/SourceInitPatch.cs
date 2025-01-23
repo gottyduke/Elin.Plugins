@@ -49,9 +49,7 @@ internal class SourceInitPatch
                 try {
                     CwlMod.Log<SourceManager>("cwl_log_workbook".Loc(import.ShortPath()));
 
-                    WorkbookImporter.BySheetName(import)
-                        .OfType<SourceData>()
-                        .Do(s => dirty.Add(s));
+                    dirty.UnionWith(WorkbookImporter.BySheetName(import).OfType<SourceData>());
                 } catch (Exception ex) {
                     CwlMod.Error<SourceManager>("cwl_error_failure".Loc(ex));
                     // noexcept
@@ -67,7 +65,7 @@ internal class SourceInitPatch
 #if DEBUG
         var elapsed = 0L;
         var total = 0;
-        var sb = new StringBuilder(2048);
+        var sb = new System.Text.StringBuilder(2048);
         sb.AppendLine();
         
         foreach (var mod in MigrateDetail.Details) {

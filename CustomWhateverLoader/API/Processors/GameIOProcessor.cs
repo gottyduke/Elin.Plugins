@@ -57,7 +57,7 @@ public class GameIOProcessor
             } catch (Exception ex) {
                 var type = save ? "save" : "load";
                 var state = post ? "post" : "pre";
-                CwlMod.Warn<GameIOProcessor>("cwl_warn_processor".Loc(type, state, ex.Message));
+                CwlMod.Warn<GameIOProcessor>("cwl_warn_processor".Loc(state, type, ex));
                 // noexcept
             }
         }
@@ -101,9 +101,8 @@ public class GameIOProcessor
                         _ => throw new NotImplementedException(attr.GetType().Name),
                     };
 
-                    // TODO loc
                     Add(ctx => method.FastInvokeStatic(ctx), save, post);
-                    CwlMod.Log<GameIOProcess>($"added process {method.DeclaringType!.Name}.{method.Name}");
+                    CwlMod.Log<GameIOProcess>("cwl_log_processor_add".Loc($"{method.DeclaringType!.Name}.{method.Name}"));
                 }
             } catch {
                 // noexcept

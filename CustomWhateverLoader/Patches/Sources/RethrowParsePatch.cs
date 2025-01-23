@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Cwl.Helper.Runtime;
+using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
 
@@ -32,10 +33,20 @@ internal class RethrowParsePatch
 
     internal static IEnumerable<MethodInfo> TargetMethods()
     {
-        var mi = typeof(SourceData).GetTypeInfo().GetCachedMethods()
+        var parsers = typeof(SourceData).GetTypeInfo().GetCachedMethods()
             .Where(mi => mi.IsStatic && _methodNames.Contains(mi.Name))
             .Where(mi => mi.GetParameters().Select(p => p.ParameterType).SequenceEqual([typeof(int)]));
-        return mi;
+        var excelParsers = typeof(ExcelParser).GetTypeInfo().GetCachedMethods();
+
+        foreach (var parser in parsers) {
+            var excelParser = Array.Find(excelParsers, mi => mi.Name == parser.Name);
+            if (excelParser is null) {
+                continue;
+            }
+
+            _cached[parser.MetadataToken] = excelParser;
+            yield return parser;
+        }
     }
 
     [Time]
@@ -44,8 +55,7 @@ internal class RethrowParsePatch
     {
         try {
             if (!_cached.TryGetValue(__originalMethod.MetadataToken, out var parser)) {
-                parser = AccessTools.FirstMethod(typeof(ExcelParser), mi => mi.Name == __originalMethod.Name);
-                _cached[__originalMethod.MetadataToken] = parser;
+                return true;
             }
 
             __result = parser.FastInvokeStatic(id);
@@ -53,12 +63,14 @@ internal class RethrowParsePatch
             var row = ExcelParser.row;
             var sb = new StringBuilder();
 
-            var expected = __originalMethod.ReturnType;
-            sb.Append($"\nrow#{row.RowNum}, cell#{id}/{ToLetterId(id)}, expected:{expected.Name}, raw:{row.Cells[id]}");
+            var expectedType = __originalMethod.ReturnType.Name;
+            var rawValue = row.Cells.TryGet(id, true);
+            sb.AppendLine("cwl_error_source_rethrow".Loc(row.RowNum, id, ToLetterId(id), expectedType, rawValue));
 
-            sb.AppendLine(row.RowNum < 4
-                ? ", SourceData begins at the 4th row. 3rd row is expected to be the default value row."
-                : $", default:{ExcelParser.rowDefault.Cells[id]}");
+            var defValue = row.RowNum < 4
+                ? "cwl_error_source_rethrow_row".Loc()
+                : "cwl_error_source_rethrow_def".Loc(ExcelParser.rowDefault.Cells.TryGet(id, true));
+            sb.AppendLine(defValue);
 
             sb.AppendLine(ex.InnerException?.Message.SplitNewline()[0]);
 
