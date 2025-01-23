@@ -4,9 +4,9 @@ namespace Cwl.Helper.Extensions;
 
 public static class DictExt
 {
-    public static int NextUniqueKey<T>(this Dictionary<int, T> dict, int step = -1)
+    public static int NextUniqueKey<T>(this Dictionary<int, T> dict, int begin = -1, int step = -1)
     {
-        var key = -1;
+        var key = begin;
         while (dict.ContainsKey(key)) {
             key += step;
         }

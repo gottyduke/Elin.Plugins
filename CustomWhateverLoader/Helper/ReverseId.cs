@@ -38,7 +38,7 @@ public static class ReverseId
             _lookup = Core.Instance.refs.bgms.ToDictionary(kv => kv.name, kv => kv);
         }
 
-        if (_lookup.TryGetValue(bgmName, out var data)) {
+        if (_lookup.TryGetValue(bgmName, out var data) || _lookup.TryGetValue($"BGM/{bgmName}", out data)) {
             id = data.id;
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using Cwl.API.Custom;
 using Cwl.API.Drama;
 using Cwl.API.Processors;
 using Cwl.Helper.FileUtil;
@@ -65,7 +66,9 @@ internal sealed partial class CwlMod
         DataLoader.MergeEffectSetting();
 
         DataLoader.LoadAllSounds();
-        DataLoader.RebuildBGM();
+
+        CustomPlaylist.RebuildBGM();
+        CustomPlaylist.BuildPlaylists();
 
         yield return null;
 

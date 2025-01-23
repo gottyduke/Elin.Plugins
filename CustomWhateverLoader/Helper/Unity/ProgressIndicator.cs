@@ -8,6 +8,8 @@ public class ProgressIndicator : EMono
 {
     private ProgressUpdater? _updater;
 
+    public PopItemText? Pop => _updater?.Pop;
+
     private void Update()
     {
         if (_updater is null) {

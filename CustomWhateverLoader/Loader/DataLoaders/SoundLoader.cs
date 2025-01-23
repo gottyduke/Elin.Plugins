@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
-using System.Text;
 using Cwl.API;
-using Cwl.API.Processors;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
-using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using Cwl.Patches.Relocation;
 using UnityEngine;
@@ -21,8 +16,8 @@ namespace Cwl;
 
 internal partial class DataLoader
 {
+    internal const string SoundPathEntry = "Media/Sound/";
     private const string SoundExtPattern = "*.*";
-    private const string SoundPathEntry = "Media/Sound/";
 
     internal static readonly Dictionary<string, FileInfo> CachedSounds = new(StringComparer.InvariantCultureIgnoreCase);
 
@@ -30,10 +25,9 @@ internal partial class DataLoader
 
     internal static void LoadAllSounds()
     {
-        var dirs = PackageIterator.GetSoundFilesFromPackage();
         LoadResourcesPatch.AddHandler<SoundData>(RelocateSound);
 
-        foreach (var dir in dirs) {
+        foreach (var dir in PackageIterator.GetSoundFilesFromPackage()) {
             foreach (var file in dir.EnumerateFiles(SoundExtPattern, SearchOption.AllDirectories)) {
                 try {
                     var audioType = file.Extension.ToLower() switch {
@@ -59,60 +53,10 @@ internal partial class DataLoader
                 }
             }
         }
-    }
-
-    internal static void RebuildBGM()
-    {
-        var refs = Core.Instance.refs;
-        if (refs.bgms.Count == 0) {
-            return;
-        }
 
         if (LastBgmIndex == 0) {
-            LastBgmIndex = refs.bgms.Count;
+            LastBgmIndex = Core.Instance.refs.bgms.Count;
         }
-
-        var sm = SoundManager.current;
-        var lookup = refs.bgms.ToDictionary(kv => kv.name, kv => kv);
-
-        // TODO loc
-        foreach (var soundName in CachedSounds.Keys.ToArray()) {
-            if (!soundName.StartsWith("BGM/")) {
-                continue;
-            }
-
-            var bgmId = soundName[4..];
-            var data = sm.GetData(bgmId) as BGMData;
-            if (data == null) {
-                continue;
-            }
-
-            if (lookup.TryGetValue(bgmId, out var bgm)) {
-                // direct replacement
-                var oldLength = bgm.clip.length;
-                bgm.clip = data.clip;
-                CwlMod.Log<DataLoader>($"BGM replacement: {bgmId}, {oldLength}s => {bgm.clip.length}s");
-            } else {
-                // addon
-                if (data.id <= 0) {
-                    data.id = refs.bgms.Count;
-                    CwlMod.Warn<DataLoader>($"assigning row based id to BGM: {data.name}, " +
-                                            $"explicit id is preferred to avoid BGM lookup collision");
-                }
-
-                var duplicate = refs.bgms.FindIndex(b => b.id == data.id);
-                if (duplicate != -1) {
-                    CwlMod.Warn<DataLoader>($"duplicate id: {data.id}, old: {refs.bgms[duplicate].name} => new: {data.name}");
-                    refs.bgms[duplicate] = data;
-                } else {
-                    refs.bgms.Add(data);
-                    CwlMod.Log<DataLoader>($"new BGM: {data.id} {data.name}");
-                }
-            }
-        }
-
-        // dictBgm might include the new data, but can't depend on the race condition
-        CoroutineHelper.Deferred(refs.RefreshBGM, () => Core.Instance.initialized);
     }
 
     private static bool RelocateSound(string path, ref Object loaded)
@@ -207,40 +151,5 @@ internal partial class DataLoader
         CwlMod.Log<DataLoader>("cwl_log_sound_loaded".Loc(meta.type, id, clip.frequency, clip.channels, clip.length));
 
         return true;
-    }
-
-    [CwlPostLoad]
-    private static void InvalidateBGM(GameIOProcessor.GameIOContext context)
-    {
-        var bgms = EClass.player.knownBGMs;
-        bgms.RemoveWhere(id => !Core.Instance.refs.dictBGM.ContainsKey(id));
-    }
-
-    // generate a dump with markdown
-    [SuppressMessage("ReSharper", "Unity.UnknownResource")]
-    private static void DumpAllBGMData()
-    {
-        var sb = new StringBuilder(2048);
-        sb.AppendLine("Playlist Dump");
-
-        var pls = Resources.LoadAll<Playlist>($"{SoundPathEntry}BGM/Playlist");
-        foreach (var playlist in pls) {
-            sb.AppendLine($"+ {playlist.name,-30}[{playlist.list.Count}]");
-            foreach (var data in playlist.list.Select(item => item.data)) {
-                if (data?.clip == null) {
-                    continue;
-                }
-
-                sb.AppendLine($"\t+ {data.name,-40} {data.clip.length:0.##}s - {data.clip.frequency}Hz x{data.clip.channels}");
-            }
-        }
-
-        sb.AppendLine("Playlist Item");
-        sb.AppendLine("|id|sound name|bgm name|").AppendLine("|-|-|-|");
-        foreach (var (id, bgm) in Core.Instance.refs.dictBGM) {
-            sb.AppendLine($"|{id}|{bgm.name}|{bgm._name}|");
-        }
-
-        CwlMod.Log<DataLoader>(sb);
     }
 }
