@@ -71,6 +71,7 @@ public partial class CustomPlaylist
     internal static void BuildPlaylists()
     {
         _loaded.Clear();
+        _cached.Clear();
         _lut = null;
 
         foreach (var dir in PackageIterator.GetSoundFilesFromPackage()) {
@@ -106,6 +107,11 @@ public partial class CustomPlaylist
         }
 
         _dirty = true;
+        
+        // hot reload
+        if (EClass.core.IsGameStarted) {
+            EClass._zone.RefreshBGM();
+        }
     }
 
     private static int[] MapToId(IEnumerable<string> names)

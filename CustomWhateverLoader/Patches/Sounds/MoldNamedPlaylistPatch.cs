@@ -13,12 +13,14 @@ internal class MoldNamedPlaylistPatch
         return AccessTools.Method(typeof(Zone), nameof(Zone.CreatePlaylist));
     }
 
+    [SwallowExceptions]
     [HarmonyPrefix]
     internal static void PurgePlaylist(ref List<int> list)
     {
         list.RemoveAll(id => !Core.Instance.refs.dictBGM.ContainsKey(id));
     }
 
+    [SwallowExceptions]
     [HarmonyPostfix]
     internal static void OnMoldPlaylist(Zone __instance, ref Playlist __result, Playlist? mold = null)
     {

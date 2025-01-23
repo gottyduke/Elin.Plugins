@@ -46,7 +46,7 @@ public class ProgressIndicator : EMono
         }
 
         pop.important = true;
-        pop.Rect().SetPivot(0.75f, 0.2f);
+        pop.Rect().SetPivot(0.75f, 0.3f);
 
         var progress = pop.gameObject.GetOrAddComponent<ProgressIndicator>();
         progress._updater = new(pop, onUpdate, shouldKill, lingerDuration);

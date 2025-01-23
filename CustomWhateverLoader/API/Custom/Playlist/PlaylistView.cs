@@ -108,14 +108,14 @@ public partial class CustomPlaylist
         
         var current = pl.currentItem;
         var sb = new StringBuilder();
-        
+
         sb.AppendLine(pl.name);
         sb.AppendLine($"shuffle: {pl.shuffle}");
         sb.AppendLine();
 
         foreach (var bgm in pl.list) {
-            var marker = bgm == current ? "=>" : "   ";
-            sb.AppendLine($"{marker} {bgm.data._name,30} {bgm.data.name}");
+            var marker = bgm == current ? "=>\t" : "\t";
+            sb.AppendLine($"{marker} {bgm.data._name} ({bgm.data.name.Replace("BGM/", "")})");
         }
 
         sb.AppendLine();
