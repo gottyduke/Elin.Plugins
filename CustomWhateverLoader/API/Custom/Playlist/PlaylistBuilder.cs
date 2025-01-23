@@ -4,7 +4,9 @@ using System.IO;
 using System.Linq;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
+using Cwl.Helper.String;
 using Cwl.LangMod;
+using Cysharp.Threading.Tasks;
 using ReflexCLI.Attributes;
 
 namespace Cwl.API.Custom;
@@ -90,7 +92,7 @@ public partial class CustomPlaylist
                     var merge = MapToId(data.List);
                     var remove = MapToId(data.Remove);
                     if (merge.Length == 0 && remove.Length == 0) {
-                        CwlMod.Warn<CustomPlaylist>("cwl_warn_playlist_empty".Loc(playlist));
+                        CwlMod.Warn<CustomPlaylist>("cwl_warn_playlist_empty".Loc(playlist.ShortPath()));
                         continue;
                     }
 
@@ -116,7 +118,29 @@ public partial class CustomPlaylist
 
     private static int[] MapToId(IEnumerable<string> names)
     {
-        return names.Select(ReverseId.BGM).Where(id => id > 0).ToArray();
+        HashSet<int> map = [];
+        foreach (var name in names) {
+            if (name == "**") {
+                map.UnionWith(Core.Instance.refs.dictBGM.Keys);
+                continue;
+            }
+            
+            if (name.Contains("/*")) {
+                var pattern = name[..name.LastIndexOf('/')];
+                var match = Core.Instance.refs.dictBGM
+                    .Where(kv => kv.Value.name.StartsWith($"BGM/{pattern}"))
+                    .Select(kv => kv.Key);
+                map.UnionWith(match);
+                continue;
+            }
+            
+            var id = ReverseId.BGM(name);
+            if (id > 0) {
+                map.Add(id);
+            }
+        }
+
+        return map.ToArray();
     }
 
     [SwallowExceptions]

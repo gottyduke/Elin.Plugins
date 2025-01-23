@@ -27,7 +27,7 @@ internal class MoldNamedPlaylistPatch
         var zoneTypeName = __instance.GetType().Name;
         __result.name = mold != null
             ? $"{mold.name}_{zoneTypeName}"
-            : __result.name.Replace("Blank", zoneTypeName);
+            : $"Playlist_Blank_{zoneTypeName}";
 
         CwlMod.Debug<CustomPlaylist>($"molding playlist {__result.name} for {__instance.GetType().Name}");
     }

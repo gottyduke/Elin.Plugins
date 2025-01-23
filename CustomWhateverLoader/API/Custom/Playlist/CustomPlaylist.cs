@@ -40,24 +40,26 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
 
         var zoneName = zone.GetType().Name;
         var baseName = GetBasePlaylistName(playlist.name, zoneName);
-        var @override = MergeOverrides([
-            ..Lut["Global"],
-            ..Lut[baseName],
-            ..Lut[zoneName],
-        ], zoneName);
-
+        
         var list = playlist.ToInts();
         playlist.list.Clear();
 
-        list.AddRange(@override.ListMerge);
-        list.RemoveAll(@override.ListRemove.Contains);
+        string[] orders = ["Global", baseName, zoneName];
+        var shuffle = false;
+        foreach (var order in orders) {
+            var lists = MergeOverrides(Lut[order].ToArray(), zoneName);
+            
+            list.RemoveAll(lists.ListRemove.Contains);
+            list.AddRange(lists.ListMerge);
+            
+            shuffle = shuffle || lists.Shuffle;
+        }
 
         if (list.Count == 0) {
             list.Add(41);
         }
 
         var dict = Core.Instance.refs.dictBGM;
-
         foreach (var id in list) {
             if (!dict.TryGetValue(id, out var bgm) || bgm?.clip == null) {
                 continue;
@@ -66,21 +68,26 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
             playlist.list.Add(new() { data = bgm, isLoading = false });
         }
 
-        playlist.name = @override.Name;
-        playlist.shuffle = @override.Shuffle;
+        if (baseName != "") {
+            baseName += "_";
+        }
+        playlist.name = $"CWL_Merged_Global_{baseName}{zoneName}";
+        playlist.shuffle = shuffle;
         
         return playlist;
     }
 
-    public static CustomPlaylist MergeOverrides(CustomPlaylist[] overrides, string zoneName)
+    public static CustomPlaylist MergeOverrides(IEnumerable<CustomPlaylist> overrides, string zoneName)
     {
-        List<string> names = ["CWL_Merged"];
-        foreach (var pl in overrides) {
+        var lists = overrides.ToArray();
+        
+        List<string> names = [];
+        foreach (var pl in lists) {
             names.Add(pl.Name);
         }
         names.Add(zoneName);
 
-        var cacheName = $"{string.Join("_", names)}/{overrides.Length}";
+        var cacheName = $"{string.Join("_", names)}/{lists.Length}";
         if (_cached.TryGetValue(cacheName, out var playlist)) {
             return playlist;
         }
@@ -89,7 +96,7 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
         HashSet<int> remove = [];
 
         var shuffle = false;
-        foreach (var pl in overrides) {
+        foreach (var pl in lists) {
             merges.UnionWith(pl.ListMerge);
             remove.UnionWith(pl.ListRemove);
 
