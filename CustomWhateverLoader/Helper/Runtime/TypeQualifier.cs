@@ -54,11 +54,14 @@ public class TypeQualifier
     internal static void SafeQueryTypesOfAll()
     {
         Plugins ??= Resources.FindObjectsOfTypeAll<BaseUnityPlugin>().ToList();
-
         Declared.Clear();
+        
         foreach (var plugin in Plugins.ToArray()) {
             try {
-                Declared.AddRange(plugin.GetType().Assembly.DefinedTypes);
+                var types = plugin.GetType().Assembly.DefinedTypes.ToArray();
+                // test cast for missing dependency
+                _ = types.Select(ti => typeof(object).IsAssignableFrom(ti)).ToArray();
+                Declared.AddRange(types);
             } catch {
                 CwlMod.Warn<TypeQualifier>("cwl_warn_decltype_missing".Loc(plugin.Info.Metadata.GUID));
                 Plugins.Remove(plugin);
