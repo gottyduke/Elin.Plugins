@@ -9,6 +9,7 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
 {
     private static readonly List<CustomPlaylist> _loaded = [];
     private static readonly Dictionary<string, CustomPlaylist> _cached = [];
+    private static readonly Dictionary<string, Playlist> _merged = [];
     private static ILookup<string, CustomPlaylist>? _lut;
     private static bool _dirty;
 
@@ -36,18 +37,28 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
             return ScriptableObject.CreateInstance<Playlist>();
         }
 
-        var playlist = mold.Instantiate();
-
         var zoneName = zone.GetType().Name;
-        var baseName = GetBasePlaylistName(playlist.name, zoneName);
+        var baseName = GetBasePlaylistName(mold.name, zoneName);
         
+        var plName = "CWL_Merged_Global_";
+        if (baseName != "") {
+            plName += $"{baseName}_";
+        }
+        plName += zoneName;
+
+        if (_merged.TryGetValue(plName, out var playlist)) {
+            return playlist;
+        }
+        
+        playlist = mold.Instantiate();
+
         var list = playlist.ToInts();
         playlist.list.Clear();
 
         string[] orders = ["Global", baseName, zoneName];
         var shuffle = false;
         foreach (var order in orders) {
-            var lists = MergeOverrides(Lut[order].ToArray(), zoneName);
+            var lists = MergeOverrides(Lut[order], zoneName);
             
             list.RemoveAll(lists.ListRemove.Contains);
             list.AddRange(lists.ListMerge);
@@ -68,16 +79,13 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
             playlist.list.Add(new() { data = bgm, isLoading = false });
         }
 
-        if (baseName != "") {
-            baseName += "_";
-        }
-        playlist.name = $"CWL_Merged_Global_{baseName}{zoneName}";
+        playlist.name = plName;
         playlist.shuffle = shuffle;
         
-        return playlist;
+        return _merged[plName] = playlist;
     }
 
-    public static CustomPlaylist MergeOverrides(IEnumerable<CustomPlaylist> overrides, string zoneName)
+    private static CustomPlaylist MergeOverrides(IEnumerable<CustomPlaylist> overrides, string zoneName)
     {
         var lists = overrides.ToArray();
         

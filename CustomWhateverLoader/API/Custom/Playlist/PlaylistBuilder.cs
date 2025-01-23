@@ -74,6 +74,7 @@ public partial class CustomPlaylist
     {
         _loaded.Clear();
         _cached.Clear();
+        _merged.Clear();
         _lut = null;
 
         foreach (var dir in PackageIterator.GetSoundFilesFromPackage()) {

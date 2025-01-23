@@ -101,6 +101,11 @@ public partial class CustomPlaylist
 
     private static string GetCurrentPlaylistInfo()
     {
+        if (!EClass.core.IsGameStarted) {
+            DisableBGMView();
+            return "disabled";
+        }
+        
         var pl = EClass.Sound.currentPlaylist;
         if (pl?.currentItem == null) {
             return _lastBgmViewInfo;
@@ -121,7 +126,6 @@ public partial class CustomPlaylist
         sb.AppendLine();
         sb.AppendLine($@"{TimeSpan.FromSeconds(pl.playedTime):mm\:ss} / {TimeSpan.FromSeconds(current.data.clip.length):mm\:ss}");
 
-        _lastBgmViewInfo = sb.ToString();
-        return _lastBgmViewInfo;
+        return _lastBgmViewInfo = sb.ToString();
     }
 }
