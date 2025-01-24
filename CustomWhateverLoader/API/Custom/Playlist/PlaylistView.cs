@@ -21,7 +21,7 @@ public partial class CustomPlaylist
     internal static string EnableBGMView()
     {
         _killBgmProgress = false;
-        
+
         _bgmProgress ??= ProgressIndicator.CreateProgress(
             () => new(GetCurrentPlaylistInfo()),
             () => _killBgmProgress,
@@ -47,7 +47,7 @@ public partial class CustomPlaylist
         pl.Play();
         return pl.currentItem.data._name;
     }
-    
+
     [ConsoleCommand("last")]
     internal static string LastBGM()
     {
@@ -105,12 +105,12 @@ public partial class CustomPlaylist
             DisableBGMView();
             return "disabled";
         }
-        
+
         var pl = EClass.Sound.currentPlaylist;
         if (pl?.currentItem == null) {
             return _lastBgmViewInfo;
         }
-        
+
         var current = pl.currentItem;
         var sb = new StringBuilder();
 

@@ -27,7 +27,13 @@ internal partial class DataLoader
     [ConsoleCommand("load_sound")]
     internal static void LoadAllSounds()
     {
-        LoadResourcesPatch.AddHandler<SoundData>(RelocateSound);
+        if (LastBgmIndex == 0) {
+            LastBgmIndex = Core.Instance.refs.bgms.Count;
+            LoadResourcesPatch.AddHandler<SoundData>(RelocateSound);
+        } else {
+            // hot reload
+            ClearSoundCache();
+        }
 
         foreach (var dir in PackageIterator.GetSoundFilesFromPackage()) {
             foreach (var file in dir.EnumerateFiles(SoundExtPattern, SearchOption.AllDirectories)) {
@@ -56,9 +62,30 @@ internal partial class DataLoader
             }
         }
 
-        if (LastBgmIndex == 0) {
-            LastBgmIndex = Core.Instance.refs.bgms.Count;
+        foreach (var (id, file) in CachedSounds) {
+            var metafile = $"{file.DirectoryName}/{Path.GetFileNameWithoutExtension(file.Name)}.json";
+            if (File.Exists(metafile)) {
+                continue;
+            }
+
+            // generate meta for first time sounds
+            _ = SoundManager.current.GetData(id);
         }
+    }
+
+    [ConsoleCommand("clear_sound_cache")]
+    private static void ClearSoundCache()
+    {
+        CachedSounds.Clear();
+        SoundManager.current.dictData.Clear();
+
+        if (LastBgmIndex == 0) {
+            return;
+        }
+
+        var count = Core.Instance.refs.bgms.Count - LastBgmIndex;
+        Core.Instance.refs.bgms.RemoveRange(LastBgmIndex, count);
+        CwlMod.Log<DataLoader>($"removed {count} cached bgm entries");
     }
 
     private static bool RelocateSound(string path, ref Object loaded)

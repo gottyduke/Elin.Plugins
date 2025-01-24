@@ -39,17 +39,18 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
 
         var zoneName = zone.GetType().Name;
         var baseName = GetBasePlaylistName(mold.name, zoneName);
-        
+
         var plName = "CWL_Merged_Global_";
         if (baseName != "") {
             plName += $"{baseName}_";
         }
+
         plName += zoneName;
 
         if (_merged.TryGetValue(plName, out var playlist)) {
             return playlist;
         }
-        
+
         playlist = mold.Instantiate();
 
         var list = playlist.ToInts();
@@ -59,10 +60,10 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
         var shuffle = false;
         foreach (var order in orders) {
             var lists = MergeOverrides(Lut[order], zoneName);
-            
+
             list.RemoveAll(lists.ListRemove.Contains);
             list.AddRange(lists.ListMerge);
-            
+
             shuffle = shuffle || lists.Shuffle;
         }
 
@@ -81,25 +82,26 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
 
         playlist.name = plName;
         playlist.shuffle = shuffle;
-        
+
         return _merged[plName] = playlist;
     }
 
     private static CustomPlaylist MergeOverrides(IEnumerable<CustomPlaylist> overrides, string zoneName)
     {
         var lists = overrides.ToArray();
-        
+
         List<string> names = [];
         foreach (var pl in lists) {
             names.Add(pl.Name);
         }
+
         names.Add(zoneName);
 
         var cacheName = $"{string.Join("_", names)}/{lists.Length}";
         if (_cached.TryGetValue(cacheName, out var playlist)) {
             return playlist;
         }
-        
+
         HashSet<int> merges = [];
         HashSet<int> remove = [];
 

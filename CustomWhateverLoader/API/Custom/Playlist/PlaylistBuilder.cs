@@ -6,7 +6,6 @@ using Cwl.Helper;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
-using Cysharp.Threading.Tasks;
 using ReflexCLI.Attributes;
 
 namespace Cwl.API.Custom;
@@ -69,13 +68,11 @@ public partial class CustomPlaylist
         }
     }
 
+    // TODO use a deferred mapping to support Playlist filtering
     [ConsoleCommand("rebuild")]
     internal static void BuildPlaylists()
     {
-        _loaded.Clear();
-        _cached.Clear();
-        _merged.Clear();
-        _lut = null;
+        ClearPlaylistCache();
 
         foreach (var dir in PackageIterator.GetSoundFilesFromPackage()) {
             try {
@@ -110,11 +107,20 @@ public partial class CustomPlaylist
         }
 
         _dirty = true;
-        
+
         // hot reload
         if (EClass.core.IsGameStarted) {
             EClass._zone.RefreshBGM();
         }
+    }
+
+    [ConsoleCommand("clear_cache")]
+    private static void ClearPlaylistCache()
+    {
+        _loaded.Clear();
+        _cached.Clear();
+        _merged.Clear();
+        _lut = null;
     }
 
     private static int[] MapToId(IEnumerable<string> names)
@@ -125,7 +131,7 @@ public partial class CustomPlaylist
                 map.UnionWith(Core.Instance.refs.dictBGM.Keys);
                 continue;
             }
-            
+
             if (name.Contains("/*")) {
                 var pattern = name[..name.LastIndexOf('/')];
                 var match = Core.Instance.refs.dictBGM
@@ -134,7 +140,7 @@ public partial class CustomPlaylist
                 map.UnionWith(match);
                 continue;
             }
-            
+
             var id = ReverseId.BGM(name);
             if (id > 0) {
                 map.Add(id);
