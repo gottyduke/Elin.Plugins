@@ -36,11 +36,19 @@ internal class DramaExpansionPatch
     [SwallowExceptions]
     private static bool ExternalInvoke(DramaManager __instance, Dictionary<string, string> item)
     {
-        if (item.GetValueOrDefault("action") is not "invoke*") {
+        if (!item.TryGetValue("action", out var action) || action is not ("invoke*" or "inject")) {
             return false;
         }
 
         if (!item.TryGetValue("param", out var rawExpr)) {
+            return false;
+        }
+
+        if (action == "inject") {
+            if (rawExpr == "Unique") {
+                InjectUniqueRumor(__instance);
+            }
+
             return false;
         }
 
@@ -49,20 +57,46 @@ internal class DramaExpansionPatch
         DramaExpansion.Cookie = new(__instance, item);
 
         foreach (var expr in rawExpr.SplitNewline()) {
-            var action = DramaExpansion.BuildExpression(expr);
-            if (action is null) {
+            var func = DramaExpansion.BuildExpression(expr);
+            if (func is null) {
                 continue;
             }
 
-            var step = new DramaEventMethod(() => action(__instance, item));
+            var step = new DramaEventMethod(() => func(__instance, item));
             if (item.TryGetValue("jump", out var jump) && !jump.IsEmpty()) {
                 step.action = null;
-                step.jumpFunc = () => action(__instance, item) ? jump : "";
+                step.jumpFunc = () => func(__instance, item) ? jump : "";
             }
 
             __instance.AddEvent(step);
         }
 
         return true;
+    }
+
+    private static void InjectUniqueRumor(DramaManager dm)
+    {
+        var chara = dm.tg.chara;
+        var rumor = GetUniqueRumor(chara, dm.enableTone);
+
+        dm.CustomEvent(dm.sequence.Exit);
+
+        var choice = new DramaChoice("letsTalk".lang(), dm.setup.step);
+        dm.lastTalk.AddChoice(choice);
+        dm._choices.Add(choice);
+
+        choice.SetOnClick(() => {
+            var firstText = rumor;
+            dm.sequence.firstTalk.funcText = () => firstText;
+            rumor = GetUniqueRumor(chara, dm.enableTone);
+            chara.affinity.OnTalkRumor();
+            choice.forceHighlight = true;
+        });
+    }
+
+    private static string GetUniqueRumor(Chara chara, bool tone = false)
+    {
+        var dialog = Lang.GetDialog("unique", chara.id).RandomItem();
+        return tone ? chara.ApplyTone(dialog) : dialog;
     }
 }

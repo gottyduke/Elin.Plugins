@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Cwl.API;
 using Cwl.API.Processors;
 using Cwl.LangMod;
 using HarmonyLib;
@@ -8,8 +10,6 @@ namespace Cwl.Patches.Quests;
 [HarmonyPatch]
 internal class SafeCreateQuestPatch
 {
-    private static bool _cleanup;
-
     internal static bool Prepare()
     {
         if (CwlConfig.SafeCreateClass) {
@@ -35,29 +35,28 @@ internal class SafeCreateQuestPatch
         resolved = true;
         CwlMod.Warn<Quest>("cwl_warn_deserialize".Loc(nameof(Quest), qualified, readType.MetadataToken,
             CwlConfig.Patches.SafeCreateClass!.Definition.Key));
-
-        if (!_cleanup) {
-            SafeSceneInitPatch.Cleanups.Enqueue(PostCleanup);
-        }
-
-        _cleanup = true;
     }
 
     [SwallowExceptions]
+    [CwlPostLoad]
     private static void PostCleanup()
     {
-        if (!_cleanup) {
-            return;
-        }
+        var sources = EMono.sources;
+        var quests = EMono.game.quests;
+        HashSet<Quest> list = [..quests.globalList, ..quests.list];
 
-        var list = EClass.game.quests.globalList;
-        list.ForeachReverse(q => {
-            if (EMono.sources.quests.map.ContainsKey(q.id)) {
-                return;
+        foreach (var quest in list) {
+            switch (quest) {
+                case QuestDummy when !sources.quests.map.ContainsKey(quest.id):
+                case QuestDeliver deliver when !sources.things.map.ContainsKey(deliver.idThing):
+                    quests.list.Remove(quest);
+                    quests.globalList.Remove(quest);
+                    break;
+                default:
+                    continue;
             }
 
-            list.Remove(q);
-            CwlMod.Log<Quest>("cwl_log_post_cleanup".Loc(nameof(Quest), q.id));
-        });
+            CwlMod.Log<Quest>("cwl_log_post_cleanup".Loc(quest.GetType().Name, quest.id));
+        }
     }
 }
