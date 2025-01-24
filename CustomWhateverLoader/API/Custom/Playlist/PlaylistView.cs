@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
+using Cwl.LangMod;
 using ReflexCLI.Attributes;
 using UnityEngine;
 
@@ -16,16 +17,22 @@ public partial class CustomPlaylist
     private static ProgressIndicator? _bgmProgress;
     private static bool _killBgmProgress;
     private static string _lastBgmViewInfo = "";
+    private static bool _detailedView;
 
     [ConsoleCommand("view")]
     internal static string EnableBGMView()
     {
+        if (!_killBgmProgress && _bgmProgress != null) {
+            _detailedView = !_detailedView;
+            return $"detailed view: {_detailedView}";
+        }
+
         _killBgmProgress = false;
         _bgmProgress ??= ProgressIndicator.CreateProgress(
             () => new(GetCurrentPlaylistInfo()),
             () => _killBgmProgress,
             1f);
-        return "enabled";
+        return "enabled, use this command again to toggle detailed view";
     }
 
     [ConsoleCommand("hide")]
@@ -33,6 +40,7 @@ public partial class CustomPlaylist
     {
         _killBgmProgress = true;
         _bgmProgress = null;
+        _detailedView = false;
         return "disabled";
     }
 
@@ -111,13 +119,22 @@ public partial class CustomPlaylist
         var sb = new StringBuilder();
 
         sb.AppendLine(pl.name);
-        sb.AppendLine($"shuffle: {pl.shuffle}");
+        sb.AppendLine();
+        sb.AppendLine("cwl_bgm_shuffle".Loc(pl.shuffle));
+        sb.AppendLine("cwl_bgm_stream".Loc(CwlConfig.SeamlessStreaming));
+        sb.AppendLine("cwl_bgm_detail".Loc(_detailedView));
         sb.AppendLine();
 
         for (var i = 0; i < pl.list.Count; ++i) {
             var bgm = pl.list[i];
-            var marker = bgm == current ? "=>" : "";
-            sb.AppendLine($"{i + 1:D2} {marker}\t{bgm.data._name} ({bgm.data.name.Replace("BGM/", "")})");
+            var bgmName = bgm == current ? $"<b>{bgm.data._name}</b>" : bgm.data._name;
+            sb.Append($"{i + 1:D2}\t{bgmName} ");
+
+            if (_detailedView) {
+                sb.AppendLine($"({bgm.data.name.Replace("BGM/", "")})");
+            } else {
+                sb.AppendLine();
+            }
         }
 
         sb.AppendLine();

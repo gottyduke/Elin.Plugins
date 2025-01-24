@@ -8,6 +8,7 @@ using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using Cwl.Patches.Relocation;
+using MethodTimer;
 using ReflexCLI.Attributes;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -24,6 +25,7 @@ internal partial class DataLoader
 
     internal static int LastBgmIndex { get; private set; }
 
+    [Time]
     [ConsoleCommand("load_sound")]
     internal static void LoadAllSounds()
     {

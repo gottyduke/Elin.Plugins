@@ -3,10 +3,12 @@ using System.IO;
 using System.Linq;
 using Cwl.API;
 using Cwl.Helper.String;
+using ReflexCLI.Attributes;
 
 namespace Cwl.Helper.FileUtil;
 
-public static class PackageIterator
+[ConsoleCommandClassCustomizer("cwl.data")]
+public class PackageIterator
 {
     private static readonly Dictionary<string, string> _cachedPaths = [];
 
@@ -92,7 +94,7 @@ public static class PackageIterator
     public static bool TryLoadFromPackageCache(string cacheName, out string path)
     {
         path = string.Empty;
-        return CwlConfig.CachePaths && _cachedPaths.TryGetValue(cacheName, out path);
+        return CwlConfig.CachePaths && _cachedPaths.TryGetValue(cacheName, out path) && File.Exists(path);
     }
 
     public static void AddCachedPath(string cacheName, string path)
@@ -100,9 +102,11 @@ public static class PackageIterator
         _cachedPaths[cacheName] = path;
     }
 
+    [ConsoleCommand("clear_path_cache")]
     [CwlLangReload]
     internal static void ClearCache()
     {
         _cachedPaths.Clear();
+        CwlMod.Log<PackageIterator>("cleared paths cache");
     }
 }

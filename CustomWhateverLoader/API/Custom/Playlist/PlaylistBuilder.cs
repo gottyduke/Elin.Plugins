@@ -6,6 +6,7 @@ using Cwl.Helper;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
+using MethodTimer;
 using ReflexCLI.Attributes;
 
 namespace Cwl.API.Custom;
@@ -44,6 +45,7 @@ public partial class CustomPlaylist
         return true;
     }
 
+    [Time]
     [ConsoleCommand("reimport")]
     internal static void RebuildBGM()
     {

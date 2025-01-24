@@ -10,6 +10,7 @@ namespace Cwl.Helper.Unity;
 public class ProgressIndicator : EMono
 {
     private static readonly List<ProgressIndicator> _active = [];
+
     private ProgressUpdater? _updater;
 
     public PopItemText Pop => GetComponent<PopItemText>();
@@ -84,11 +85,15 @@ public class ProgressIndicator : EMono
     private void Sync(UpdateInfo info)
     {
         Pop.SetText(info.Text, info.Sprite, info.Color ?? default(Color));
+        AdjustPosition();
+    }
 
+    private void AdjustPosition()
+    {
         var rect = Pop.Rect();
         rect.DOComplete();
-        var y = 0f;
 
+        var y = 0f;
         foreach (var progress in _active.OfType<ProgressIndicator>()) {
             if (progress == this) {
                 rect.anchoredPosition = new(0f, y);

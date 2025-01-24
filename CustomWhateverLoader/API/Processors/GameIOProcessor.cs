@@ -6,6 +6,7 @@ using Cwl.Helper.FileUtil;
 using Cwl.Helper.Runtime;
 using Cwl.Helper.String;
 using Cwl.LangMod;
+using MethodTimer;
 
 namespace Cwl.API.Processors;
 
@@ -83,6 +84,7 @@ public class GameIOProcessor
         }
     }
 
+    [Time]
     internal static void RegisterEvents()
     {
         var methods = (TypeQualifier.Plugins ?? [])
