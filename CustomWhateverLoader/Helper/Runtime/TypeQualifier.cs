@@ -55,7 +55,7 @@ public class TypeQualifier
     {
         Plugins ??= Resources.FindObjectsOfTypeAll<BaseUnityPlugin>().ToList();
         Declared.Clear();
-        
+
         foreach (var plugin in Plugins.ToArray()) {
             try {
                 var types = plugin.GetType().Assembly.DefinedTypes.ToArray();

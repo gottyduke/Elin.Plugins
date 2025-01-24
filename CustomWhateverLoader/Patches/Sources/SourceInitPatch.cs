@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Cwl.API;
 using Cwl.API.Migration;
 using Cwl.Helper.FileUtil;
@@ -65,23 +66,23 @@ internal class SourceInitPatch
 #if DEBUG
         var elapsed = 0L;
         var total = 0;
-        var sb = new System.Text.StringBuilder(2048);
+        var sb = new StringBuilder(2048);
         sb.AppendLine();
-        
+
         foreach (var mod in MigrateDetail.Details) {
             if (mod.Key is null) {
                 continue;
             }
-            
+
             var time = mod.Sum(d => d.LoadingTime);
             elapsed += time;
-            
+
             var count = mod.Count();
             total += count;
-            
+
             sb.AppendLine($"{time,5}ms[{count,3}] {mod.Key.title}/{mod.Key.id}");
         }
-        
+
         sb.AppendLine($"{elapsed}ms[{total,3}] total elapsed");
         CwlMod.Log<MigrateDetail>(sb);
 #endif

@@ -42,6 +42,6 @@ internal class SafeSceneInitPatch
 
         CoroutineHelper.Deferred(
             () => SafeToCreate = false,
-            () => EMono.core?.game is null);
+            () => !EMono.core.IsGameStarted);
     }
 }

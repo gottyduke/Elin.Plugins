@@ -240,7 +240,7 @@
         <Compile Include="Loader\CwlStartTask.cs"/>
         <Compile Include="Loader\CwlDebug.cs"/>
         <Compile Include="Loader\DataLoaders\CharaTalkLoader.cs"/>
-        <Compile Include="Loader\DataLoaders\DataLoader.cs" />
+        <Compile Include="Loader\DataLoaders\DataLoader.cs"/>
         <Compile Include="Loader\DataLoaders\DialogPreloader.cs"/>
         <Compile Include="Loader\DataLoaders\EffectSettingLoader.cs"/>
         <Compile Include="Loader\DataLoaders\GodTalkLoader.cs"/>
