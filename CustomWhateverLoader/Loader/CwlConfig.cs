@@ -1,29 +1,47 @@
 ﻿using BepInEx.Configuration;
+using ReflexCLI.Attributes;
 
 // ReSharper disable MemberHidesStaticFromOuterClass
 
 namespace Cwl;
 
+[ConsoleCommandClassCustomizer("cwl.config")]
 public class CwlConfig
 {
-    public static bool CachePaths => Caching.Paths?.Value is true;
-    public static bool CacheSprites => Caching.Sprites?.Value is true;
+    [ConsoleCommand] public static bool SeamlessStreaming => BGM.SeamlessStreaming?.Value is true;
 
-    public static bool QualifyTypeName => Patches.QualifyTypeName?.Value is true;
-    public static bool FixBaseGameAvatar => Patches.FixBaseGameAvatar?.Value is true;
-    public static bool SafeCreateClass => Patches.SafeCreateClass?.Value is true;
-    public static bool ExpandedActions => Dialog.ExpandedActions?.Value is true;
-    public static bool ExpandedActionsExternal => Dialog.ExpandedActionsAllowExternal?.Value is true;
-    public static bool NoOverlappingSounds => Dialog.NoOverlappingSounds?.Value is true;
-    public static bool VariableQuote => Dialog.VariableQuote?.Value is true;
-    public static bool AllowProcessors => Source.AllowProcessors?.Value is true;
-    public static bool NamedImport => Source.NamedImport?.Value is true;
-    public static bool RethrowException => Source.RethrowException?.Value is true;
-    public static bool SheetInspection => Source.SheetInspection?.Value is true;
+    [ConsoleCommand] public static bool CachePaths => Caching.Paths?.Value is true;
+
+    [ConsoleCommand] public static bool CacheSheets => Caching.Sheets?.Value is true;
+
+    [ConsoleCommand] public static bool CacheSprites => Caching.Sprites?.Value is true;
+
+    [ConsoleCommand] public static bool ExpandedActions => Dialog.ExpandedActions?.Value is true;
+
+    [ConsoleCommand] public static bool ExpandedActionsExternal => Dialog.ExpandedActionsAllowExternal?.Value is true;
+
+    [ConsoleCommand] public static bool NoOverlappingSounds => Dialog.NoOverlappingSounds?.Value is true;
+
+    [ConsoleCommand] public static bool VariableQuote => Dialog.VariableQuote?.Value is true;
+
+    [ConsoleCommand] public static bool QualifyTypeName => Patches.QualifyTypeName?.Value is true;
+
+    [ConsoleCommand] public static bool FixBaseGameAvatar => Patches.FixBaseGameAvatar?.Value is true;
+
+    [ConsoleCommand] public static bool SafeCreateClass => Patches.SafeCreateClass?.Value is true;
+
+    [ConsoleCommand] public static bool AllowProcessors => Source.AllowProcessors?.Value is true;
+
+    [ConsoleCommand] public static bool NamedImport => Source.NamedImport?.Value is true;
+
+    [ConsoleCommand] public static bool RethrowException => Source.RethrowException?.Value is true;
+
+    [ConsoleCommand] public static bool SheetInspection => Source.SheetInspection?.Value is true;
 
     // TODO: disabled due to frequent game updates
-    public static bool SheetMigrate => false;
-    public static bool TrimSpaces => Source.TrimSpaces?.Value is true;
+    [ConsoleCommand] public static bool SheetMigrate => false;
+
+    [ConsoleCommand] public static bool TrimSpaces => Source.TrimSpaces?.Value is true;
 
     internal static void Load(ConfigFile config)
     {
@@ -41,12 +59,31 @@ public class CwlConfig
             "Measure the extra loading time added by CWL, this is displayed in Player.log\n" +
             "记录CWL运行时间");
 
+#if DEBUG
+        Logging.Verbose.Value = true;
+        Logging.Execution.Value = true;
+#endif
+
+        BGM.SeamlessStreaming = config.Bind(
+            ModInfo.Name,
+            "BGM.SeamlessStreaming",
+            true,
+            "When switching to a new playlist, if current playing BGM is included in the new playlist, seamlessly stream it\n" +
+            "当切换播放列表时，如果当前播放的曲目在新播放列表中，则尝试无缝衔接");
+
         Caching.Paths = config.Bind(
             ModInfo.Name,
             "Caching.Paths",
             true,
             "Cache paths relocated by CWL instead of iterating new paths\n" +
             "缓存CWL重定向的路径而不是每次重新搜索");
+
+        Caching.Sheets = config.Bind(
+            ModInfo.Name,
+            "Caching.Sheets",
+            true,
+            "Cache source sheets loaded by CWL which will load much faster when it's unchanged after caching\n" +
+            "缓存CWL加载的源表，缓存后的源表如果没有修改则能够以极高的速度加载");
 
         Caching.Sprites = config.Bind(
             ModInfo.Name,
@@ -155,16 +192,15 @@ public class CwlConfig
         internal static ConfigEntry<bool>? Execution { get; set; }
     }
 
-    internal class Patches
+    internal class BGM
     {
-        internal static ConfigEntry<bool>? QualifyTypeName { get; set; }
-        internal static ConfigEntry<bool>? FixBaseGameAvatar { get; set; }
-        internal static ConfigEntry<bool>? SafeCreateClass { get; set; }
+        internal static ConfigEntry<bool>? SeamlessStreaming { get; set; }
     }
 
     internal class Caching
     {
         internal static ConfigEntry<bool>? Paths { get; set; }
+        internal static ConfigEntry<bool>? Sheets { get; set; }
         internal static ConfigEntry<bool>? Sprites { get; set; }
     }
 
@@ -174,6 +210,13 @@ public class CwlConfig
         internal static ConfigEntry<bool>? ExpandedActionsAllowExternal { get; set; }
         internal static ConfigEntry<bool>? NoOverlappingSounds { get; set; }
         internal static ConfigEntry<bool>? VariableQuote { get; set; }
+    }
+
+    internal class Patches
+    {
+        internal static ConfigEntry<bool>? QualifyTypeName { get; set; }
+        internal static ConfigEntry<bool>? FixBaseGameAvatar { get; set; }
+        internal static ConfigEntry<bool>? SafeCreateClass { get; set; }
     }
 
     internal class Source
