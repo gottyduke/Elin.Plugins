@@ -21,14 +21,10 @@ public partial class CustomPlaylist
     internal static string EnableBGMView()
     {
         _killBgmProgress = false;
-
         _bgmProgress ??= ProgressIndicator.CreateProgress(
             () => new(GetCurrentPlaylistInfo()),
             () => _killBgmProgress,
             1f);
-
-        _bgmProgress!.Pop!.text.alignment = TextAnchor.UpperLeft;
-
         return "enabled";
     }
 
@@ -118,9 +114,10 @@ public partial class CustomPlaylist
         sb.AppendLine($"shuffle: {pl.shuffle}");
         sb.AppendLine();
 
-        foreach (var bgm in pl.list) {
-            var marker = bgm == current ? "=>\t" : "\t";
-            sb.AppendLine($"{marker} {bgm.data._name} ({bgm.data.name.Replace("BGM/", "")})");
+        for (var i = 0; i < pl.list.Count; ++i) {
+            var bgm = pl.list[i];
+            var marker = bgm == current ? "=>" : "";
+            sb.AppendLine($"{i + 1:D2} {marker}\t{bgm.data._name} ({bgm.data.name.Replace("BGM/", "")})");
         }
 
         sb.AppendLine();

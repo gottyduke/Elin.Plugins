@@ -97,6 +97,10 @@
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.Sound.dll</HintPath>
             <Private>False</Private>
         </Reference>
+        <Reference Include="Plugins.Tween">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.Tween.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
         <Reference Include="Plugins.UI">
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.UI.dll</HintPath>
             <Private>False</Private>
@@ -141,6 +145,10 @@
         </Reference>
         <Reference Include="UnityEngine.UI">
             <HintPath>$(ElinGamePath)\Elin\Elin_Data\Managed\UnityEngine.UI.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.UIModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UIModule.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule">
@@ -216,6 +224,7 @@
         <Compile Include="Helper\Runtime\OverrideMethodComparer.cs"/>
         <Compile Include="Helper\Runtime\SourceParseException.cs"/>
         <Compile Include="Helper\Runtime\TypeQualifier.cs"/>
+        <Compile Include="Helper\ScopeExit.cs"/>
         <Compile Include="Helper\String\Capitalizer.cs"/>
         <Compile Include="Helper\String\GameVersion.cs"/>
         <Compile Include="Helper\String\Hashing.cs"/>

@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using DG.Tweening;
 using UnityEngine;
 
 namespace Cwl.Helper.Unity;
 
 public class ProgressIndicator : EMono
 {
+    private static readonly List<ProgressIndicator> _active = [];
     private ProgressUpdater? _updater;
 
-    public PopItemText? Pop => _updater?.Pop;
+    public PopItemText Pop => GetComponent<PopItemText>();
 
     private void Update()
     {
@@ -17,19 +21,16 @@ public class ProgressIndicator : EMono
             return;
         }
 
-        var (pop, onUpdate, shouldKill, linger) = _updater;
-        if (pop == null) {
+        var (onUpdate, shouldKill, linger) = _updater;
+        if (Pop == null) {
             return;
         }
 
-        var update = onUpdate();
-        Sync(pop, update);
+        Sync(onUpdate());
 
-        if (!shouldKill()) {
-            return;
+        if (shouldKill()) {
+            StartCoroutine(DeferredKill(linger, onUpdate));
         }
-
-        StartCoroutine(DeferredKill(pop, onUpdate, linger));
     }
 
     public static ProgressIndicator? CreateProgress(Func<UpdateInfo> onUpdate, Func<bool> shouldKill, float lingerDuration = 10f)
@@ -38,61 +39,67 @@ public class ProgressIndicator : EMono
             return null;
         }
 
-        var (text, sprite, color) = onUpdate();
-
-        var pop = ui.popSystem.PopText(text, sprite, "PopAchievement", color ?? default(Color), duration: 999f);
+        var pop = ui.popSystem.PopText("", id: "PopAchievement", duration: 999f);
         if (pop == null) {
             return null;
         }
 
+        ui.popSystem.maxLines++;
+        ui.popSystem.insert = false;
+
+        pop.name = "PopProgress";
         pop.important = true;
-        pop.Rect().SetPivot(0.75f, 0.3f);
+        pop.text.alignment = TextAnchor.UpperLeft;
+        pop.Rect().pivot = new(1f, 1f);
 
         var progress = pop.gameObject.GetOrAddComponent<ProgressIndicator>();
-        progress._updater = new(pop, onUpdate, shouldKill, lingerDuration);
+        progress._updater = new(onUpdate, shouldKill, lingerDuration);
 
-        ui.popSystem.maxLines++;
-
+        _active.Add(progress);
         return progress;
     }
 
-    public static KillOnScopeExit CreateProgressScoped(Func<UpdateInfo> onUpdate, float lingerDuration = 10f)
+    public static ScopeExit CreateProgressScoped(Func<UpdateInfo> onUpdate, float lingerDuration = 10f)
     {
-        var scopedExit = new KillOnScopeExit();
+        var scopedExit = new ScopeExit();
         CreateProgress(onUpdate, () => !scopedExit.Alive, lingerDuration);
         return scopedExit;
     }
 
-    private IEnumerator DeferredKill(PopItemText pop, Func<UpdateInfo> onUpdate, float linger)
+    private IEnumerator DeferredKill(float linger, Func<UpdateInfo> onUpdate)
     {
-        Sync(pop, onUpdate());
+        Sync(onUpdate());
 
         yield return new WaitForSecondsRealtime(linger);
 
-        pop.important = false;
+        Pop.important = false;
+
         _updater = null;
+        _active.Remove(this);
 
         ui.popSystem.maxLines--;
-        ui.popSystem.Kill(pop);
+        ui.popSystem.Kill(Pop);
     }
 
-    private static void Sync(PopItemText pop, UpdateInfo info)
+    private void Sync(UpdateInfo info)
     {
-        pop.SetText(info.Text, info.Sprite, info.Color ?? default(Color));
-        pop.RebuildLayout(true);
-    }
+        Pop.SetText(info.Text, info.Sprite, info.Color ?? default(Color));
 
-    public class KillOnScopeExit : IDisposable
-    {
-        public bool Alive { get; private set; }
+        var rect = Pop.Rect();
+        rect.DOComplete();
+        var y = 0f;
 
-        public void Dispose()
-        {
-            Alive = false;
+        foreach (var progress in _active.OfType<ProgressIndicator>()) {
+            if (progress == this) {
+                rect.anchoredPosition = new(0f, y);
+                break;
+            }
+
+            y -= progress.Pop.Rect().sizeDelta.y;
         }
     }
 
     public record UpdateInfo(string Text, Sprite? Sprite = null, Color? Color = null);
 
-    private record ProgressUpdater(PopItemText Pop, Func<UpdateInfo> OnUpdate, Func<bool> ShouldKill, float LingerDuration);
+    private record ProgressUpdater(Func<UpdateInfo> OnUpdate, Func<bool> ShouldKill, float LingerDuration);
 }
