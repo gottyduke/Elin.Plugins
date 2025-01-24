@@ -16,6 +16,10 @@ internal class InvalidateSupplyPatch
     [HarmonyPrefix]
     internal static bool InvalidateItems(QuestDeliver __instance, ref List<Thing> __result)
     {
+        if (__instance.idThing is null) {
+            return true;
+        }
+
         if (EMono.sources.things.map.ContainsKey(__instance.idThing)) {
             return true;
         }
@@ -23,7 +27,7 @@ internal class InvalidateSupplyPatch
         __result = [];
         CwlMod.Warn<InvalidateSupplyPatch>($"quest {__instance.GetType().Name} has invalid item id: {__instance.idThing}\n" +
                                            $"CWL caught the exception and kept the game going");
-        
+
         return false;
     }
 }
