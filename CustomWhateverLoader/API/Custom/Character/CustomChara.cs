@@ -103,7 +103,9 @@ public partial class CustomChara : Chara
 
         try {
             chara = CharaGen.Create(id);
-            if (chara.id == "beggar") {
+            // Because noa wrote so
+            // ReSharper disable once StringLiteralTypo
+            if (chara.id == "begger") {
                 throw new();
             }
 

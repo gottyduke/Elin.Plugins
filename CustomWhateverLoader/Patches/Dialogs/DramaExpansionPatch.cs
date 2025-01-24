@@ -74,6 +74,7 @@ internal class DramaExpansionPatch
         return true;
     }
 
+    [SwallowExceptions]
     private static void InjectUniqueRumor(DramaManager dm)
     {
         var chara = dm.tg.chara;

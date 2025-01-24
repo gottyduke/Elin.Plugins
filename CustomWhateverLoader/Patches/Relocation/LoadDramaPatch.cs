@@ -56,7 +56,8 @@ internal class LoadDramaPatch
 
         // Elona Dialog/Drama files are not in their LangCode subdirectory
         var fallback = books.First();
-        var localized = books.FirstOrDefault(b => b.Contains($"/{lang}/")) ?? fallback;
+        // 1.19.5 change to last to allow mapping vanilla dramas
+        var localized = books.LastOrDefault(b => b.Contains($"/{lang}/")) ?? fallback;
 
         if (data.path.NormalizePath() != localized) {
             CwlMod.Log<DramaManager>("cwl_relocate_drama".Loc(cachedBookName, Pattern, localized.ShortPath()));
