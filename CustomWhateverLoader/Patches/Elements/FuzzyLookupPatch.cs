@@ -36,11 +36,11 @@ internal class FuzzyLookup
             }
 
             row = ele;
-            CwlMod.Warn<FuzzyLookup>($"{id} => {name}");
+            CwlMod.Log<FuzzyLookup>($"{id} => {name}");
             return true;
         }
 
-        CwlMod.Warn<FuzzyLookup>($"cannot find element: {id}");
+        CwlMod.Log<FuzzyLookup>($"cannot find element: {id}");
         return false;
     }
 }

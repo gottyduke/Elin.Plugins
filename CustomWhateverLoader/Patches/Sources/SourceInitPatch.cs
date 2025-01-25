@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+#if DEBUG
 using System.Text;
+#endif
 using Cwl.API;
 using Cwl.API.Migration;
 using Cwl.Helper.FileUtil;

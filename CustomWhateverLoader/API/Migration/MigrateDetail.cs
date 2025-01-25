@@ -96,7 +96,7 @@ public sealed partial class MigrateDetail
     {
         switch (CurrentSheet?.MigrateStrategy) {
             case Strategy.Reorder: {
-                CwlMod.Warn<MigrateDetail>("cwl_warn_misaligned_sheet".Loc(CwlConfig.Source.NamedImport!.Definition.Key));
+                CwlMod.Log<MigrateDetail>("cwl_warn_misaligned_sheet".Loc(CwlConfig.Source.NamedImport!.Definition.Key));
                 DumpHeaders();
 
                 if (CwlConfig.SheetMigrate) {
@@ -106,7 +106,7 @@ public sealed partial class MigrateDetail
                 break;
             }
             case Strategy.Missing: {
-                CwlMod.Warn<MigrateDetail>("cwl_warn_missing_header".Loc());
+                CwlMod.Log<MigrateDetail>("cwl_warn_missing_header".Loc());
                 DumpHeaders();
                 break;
             }
@@ -124,7 +124,7 @@ public sealed partial class MigrateDetail
         var sheet = CurrentSheet.Sheet;
         var migratedFile = $"{SheetFile}_{sheet.SheetName}_{GameVersion.Normalized}_cwl_migrated.xlsx";
         if (File.Exists(migratedFile)) {
-            CwlMod.Warn<MigrateDetail>("cwl_log_migration_cancel".Loc(GameVersion.Normalized));
+            CwlMod.Log<MigrateDetail>("cwl_log_migration_cancel".Loc(GameVersion.Normalized));
             return;
         }
 
@@ -157,7 +157,7 @@ public sealed partial class MigrateDetail
 
             CwlMod.Log<MigrateDetail>("cwl_log_migration_complete".Loc(migratedFile));
         } catch (Exception ex) {
-            CwlMod.Warn<MigrateDetail>("cwl_warn_migration_failure".Loc(ex));
+            CwlMod.Log<MigrateDetail>("cwl_warn_migration_failure".Loc(ex));
             // noexcept
         }
     }
@@ -176,7 +176,7 @@ public sealed partial class MigrateDetail
         var defaults = sheet.GetRow(2)?.Cells?
             .Where(c => c?.ToString() is not (null or ""));
         if (defaults?.Count() is not > 0) {
-            CwlMod.Warn<MigrateDetail>("cwl_warn_empty_default".Loc());
+            CwlMod.Log<MigrateDetail>("cwl_warn_empty_default".Loc());
         }
     }
 
@@ -191,7 +191,7 @@ public sealed partial class MigrateDetail
         }
 
         var file = new FileInfo(SheetFile);
-        CwlMod.Warn<MigrateDetail>(file.ShortPath());
+        CwlMod.Log<MigrateDetail>(file.ShortPath());
 
         var expected = CurrentSheet.Expected.OrderBy(c => c.Index).ToList();
         var given = CurrentSheet.Given.OrderBy(c => c.Index).ToList();

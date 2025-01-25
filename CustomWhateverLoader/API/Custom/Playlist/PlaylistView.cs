@@ -138,7 +138,7 @@ public partial class CustomPlaylist
         }
 
         sb.AppendLine();
-        sb.AppendLine($@"{TimeSpan.FromSeconds(pl.playedTime):mm\:ss} / {TimeSpan.FromSeconds(current.data.clip.length):mm\:ss}");
+        sb.Append($@"{TimeSpan.FromSeconds(pl.playedTime):mm\:ss} / {TimeSpan.FromSeconds(current.data.clip.length):mm\:ss}");
 
         return _lastBgmViewInfo = sb.ToString();
     }

@@ -34,6 +34,7 @@ public class ProgressIndicator : EMono
         }
     }
 
+    [SwallowExceptions]
     public static ProgressIndicator? CreateProgress(Func<UpdateInfo> onUpdate, Func<bool> shouldKill, float lingerDuration = 10f)
     {
         if (ui?.popSystem == null) {
@@ -45,7 +46,6 @@ public class ProgressIndicator : EMono
             return null;
         }
 
-        ui.popSystem.maxLines++;
         ui.popSystem.insert = false;
 
         pop.name = "PopProgress";
@@ -77,8 +77,6 @@ public class ProgressIndicator : EMono
 
         _updater = null;
         _active.Remove(this);
-
-        ui.popSystem.maxLines--;
         ui.popSystem.Kill(Pop);
     }
 

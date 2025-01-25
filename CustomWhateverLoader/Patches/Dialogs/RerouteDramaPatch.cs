@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection.Emit;
 using Cwl.API.Custom;
+using Cwl.LangMod;
 using HarmonyLib;
 
 namespace Cwl.Patches.Dialogs;
@@ -37,7 +39,16 @@ internal class RerouteDramaPatch
             return false;
         }
 
-        chara.ShowDialog(drama);
+        try {
+            chara.ShowDialog(drama);
+        } catch (Exception ex) {
+            CwlMod.Error<CustomChara>("cwl_error_failure".Loc(ex));
+            if (ELayer.ui.TopLayer is LayerDrama layer) {
+                layer.Close();
+            }
+            // noexcept
+        }
+
         return true;
     }
 }
