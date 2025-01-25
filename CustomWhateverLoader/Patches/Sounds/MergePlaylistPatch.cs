@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection.Emit;
 using Cwl.API.Custom;
 using Cwl.Helper.Extensions;
+using Cwl.Helper.Unity;
+using Cwl.LangMod;
 using HarmonyLib;
 
 namespace Cwl.Patches.Sounds;
@@ -9,6 +12,8 @@ namespace Cwl.Patches.Sounds;
 [HarmonyPatch]
 internal class MergePlaylistPatch
 {
+    private static Lot? _lotDeferred;
+
     [HarmonyTranspiler]
     [HarmonyPatch(typeof(Zone), nameof(Zone.RefreshBGM))]
     internal static IEnumerable<CodeInstruction> OnSetNewPlaylistIl(IEnumerable<CodeInstruction> instructions)
@@ -30,14 +35,27 @@ internal class MergePlaylistPatch
 
     private static void TryMergeNewPlaylist(SoundManager sm, Playlist mold, bool stopBGM, Zone zone)
     {
-        var merged = CustomPlaylist.GeneratePlaylistForZone(mold, zone);
-        if (merged == null || merged.list.Count == 0) {
-            sm.SwitchPlaylist(mold);
-            return;
-        }
+        try {
+            var merged = CustomPlaylist.GeneratePlaylistForZone(mold, zone);
+            if (merged == null || merged.list.Count == 0) {
+                sm.SwitchPlaylist(mold);
+                return;
+            }
 
-        if (!TryStreaming(merged)) {
-            sm.SwitchPlaylist(merged);
+            if (mold == SoundManager.current.plLot) {
+                if (_lotDeferred is null) {
+                    _lotDeferred = EClass.pc?.pos?.cell?.room?.lot;
+                    CoroutineHelper.Deferred(DeferredRefresh, ShouldRefresh);
+                }
+            }
+
+            if (!TryStreaming(merged)) {
+                sm.SwitchPlaylist(merged);
+            }
+        } catch (Exception ex) {
+            sm.SwitchPlaylist(mold);
+            CwlMod.Warn<CustomPlaylist>("cwl_error_failure".Loc(ex.Message));
+            // noexcept
         }
     }
 
@@ -63,5 +81,17 @@ internal class MergePlaylistPatch
         }
 
         return true;
+    }
+
+    private static void DeferredRefresh()
+    {
+        EClass._zone?.RefreshBGM();
+        _lotDeferred = null;
+    }
+
+    private static bool ShouldRefresh()
+    {
+        var lot = EClass.pc?.pos?.cell?.room?.lot;
+        return !EClass.core.IsGameStarted || lot is null || lot != _lotDeferred;
     }
 }
