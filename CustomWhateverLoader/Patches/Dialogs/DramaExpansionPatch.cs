@@ -78,6 +78,11 @@ internal class DramaExpansionPatch
     private static void InjectUniqueRumor(DramaManager dm)
     {
         var chara = dm.tg.chara;
+        var rumors = Lang.GetDialog("unique", chara.id);
+        if (rumors.Length == 1 && rumors[0] == chara.id) {
+            return;
+        }
+
         var rumor = GetUniqueRumor(chara, dm.enableTone);
 
         dm.CustomEvent(dm.sequence.Exit);

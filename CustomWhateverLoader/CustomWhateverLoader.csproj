@@ -183,6 +183,7 @@
         <Compile Include="API\Custom\Character\CustomChara.cs"/>
         <Compile Include="API\Custom\CustomCondition.cs"/>
         <Compile Include="API\Custom\CustomElement.cs"/>
+        <Compile Include="API\Custom\CustomFigure.cs" />
         <Compile Include="API\Custom\CustomMerchant.cs"/>
         <Compile Include="API\Custom\CustomReligion.cs"/>
         <Compile Include="API\Custom\CustomZone.cs"/>
@@ -303,6 +304,7 @@
         <Compile Include="Patches\Sources\RethrowParsePatch.cs"/>
         <Compile Include="Patches\Sources\SafeCreateCardPatch.cs"/>
         <Compile Include="Patches\Sources\SourceInitPatch.cs"/>
+        <Compile Include="Patches\Traits\FigureRendererPatch.cs" />
         <Compile Include="Patches\Traits\MerchantOnBarterPatch.cs"/>
         <Compile Include="Patches\Traits\SafeCreateTraitPatch.cs"/>
         <Compile Include="Patches\Zones\SafeCreateZonePatch.cs"/>
