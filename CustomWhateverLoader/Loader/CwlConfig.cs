@@ -8,39 +8,33 @@ namespace Cwl;
 [ConsoleCommandClassCustomizer("cwl.config")]
 public class CwlConfig
 {
+    [ConsoleCommand] public static bool LoggingVerbose => Logging.Verbose?.Value is true;
+    [ConsoleCommand] public static bool LoggingExceptionAnalyze => Logging.ExceptionAnalyze?.Value is true;
+    [ConsoleCommand] public static bool LoggingExceptionPopup => Logging.ExceptionPopup?.Value is true;
+
     [ConsoleCommand] public static bool SeamlessStreaming => BGM.SeamlessStreaming?.Value is true;
 
     [ConsoleCommand] public static bool CachePaths => Caching.Paths?.Value is true;
-
     [ConsoleCommand] public static bool CacheSheets => Caching.Sheets?.Value is true;
-
     [ConsoleCommand] public static bool CacheSprites => Caching.Sprites?.Value is true;
 
     [ConsoleCommand] public static bool ExpandedActions => Dialog.ExpandedActions?.Value is true;
-
     [ConsoleCommand] public static bool ExpandedActionsExternal => Dialog.ExpandedActionsAllowExternal?.Value is true;
-
     [ConsoleCommand] public static bool NoOverlappingSounds => Dialog.NoOverlappingSounds?.Value is true;
-
     [ConsoleCommand] public static bool VariableQuote => Dialog.VariableQuote?.Value is true;
 
     [ConsoleCommand] public static bool QualifyTypeName => Patches.QualifyTypeName?.Value is true;
-
     [ConsoleCommand] public static bool FixBaseGameAvatar => Patches.FixBaseGameAvatar?.Value is true;
-
     [ConsoleCommand] public static bool SafeCreateClass => Patches.SafeCreateClass?.Value is true;
 
     [ConsoleCommand] public static bool AllowProcessors => Source.AllowProcessors?.Value is true;
-
     [ConsoleCommand] public static bool NamedImport => Source.NamedImport?.Value is true;
-
     [ConsoleCommand] public static bool RethrowException => Source.RethrowException?.Value is true;
 
     [ConsoleCommand] public static bool SheetInspection => Source.SheetInspection?.Value is true;
 
     // TODO: disabled due to frequent game updates
     [ConsoleCommand] public static bool SheetMigrate => false;
-
     [ConsoleCommand] public static bool TrimSpaces => Source.TrimSpaces?.Value is true;
 
     internal static void Load(ConfigFile config)
@@ -59,9 +53,25 @@ public class CwlConfig
             "Measure the extra loading time added by CWL, this is displayed in Player.log\n" +
             "记录CWL运行时间");
 
+        Logging.ExceptionAnalyze = config.Bind(
+            ModInfo.Name,
+            "Logging.ExceptionAnalyze",
+            true,
+            "Analyze the unhandled exception during gameplay and log the results\n" +
+            "分析游戏运行时抛出的异常");
+
+        Logging.ExceptionPopup = config.Bind(
+            ModInfo.Name,
+            "Logging.ExceptionPopup",
+            true,
+            "Display a popup for the analyzed unhandled exception\n" +
+            "在游戏中显示游戏运行时抛出的异常");
+
 #if DEBUG
         Logging.Verbose.Value = true;
         Logging.Execution.Value = true;
+        Logging.ExceptionAnalyze.Value = true;
+        Logging.ExceptionPopup.Value = true;
 #endif
 
         BGM.SeamlessStreaming = config.Bind(
@@ -190,6 +200,8 @@ public class CwlConfig
     {
         internal static ConfigEntry<bool>? Verbose { get; set; }
         internal static ConfigEntry<bool>? Execution { get; set; }
+        internal static ConfigEntry<bool>? ExceptionAnalyze { get; set; }
+        internal static ConfigEntry<bool>? ExceptionPopup { get; set; }
     }
 
     internal class BGM

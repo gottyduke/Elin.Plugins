@@ -27,4 +27,9 @@ public struct OverrideMethodComparer : IEqualityComparer<MethodInfo>
             .Select(t => t.GetRuntimeMethod(methodName, parameterTypes))
             .Distinct(Default);
     }
+
+    public static IEnumerable<MethodInfo> FindAllOverridesGetter(Type type, string propertyName)
+    {
+        return FindAllOverrides(type, $"get_{propertyName}");
+    }
 }
