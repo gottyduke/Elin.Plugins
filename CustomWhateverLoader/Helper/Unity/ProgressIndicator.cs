@@ -45,7 +45,6 @@ public class ProgressIndicator : EMono
             return null;
         }
 
-        ui.popSystem.maxLines++;
         ui.popSystem.insert = false;
 
         pop.name = "PopProgress";
@@ -77,8 +76,6 @@ public class ProgressIndicator : EMono
 
         _updater = null;
         _active.Remove(this);
-
-        ui.popSystem.maxLines--;
         ui.popSystem.Kill(Pop);
     }
 

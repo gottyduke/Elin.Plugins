@@ -12,7 +12,7 @@ internal class DramaPortraitOverride
     [HarmonyPatch(typeof(Portrait), nameof(Portrait.SetPerson))]
     internal static void OnSetDialogActorPortrait(Portrait __instance, Person p)
     {
-        if (EMono.ui.TopLayer is not LayerDrama layer || layer.drama != DramaExpansion.Cookie?.Dm) {
+        if (ELayer.ui.TopLayer is not LayerDrama layer || layer.drama != DramaExpansion.Cookie?.Dm) {
             return;
         }
 

@@ -245,6 +245,7 @@
         <Compile Include="Loader\CwlAsmInfo.cs"/>
         <Compile Include="Loader\CwlConfig.cs"/>
         <Compile Include="Loader\CwlConsole.cs"/>
+        <Compile Include="Loader\CwlException.cs" />
         <Compile Include="Loader\CwlLogger.cs"/>
         <Compile Include="Loader\CwlStartTask.cs"/>
         <Compile Include="Loader\CwlDebug.cs"/>
