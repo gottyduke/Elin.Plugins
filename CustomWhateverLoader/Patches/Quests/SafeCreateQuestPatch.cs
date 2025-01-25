@@ -41,22 +41,21 @@ internal class SafeCreateQuestPatch
     [CwlPostLoad]
     private static void PostCleanup()
     {
-        var sources = EMono.sources;
         var quests = EMono.game.quests;
         HashSet<Quest> list = [..quests.globalList, ..quests.list];
 
         foreach (var quest in list) {
             switch (quest) {
-                case QuestDummy when !sources.quests.map.ContainsKey(quest.id):
-                case QuestDeliver deliver when !sources.things.map.ContainsKey(deliver.idThing):
+                // 1.19.8 purge dummies regardless
+                case QuestDummy:
+                case not null when quest.id is null || !EMono.sources.quests.map.ContainsKey(quest.id):
                     quests.list.Remove(quest);
                     quests.globalList.Remove(quest);
+                    CwlMod.Log<Quest>("cwl_log_post_cleanup".Loc(quest.GetType().Name, quest.id));
                     break;
                 default:
                     continue;
             }
-
-            CwlMod.Log<Quest>("cwl_log_post_cleanup".Loc(quest.GetType().Name, quest.id));
         }
     }
 }
