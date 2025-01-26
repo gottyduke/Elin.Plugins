@@ -11,12 +11,13 @@ namespace Cwl.Helper.FileUtil;
 public class PackageIterator
 {
     private static readonly Dictionary<string, string> _cachedPaths = [];
+    private static readonly Dictionary<string, FileMapping> _mappings = [];
 
     public static IEnumerable<string> GetLangFilesFromPackage(string pattern, bool excludeBuiltIn = false)
     {
         return BaseModManager.Instance.packages
             .Where(p => p.activated)
-            .Where(p => !excludeBuiltIn || (excludeBuiltIn && !p.builtin))
+            .Where(p => !excludeBuiltIn || !p.builtin)
             .Select(p => p.dirInfo)
             .SelectMany(d => d.GetDirectories("Lang*"))
             .SelectMany(d => d.GetFiles(pattern, SearchOption.AllDirectories))
@@ -26,18 +27,9 @@ public class PackageIterator
 
     public static IEnumerable<DirectoryInfo> GetLangModFilesFromPackage(string? modGuid = null)
     {
-        var lang = Core.Instance.config?.lang ?? "EN";
-        return GetLoadedPackages(modGuid)
-            .SelectMany(d => d.GetDirectories("LangMod"))
-            .Select(d => {
-                var dirs = d.GetDirectories();
-                return dirs.FirstOrDefault(sd => sd.Name == lang) ??
-                       // 1.17 use CN as ZHTW fallback
-                       dirs.FirstOrDefault(sd => lang == "ZHTW" && sd.Name == "CN") ??
-                       // 1.7 use EN as 1st fallback
-                       dirs.FirstOrDefault(sd => sd.Name == "EN") ??
-                       dirs.FirstOrDefault();
-            });
+        return GetLoadedPackagesAsMapping(modGuid)
+            .Select(m => m.Primary)
+            .OfType<DirectoryInfo>();
     }
 
     public static IEnumerable<DirectoryInfo> GetSoundFilesFromPackage(string? modGuid = null)
@@ -52,6 +44,25 @@ public class PackageIterator
             .Where(p => p.activated && !p.builtin)
             .Where(p => modGuid is null || p.id == modGuid)
             .Select(p => p.dirInfo);
+    }
+
+    public static IEnumerable<FileMapping> GetLoadedPackagesAsMapping(string? modGuid = null)
+    {
+        return BaseModManager.Instance.packages
+            .OfType<ModPackage>()
+            .Where(p => p.activated && !p.builtin)
+            .Where(p => modGuid is null || p.id == modGuid)
+            .Select(GetPackageMapping);
+    }
+
+    public static FileMapping GetPackageMapping(ModPackage package)
+    {
+        if (_mappings.TryGetValue(package.id, out var mapping)) {
+            return mapping;
+        }
+
+        var lang = Core.Instance.config?.lang ?? "EN";
+        return _mappings[package.id] = new(package, lang);
     }
 
     public static IEnumerable<ExcelData> GetRelocatedExcelsFromPackage(string relativePath, int startIndex = 5)
@@ -76,19 +87,8 @@ public class PackageIterator
 
     public static FileInfo? GetRelocatedFileFromPackage(string relativePath, string modGuid)
     {
-        var cacheName = $"{modGuid}/Resources";
-        if (!TryLoadFromPackageCache(cacheName, out var cachedPath)) {
-            var resources = GetLangModFilesFromPackage(modGuid).FirstOrDefault();
-            if (resources?.Exists is not true) {
-                return null;
-            }
-
-            cachedPath = resources.FullName;
-            AddCachedPath(cacheName, cachedPath);
-        }
-
-        var file = Path.Combine(cachedPath, relativePath);
-        return File.Exists(file) ? new(file) : null;
+        var resources = GetLoadedPackagesAsMapping(modGuid).FirstOrDefault();
+        return resources?.RelocateFile(relativePath);
     }
 
     public static bool TryLoadFromPackageCache(string cacheName, out string path)
@@ -106,7 +106,10 @@ public class PackageIterator
     [CwlLangReload]
     internal static void ClearCache()
     {
-        _cachedPaths.Clear();
+        foreach (var mapping in _mappings.Values) {
+            mapping.RebuildLangModMapping(Core.Instance.config?.lang ?? "EN");
+        }
+
         CwlMod.Log<PackageIterator>("cleared paths cache");
     }
 }
