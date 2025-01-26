@@ -37,7 +37,7 @@ internal class MergePlaylistPatch
     {
         try {
             var merged = CustomPlaylist.GeneratePlaylistForZone(mold, zone);
-            if (merged == null || merged.list.Count == 0) {
+            if (merged == null || merged.list.Count == 0 || mold.list.Count == 0) {
                 sm.SwitchPlaylist(mold);
                 return;
             }
