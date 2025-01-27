@@ -1,5 +1,5 @@
 ﻿using System;
 
-namespace Cwl.API;
+namespace Cwl.API.Attributes;
 
 public class CwlEvent : Attribute;

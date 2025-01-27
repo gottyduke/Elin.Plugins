@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Cwl.API.Processors;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
 using Cwl.LangMod;
@@ -9,7 +8,6 @@ namespace Cwl.API.Custom;
 
 public class CustomMerchant : TraitMerchant
 {
-    private static bool _transform;
     internal static readonly Dictionary<string, SerializableStockData> Managed = [];
 
     public static IReadOnlyCollection<SerializableStockData> All => Managed.Values;
@@ -18,11 +16,6 @@ public class CustomMerchant : TraitMerchant
 
     public static void AddStock(string charaId, string stockId)
     {
-        if (!_transform) {
-            TraitTransformer.Add(TransformMerchant);
-            _transform = true;
-        }
-
         stockId = stockId.IsEmpty() ? $"stock_{charaId}" : $"stock{stockId}";
 
         var file = PackageIterator.GetRelocatedFilesFromPackage($"Data/{stockId}.json").FirstOrDefault();
@@ -87,7 +80,7 @@ public class CustomMerchant : TraitMerchant
         }
     }
 
-    private static void TransformMerchant(ref string traitName, Card traitOwner)
+    internal static void TransformMerchant(ref string traitName, Card traitOwner)
     {
         if (traitName == nameof(TraitMerchant) && Managed.Keys.Contains(traitOwner.id)) {
             traitName = nameof(CustomMerchant);

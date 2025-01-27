@@ -80,6 +80,7 @@ internal static class InvalidateDestThingPatch
             }
         }
 
+        _cleanup.Clear();
         _queued = false;
     }
 }

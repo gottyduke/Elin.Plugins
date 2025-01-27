@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using Cwl.API.Attributes;
 using Cwl.API.Custom;
 using Cwl.API.Drama;
 using Cwl.API.Processors;
@@ -7,7 +8,10 @@ using Cwl.Helper.FileUtil;
 using Cwl.Helper.Runtime;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
+using Cwl.Patches.Conditions;
+using Cwl.Patches.Quests;
 using Cwl.Patches.Sources;
+using Cwl.Patches.Zones;
 using HarmonyLib;
 using MethodTimer;
 
@@ -79,6 +83,7 @@ internal sealed partial class CwlMod
         CurrentLoading = "cwl_log_finished_loading".Loc();
 
         OnDisable();
+        SetupExceptionHook();
     }
 
     private void OnStartCore()
@@ -88,7 +93,7 @@ internal sealed partial class CwlMod
         }
 
         QueryDeclTypes();
-        GameIOProcessor.RegisterEvents();
+        RegisterEvents();
 
         StartCoroutine(LoadTask());
     }
@@ -108,5 +113,19 @@ internal sealed partial class CwlMod
 
         // sources
         TypeQualifier.SafeQueryTypesOfAll();
+    }
+
+    [Time]
+    private static void RegisterEvents()
+    {
+        foreach (var (method, attrs) in AttributeQuery.MethodsWith<CwlEvent>()) {
+            GameIOProcessor.RegisterEvents(method, attrs);
+        }
+
+        TraitTransformer.Add(CustomMerchant.TransformMerchant);
+
+        TypeResolver.Add(SafeCreateConditionPatch.ResolveCondition);
+        TypeResolver.Add(SafeCreateQuestPatch.ResolveQuest);
+        TypeResolver.Add(SafeCreateZonePatch.ResolveZone);
     }
 }

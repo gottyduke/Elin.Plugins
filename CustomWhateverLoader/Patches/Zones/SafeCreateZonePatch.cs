@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Cwl.API.Processors;
 using Cwl.LangMod;
 using HarmonyLib;
 
@@ -13,14 +12,10 @@ internal class SafeCreateZonePatch
 
     internal static bool Prepare()
     {
-        if (CwlConfig.SafeCreateClass) {
-            TypeResolver.Add(ResolveZones);
-        }
-
         return CwlConfig.SafeCreateClass;
     }
 
-    private static void ResolveZones(ref bool resolved, Type objectType, ref Type readType, string qualified)
+    internal static void ResolveZone(ref bool resolved, Type objectType, ref Type readType, string qualified)
     {
         if (resolved) {
             return;

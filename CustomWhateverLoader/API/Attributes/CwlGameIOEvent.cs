@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Cwl.API;
+namespace Cwl.API.Attributes;
 
 [AttributeUsage(AttributeTargets.Method)]
 public class CwlGameIOEvent : CwlEvent;

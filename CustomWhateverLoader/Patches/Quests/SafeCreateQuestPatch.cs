@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Cwl.API;
-using Cwl.API.Processors;
+using Cwl.API.Attributes;
 using Cwl.LangMod;
 using HarmonyLib;
 
@@ -12,16 +11,12 @@ internal class SafeCreateQuestPatch
 {
     internal static bool Prepare()
     {
-        if (CwlConfig.SafeCreateClass) {
-            TypeResolver.Add(ResolveQuest);
-        }
-
         return CwlConfig.SafeCreateClass;
     }
 
     // 23.73 fixed
     // https://elin-modding-resources.github.io/Elin.Docs/diff/424dbab1c12832c2e79eb2d9f3c9fd4d8cf56696
-    private static void ResolveQuest(ref bool resolved, Type objectType, ref Type readType, string qualified)
+    internal static void ResolveQuest(ref bool resolved, Type objectType, ref Type readType, string qualified)
     {
         if (resolved) {
             return;

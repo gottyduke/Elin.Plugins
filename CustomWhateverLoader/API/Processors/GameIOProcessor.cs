@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Reflection;
+using Cwl.API.Attributes;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.Runtime;
 using Cwl.Helper.String;
@@ -56,8 +56,8 @@ public class GameIOProcessor
             try {
                 ioProcess(context);
             } catch (Exception ex) {
-                var type = save ? "save" : "load";
                 var state = post ? "post" : "pre";
+                var type = save ? "save" : "load";
                 CwlMod.Warn<GameIOProcessor>("cwl_warn_processor".Loc(state, type, ex));
                 // noexcept
             }
@@ -85,30 +85,28 @@ public class GameIOProcessor
     }
 
     [Time]
-    internal static void RegisterEvents()
+    internal static void RegisterEvents(MethodInfo method, CwlEvent[] attributes)
     {
-        var methods = (TypeQualifier.Plugins ?? [])
-            .SelectMany(p => p.GetType().Assembly.DefinedTypes)
-            .SelectMany(CachedMethods.GetCachedMethods)
-            .Where(mi => mi.IsStatic && !mi.IsGenericMethod);
+        if (Array.Find(attributes, attr => attr is CwlGameIOEvent) is null) {
+            return;
+        }
 
-        foreach (var method in methods) {
-            try {
-                foreach (var attr in method.GetCustomAttributes<CwlGameIOEvent>(true)) {
-                    var (save, post) = attr switch {
-                        CwlPreLoad => (false, false),
-                        CwlPostLoad => (false, true),
-                        CwlPreSave => (true, false),
-                        CwlPostSave => (true, true),
-                        _ => throw new NotImplementedException(attr.GetType().Name),
-                    };
+        foreach (var attr in attributes) {
+            var (save, post) = attr switch {
+                CwlPreLoad => (false, false),
+                CwlPostLoad => (false, true),
+                CwlPreSave => (true, false),
+                CwlPostSave => (true, true),
+                _ => throw new NotImplementedException(attr.GetType().Name),
+            };
 
-                    Add(ctx => method.FastInvokeStatic(ctx), save, post);
-                    CwlMod.Log<GameIOProcess>("cwl_log_processor_add".Loc($"{method.DeclaringType!.Name}.{method.Name}"));
-                }
-            } catch {
-                // noexcept
-            }
+            Add(ctx => method.FastInvokeStatic(ctx), save, post);
+
+            var state = post ? "post" : "pre";
+            var type = save ? "save" : "load";
+            var decl = method.DeclaringType!;
+            var provider = $"{decl.Assembly.GetName().Name}::{decl.Name}.{method.Name}";
+            CwlMod.Log<GameIOProcess>("cwl_log_processor_add".Loc(state, type, provider));
         }
     }
 

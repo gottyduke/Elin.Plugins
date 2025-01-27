@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using Cwl.API.Custom;
-using Cwl.API.Processors;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.Runtime;
 using Cwl.LangMod;
@@ -16,10 +15,6 @@ internal class SafeCreateConditionPatch
 {
     internal static bool Prepare()
     {
-        if (CwlConfig.SafeCreateClass) {
-            TypeResolver.Add(ResolveCondition);
-        }
-
         return CwlConfig.SafeCreateClass;
     }
 
@@ -55,6 +50,22 @@ internal class SafeCreateConditionPatch
         });
     }
 
+    internal static void ResolveCondition(ref bool resolved, Type objectType, ref Type readType, string qualified)
+    {
+        if (resolved) {
+            return;
+        }
+
+        if (objectType != typeof(Condition) || readType != typeof(object)) {
+            return;
+        }
+
+        readType = typeof(CustomCondition);
+        resolved = true;
+        CwlMod.Warn<CustomCondition>("cwl_warn_deserialize".Loc(nameof(Condition), qualified, readType.MetadataToken,
+            CwlConfig.Patches.SafeCreateClass!.Definition.Key));
+    }
+
     [Time]
     private static Condition SafeCreateInvoke(string unqualified, string assembly, string alias)
     {
@@ -77,21 +88,5 @@ internal class SafeCreateConditionPatch
         row.detail = "cwl_type_safety_desc".Loc();
 
         return new CustomCondition();
-    }
-
-    private static void ResolveCondition(ref bool resolved, Type objectType, ref Type readType, string qualified)
-    {
-        if (resolved) {
-            return;
-        }
-
-        if (objectType != typeof(Condition) || readType != typeof(object)) {
-            return;
-        }
-
-        readType = typeof(CustomCondition);
-        resolved = true;
-        CwlMod.Warn<CustomCondition>("cwl_warn_deserialize".Loc(nameof(Condition), qualified, readType.MetadataToken,
-            CwlConfig.Patches.SafeCreateClass!.Definition.Key));
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Cwl.Helper.Runtime;
+using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
 
@@ -36,7 +37,7 @@ public partial class DramaExpansion : DramaOutcome
                 return;
             }
 
-            CwlMod.Log<DramaExpansion>($"building external methods from {assemblyName}");
+            CwlMod.Log<DramaExpansion>("cwl_log_drama_build_ext".Loc(assemblyName));
 
             methods = AccessTools.GetTypesFromAssembly(asm)
                 .SelectMany(AccessTools.GetDeclaredMethods)
@@ -50,12 +51,13 @@ public partial class DramaExpansion : DramaOutcome
 
         var count = 0;
         foreach (var method in methods) {
-            var entry = external ? $"ext.{method.DeclaringType!.Name}.{method.Name}" : method.Name;
-            _built[entry] = new(method, method.GetParameters().Length, method.DeclaringType!);
+            var type = method.DeclaringType!;
+            var entry = external ? $"ext.{type.Name}.{method.Name}" : method.Name;
+            _built[entry] = new(method, method.GetParameters().Length, type);
             count++;
         }
 
-        CwlMod.Log<DramaExpansion>($"rebuilt {count} methods");
+        CwlMod.Log<DramaExpansion>("cwl_log_drama_build".Loc(count));
     }
 
     internal static Func<DramaManager, Dictionary<string, string>, bool>? BuildExpression(string? expression)
@@ -68,7 +70,7 @@ public partial class DramaExpansion : DramaOutcome
             return cached;
         }
 
-        var parse = Regex.Match(expression.Replace("\"", ""), @"^(?<func>\w+)\((?<params>.*)?\)$");
+        var parse = Regex.Match(expression.Replace("\"", ""), @"^(?<func>\w+)\((?<params>.*)?\)$", RegexOptions.Compiled);
         if (!parse.Success) {
             return null;
         }

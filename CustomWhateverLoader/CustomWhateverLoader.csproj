@@ -177,7 +177,6 @@
         <Compile Include="API\Attributes\CwlForwardPatch.cs"/>
         <Compile Include="API\Attributes\CwlGameIOEvent.cs"/>
         <Compile Include="API\Attributes\CwlLangEvent.cs"/>
-        <Compile Include="API\Attributes\CwlStartEvent.cs"/>
         <Compile Include="API\Custom\Character\CharaImporter.cs"/>
         <Compile Include="API\Custom\Character\AddEqOrThing.cs"/>
         <Compile Include="API\Custom\Character\CustomChara.cs"/>
@@ -206,6 +205,7 @@
         <Compile Include="API\Serializable\SerializableEffectSetting.cs"/>
         <Compile Include="API\Serializable\SerializableModPackage.cs"/>
         <Compile Include="API\Serializable\SerializablePlaylist.cs"/>
+        <Compile Include="API\Serializable\SerializableQuestDefinition.cs" />
         <Compile Include="API\Serializable\SerializableSoundData.cs"/>
         <Compile Include="API\Serializable\SerializableStockData.cs"/>
         <Compile Include="API\WorkbookImporter.cs"/>
@@ -215,10 +215,12 @@
         <Compile Include="Helper\Extensions\GameDateExt.cs" />
         <Compile Include="Helper\Extensions\LinqExt.cs"/>
         <Compile Include="Helper\FileUtil\ConfigCereal.cs"/>
+        <Compile Include="Helper\FileUtil\FileMapping.cs" />
         <Compile Include="Helper\FileUtil\PackageIterator.cs"/>
         <Compile Include="Helper\IntrospectCopy.cs"/>
         <Compile Include="Helper\ModSpriteReplacer.cs"/>
         <Compile Include="Helper\ReverseId.cs"/>
+        <Compile Include="Helper\Runtime\AttributeQuery.cs" />
         <Compile Include="Helper\Runtime\CachedMethods.cs"/>
         <Compile Include="Helper\Runtime\DramaActionException.cs"/>
         <Compile Include="Helper\Runtime\MethodDispatcher.cs"/>
@@ -227,6 +229,7 @@
         <Compile Include="Helper\Runtime\TypeQualifier.cs"/>
         <Compile Include="Helper\ScopeExit.cs"/>
         <Compile Include="Helper\String\Capitalizer.cs"/>
+        <Compile Include="Helper\String\FastStringWatch.cs" />
         <Compile Include="Helper\String\GameVersion.cs"/>
         <Compile Include="Helper\String\Hashing.cs"/>
         <Compile Include="Helper\String\ParamParser.cs"/>
@@ -296,6 +299,7 @@
         <Compile Include="Patches\Relocation\LoadDramaPatch.cs"/>
         <Compile Include="Patches\Relocation\LoadResourcesPatch.cs"/>
         <Compile Include="Patches\SafeSceneInitPatch.cs"/>
+        <Compile Include="Patches\Sounds\SetBGMOverridePatch.cs" />
         <Compile Include="Patches\Sounds\MergePlaylistPatch.cs"/>
         <Compile Include="Patches\Sounds\MoldNamedPlaylistPatch.cs"/>
         <Compile Include="Patches\Sources\CacheImportPatch.cs"/>

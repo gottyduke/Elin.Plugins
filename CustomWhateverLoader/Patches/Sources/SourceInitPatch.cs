@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-#if DEBUG
-using System.Text;
-#endif
 using Cwl.API;
 using Cwl.API.Migration;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;
+#if DEBUG
+using System.Text;
+#endif
 
 namespace Cwl.Patches.Sources;
 

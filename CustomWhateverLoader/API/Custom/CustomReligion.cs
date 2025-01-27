@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Cwl.API.Attributes;
 using Cwl.API.Processors;
 using Cwl.Patches.Elements;
 using MethodTimer;
