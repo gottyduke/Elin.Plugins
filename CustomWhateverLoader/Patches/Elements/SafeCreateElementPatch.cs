@@ -70,7 +70,7 @@ internal class SafeCreateElementPatch
             _prompted[id]++;
 
             if (_prompted[id] <= LogSpamMax) {
-                CwlMod.Warn<CustomElement>(_prompted[id] == LogSpamMax
+                CwlMod.WarnWithPopup<CustomElement>(_prompted[id] == LogSpamMax
                     ? "cwl_warn_deserialize_final".Loc()
                     : "cwl_warn_deserialize".Loc(nameof(Element), id, unqualified,
                         CwlConfig.Patches.SafeCreateClass!.Definition.Key));

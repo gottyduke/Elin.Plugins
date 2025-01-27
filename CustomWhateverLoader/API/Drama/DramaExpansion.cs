@@ -41,8 +41,9 @@ public partial class DramaExpansion
         object? result;
         if (!methodName.StartsWith("ext.")) {
             if (pack.Length != action.ParameterCount) {
-                CwlMod.Warn<DramaExpansion>($"failed emitting call [{methodName}]({string.Join(",", parameters)})\n" +
-                                            $"requires {action.ParameterCount} parameter(s).");
+                var methodGroup = $"[{methodName}]({string.Join(",", parameters)})";
+                CwlMod.WarnWithPopup<DramaExpansion>($"failed emitting call {methodGroup}\n" +
+                                                     $"requires {action.ParameterCount} parameter(s).");
                 return false;
             }
 

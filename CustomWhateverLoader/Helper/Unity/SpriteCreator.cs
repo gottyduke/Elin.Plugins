@@ -42,7 +42,7 @@ public static class SpriteCreator
 
             _cached[cache] = tex;
         } catch (Exception ex) {
-            CwlMod.Warn<Sprite>("cwl_warn_sprite_creator".Loc(path.ShortPath(), ex));
+            CwlMod.WarnWithPopup<Sprite>("cwl_warn_sprite_creator".Loc(path.ShortPath(), ex.Message), ex);
             return null;
             // noexcept
         }

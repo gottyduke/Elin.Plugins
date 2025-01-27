@@ -24,7 +24,7 @@ public class TypeResolver
             try {
                 resolver(ref resolved, objectType, ref readType, qualified);
             } catch (Exception ex) {
-                CwlMod.Warn<TypeResolver>("cwl_warn_processor".Loc("type", "resolve", ex.Message));
+                CwlMod.Warn<TypeResolver>("cwl_warn_processor".Loc("type", "resolve", ex));
                 // noexcept
             }
         }

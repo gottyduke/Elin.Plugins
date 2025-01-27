@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Cwl.LangMod;
 using MethodTimer;
 
@@ -20,8 +21,8 @@ public class CustomZone : Zone
             }
 
             Managed[r.id] = r;
-        } catch {
-            CwlMod.Error<CustomZone>("cwl_error_qualify_type".Loc(nameof(Zone), r.id, r.type));
+        } catch (Exception ex) {
+            CwlMod.ErrorWithPopup<CustomZone>("cwl_error_qualify_type".Loc(nameof(Zone), r.id, r.type), ex);
             // noexcept
         }
     }

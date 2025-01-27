@@ -62,7 +62,7 @@ internal class SafeCreateConditionPatch
 
         readType = typeof(CustomCondition);
         resolved = true;
-        CwlMod.Warn<CustomCondition>("cwl_warn_deserialize".Loc(nameof(Condition), qualified, readType.MetadataToken,
+        CwlMod.WarnWithPopup<CustomCondition>("cwl_warn_deserialize".Loc(nameof(Condition), qualified, readType.MetadataToken,
             CwlConfig.Patches.SafeCreateClass!.Definition.Key));
     }
 
@@ -80,7 +80,7 @@ internal class SafeCreateConditionPatch
             // noexcept
         }
 
-        CwlMod.Warn<CustomCondition>("cwl_warn_deserialize".Loc(nameof(Condition), alias, unqualified,
+        CwlMod.WarnWithPopup<CustomCondition>("cwl_warn_deserialize".Loc(nameof(Condition), alias, unqualified,
             CwlConfig.Patches.SafeCreateClass!.Definition.Key));
 
         var row = EMono.sources.stats.alias.TryGetValue(alias)!;

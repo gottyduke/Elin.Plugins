@@ -30,8 +30,8 @@ internal class SourceInitPatch
             try {
                 Harmony.CreateAndPatchAll(typeof(NamedImportPatch), ModInfo.Guid);
             } catch (Exception ex) {
-                CwlMod.Warn<SourceManager>($"failed to patch Source.NamedImport, disabled\n" +
-                                           $"{ex.Message.SplitNewline()[0]}");
+                CwlMod.WarnWithPopup<SourceManager>($"failed to patch Source.NamedImport, disabled\n" +
+                                                    $"{ex.Message.SplitNewline()[0]}", ex);
                 // noexcept
             }
 
@@ -54,7 +54,7 @@ internal class SourceInitPatch
 
                     dirty.UnionWith(WorkbookImporter.BySheetName(import).OfType<SourceData>());
                 } catch (Exception ex) {
-                    CwlMod.Error<SourceManager>("cwl_error_failure".Loc(ex));
+                    CwlMod.WarnWithPopup<SourceManager>("cwl_error_failure".Loc(ex.Message), ex);
                     // noexcept
                 }
             }
@@ -100,7 +100,7 @@ internal class SourceInitPatch
                 // 1.18.12 new AllowHotInitialization prevents setting rows before Init...
                 imported.Init();
             } catch (Exception ex) {
-                CwlMod.Error<SourceManager>("cwl_error_failure".Loc(ex));
+                CwlMod.ErrorWithPopup<SourceManager>("cwl_error_failure".Loc(ex.Message), ex);
                 // noexcept
             }
         }

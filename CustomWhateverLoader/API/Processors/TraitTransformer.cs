@@ -23,7 +23,7 @@ public class TraitTransformer
             try {
                 transformer(ref traitName, traitOwner);
             } catch (Exception ex) {
-                CwlMod.Warn<TraitTransformer>("cwl_warn_processor".Loc("trait", "transform", ex.Message));
+                CwlMod.Warn<TraitTransformer>("cwl_warn_processor".Loc("trait", "transform", ex));
                 // noexcept
             }
         }

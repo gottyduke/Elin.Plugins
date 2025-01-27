@@ -24,8 +24,8 @@ public class CustomCondition : Condition
             SanitizePhase(r);
 
             Managed[r.id] = r;
-        } catch {
-            CwlMod.Error<CustomCondition>("cwl_error_qualify_type".Loc(nameof(Condition), r.id, r.type));
+        } catch (Exception ex) {
+            CwlMod.ErrorWithPopup<CustomCondition>("cwl_error_qualify_type".Loc(nameof(Condition), r.id, r.type), ex);
             // noexcept
         }
     }

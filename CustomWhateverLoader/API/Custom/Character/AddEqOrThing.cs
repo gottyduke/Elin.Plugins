@@ -8,7 +8,7 @@ public partial class CustomChara
     private static void AddEqOrThing(Chara chara, string id, string? payload, bool equip = false)
     {
         if (sources.cards.map.TryGetValue(id) is null) {
-            CwlMod.Warn<CustomChara>("cwl_warn_thing_gen".Loc(id, chara.id));
+            CwlMod.WarnWithPopup<CustomChara>("cwl_warn_thing_gen".Loc(id, chara.id));
             return;
         }
 
@@ -39,7 +39,7 @@ public partial class CustomChara
             CwlMod.Log<CustomChara>("cwl_log_added_thing".Loc(id, thing.Num, chara.id));
         } catch {
             thing?.Destroy();
-            CwlMod.Warn<CustomChara>("cwl_warn_thing_gen".Loc(id, chara.id));
+            CwlMod.WarnWithPopup<CustomChara>("cwl_warn_thing_gen".Loc(id, chara.id));
             // noexcept
         }
     }

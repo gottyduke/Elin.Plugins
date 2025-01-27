@@ -1,11 +1,14 @@
 ﻿using System.Runtime.CompilerServices;
 using Cwl.Helper.Unity;
 using Cwl.ThirdParty;
+using UnityEngine;
 
 namespace Cwl;
 
 internal sealed partial class CwlMod
 {
+    private static readonly Color _warningColor = new(237f / 255, 96f / 255, 71f / 255);
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Log(object payload)
     {
@@ -33,7 +36,6 @@ internal sealed partial class CwlMod
     }
 
     [SwallowExceptions]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Warn(object payload)
     {
         UnityEngine.Debug.Log($"[CWL][WARN] {payload}");
@@ -46,17 +48,33 @@ internal sealed partial class CwlMod
         Warn($"[{typeof(T).Name}] {payload}");
     }
 
+    internal static void WarnWithPopup<T>(object payload, object? log = null)
+    {
+        Warn<T>(payload);
+        if (log is not null) {
+            UnityEngine.Debug.Log(log);
+        }
+    }
+
     [SwallowExceptions]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Error(object payload, [CallerMemberName] string caller = "")
     {
         UnityEngine.Debug.Log($"[CWL][ERROR] [{caller}] {payload}");
         Glance.Dispatch(payload);
-        using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToString()));
+        using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToString(), Color: _warningColor));
     }
 
     internal static void Error<T>(object payload, [CallerMemberName] string caller = "")
     {
         Error($"[{typeof(T).Name}] {payload}", caller);
+    }
+
+    internal static void ErrorWithPopup<T>(object payload, object? log = null)
+    {
+        Error<T>(payload);
+        if (log is not null) {
+            UnityEngine.Debug.Log(log);
+        }
     }
 }

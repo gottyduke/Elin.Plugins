@@ -49,7 +49,7 @@ internal class SetMaterialRowPatch
                 }
             }
         } catch (Exception ex) {
-            CwlMod.Warn<Material>("cwl_warn_mat_color".Loc(r.alias, tags.Join(), ex));
+            CwlMod.WarnWithPopup<Material>("cwl_warn_mat_color".Loc(r.alias, tags.Join(), ex.Message), ex);
             return;
         }
 

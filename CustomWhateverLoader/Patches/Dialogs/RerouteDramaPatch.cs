@@ -42,7 +42,7 @@ internal class RerouteDramaPatch
         try {
             chara.ShowDialog(drama);
         } catch (Exception ex) {
-            CwlMod.Error<CustomChara>("cwl_error_failure".Loc(ex));
+            CwlMod.ErrorWithPopup<CustomChara>("cwl_error_failure".Loc(ex.Message), ex);
             if (ELayer.ui.TopLayer is LayerDrama layer) {
                 layer.Close();
             }

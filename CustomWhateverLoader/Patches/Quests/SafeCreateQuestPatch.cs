@@ -28,7 +28,7 @@ internal class SafeCreateQuestPatch
 
         readType = typeof(Quest);
         resolved = true;
-        CwlMod.Warn<Quest>("cwl_warn_deserialize".Loc(nameof(Quest), qualified, readType.MetadataToken,
+        CwlMod.WarnWithPopup<Quest>("cwl_warn_deserialize".Loc(nameof(Quest), qualified, readType.MetadataToken,
             CwlConfig.Patches.SafeCreateClass!.Definition.Key));
     }
 

@@ -16,7 +16,7 @@ internal partial class DataLoader
                 MOD.listTalk.items.Add(charaTalk);
                 CwlMod.Log<DataLoader>("cwl_preload_chara_talk".Loc(charaTalk.path.ShortPath()));
             } catch (Exception ex) {
-                CwlMod.Warn<DataLoader>("cwl_error_failure".Loc(ex));
+                CwlMod.WarnWithPopup<DataLoader>("cwl_error_failure".Loc(ex.Message), ex);
                 // noexcept
             }
         }
@@ -30,7 +30,7 @@ internal partial class DataLoader
                 MOD.tones.items.Add(charaTone);
                 CwlMod.Log<DataLoader>("cwl_preload_chara_tone".Loc(charaTone.path.ShortPath()));
             } catch (Exception ex) {
-                CwlMod.Warn<DataLoader>("cwl_error_failure".Loc(ex));
+                CwlMod.WarnWithPopup<DataLoader>("cwl_error_failure".Loc(ex.Message), ex);
                 // noexcept
             }
         }

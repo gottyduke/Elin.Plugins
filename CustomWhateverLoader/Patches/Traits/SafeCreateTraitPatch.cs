@@ -63,8 +63,9 @@ internal class SafeCreateTraitPatch
             if (_qualifiedTraits.Add(qualified.FullName)) {
                 CwlMod.Log<Trait>("cwl_log_custom_type".Loc(nameof(Trait), unqualified, qualified.FullName));
             }
-        } catch {
-            CwlMod.Warn<Trait>("cwl_error_qualify_type".Loc(nameof(Trait), $"{unqualified} @ {owner.id}", ""));
+        } catch (Exception ex) {
+            CwlMod.WarnWithPopup<Trait>("cwl_error_qualify_type".Loc(nameof(Trait), $"{unqualified} @ {owner.id}",
+                ex.GetType().Name));
             // noexcept
         }
 

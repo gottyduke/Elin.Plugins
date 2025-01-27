@@ -36,7 +36,7 @@ internal partial class DataLoader
 
                 CwlMod.Log<DataLoader>("cwl_preload_god_talk".Loc(talk.path.ShortPath()));
             } catch (Exception ex) {
-                CwlMod.Error<DataLoader>("cwl_error_merge_god_talk".Loc(talk.path.ShortPath(), ex));
+                CwlMod.ErrorWithPopup<DataLoader>("cwl_error_merge_god_talk".Loc(talk.path.ShortPath(), ex));
                 // noexcept
             }
         }

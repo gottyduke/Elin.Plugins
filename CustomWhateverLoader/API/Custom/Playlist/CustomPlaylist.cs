@@ -84,7 +84,7 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
 
             return _merged[cacheName] = playlist;
         } catch (Exception ex) {
-            CwlMod.Warn<CustomPlaylist>("cwl_error_failure".Loc(ex));
+            CwlMod.WarnWithPopup<CustomPlaylist>("cwl_error_failure".Loc(ex.Message), ex);
             // noexcept
         }
 

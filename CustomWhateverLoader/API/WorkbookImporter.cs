@@ -83,7 +83,7 @@ public class WorkbookImporter
 
                 dirty.Add(source);
             } catch (Exception ex) {
-                CwlMod.Error<WorkbookImporter>("cwl_error_failure".Loc(ex));
+                CwlMod.ErrorWithPopup<WorkbookImporter>("cwl_error_failure".Loc(ex.Message), ex);
                 // noexcept
             }
         }

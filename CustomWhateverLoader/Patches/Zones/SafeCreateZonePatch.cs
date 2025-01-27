@@ -27,7 +27,7 @@ internal class SafeCreateZonePatch
 
         readType = typeof(Zone);
         resolved = true;
-        CwlMod.Warn<Zone>("cwl_warn_deserialize".Loc(nameof(Zone), qualified, readType.MetadataToken,
+        CwlMod.WarnWithPopup<Zone>("cwl_warn_deserialize".Loc(nameof(Zone), qualified, readType.MetadataToken,
             CwlConfig.Patches.SafeCreateClass!.Definition.Key));
 
         if (!_cleanup) {

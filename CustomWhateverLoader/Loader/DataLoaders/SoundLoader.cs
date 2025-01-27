@@ -58,7 +58,7 @@ internal partial class DataLoader
                     CachedSounds[id] = file;
                     CwlMod.Log<DataLoader>(CwlMod.CurrentLoading);
                 } catch (Exception ex) {
-                    CwlMod.Error<DataLoader>("cwl_error_sound_loader".Loc(file.Name, ex));
+                    CwlMod.WarnWithPopup<DataLoader>("cwl_error_sound_loader".Loc(file.Name, ex));
                     // noexcept
                 }
             }
@@ -126,17 +126,18 @@ internal partial class DataLoader
         sw.Stop();
 
         if (clipLoader.result != UnityWebRequest.Result.Success) {
-            CwlMod.Error<DataLoader>("cwl_error_sound_loader".Loc(id, clipLoader.error));
+            CwlMod.WarnWithPopup<DataLoader>("cwl_error_sound_loader".Loc(id, clipLoader.error));
             return false;
         }
 
         var clip = DownloadHandlerAudioClip.GetContent(clipLoader);
 
         if (clip?.samples is not > 0) {
-            CwlMod.Error<DataLoader>("cwl_error_sound_loader".Loc(id, $"Codec error/{audioType.ToString()}"));
+            CwlMod.WarnWithPopup<DataLoader>("cwl_error_sound_loader".Loc(id, $"Codec error/{audioType.ToString()}"));
             if (audioType == AudioType.MPEG) {
-                CwlMod.Error<AudioClip>("CWL suggests using a different format than MP3, because Unity pre 2022.3.21+ had " +
-                                        "problems decoding long MP3 audio files.");
+                CwlMod.WarnWithPopup<AudioClip>(
+                    "CWL suggests using a different format than MP3, because Unity pre 2022.3.21+ had " +
+                    "problems decoding long MP3 audio files.");
             }
 
             return false;

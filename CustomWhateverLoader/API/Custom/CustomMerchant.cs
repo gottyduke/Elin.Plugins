@@ -20,7 +20,7 @@ public class CustomMerchant : TraitMerchant
 
         var file = PackageIterator.GetRelocatedFilesFromPackage($"Data/{stockId}.json").FirstOrDefault();
         if (!ConfigCereal.ReadConfig(file?.FullName, out SerializableStockData? stock) || stock is null) {
-            CwlMod.Warn<CustomMerchant>("cwl_warn_stock_file".Loc(stockId));
+            CwlMod.WarnWithPopup<CustomMerchant>("cwl_warn_stock_file".Loc(stockId));
             return;
         }
 

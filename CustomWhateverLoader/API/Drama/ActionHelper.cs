@@ -7,20 +7,7 @@ namespace Cwl.API.Drama;
 
 public partial class DramaExpansion
 {
-    private static bool SafeInvoke(ActionWrapper action, DramaManager dm, Dictionary<string, string> item, params string[] pack)
-    {
-        try {
-            var result = action.Method.FastInvokeStatic(dm, item, pack);
-            return result is not null && (bool)result;
-        } catch (Exception ex) {
-            CwlMod.Warn<DramaExpansion>($"failed emitting call [{action.Method.Name}]({string.Join(",", pack)})\n{ex}");
-            // noexcept
-        }
-
-        return false;
-    }
-
-    private static bool Compare(float lhs, string expr)
+    public static bool Compare(float lhs, string expr)
     {
         return expr.Trim() switch {
             ['>', .. { } raw] when float.TryParse(raw, out var rhs) => lhs > rhs,
@@ -34,7 +21,7 @@ public partial class DramaExpansion
         };
     }
 
-    private static float ArithmeticModOrSet(float lhs, string expr)
+    public static float ArithmeticModOrSet(float lhs, string expr)
     {
         return expr.Trim() switch {
             ['+', .. { } raw] when float.TryParse(raw, out var rhs) => lhs + rhs,
@@ -49,8 +36,22 @@ public partial class DramaExpansion
         };
     }
 
-    private static int ArithmeticModOrSet(int lhs, string expr)
+    public static int ArithmeticModOrSet(int lhs, string expr)
     {
         return (int)ArithmeticModOrSet((float)lhs, expr);
+    }
+    
+    private static bool SafeInvoke(ActionWrapper action, DramaManager dm, Dictionary<string, string> item, params string[] pack)
+    {
+        try {
+            var result = action.Method.FastInvokeStatic(dm, item, pack);
+            return result is not null && (bool)result;
+        } catch (Exception ex) {
+            var methodGroup = $"[{action.Method.Name}]({string.Join(",", pack)})";
+            CwlMod.WarnWithPopup<DramaExpansion>($"call failure: {methodGroup}\n{ex.Message}", ex);
+            // noexcept
+        }
+
+        return false;
     }
 }

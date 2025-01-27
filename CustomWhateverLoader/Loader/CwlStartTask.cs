@@ -36,7 +36,7 @@ internal sealed partial class CwlMod
             try {
                 harmony.CreateClassProcessor(patch).Patch();
             } catch (Exception ex) {
-                Error($"failed to apply patch {ex}");
+                Error<CwlMod>($"failed to apply patch {ex}");
                 // noexcept
             }
         }

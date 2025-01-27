@@ -25,7 +25,7 @@ public class LoadResourcesPatch
             try {
                 return handler(path, ref loaded);
             } catch (Exception ex) {
-                CwlMod.Warn<T>("cwl_error_failure".Loc(ex));
+                CwlMod.WarnWithPopup<T>("cwl_error_failure".Loc(ex.Message), ex);
                 // noexcept
             }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Cwl.API.Attributes;
@@ -34,8 +35,8 @@ public class CustomElement : Element
             }
 
             Managed[r.id] = r;
-        } catch {
-            CwlMod.Error<CustomElement>("cwl_error_qualify_type".Loc(nameof(Element), r.id, r.type));
+        } catch (Exception ex) {
+            CwlMod.ErrorWithPopup<CustomElement>("cwl_error_qualify_type".Loc(nameof(Element), r.id, r.type), ex);
             // noexcept
         }
     }

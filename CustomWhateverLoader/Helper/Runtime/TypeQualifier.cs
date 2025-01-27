@@ -35,7 +35,7 @@ public class TypeQualifier
                 qualified ??= types.FirstOrDefault(t => t.FullName!.Equals(unq, StringComparison.InvariantCultureIgnoreCase)) ??
                               types.FirstOrDefault(t => t.Name.Equals(unq, StringComparison.InvariantCultureIgnoreCase));
                 if (qualified?.FullName is not null) {
-                    CwlMod.Warn<TypeQualifier>($"typo in custom type {unq}, {qualified.FullName}");
+                    CwlMod.WarnWithPopup<TypeQualifier>($"typo in custom type {unq}, {qualified.FullName}");
                 }
             }
 

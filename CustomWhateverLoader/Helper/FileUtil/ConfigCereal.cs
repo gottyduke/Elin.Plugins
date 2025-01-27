@@ -52,7 +52,7 @@ public class ConfigCereal
                 return inferred is not null;
             }
         } catch (Exception ex) {
-            CwlMod.Error<ConfigCereal>($"failed to read config: {ex.Message}");
+            CwlMod.Error<ConfigCereal>($"failed to read config: {ex}");
             throw;
         }
 
@@ -78,7 +78,7 @@ public class ConfigCereal
                 sw.Write(json);
             }
         } catch (Exception ex) {
-            CwlMod.Error<ConfigCereal>($"internal failure: {ex.Message}");
+            CwlMod.Error<ConfigCereal>($"internal failure: {ex}");
             // noexcept
         }
     }

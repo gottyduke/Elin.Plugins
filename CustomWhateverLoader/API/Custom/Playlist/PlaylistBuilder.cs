@@ -28,7 +28,7 @@ public partial class CustomPlaylist
         // unassigned id
         if (data.id <= 0) {
             data.id = bgms.Count + 1;
-            CwlMod.Warn<CustomPlaylist>("cwl_warn_bgm_id_collision".Loc(data.name, data.id));
+            CwlMod.WarnWithPopup<CustomPlaylist>("cwl_warn_bgm_id_collision".Loc(data.name, data.id));
         }
 
         if (dict.TryGetValue(data.id, out var bgm)) {
@@ -64,7 +64,7 @@ public partial class CustomPlaylist
 
                 AddOrReplaceBGM(soundName);
             } catch (Exception ex) {
-                CwlMod.Warn<CustomPlaylist>("cwl_error_sound_loader".Loc(soundName, ex));
+                CwlMod.WarnWithPopup<CustomPlaylist>("cwl_error_sound_loader".Loc(soundName, ex.Message), ex);
                 // noexcept
             }
         }
@@ -92,7 +92,7 @@ public partial class CustomPlaylist
                     var merge = MapToId(data.List);
                     var remove = MapToId(data.Remove);
                     if (merge.Length == 0 && remove.Length == 0) {
-                        CwlMod.Warn<CustomPlaylist>("cwl_warn_playlist_empty".Loc(playlist.ShortPath()));
+                        CwlMod.WarnWithPopup<CustomPlaylist>("cwl_warn_playlist_empty".Loc(playlist.ShortPath()));
                         continue;
                     }
 
@@ -103,7 +103,7 @@ public partial class CustomPlaylist
                     CwlMod.Log<CustomPlaylist>("cwl_log_playlist_added".Loc(provider, merge.Length, remove.Length));
                 }
             } catch (Exception ex) {
-                CwlMod.Warn<CustomPlaylist>("cwl_error_failure".Loc(ex));
+                CwlMod.WarnWithPopup<CustomPlaylist>("cwl_error_failure".Loc(ex.Message), ex);
                 // noexcept
             }
         }
