@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Cwl.API;
+using Cwl.API.Attributes;
 using Cwl.Helper.String;
 using ReflexCLI.Attributes;
 

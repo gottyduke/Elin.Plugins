@@ -43,8 +43,8 @@ public class FileMapping
             return;
         }
 
-        SortedSet<string> ordering = [langCode, ..FallbackLut[langCode], ..FallbackLut["*"]];
-        SortedSet<string> indexed = [
+        HashSet<string> ordering = [langCode, ..FallbackLut[langCode], ..FallbackLut["*"]];
+        HashSet<string> indexed = [
             ..ordering.Select(order => Path.Combine(langMod, order)).Where(resources.Contains),
             ..resources,
         ];
