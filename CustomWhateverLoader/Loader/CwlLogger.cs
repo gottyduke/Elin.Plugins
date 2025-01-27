@@ -70,9 +70,9 @@ internal sealed partial class CwlMod
         Error($"[{typeof(T).Name}] {payload}", caller);
     }
 
-    internal static void ErrorWithPopup<T>(object payload, object? log = null)
+    internal static void ErrorWithPopup<T>(object payload, object? log = null, [CallerMemberName] string caller = "")
     {
-        Error<T>(payload);
+        Error<T>(payload, caller);
         if (log is not null) {
             UnityEngine.Debug.Log(log);
         }

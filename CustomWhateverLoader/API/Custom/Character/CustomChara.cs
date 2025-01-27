@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Cwl.Helper.FileUtil;
+using Cwl.Helper.Runtime;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using MethodTimer;
@@ -106,7 +108,7 @@ public partial class CustomChara : Chara
             // Because noa wrote so
             // ReSharper disable once StringLiteralTypo
             if (chara.id == "begger") {
-                throw new();
+                throw new BeggarException(id);
             }
 
             equips ??= [];
@@ -129,15 +131,14 @@ public partial class CustomChara : Chara
             }
 
             return true;
-        } catch {
+        } catch (Exception ex) {
+            chara?.Destroy();
+            chara = null;
+
+            CwlMod.ErrorWithPopup<CustomChara>("cwl_error_chara_gen".Loc(id), ex);
+            return false;
             // noexcept
         }
-
-        chara?.Destroy();
-        chara = null;
-
-        CwlMod.ErrorWithPopup<CustomChara>("cwl_error_chara_gen".Loc(id));
-        return false;
     }
 
     public static bool CreateTaggedChara(string id, out Chara? chara, CharaImport import)
