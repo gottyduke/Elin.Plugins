@@ -40,14 +40,7 @@ internal partial class DataLoader
         foreach (var dir in PackageIterator.GetSoundFilesFromPackage()) {
             foreach (var file in dir.EnumerateFiles(SoundExtPattern, SearchOption.AllDirectories)) {
                 try {
-                    var audioType = file.Extension.ToLower() switch {
-                        ".acc" => AudioType.ACC,
-                        ".mp3" => AudioType.MPEG, // possible codec error
-                        ".ogg" => AudioType.OGGVORBIS,
-                        ".wav" => AudioType.WAV,
-                        _ => AudioType.UNKNOWN,
-                    };
-
+                    var audioType = GetAudioType(file.Extension);
                     if (audioType == AudioType.UNKNOWN) {
                         continue;
                     }
@@ -103,14 +96,7 @@ internal partial class DataLoader
         }
 
         var name = Path.GetFileNameWithoutExtension(file.FullName);
-        var audioType = file.Extension.ToLower() switch {
-            ".acc" => AudioType.ACC,
-            ".mp3" => AudioType.MPEG, // possible codec error
-            ".ogg" => AudioType.OGGVORBIS,
-            ".wav" => AudioType.WAV,
-            _ => AudioType.UNKNOWN,
-        };
-
+        var audioType = GetAudioType(file.Extension);
         if (audioType == AudioType.UNKNOWN) {
             return false;
         }
@@ -128,7 +114,6 @@ internal partial class DataLoader
         }
 
         var clip = DownloadHandlerAudioClip.GetContent(clipLoader);
-
         if (clip?.samples is not > 0) {
             CwlMod.WarnWithPopup<DataLoader>("cwl_error_sound_loader".Loc(id, $"Codec error/{audioType.ToString()}"));
             if (audioType == AudioType.MPEG) {
@@ -144,7 +129,6 @@ internal partial class DataLoader
 
         var data = ScriptableObject.CreateInstance<SoundData>();
         var metafile = $"{file.DirectoryName}/{name}.json";
-
         if (ConfigCereal.ReadConfig<SerializableSoundData>(metafile, out var meta) && meta is not null) {
             if (meta.type == SoundData.Type.BGM) {
                 var bgm = ScriptableObject.CreateInstance<BGMData>();
@@ -180,5 +164,16 @@ internal partial class DataLoader
         CwlMod.Log<DataLoader>("cwl_log_sound_loaded".Loc(meta.type, id, clip.frequency, clip.channels, clip.length));
 
         return true;
+    }
+
+    private static AudioType GetAudioType(string extension)
+    {
+        return extension.ToLower().Trim() switch {
+            ".acc" => AudioType.ACC,
+            ".mp3" => AudioType.MPEG, // possible codec error
+            ".ogg" => AudioType.OGGVORBIS,
+            ".wav" => AudioType.WAV,
+            _ => AudioType.UNKNOWN,
+        };
     }
 }

@@ -239,10 +239,8 @@
         <Compile Include="Helper\Unity\AudioClipStream.cs" />
         <Compile Include="Helper\Unity\ChildrenIterator.cs"/>
         <Compile Include="Helper\Unity\ColorParser.cs"/>
-        <Compile Include="Helper\Unity\ComponentFetch.cs"/>
         <Compile Include="Helper\Unity\CoroutineHelper.cs"/>
         <Compile Include="Helper\Unity\DeferredCoroutine.cs"/>
-        <Compile Include="Helper\Unity\EventTriggerMerge.cs" />
         <Compile Include="Helper\Unity\PixelRaycast.cs"/>
         <Compile Include="Helper\Unity\ProgressIndicator.cs"/>
         <Compile Include="Helper\Unity\SpriteCreator.cs"/>
@@ -302,6 +300,7 @@
         <Compile Include="Patches\Relocation\LoadDramaPatch.cs"/>
         <Compile Include="Patches\Relocation\LoadResourcesPatch.cs"/>
         <Compile Include="Patches\SafeSceneInitPatch.cs"/>
+        <Compile Include="Patches\SkipProgressTweenPatch.cs" />
         <Compile Include="Patches\Sounds\SetBGMOverridePatch.cs" />
         <Compile Include="Patches\Sounds\MergePlaylistPatch.cs"/>
         <Compile Include="Patches\Sounds\MoldNamedPlaylistPatch.cs"/>

@@ -7,9 +7,12 @@ public static class FastStringWatch
 {
     private static readonly Dictionary<FastString, StringWatch> _cached = [];
 
-    public static FastString Watch(this FastString buffer, Func<string> onWatch, Func<string> onModify)
+    public static FastString Watch(this FastString buffer, Func<string> onWatch, Func<string> onModify, bool resetWatch = false)
     {
-        _cached[buffer] = new(onWatch, onModify);
+        if (!_cached.ContainsKey(buffer) || resetWatch) {
+            _cached[buffer] = new(onWatch, onModify);
+        }
+
         return buffer;
     }
 
@@ -23,7 +26,7 @@ public static class FastStringWatch
             buffer.Set(watch.OnModify());
         }
 
-        return $"{buffer}{value}";
+        return buffer + value;
     }
 
     private record StringWatch(Func<string> OnWatch, Func<string> OnModify);

@@ -28,12 +28,13 @@ public partial class CustomPlaylist
         }
 
         _killBgmProgress = false;
-        _bgmProgress ??= ProgressIndicator.CreateProgress(
-            () => new(GetCurrentPlaylistInfo()),
-            () => _killBgmProgress,
-            1f);
-        _bgmProgress?.EnableHover();
-
+        if (_bgmProgress == null) {
+            _bgmProgress = ProgressIndicator.CreateProgress(
+                () => new(GetCurrentPlaylistInfo(), SpriteSheet.Get("ActLionDance")),
+                () => _killBgmProgress,
+                1f);
+        }
+        
         return "enabled, use this command again to toggle detailed view";
     }
 

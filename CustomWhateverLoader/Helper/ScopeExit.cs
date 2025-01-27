@@ -5,7 +5,7 @@ namespace Cwl.Helper;
 public struct ScopeExit : IDisposable
 {
     public bool Alive { get; private set; }
-    public object? Object { get; set; }
+    public object? Object { private get; set; }
 
     public T Get<T>() where T : class
     {
