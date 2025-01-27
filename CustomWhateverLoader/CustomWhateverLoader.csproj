@@ -221,6 +221,7 @@
         <Compile Include="Helper\ModSpriteReplacer.cs"/>
         <Compile Include="Helper\ReverseId.cs"/>
         <Compile Include="Helper\Runtime\AttributeQuery.cs" />
+        <Compile Include="Helper\Runtime\BeggarException.cs" />
         <Compile Include="Helper\Runtime\CachedMethods.cs"/>
         <Compile Include="Helper\Runtime\DramaActionException.cs"/>
         <Compile Include="Helper\Runtime\MethodDispatcher.cs"/>
@@ -235,11 +236,13 @@
         <Compile Include="Helper\String\ParamParser.cs"/>
         <Compile Include="Helper\String\PathNormalizer.cs"/>
         <Compile Include="Helper\String\PathTruncation.cs"/>
+        <Compile Include="Helper\Unity\AudioClipStream.cs" />
         <Compile Include="Helper\Unity\ChildrenIterator.cs"/>
         <Compile Include="Helper\Unity\ColorParser.cs"/>
         <Compile Include="Helper\Unity\ComponentFetch.cs"/>
         <Compile Include="Helper\Unity\CoroutineHelper.cs"/>
         <Compile Include="Helper\Unity\DeferredCoroutine.cs"/>
+        <Compile Include="Helper\Unity\EventTriggerMerge.cs" />
         <Compile Include="Helper\Unity\PixelRaycast.cs"/>
         <Compile Include="Helper\Unity\ProgressIndicator.cs"/>
         <Compile Include="Helper\Unity\SpriteCreator.cs"/>

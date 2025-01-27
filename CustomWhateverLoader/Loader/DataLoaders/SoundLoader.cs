@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using Cwl.API;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
+using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using Cwl.Patches.Relocation;
 using MethodTimer;
@@ -115,15 +115,12 @@ internal partial class DataLoader
             return false;
         }
 
-        using var clipLoader = UnityWebRequestMultimedia.GetAudioClip($"file://{file.FullName}", audioType);
+        var streaming = id.StartsWith("BGM/");
+        using var clipLoader = AudioClipStream.GetAudioClip($"file://{file.FullName}", audioType, false, streaming);
         clipLoader.SendWebRequest();
 
-        var sw = new Stopwatch();
-        sw.Start();
-        while (!clipLoader.isDone && sw.ElapsedMilliseconds < 3000) {
+        while (!clipLoader.isDone) {
         }
-
-        sw.Stop();
 
         if (clipLoader.result != UnityWebRequest.Result.Success) {
             CwlMod.WarnWithPopup<DataLoader>("cwl_error_sound_loader".Loc(id, clipLoader.error));
