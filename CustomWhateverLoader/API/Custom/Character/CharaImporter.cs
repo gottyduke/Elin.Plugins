@@ -101,6 +101,7 @@ public partial class CustomChara
                     if (invalidZone is not null) {
                         CwlMod.WarnWithPopup<CustomChara>("cwl_error_zone_invalid".Loc(id, invalidZone));
                     }
+
                     SpawnAtZone(chara, toAddZone);
 
                     var loc = "cwl_log_added_cm";

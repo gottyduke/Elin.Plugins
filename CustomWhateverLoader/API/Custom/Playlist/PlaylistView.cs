@@ -32,6 +32,8 @@ public partial class CustomPlaylist
             () => new(GetCurrentPlaylistInfo()),
             () => _killBgmProgress,
             1f);
+        _bgmProgress?.EnableHover();
+
         return "enabled, use this command again to toggle detailed view";
     }
 

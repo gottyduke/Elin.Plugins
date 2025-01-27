@@ -40,7 +40,7 @@ public partial class DramaExpansion
     {
         return (int)ArithmeticModOrSet((float)lhs, expr);
     }
-    
+
     private static bool SafeInvoke(ActionWrapper action, DramaManager dm, Dictionary<string, string> item, params string[] pack)
     {
         try {
