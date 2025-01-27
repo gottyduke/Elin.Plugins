@@ -81,8 +81,9 @@ public partial class CustomChara
                         toAddZone = import.Zones[0];
                     }
 
+                    string? invalidZone = null;
                     if (!ValidateZone(toAddZone, out var destZone) || destZone is null) {
-                        CwlMod.WarnWithPopup<CustomChara>("cwl_error_zone_invalid".Loc(id, toAddZone));
+                        invalidZone = toAddZone;
                         toAddZone = "Zone_*";
                     }
 
@@ -97,6 +98,9 @@ public partial class CustomChara
                         break;
                     }
 
+                    if (invalidZone is not null) {
+                        CwlMod.WarnWithPopup<CustomChara>("cwl_error_zone_invalid".Loc(id, invalidZone));
+                    }
                     SpawnAtZone(chara, toAddZone);
 
                     var loc = "cwl_log_added_cm";

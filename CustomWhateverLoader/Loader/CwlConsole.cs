@@ -12,13 +12,13 @@ internal class CwlConsole
         // Because noa wrote so
         // ReSharper disable once StringLiteralTypo
         var beggars = EClass.game.cards.globalCharas.Values
-            .Where(chara => chara.id == "begger" && chara.c_altName is null && chara.Aka == chara.NameSimple)
+            .Where(chara => chara?.id == "begger" && chara.c_altName is null)
             .ToArray();
 
         foreach (var chara in beggars) {
             chara.Destroy();
         }
 
-        return $"vacated {beggars.Length} beggars";
+        return $"vacated {beggars.Length} beggar(s)";
     }
 }
