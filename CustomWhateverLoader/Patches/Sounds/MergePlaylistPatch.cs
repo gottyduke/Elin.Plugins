@@ -54,7 +54,7 @@ internal class MergePlaylistPatch
             }
         } catch (Exception ex) {
             sm.SwitchPlaylist(mold);
-            CwlMod.Warn<CustomPlaylist>("cwl_error_failure".Loc(ex.Message));
+            CwlMod.WarnWithPopup<CustomPlaylist>("cwl_error_failure".Loc(ex.Message), ex);
             // noexcept
         }
     }
@@ -67,6 +67,10 @@ internal class MergePlaylistPatch
         }
 
         var sm = SoundManager.current;
+        if (sm.currentBGM?.data == null) {
+            return false;
+        }
+
         var currentStreaming = newList.list.FindIndex(bgm => bgm.data == sm.currentBGM.data);
         if (currentStreaming == -1) {
             return false;

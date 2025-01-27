@@ -9,20 +9,41 @@ namespace Cwl.API.Custom;
 
 public partial class CustomChara
 {
-    public static void SpawnAtZone(Chara chara, string zoneFullName)
+    private static Zone[]? _zones;
+
+    public static bool ValidateZone(string zoneFullName, out Zone? zone, bool randomFallback = false)
     {
-        // credits to 105gun
-        var zones = game.spatials.map.Values
+        _zones ??= game.spatials.map.Values
             .OfType<Zone>()
             .ToArray();
-        var destZone = Array.Find(zones, z => z is not Zone_Dungeon && z.GetType().Name == zoneFullName) ??
-                       Array.FindAll(zones, z => z.CanSpawnAdv).RandomItem();
 
-        chara.SetHomeZone(destZone);
+        var matchName = zoneFullName;
+        zone = Array.Find(_zones, z => z is not Zone_Dungeon && z.GetType().Name == matchName);
+        if (zone is null && zoneFullName != "Zone_*" && !randomFallback) {
+            return false;
+        }
+
+        zone ??= Array.FindAll(_zones, z => z.CanSpawnAdv).RandomItem();
+        return zone is not null;
+    }
+
+    public static void SpawnAtZone(Chara chara, string zoneFullName)
+    {
+        if (!ValidateZone(zoneFullName, out var destZone, true) || destZone is null) {
+            return;
+        }
+
+        SpawnAtZone(chara, destZone);
+    }
+
+    public static void SpawnAtZone(Chara chara, Zone zone)
+    {
+        // credits to 105gun
+        chara.SetHomeZone(zone);
         chara.global.transition = new() {
             state = ZoneTransition.EnterState.RandomVisit,
         };
-        destZone.AddCard(chara);
+        zone.AddCard(chara);
     }
 
     [Time]
@@ -60,6 +81,11 @@ public partial class CustomChara
                         toAddZone = import.Zones[0];
                     }
 
+                    if (!ValidateZone(toAddZone, out var destZone) || destZone is null) {
+                        CwlMod.WarnWithPopup<CustomChara>("cwl_error_zone_invalid".Loc(id, toAddZone));
+                        toAddZone = "Zone_*";
+                    }
+
                     if (toAddZone.EndsWith("*")) {
                         if (game.cards.globalCharas.Values.Count(c => c.id == id) >= import.Zones.Length) {
                             CwlMod.Log<CustomChara>(skipLoc.Loc(id));
@@ -82,7 +108,7 @@ public partial class CustomChara
                     CwlMod.Log<CustomChara>(loc.Loc(id, chara.homeZone.Name));
                 }
             } catch (Exception ex) {
-                CwlMod.Warn<CustomChara>("cwl_error_failure".Loc(ex));
+                CwlMod.WarnWithPopup<CustomChara>("cwl_error_failure".Loc(ex.Message), ex);
                 // noexcept
             }
         }
