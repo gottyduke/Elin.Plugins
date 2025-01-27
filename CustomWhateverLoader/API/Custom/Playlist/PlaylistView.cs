@@ -16,7 +16,7 @@ public partial class CustomPlaylist
 {
     private static ProgressIndicator? _bgmProgress;
     private static bool _killBgmProgress;
-    private static string _lastBgmViewInfo = "";
+    private static readonly FastString _lastBgmViewInfo = new(128);
     private static bool _detailedView;
 
     [ConsoleCommand("view")]
@@ -112,34 +112,41 @@ public partial class CustomPlaylist
 
         var pl = EClass.Sound.currentPlaylist;
         if (pl?.currentItem == null) {
-            return _lastBgmViewInfo;
+            return "disabled";
         }
 
         var current = pl.currentItem;
-        var sb = new StringBuilder();
+        _lastBgmViewInfo.Watch(
+            () => $"{pl.GetInstanceID()}{_detailedView}{string.Join("/", pl.ToInts())}{current.data.id}",
+            () => {
+                var sb = new StringBuilder();
 
-        sb.AppendLine(pl.name);
-        sb.AppendLine();
-        sb.AppendLine("cwl_bgm_shuffle".Loc(pl.shuffle));
-        sb.AppendLine("cwl_bgm_stream".Loc(CwlConfig.SeamlessStreaming));
-        sb.AppendLine("cwl_bgm_detail".Loc(_detailedView));
-        sb.AppendLine();
-
-        for (var i = 0; i < pl.list.Count; ++i) {
-            var bgm = pl.list[i];
-            var bgmName = bgm == current ? $"<b>{bgm.data._name}</b>" : bgm.data._name;
-            sb.Append($"{i + 1:D2}\t{bgmName} ");
-
-            if (_detailedView) {
-                sb.AppendLine($"({bgm.data.name.Replace("BGM/", "")})");
-            } else {
+                sb.AppendLine(pl.name);
                 sb.AppendLine();
+                sb.AppendLine("cwl_bgm_shuffle".Loc(pl.shuffle));
+                sb.AppendLine("cwl_bgm_stream".Loc(CwlConfig.SeamlessStreaming));
+                sb.AppendLine("cwl_bgm_detail".Loc(_detailedView));
+                sb.AppendLine();
+
+                for (var i = 0; i < pl.list.Count; ++i) {
+                    var bgm = pl.list[i];
+                    var bgmName = bgm == current ? $"<b>{bgm.data._name}</b>" : bgm.data._name;
+                    sb.Append($"{i + 1:D2}\t{bgmName} ");
+
+                    if (_detailedView) {
+                        sb.AppendLine($"({bgm.data.name.Replace("BGM/", "")})");
+                    } else {
+                        sb.AppendLine();
+                    }
+                }
+
+                sb.AppendLine();
+                return sb.ToString();
             }
-        }
+        );
 
-        sb.AppendLine();
-        sb.Append($@"{TimeSpan.FromSeconds(pl.playedTime):mm\:ss} / {TimeSpan.FromSeconds(current.data.clip.length):mm\:ss}");
-
-        return _lastBgmViewInfo = sb.ToString();
+        var played = TimeSpan.FromSeconds(pl.playedTime);
+        var length = TimeSpan.FromSeconds(current.data.clip.length);
+        return _lastBgmViewInfo.With($@"{played:mm\:ss} / {length:mm\:ss}");
     }
 }

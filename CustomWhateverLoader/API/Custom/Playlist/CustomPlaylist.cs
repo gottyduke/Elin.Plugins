@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cwl.API.Attributes;
 using Cwl.API.Processors;
 using Cwl.LangMod;
 using UnityEngine;
@@ -49,14 +50,13 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
             }
 
             plName += zoneName;
-
-            if (_merged.TryGetValue(plName, out var playlist)) {
+            var cacheName = $"{plName}_{mold.name}";
+            if (_merged.TryGetValue(cacheName, out var playlist)) {
                 return playlist;
             }
 
+            var list = mold.ToInts();
             playlist = mold.Instantiate();
-
-            var list = playlist.ToInts();
             playlist.list.Clear();
 
             string[] orders = ["Global", baseName, zoneName];
@@ -68,10 +68,6 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
                 list.AddRange(lists.ListMerge);
 
                 shuffle = shuffle || lists.Shuffle;
-            }
-
-            if (list.Count == 0) {
-                list.Add(41);
             }
 
             var dict = Core.Instance.refs.dictBGM;
@@ -86,7 +82,7 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
             playlist.name = plName;
             playlist.shuffle = shuffle;
 
-            return _merged[plName] = playlist;
+            return _merged[cacheName] = playlist;
         } catch (Exception ex) {
             CwlMod.Warn<CustomPlaylist>("cwl_error_failure".Loc(ex));
             // noexcept
@@ -132,7 +128,8 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
 
     private static string GetBasePlaylistName(string fullName, string zoneName)
     {
-        return fullName.Replace("Playlist_", "").Replace(zoneName, "").TrimEnd('_');
+        var name = fullName.Replace("Playlist_", "").Replace(zoneName, "") + "_";
+        return name[..name.IndexOf('_')];
     }
 
     [CwlPostLoad]

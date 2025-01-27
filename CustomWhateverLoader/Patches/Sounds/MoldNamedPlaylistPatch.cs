@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Cwl.API.Custom;
 using HarmonyLib;
@@ -22,12 +23,13 @@ internal class MoldNamedPlaylistPatch
 
     [SwallowExceptions]
     [HarmonyPostfix]
-    internal static void OnMoldPlaylist(Zone __instance, ref Playlist __result, Playlist? mold = null)
+    internal static void OnMoldPlaylist(Zone __instance, ref Playlist __result, ref List<int> list, Playlist? mold = null)
     {
         var zoneTypeName = __instance.GetType().Name;
         __result.name = mold != null
-            ? $"{mold.name}_{zoneTypeName}"
-            : $"Playlist_Blank_{zoneTypeName}";
+            ? $"{mold.name}_{zoneTypeName}/"
+            : $"Playlist_Blank_{zoneTypeName}/";
+        __result.name += string.Join("/", list.OrderBy(i => i));
 
         CwlMod.Debug<CustomPlaylist>($"molding playlist {__result.name} for {__instance.GetType().Name}");
     }
