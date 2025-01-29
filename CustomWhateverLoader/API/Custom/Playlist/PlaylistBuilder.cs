@@ -92,7 +92,7 @@ public partial class CustomPlaylist
                     var merge = MapToId(data.List);
                     var remove = MapToId(data.Remove);
                     if (merge.Length == 0 && remove.Length == 0) {
-                        CwlMod.WarnWithPopup<CustomPlaylist>("cwl_warn_playlist_empty".Loc(playlist.ShortPath()));
+                        CwlMod.Warn<CustomPlaylist>("cwl_warn_playlist_empty".Loc(playlist.ShortPath()));
                         continue;
                     }
 

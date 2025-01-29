@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Cwl.LangMod;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -12,18 +13,20 @@ namespace Cwl.Helper.Unity;
 public class ProgressIndicator : EMono, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
     private static readonly List<ProgressIndicator> _active = [];
-
-    private bool _hoverable;
-    private Func<string>? _onHover;
+    private Func<string>? _onHoverUpdate;
+    private Func<string>? _onTailUpdate;
     private Outline? _outline;
+    private float _remaining;
+    private UIText? _tailText;
+
     private ProgressUpdater? _updater;
 
     public PopItemText Pop => GetComponent<PopItemText>();
-    public bool Expanded { get; private set; }
+    public bool Hovering { get; private set; }
 
     private void Start()
     {
-        StartCoroutine(Sync(0.2f));
+        StartCoroutine(UpdateProgress(0.2f));
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -35,21 +38,13 @@ public class ProgressIndicator : EMono, IPointerClickHandler, IPointerEnterHandl
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (!_hoverable) {
-            return;
-        }
-
-        Expanded = true;
+        Hovering = true;
         _outline!.enabled = true;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (!_hoverable) {
-            return;
-        }
-
-        Expanded = false;
+        Hovering = false;
         _outline!.enabled = false;
     }
 
@@ -82,6 +77,8 @@ public class ProgressIndicator : EMono, IPointerClickHandler, IPointerEnterHandl
 
         var progress = pop.GetOrCreate<ProgressIndicator>();
         progress._updater = new(onUpdate, shouldKill, Mathf.Max(lingerDuration, 0f));
+        progress.GetOrCreate<UICollider>();
+        progress.AppendOutline();
 
         _active.Add(progress);
         return progress;
@@ -93,7 +90,7 @@ public class ProgressIndicator : EMono, IPointerClickHandler, IPointerEnterHandl
     /// <param name="onUpdate">update func</param>
     /// <param name="lingerDuration">default 10 seconds linger duration</param>
     /// <returns>
-    ///     <see cref="IDisposable" /> resource via using statement, underlying <see cref="ProgressIndicator" /> can
+    ///     <see cref="IDisposable" /> resource via using statement, <see cref="ProgressIndicator" /> can
     ///     be accessed through property <see cref="ScopeExit.Object" />
     /// </returns>
     public static ScopeExit CreateProgressScoped(Func<UpdateInfo> onUpdate, float lingerDuration = 10f)
@@ -103,42 +100,53 @@ public class ProgressIndicator : EMono, IPointerClickHandler, IPointerEnterHandl
         return scopeExit;
     }
 
-    public ProgressIndicator SetHover(Func<string>? onHover = null)
+    public ProgressIndicator AppendHoverText(Func<string> onHover)
     {
-        if (_hoverable) {
-            return this;
-        }
-
-        _hoverable = true;
-        _onHover = onHover;
-
-        _outline = GetComponentInChildren<Image>().GetOrCreate<Outline>();
-        _outline.effectDistance = new(2f, 2f);
-        _outline.effectColor = Color.black;
-        _outline.enabled = false;
-
-        this.GetOrCreate<UICollider>();
-
+        _onHoverUpdate = onHover;
         return this;
     }
 
-    private IEnumerator Sync(float interval)
+    public ProgressIndicator AppendTailText(Func<string> onUpdate)
+    {
+        if (_tailText == null) {
+            var tail = new GameObject("TailText");
+            tail.transform.SetParent(transform);
+
+            _tailText = tail.transform.GetOrCreate<UIText>();
+            _tailText.color = Color.black;
+            _tailText.fontType = FontType.Balloon;
+            _tailText.enabled = true;
+
+            var csf = _tailText.GetOrCreate<ContentSizeFitter>();
+            csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            csf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+        }
+
+        _onTailUpdate = onUpdate;
+        return this;
+    }
+
+    private IEnumerator UpdateProgress(float interval)
     {
         if (_updater is null) {
             yield break;
         }
 
         var (onUpdate, shouldKill, lingerTime) = _updater;
+        _remaining = lingerTime;
 
-        while (!shouldKill()) {
+        while (_remaining > 0f) {
             UpdatePopup(onUpdate);
-            yield return new WaitForSeconds(interval);
-        }
 
-        while (lingerTime > 0f) {
-            UpdatePopup(onUpdate);
             yield return new WaitForSeconds(interval);
-            lingerTime -= interval;
+
+            if (shouldKill()) {
+                if (!Hovering) {
+                    _remaining -= interval;
+                }
+            } else {
+                _remaining = lingerTime;
+            }
         }
 
         Kill();
@@ -146,16 +154,30 @@ public class ProgressIndicator : EMono, IPointerClickHandler, IPointerEnterHandl
 
     private void UpdatePopup(Func<UpdateInfo> onUpdate)
     {
-        var info = onUpdate();
-        var text = info.Text;
+        try {
+            var (text, sprite, color) = onUpdate();
 
-        if (_hoverable && _onHover is not null) {
-            var append = Expanded ? _onHover() : "<Hover For More Information>";
-            text += $"\b{append}";
+            if (Hovering) {
+                text += $"\n{"cwl_ui_hover_close".Loc()}";
+            }
+
+            if (_onHoverUpdate is not null) {
+                text += Hovering
+                    ? $"\n{_onHoverUpdate()}"
+                    : $"\n{"cwl_ui_hover_detail".Loc()}";
+            }
+
+            Pop.SetText(text, sprite, color ?? default(Color));
+
+            if (_tailText != null && _onTailUpdate is not null) {
+                _tailText.SetText(_onTailUpdate());
+            }
+
+            Pop.RebuildLayout(true);
+            AdjustPosition();
+        } catch {
+            // noexcept
         }
-
-        Pop.SetText(text, info.Sprite, info.Color ?? default(Color));
-        AdjustPosition();
     }
 
     private void AdjustPosition()
@@ -177,6 +199,14 @@ public class ProgressIndicator : EMono, IPointerClickHandler, IPointerEnterHandl
         Pop.important = false;
         _active.Remove(this);
         ui.popSystem.Kill(Pop);
+    }
+
+    private void AppendOutline()
+    {
+        _outline = GetComponentInChildren<Image>().GetOrCreate<Outline>();
+        _outline.effectDistance = new(2f, 2f);
+        _outline.effectColor = Color.black;
+        _outline.enabled = false;
     }
 
     public record UpdateInfo(string Text, Sprite? Sprite = null, Color? Color = null);

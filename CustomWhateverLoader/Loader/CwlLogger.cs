@@ -40,7 +40,6 @@ internal sealed partial class CwlMod
     {
         UnityEngine.Debug.Log($"[CWL][WARN] {payload}");
         Glance.Dispatch(payload);
-        using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToString()));
     }
 
     internal static void Warn<T>(object payload)
@@ -54,6 +53,7 @@ internal sealed partial class CwlMod
         if (log is not null) {
             UnityEngine.Debug.Log(log);
         }
+        using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToString()));
     }
 
     [SwallowExceptions]
@@ -62,7 +62,6 @@ internal sealed partial class CwlMod
     {
         UnityEngine.Debug.Log($"[CWL][ERROR] [{caller}] {payload}");
         Glance.Dispatch(payload);
-        using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToString(), Color: _warningColor));
     }
 
     internal static void Error<T>(object payload, [CallerMemberName] string caller = "")
@@ -76,5 +75,6 @@ internal sealed partial class CwlMod
         if (log is not null) {
             UnityEngine.Debug.Log(log);
         }
+        using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToString(), Color: _warningColor));
     }
 }

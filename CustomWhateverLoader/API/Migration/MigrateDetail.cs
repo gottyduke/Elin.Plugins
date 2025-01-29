@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using NPOI.SS.UserModel;
@@ -213,6 +215,32 @@ public sealed partial class MigrateDetail
         }
     }
 
+    [Conditional("DEBUG")]
+    public static void DumpTiming()
+    {
+        var elapsed = 0L;
+        var total = 0;
+        var sb = new StringBuilder(2048);
+        sb.AppendLine();
+
+        foreach (var mod in Details) {
+            if (mod.Key is null) {
+                continue;
+            }
+
+            var time = mod.Sum(d => d.LoadingTime);
+            elapsed += time;
+
+            var count = mod.Count();
+            total += count;
+
+            sb.AppendLine($"{time,5}ms[{count,3}] {mod.Key.title}/{mod.Key.id}");
+        }
+
+        sb.AppendLine($"{elapsed}ms[{total,3}] total elapsed");
+        CwlMod.Log<MigrateDetail>(sb);
+    }
+    
     public sealed class MigrateSheet
     {
         public List<HeaderCell> Expected = [];

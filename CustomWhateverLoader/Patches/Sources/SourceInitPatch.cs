@@ -65,30 +65,7 @@ internal class SourceInitPatch
             CwlMod.Log<SourceManager>("cwl_log_workbook_complete".Loc());
         }
 
-#if DEBUG
-        var elapsed = 0L;
-        var total = 0;
-        var sb = new StringBuilder(2048);
-        sb.AppendLine();
-
-        foreach (var mod in MigrateDetail.Details) {
-            if (mod.Key is null) {
-                continue;
-            }
-
-            var time = mod.Sum(d => d.LoadingTime);
-            elapsed += time;
-
-            var count = mod.Count();
-            total += count;
-
-            sb.AppendLine($"{time,5}ms[{count,3}] {mod.Key.title}/{mod.Key.id}");
-        }
-
-        sb.AppendLine($"{elapsed}ms[{total,3}] total elapsed");
-        CwlMod.Log<MigrateDetail>(sb);
-#endif
-
+        MigrateDetail.DumpTiming();
         MigrateDetail.Clear();
     }
 
