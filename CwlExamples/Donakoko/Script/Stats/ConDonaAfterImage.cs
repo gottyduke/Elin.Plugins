@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Dona.Stats;
 
 // the main condition to monitor the after image duration and effects
-internal class ConDonaAfterImage : Condition
+internal class ConDonaAfterImage : BaseBuff
 {
     private Coroutine? _effectRenderer;
 

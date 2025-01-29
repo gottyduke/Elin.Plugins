@@ -11,11 +11,6 @@ internal class TraitDonakoko : TraitUniqueChara
     // 複製体はオリジナルよりもLvが低く、ドナココ本人よりも敵に優先的に狙われる。
     internal void TakePhoto(Chara target)
     {
-        // if target is already dead, don't make image
-        if (target.hp <= 0) {
-            return;
-        }
-
         // get koko's feat
         var feat = owner.elements.GetOrCreateElement(Constants.FeatId) as FeatDonaTrueSelf;
         // sync base level with koko camera
@@ -43,6 +38,11 @@ internal class TraitDonakoko : TraitUniqueChara
             ele.vBase = Mathf.RoundToInt(src.vBase * modifier);
             ele.vLink = Mathf.RoundToInt(src.vLink * modifier);
             ele.vSource = Mathf.RoundToInt(src.vSource * modifier);
+        }
+
+        // if target is already dead, scale hp back
+        if (target.hp <= 0) {
+            image.hp = Mathf.RoundToInt(image.MaxHP * modifier);
         }
 
         // sync metadata, this is for extend display users

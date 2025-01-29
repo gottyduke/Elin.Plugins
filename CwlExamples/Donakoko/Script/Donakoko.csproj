@@ -58,6 +58,9 @@
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\netstandard.dll</HintPath>
             <Private>False</Private>
         </Reference>
+        <Reference Include="Newtonsoft.Json">
+            <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Elin\Elin_Data\Managed\Newtonsoft.Json.dll</HintPath>
+        </Reference>
         <Reference Include="Plugins.BaseCore">
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.BaseCore.dll</HintPath>
             <Private>False</Private>

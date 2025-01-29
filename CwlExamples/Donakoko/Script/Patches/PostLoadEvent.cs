@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Cwl.API.Attributes;
 using Cwl.API.Processors;
 using Dona.Common;
 
@@ -6,6 +7,7 @@ namespace Dona.Patches;
 
 internal class PostLoadEvent : EClass
 {
+    [CwlPostLoad]
     internal static void AddItemIfMissing(GameIOProcessor.GameIOContext context)
     {
         if (!core.IsGameStarted) {
