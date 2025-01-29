@@ -7,18 +7,16 @@ namespace Cwl.Helper.Unity;
 public class CoroutineHelper : MonoBehaviour
 {
     private static readonly Lazy<CoroutineHelper> _instance = new(() => {
-        if (GameObject.Find("CoroutineHelper") is var go && go?.GetComponent<CoroutineHelper>() is { } globalHelper) {
+        if (GameObject.Find(nameof(CoroutineHelper)) is var go && go?.GetComponent<CoroutineHelper>() is { } globalHelper) {
             return globalHelper;
         }
 
-        if (go == null) {
-            Destroy(go);
-            go = new("CoroutineHelper");
-            DontDestroyOnLoad(go);
-        }
+        Destroy(go);
 
-        globalHelper = go.AddComponent<CoroutineHelper>();
-        return globalHelper;
+        go = new(nameof(CoroutineHelper));
+        DontDestroyOnLoad(go);
+
+        return go.AddComponent<CoroutineHelper>();
     });
 
     public static CoroutineHelper Instance => _instance.Value;
@@ -65,7 +63,7 @@ public class CoroutineHelper : MonoBehaviour
     }
 
     // No
-    public static void HaltAll()
+    internal static void HaltAll()
     {
         Instance.StopAllCoroutines();
     }

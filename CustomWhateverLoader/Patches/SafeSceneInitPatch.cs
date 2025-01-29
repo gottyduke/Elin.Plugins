@@ -31,17 +31,15 @@ internal class SafeSceneInitPatch
     [HarmonyPostfix]
     internal static void OnSceneInit(Scene.Mode newMode)
     {
-        if (newMode != Scene.Mode.StartGame) {
-            return;
+        switch (newMode) {
+            case Scene.Mode.Title:
+                SafeToCreate = false;
+                break;
+            case Scene.Mode.StartGame:
+                SafeToCreate = true;
+                CoroutineHelper.Immediate(CustomChara.AddDelayedChara);
+                CoroutineHelper.Immediate(CustomElement.GainAbilityOnLoad);
+                break;
         }
-
-        SafeToCreate = true;
-
-        CoroutineHelper.Immediate(CustomChara.AddDelayedChara);
-        CoroutineHelper.Immediate(CustomElement.GainAbilityOnLoad());
-
-        CoroutineHelper.Deferred(
-            () => SafeToCreate = false,
-            () => !EMono.core.IsGameStarted);
     }
 }

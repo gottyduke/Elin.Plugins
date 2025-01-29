@@ -24,8 +24,8 @@ public static class DeferredCoroutine
     public static void StartDeferredCoroutine(this MonoBehaviour instance, Action action, Func<bool> condition)
     {
         _halt = false;
-        _awaiter ??= instance.StartCoroutine(DeferredAwaiter(1));
         _deferredAwaiters.Add((action, condition));
+        _awaiter ??= instance.StartCoroutine(DeferredAwaiter());
     }
 
     private static IEnumerator DeferredFrames(Action action, int frames = 1)
@@ -43,7 +43,7 @@ public static class DeferredCoroutine
         action();
     }
 
-    private static IEnumerator DeferredAwaiter(int frames)
+    private static IEnumerator DeferredAwaiter()
     {
         while (!_halt) {
             for (var i = _deferredAwaiters.Count - 1; i >= 0; --i) {
@@ -61,9 +61,7 @@ public static class DeferredCoroutine
                 yield break;
             }
 
-            for (var i = 0; i < frames; ++i) {
-                yield return null;
-            }
+            yield return null;
         }
     }
 }
