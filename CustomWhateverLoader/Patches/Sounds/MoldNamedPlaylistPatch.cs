@@ -1,19 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Cwl.API.Custom;
 using HarmonyLib;
 
 namespace Cwl.Patches.Sounds;
 
-[HarmonyPatch]
+[HarmonyPatch(typeof(Zone), nameof(Zone.CreatePlaylist))]
 internal class MoldNamedPlaylistPatch
 {
-    internal static MethodInfo TargetMethod()
-    {
-        return AccessTools.Method(typeof(Zone), nameof(Zone.CreatePlaylist));
-    }
-
     [SwallowExceptions]
     [HarmonyPrefix]
     internal static void PurgePlaylist(ref List<int> list)

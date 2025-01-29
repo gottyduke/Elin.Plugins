@@ -12,4 +12,10 @@ public static class Hashing
     {
         return label.Aggregate(FnvOffset32, (hash, c) => (c ^ hash) * FnvPrime32);
     }
+
+    public static string UniqueString(this Playlist mold)
+    {
+        var list = mold.ToInts();
+        return $"{mold.name}_{string.Join('/', list)}";
+    }
 }

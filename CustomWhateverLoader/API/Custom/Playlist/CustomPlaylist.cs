@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cwl.API.Attributes;
 using Cwl.API.Processors;
+using Cwl.Helper.String;
 using Cwl.LangMod;
 using UnityEngine;
 
@@ -50,7 +51,8 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
             }
 
             plName += zoneName;
-            var cacheName = $"{plName}_{mold.name}";
+            
+            var cacheName = $"{plName}_{mold.UniqueString()}";
             if (_merged.TryGetValue(cacheName, out var playlist)) {
                 return playlist;
             }
@@ -114,6 +116,7 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
         foreach (var pl in lists) {
             merges.UnionWith(pl.ListMerge);
             remove.UnionWith(pl.ListRemove);
+            remove.ExceptWith(pl.ListMerge);
 
             shuffle |= pl.Shuffle;
         }
