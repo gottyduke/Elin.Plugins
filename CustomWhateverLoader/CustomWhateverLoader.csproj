@@ -261,7 +261,7 @@
         <Compile Include="Loader\DataLoaders\SoundLoader.cs"/>
         <Compile Include="Loader\ModIntegrity.cs"/>
         <Compile Include="Patches\Charas\BioOverridePatch.cs"/>
-        <Compile Include="Patches\Charas\SetCharaPortraitPatch.cs"/>
+        <Compile Include="Patches\Charas\RepositionPortraitPatch.cs" />
         <Compile Include="Patches\Charas\SetCharaRowPatch.cs"/>
         <Compile Include="Patches\Conditions\SafeCreateConditionPatch.cs"/>
         <Compile Include="Patches\Conditions\SetConditionRowPatch.cs"/>
