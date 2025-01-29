@@ -8,7 +8,7 @@ namespace Cwl.Helper.Runtime;
 public class AttributeQuery
 {
     [SwallowExceptions]
-    public static IEnumerable<Tuple<Type, T[]>> TypesWith<T>(bool inherit = true) where T : Attribute
+    public static IEnumerable<(Type, T[])> TypesWith<T>(bool inherit = true) where T : Attribute
     {
         foreach (var type in TypeQualifier.Declared) {
             var attrs = type.GetCustomAttributes<T>(inherit).ToArray();
@@ -18,7 +18,7 @@ public class AttributeQuery
         }
     }
 
-    public static IEnumerable<Tuple<MethodInfo, T[]>> MethodsWith<T>(bool inherit = true) where T : Attribute
+    public static IEnumerable<(MethodInfo, T[])> MethodsWith<T>(bool inherit = true) where T : Attribute
     {
         foreach (var method in TypeQualifier.Declared.SelectMany(CachedMethods.GetCachedMethods)) {
             var attrs = method.GetCustomAttributes<T>(inherit).ToArray();

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Cwl.API.Attributes;
@@ -27,7 +26,7 @@ public class CustomElement : Element
                 nameof(FEAT) => 32,
                 _ => 48,
             };
-            ModSpriteReplacer.AppendSpriteSheet(r.alias, size, size);
+            SpriteReplacerHelper.AppendSpriteSheet(r.alias, size, size);
 
             if (CwlConfig.QualifyTypeName) {
                 r.type = qualified;
@@ -43,10 +42,10 @@ public class CustomElement : Element
 
     // credits to 105gun
     [Time]
-    internal static IEnumerator GainAbilityOnLoad()
+    internal static void GainAbilityOnLoad()
     {
         if (!SafeSceneInitPatch.SafeToCreate) {
-            yield break;
+            return;
         }
 
         foreach (var element in All) {

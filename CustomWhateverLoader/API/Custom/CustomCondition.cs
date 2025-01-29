@@ -14,7 +14,7 @@ public class CustomCondition : Condition
     internal static void AddCondition(SourceStat.Row r, string qualified)
     {
         try {
-            ModSpriteReplacer.AppendSpriteSheet(r.alias, 32, 32);
+            SpriteReplacerHelper.AppendSpriteSheet(r.alias, 32, 32);
 
             if (CwlConfig.QualifyTypeName) {
                 r.type = qualified;

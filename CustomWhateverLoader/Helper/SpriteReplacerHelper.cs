@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Cwl.Helper;
 
-public class ModSpriteReplacer
+public class SpriteReplacerHelper
 {
     public static Sprite? AppendSpriteSheet(string id, int resizeWidth = 0, int resizeHeight = 0, string pattern = "@")
     {

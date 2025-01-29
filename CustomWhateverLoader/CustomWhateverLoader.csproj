@@ -218,7 +218,7 @@
         <Compile Include="Helper\FileUtil\FileMapping.cs" />
         <Compile Include="Helper\FileUtil\PackageIterator.cs"/>
         <Compile Include="Helper\IntrospectCopy.cs"/>
-        <Compile Include="Helper\ModSpriteReplacer.cs"/>
+        <Compile Include="Helper\SpriteReplacerHelper.cs" />
         <Compile Include="Helper\ReverseId.cs"/>
         <Compile Include="Helper\Runtime\AttributeQuery.cs" />
         <Compile Include="Helper\Runtime\BeggarException.cs" />
