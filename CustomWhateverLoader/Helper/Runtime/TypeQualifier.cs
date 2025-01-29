@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using BepInEx;
 using Cwl.LangMod;
 using UnityEngine;
@@ -14,6 +15,26 @@ public class TypeQualifier
     internal static readonly List<TypeInfo> Declared = [];
 
     private static readonly Dictionary<string, Type> _qualifiedResults = [];
+
+    private static readonly Dictionary<string, Type> _aliasMapping = new() {
+        { "byte", typeof(byte) },
+        { "sbyte", typeof(sbyte) },
+        { "short", typeof(short) },
+        { "ushort", typeof(ushort) },
+        { "int", typeof(int) },
+        { "uint", typeof(uint) },
+        { "long", typeof(long) },
+        { "ulong", typeof(ulong) },
+        { "float", typeof(float) },
+        { "double", typeof(double) },
+        { "decimal", typeof(decimal) },
+        { "object", typeof(object) },
+        { "bool", typeof(bool) },
+        { "char", typeof(char) },
+        { "string", typeof(string) },
+        { "void", typeof(void) },
+        { "nuint", typeof(nuint) },
+    };
 
     public static Type? TryQualify<T>(params string[] unqualified) where T : EClass
     {
@@ -50,6 +71,52 @@ public class TypeQualifier
         return null;
     }
 
+    public static Type? GlobalResolve(string unresolvedStr)
+    {
+        var trimmedParam = unresolvedStr.Trim();
+        if (string.IsNullOrEmpty(trimmedParam)) {
+            return null;
+        }
+
+        var paramParts = trimmedParam.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (paramParts.Length == 0) {
+            return null;
+        }
+
+        // DMD
+        var typeName = paramParts[0];
+        var dmdGeneric = Regex.Match(typeName, "<([^>]+)>");
+        if (dmdGeneric.Success) {
+            foreach (var alias in dmdGeneric.Groups[1].Value.Split(',')) {
+                var trimmedAlias = alias.Trim();
+                if (_aliasMapping.TryGetValue(trimmedAlias, out var type)) {
+                    typeName = typeName.Replace(trimmedAlias, type.FullName);
+                }
+            }
+
+            typeName = typeName.Replace('<', '[').Replace('>', ']');
+        }
+
+        // DMD NestType
+        typeName = typeName.Replace('/', '+');
+
+        // Ref
+        var refParam = typeName.EndsWith('&');
+        if (refParam) {
+            typeName = typeName[..^1];
+        }
+
+        var paramType = CachedMethods.TryGetType(typeName);
+        if (paramType == null) {
+            return null;
+        }
+
+        if (refParam) {
+            paramType = paramType.MakeByRefType();
+        }
+
+        return paramType;
+    }
 
     internal static void SafeQueryTypesOfAll()
     {

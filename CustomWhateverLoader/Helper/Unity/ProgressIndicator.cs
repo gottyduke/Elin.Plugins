@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Cwl.LangMod;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -13,12 +12,14 @@ namespace Cwl.Helper.Unity;
 public class ProgressIndicator : EMono, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
     private static readonly List<ProgressIndicator> _active = [];
+
+    private string _hoverClosePrompt = "";
+    private string _hoverDetailPrompt = "";
     private Func<string>? _onHoverUpdate;
     private Func<string>? _onTailUpdate;
     private Outline? _outline;
     private float _remaining;
     private UIText? _tailText;
-
     private ProgressUpdater? _updater;
 
     public PopItemText Pop => GetComponent<PopItemText>();
@@ -69,16 +70,18 @@ public class ProgressIndicator : EMono, IPointerClickHandler, IPointerEnterHandl
 
         ui.popSystem.insert = false;
         ui.popSystem.maxLines = int.MaxValue;
+        ui.popSystem.GetOrCreate<PopUpdater>();
 
         pop.name = "PopProgress";
         pop.important = true;
         pop.text.alignment = TextAnchor.UpperLeft;
+        pop.text.fontType = FontType.Balloon;
         pop.Rect().pivot = new(1f, 1f);
 
         var progress = pop.GetOrCreate<ProgressIndicator>();
         progress._updater = new(onUpdate, shouldKill, Mathf.Max(lingerDuration, 0f));
         progress.GetOrCreate<UICollider>();
-        progress.AppendOutline();
+        progress.SetHoverPrompt().AppendOutline();
 
         _active.Add(progress);
         return progress;
@@ -100,13 +103,16 @@ public class ProgressIndicator : EMono, IPointerClickHandler, IPointerEnterHandl
         return scopeExit;
     }
 
-    public ProgressIndicator AppendHoverText(Func<string> onHover)
+    public ProgressIndicator AppendHoverText(Func<string> onHover, bool overwrite = false)
     {
-        _onHoverUpdate = onHover;
+        if (_onHoverUpdate is null || overwrite) {
+            _onHoverUpdate = onHover;
+        }
+
         return this;
     }
 
-    public ProgressIndicator AppendTailText(Func<string> onUpdate)
+    public ProgressIndicator AppendTailText(Func<string> onUpdate, bool overwrite = false)
     {
         if (_tailText == null) {
             var tail = new GameObject("TailText");
@@ -122,7 +128,23 @@ public class ProgressIndicator : EMono, IPointerClickHandler, IPointerEnterHandl
             csf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
         }
 
-        _onTailUpdate = onUpdate;
+        if (_onTailUpdate is null || overwrite) {
+            _onTailUpdate = onUpdate;
+        }
+
+        return this;
+    }
+
+    public ProgressIndicator SetHoverPrompt(string? close = null, string? detail = null)
+    {
+        _hoverClosePrompt = close ?? "cwl_ui_hover_close".Loc();
+        _hoverDetailPrompt = detail ?? "cwl_ui_hover_detail".Loc();
+        return this;
+    }
+
+    public ProgressIndicator ResetProgress()
+    {
+        _remaining = _updater?.LingerDuration ?? 0f;
         return this;
     }
 
@@ -135,15 +157,14 @@ public class ProgressIndicator : EMono, IPointerClickHandler, IPointerEnterHandl
         var (onUpdate, shouldKill, lingerTime) = _updater;
         _remaining = lingerTime;
 
+        var yieldSeconds = new WaitForSeconds(interval);
         while (_remaining > 0f) {
             UpdatePopup(onUpdate);
 
-            yield return new WaitForSeconds(interval);
+            yield return yieldSeconds;
 
-            if (shouldKill()) {
-                if (!Hovering) {
-                    _remaining -= interval;
-                }
+            if (shouldKill() && !Hovering) {
+                _remaining -= interval;
             } else {
                 _remaining = lingerTime;
             }
@@ -158,13 +179,11 @@ public class ProgressIndicator : EMono, IPointerClickHandler, IPointerEnterHandl
             var (text, sprite, color) = onUpdate();
 
             if (Hovering) {
-                text += $"\n{"cwl_ui_hover_close".Loc()}";
+                text += $"\n{_hoverClosePrompt}\n";
             }
 
             if (_onHoverUpdate is not null) {
-                text += Hovering
-                    ? $"\n{_onHoverUpdate()}"
-                    : $"\n{"cwl_ui_hover_detail".Loc()}";
+                text += Hovering ? $"\n{_onHoverUpdate()}" : $"\n{_hoverDetailPrompt}";
             }
 
             Pop.SetText(text, sprite, color ?? default(Color));
@@ -174,23 +193,8 @@ public class ProgressIndicator : EMono, IPointerClickHandler, IPointerEnterHandl
             }
 
             Pop.RebuildLayout(true);
-            AdjustPosition();
         } catch {
             // noexcept
-        }
-    }
-
-    private void AdjustPosition()
-    {
-        var rect = Pop.Rect();
-        var y = 0f;
-        foreach (var progress in _active.OfType<ProgressIndicator>()) {
-            if (progress == this) {
-                rect.anchoredPosition = new(0f, y);
-                break;
-            }
-
-            y -= progress.Pop.Rect().sizeDelta.y;
         }
     }
 
@@ -207,6 +211,33 @@ public class ProgressIndicator : EMono, IPointerClickHandler, IPointerEnterHandl
         _outline.effectDistance = new(2f, 2f);
         _outline.effectColor = Color.black;
         _outline.enabled = false;
+    }
+
+    private class PopUpdater : EMono
+    {
+        private void OnEnable()
+        {
+            StartCoroutine(UpdatePosition());
+        }
+
+        private static IEnumerator UpdatePosition()
+        {
+            var yieldSeconds = new WaitForSeconds(0.1f);
+            while (_active.Count >= 0) {
+                var y = 0f;
+                foreach (var pop in ui.popSystem.items) {
+                    var rect = pop.Rect();
+                    if (pop.GetComponent<ProgressIndicator>()?.Hovering ?? false) {
+                        y = rect.anchoredPosition.y - rect.sizeDelta.y;
+                    } else {
+                        rect.anchoredPosition = new(0f, y);
+                        y -= rect.sizeDelta.y;
+                    }
+                }
+
+                yield return yieldSeconds;
+            }
+        }
     }
 
     public record UpdateInfo(string Text, Sprite? Sprite = null, Color? Color = null);
