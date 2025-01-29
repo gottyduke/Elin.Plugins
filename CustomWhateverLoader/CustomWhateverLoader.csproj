@@ -272,6 +272,7 @@
         <Compile Include="Patches\Dialogs\VariableQuotePatch.cs"/>
         <Compile Include="Patches\Elements\ActPerformEvent.cs"/>
         <Compile Include="Patches\Elements\FeatApplyEvent.cs"/>
+        <Compile Include="Patches\Elements\FixedSourceValuePatch.cs" />
         <Compile Include="Patches\Elements\FuzzyLookupPatch.cs"/>
         <Compile Include="Patches\Elements\MergeAttackElementPatch.cs"/>
         <Compile Include="Patches\Elements\SafeCreateElementPatch.cs"/>
