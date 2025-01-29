@@ -194,7 +194,6 @@
         <Compile Include="API\Drama\DramaExpansion.cs"/>
         <Compile Include="API\Drama\ActionHelper.cs"/>
         <Compile Include="API\Migration\MigrateDetail.cs"/>
-        <Compile Include="API\Migration\SheetCache.cs"/>
         <Compile Include="API\Processors\GameIOProcessor.cs"/>
         <Compile Include="API\Processors\SheetProcessor.cs"/>
         <Compile Include="API\Processors\TraitTransformer.cs"/>
@@ -290,6 +289,7 @@
         <Compile Include="Patches\Quests\SafeCreateQuestPatch.cs"/>
         <Compile Include="Patches\Quests\SetQuestRowPatch.cs"/>
         <Compile Include="Patches\Recipes\IngredientMatPatch.cs"/>
+        <Compile Include="Patches\Recipes\ForceRarityPatch.cs" />
         <Compile Include="Patches\Recipes\SetRecipeRowPatch.cs"/>
         <Compile Include="Patches\Religions\SetReligionOwnerPatch.cs"/>
         <Compile Include="Patches\Religions\SetReligionPortraitPatch.cs"/>
