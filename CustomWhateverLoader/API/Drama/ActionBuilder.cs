@@ -13,7 +13,7 @@ namespace Cwl.API.Drama;
 /// <summary>
 ///     CWL loads the static methods from derived <see cref="DramaOutcome" /> classes but it will not be instantiated
 /// </summary>
-public partial class DramaExpansion : DramaOutcome
+public partial class DramaExpansion
 {
     private static readonly Dictionary<string, ActionWrapper?> _built = [];
     private static readonly Dictionary<string, Func<DramaManager, Dictionary<string, string>, bool>> _expressions = [];
@@ -70,7 +70,7 @@ public partial class DramaExpansion : DramaOutcome
             return cached;
         }
 
-        var parse = Regex.Match(expression.Replace("\"", ""), @"^(?<func>\w+)\((?<params>.*)?\)$", RegexOptions.Compiled);
+        var parse = Regex.Match(expression.Replace("\"", ""), @"^(?<func>\w+)\((?<params>.*)?\)$");
         if (!parse.Success) {
             return null;
         }

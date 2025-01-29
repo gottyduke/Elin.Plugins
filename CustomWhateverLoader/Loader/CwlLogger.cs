@@ -53,6 +53,7 @@ internal sealed partial class CwlMod
         if (log is not null) {
             UnityEngine.Debug.Log(log);
         }
+
         using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToString()));
     }
 
@@ -75,6 +76,7 @@ internal sealed partial class CwlMod
         if (log is not null) {
             UnityEngine.Debug.Log(log);
         }
+
         using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToString(), Color: _warningColor));
     }
 }

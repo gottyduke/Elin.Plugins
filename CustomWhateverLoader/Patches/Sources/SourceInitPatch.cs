@@ -8,9 +8,6 @@ using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;
-#if DEBUG
-using System.Text;
-#endif
 
 namespace Cwl.Patches.Sources;
 

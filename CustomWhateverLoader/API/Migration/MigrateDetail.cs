@@ -11,7 +11,7 @@ using NPOI.XSSF.UserModel;
 
 namespace Cwl.API.Migration;
 
-public sealed partial class MigrateDetail
+public sealed class MigrateDetail
 {
     public enum Strategy
     {
@@ -240,7 +240,7 @@ public sealed partial class MigrateDetail
         sb.AppendLine($"{elapsed}ms[{total,3}] total elapsed");
         CwlMod.Log<MigrateDetail>(sb);
     }
-    
+
     public sealed class MigrateSheet
     {
         public List<HeaderCell> Expected = [];

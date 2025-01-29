@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Cwl.Helper.Runtime;
+using Cwl.Helper.Runtime.Exceptions;
 
 // ReSharper disable InconsistentNaming
 
 namespace Cwl.API.Drama;
 
-public partial class DramaExpansion
+public partial class DramaExpansion : DramaOutcome
 {
     public static ActionCookie? Cookie { get; internal set; }
 
@@ -42,9 +43,8 @@ public partial class DramaExpansion
         if (!methodName.StartsWith("ext.")) {
             if (pack.Length != action.ParameterCount) {
                 var methodGroup = $"[{methodName}]({string.Join(",", parameters)})";
-                CwlMod.WarnWithPopup<DramaExpansion>($"failed emitting call {methodGroup}\n" +
+                throw new DramaActionInvokeException($"failed emitting call {methodGroup}\n" +
                                                      $"requires {action.ParameterCount} parameter(s).");
-                return false;
             }
 
             CwlMod.Debug<DramaExpansion>($"emit call [{methodName}]({string.Join(",", parameters)})");
