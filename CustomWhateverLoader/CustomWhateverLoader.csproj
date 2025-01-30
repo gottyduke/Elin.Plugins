@@ -292,7 +292,6 @@
         <Compile Include="Patches\Quests\InventoryChangeEvent.cs" />
         <Compile Include="Patches\Quests\SafeCreateQuestPatch.cs" />
         <Compile Include="Patches\Quests\SetQuestRowPatch.cs" />
-        <Compile Include="Patches\Recipes\IngredientMatPatch.cs" />
         <Compile Include="Patches\Recipes\ForceRarityPatch.cs" />
         <Compile Include="Patches\Recipes\SetRecipeRowPatch.cs" />
         <Compile Include="Patches\Religions\SetReligionOwnerPatch.cs" />
@@ -310,6 +309,7 @@
         <Compile Include="Patches\Sounds\MoldNamedPlaylistPatch.cs" />
         <Compile Include="Patches\Sources\CacheImportPatch.cs" />
         <Compile Include="Patches\Sources\CellPostProcessPatch.cs" />
+        <Compile Include="Patches\Sources\FixNoaThingVPatch.cs" />
         <Compile Include="Patches\Sources\NamedImportPatch.cs" />
         <Compile Include="Patches\Sources\RethrowParsePatch.cs" />
         <Compile Include="Patches\Sources\SafeCreateCardPatch.cs" />
