@@ -26,6 +26,33 @@ public static class CachedMethods
         return _cached[type] = AccessTools.GetDeclaredMethods(type).ToArray();
     }
 
+    public static MethodInfo? GetCachedMethod(string typeName, string methodName, Type[] parameters)
+    {
+        try {
+            var type = TryGetType(typeName);
+            if (type is null) {
+                return null;
+            }
+
+            return Array.Find(type.GetCachedMethods(),
+                mi => mi.Name == methodName &&
+                      mi.GetParameters().Select(p => p.ParameterType).SequenceEqual(parameters));
+        } catch {
+            return null;
+            // noexcept
+        }
+    }
+
+    public static Type? TryGetType(string typeName)
+    {
+        try {
+            return AccessTools.TypeByName(typeName);
+        } catch {
+            return null;
+            // noexcept
+        }
+    }
+
     public static IEnumerable<T> OfDerived<T>(this IEnumerable<T> source, Type baseType) where T : Type
     {
         return source.Where(baseType.IsAssignableFrom);

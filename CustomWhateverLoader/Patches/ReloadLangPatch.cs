@@ -11,5 +11,6 @@ internal class ReloadLangPatch
     internal static void OnSetLang()
     {
         PackageIterator.ClearCache();
+        DataLoader.MergeGodTalk();
     }
 }

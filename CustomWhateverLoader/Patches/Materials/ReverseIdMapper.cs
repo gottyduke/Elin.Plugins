@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Reflection;
+using Cwl.Helper.Runtime;
 using HarmonyLib;
 
 namespace Cwl.Patches.Materials;
@@ -26,5 +28,26 @@ internal class ReverseIdMapper
 
         var mat = EMono.sources.materials;
         _idMat = mat.rows.IndexOf(mat.map.GetValueOrDefault(_idMat));
+    }
+
+    [HarmonyPatch]
+    internal class RecipeColorIdMapper
+    {
+        internal static IEnumerable<MethodInfo> TargetMethods()
+        {
+            return OverrideMethodComparer.FindAllOverrides(typeof(Recipe), nameof(Recipe.GetColorMaterial));
+        }
+
+        [SwallowExceptions]
+        [HarmonyPrefix]
+        internal static void OnGetColorId(Recipe __instance)
+        {
+            if (__instance.idMat == -1) {
+                return;
+            }
+
+            var mat = EMono.sources.materials;
+            __instance.idMat = mat.rows.IndexOf(mat.map.GetValueOrDefault(__instance.idMat));
+        }
     }
 }
