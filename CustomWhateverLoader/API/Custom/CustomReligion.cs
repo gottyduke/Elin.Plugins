@@ -11,9 +11,9 @@ namespace Cwl.API.Custom;
 public class CustomReligion(string religionId) : Religion, IChunkable
 {
     internal static readonly Dictionary<string, CustomReligion> Managed = [];
-    private static bool _applied;
-    private bool _canJoin;
 
+    private bool _canJoin;
+    private string[] _elements = [];
     [JsonProperty] private string _id = religionId;
     private bool _isMinor;
 
@@ -27,11 +27,6 @@ public class CustomReligion(string religionId) : Religion, IChunkable
 
     public static CustomReligion GerOrAdd(string id)
     {
-        if (!_applied) {
-            ActPerformEvent.Add(ProcGodTalk);
-            _applied = true;
-        }
-
         Managed.TryAdd(id, new(id));
         return Managed[id];
     }
@@ -46,6 +41,22 @@ public class CustomReligion(string religionId) : Religion, IChunkable
     {
         _canJoin = canJoin;
         return this;
+    }
+
+    public CustomReligion SetElements(string[] elements)
+    {
+        _elements = elements;
+        return this;
+    }
+
+    public bool IsFactionElement(string alias)
+    {
+        return _elements.Contains(alias);
+    }
+    
+    public bool IsFactionElement(Element element)
+    {
+        return IsFactionElement(element.source.alias);
     }
 
     public void Reset()
@@ -87,6 +98,7 @@ public class CustomReligion(string religionId) : Religion, IChunkable
         }
     }
 
+    [CwlActPerformEvent]
     private static void ProcGodTalk(Act act)
     {
         if (!CustomElement.Managed.ContainsKey(act.id)) {

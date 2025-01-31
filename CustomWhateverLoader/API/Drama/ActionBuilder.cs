@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Cwl.API.Attributes;
 using Cwl.Helper.Runtime;
 using Cwl.LangMod;
 using HarmonyLib;
@@ -46,7 +47,8 @@ public partial class DramaExpansion
             methods = TypeQualifier.Declared.OfDerived(typeof(DramaOutcome))
                 .SelectMany(AccessTools.GetDeclaredMethods)
                 .Where(mi => mi is { IsStatic: true, IsGenericMethod: false, IsSpecialName: false })
-                .Where(mi => Delegate.CreateDelegate(typeof(DramaAction), mi, false) is not null);
+                .Where(mi => Delegate.CreateDelegate(typeof(DramaAction), mi, false) is not null)
+                .Concat(AttributeQuery.MethodsWith<CwlDramaExpansion>().Select(aq => aq.Item1));
         }
 
         var count = 0;

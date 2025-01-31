@@ -173,6 +173,8 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="API\Attributes\CwlActPerformEvent.cs" />
+        <Compile Include="API\Attributes\CwlDramaExpansion.cs" />
         <Compile Include="API\Attributes\CwlEvent.cs"/>
         <Compile Include="API\Attributes\CwlForwardPatch.cs"/>
         <Compile Include="API\Attributes\CwlGameIOEvent.cs"/>
@@ -189,8 +191,12 @@
         <Compile Include="API\Custom\Playlist\PlaylistBuilder.cs"/>
         <Compile Include="API\Custom\Playlist\PlaylistView.cs"/>
         <Compile Include="API\Custom\Quest\CustomQuest.cs"/>
+        <Compile Include="API\Custom\Quest\QuestConditions.cs" />
+        <Compile Include="API\Custom\Quest\QuestDetails.cs" />
+        <Compile Include="API\Custom\Quest\QuestStages.cs" />
         <Compile Include="API\Drama\ActionBuilder.cs"/>
         <Compile Include="API\Drama\ActionCookie.cs"/>
+        <Compile Include="API\Drama\ActionParameter.cs" />
         <Compile Include="API\Drama\DramaExpansion.cs"/>
         <Compile Include="API\Drama\ActionHelper.cs"/>
         <Compile Include="API\Migration\MigrateDetail.cs"/>
@@ -204,7 +210,8 @@
         <Compile Include="API\Serializable\SerializableEffectSetting.cs"/>
         <Compile Include="API\Serializable\SerializableModPackage.cs"/>
         <Compile Include="API\Serializable\SerializablePlaylist.cs"/>
-        <Compile Include="API\Serializable\SerializableQuestDefinition.cs" />
+        <Compile Include="API\Serializable\SerializableQuestData.cs" />
+        <Compile Include="API\Serializable\SerializableReligionElement.cs" />
         <Compile Include="API\Serializable\SerializableSoundData.cs"/>
         <Compile Include="API\Serializable\SerializableStockData.cs"/>
         <Compile Include="API\WorkbookImporter.cs"/>
@@ -260,7 +267,7 @@
         <Compile Include="Loader\DataLoaders\DataLoader.cs" />
         <Compile Include="Loader\DataLoaders\DialogPreloader.cs" />
         <Compile Include="Loader\DataLoaders\EffectSettingLoader.cs" />
-        <Compile Include="Loader\DataLoaders\GodTalkLoader.cs" />
+        <Compile Include="Loader\DataLoaders\ReligionLoader.cs" />
         <Compile Include="Loader\DataLoaders\SoundLoader.cs" />
         <Compile Include="Loader\ModIntegrity.cs" />
         <Compile Include="Patches\Charas\BioOverridePatch.cs" />
@@ -289,11 +296,12 @@
         <Compile Include="Patches\Materials\SetMaterialRowPatch.cs" />
         <Compile Include="Patches\Objs\ReverseIdMapper.cs" />
         <Compile Include="Patches\Quests\InvalidateDeliverPatch.cs" />
-        <Compile Include="Patches\Quests\InventoryChangeEvent.cs" />
         <Compile Include="Patches\Quests\SafeCreateQuestPatch.cs" />
         <Compile Include="Patches\Quests\SetQuestRowPatch.cs" />
         <Compile Include="Patches\Recipes\ForceRarityPatch.cs" />
         <Compile Include="Patches\Recipes\SetRecipeRowPatch.cs" />
+        <Compile Include="Patches\Religions\FactionElementPatch.cs" />
+        <Compile Include="Patches\Religions\ReligionArtifactPatch.cs" />
         <Compile Include="Patches\Religions\SetReligionOwnerPatch.cs" />
         <Compile Include="Patches\Religions\SetReligionPortraitPatch.cs" />
         <Compile Include="Patches\Religions\SetReligionRowPatch.cs" />
@@ -309,7 +317,6 @@
         <Compile Include="Patches\Sounds\MoldNamedPlaylistPatch.cs" />
         <Compile Include="Patches\Sources\CacheImportPatch.cs" />
         <Compile Include="Patches\Sources\CellPostProcessPatch.cs" />
-        <Compile Include="Patches\Sources\FixNoaThingVPatch.cs" />
         <Compile Include="Patches\Sources\NamedImportPatch.cs" />
         <Compile Include="Patches\Sources\RethrowParsePatch.cs" />
         <Compile Include="Patches\Sources\SafeCreateCardPatch.cs" />

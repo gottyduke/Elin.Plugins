@@ -5,23 +5,23 @@ using UnityEngine;
 
 namespace Cwl.Helper.Unity;
 
-public static class DeferredCoroutine
+internal static class DeferredCoroutine
 {
     private static readonly List<(Action action, Func<bool> condition)> _deferredAwaiters = [];
     private static Coroutine? _awaiter;
     private static bool _halt;
 
-    public static void StartDeferredCoroutine(this MonoBehaviour instance, Action action, int frames = 1)
+    internal static void StartDeferredCoroutine(this MonoBehaviour instance, Action action, int frames = 1)
     {
         instance.StartCoroutine(DeferredFrames(action, frames));
     }
 
-    public static void StartDeferredCoroutine(this MonoBehaviour instance, Action action, float seconds)
+    internal static void StartDeferredCoroutine(this MonoBehaviour instance, Action action, float seconds)
     {
         instance.StartCoroutine(DeferredSeconds(action, seconds));
     }
 
-    public static void StartDeferredCoroutine(this MonoBehaviour instance, Action action, Func<bool> condition)
+    internal static void StartDeferredCoroutine(this MonoBehaviour instance, Action action, Func<bool> condition)
     {
         _halt = false;
         _deferredAwaiters.Add((action, condition));

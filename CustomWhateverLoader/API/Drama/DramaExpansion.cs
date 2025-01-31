@@ -80,26 +80,36 @@ public partial class DramaExpansion : DramaOutcome
         return parameters.All(expr => !BuildExpression(expr)!(dm, line));
     }
 
-    public static bool affinity_check(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    public static bool add_item(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        if (parameters is not [{ } id, { } expr]) {
+        if (parameters is not [{ } id, { } material]) {
             throw new DramaActionArgumentException(parameters);
         }
 
-        return game.cards.globalCharas.Find(id.Trim()) is { } chara && Compare(chara._affinity, expr);
+        return false;
+    }
+
+    public static bool affinity_check(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        if (parameters is not [{ } expr]) {
+            throw new DramaActionArgumentException(parameters);
+        }
+
+        return dm.sequence.GetActor(line["actor"]) is { owner.chara: { } actor } &&
+               Compare(actor._affinity, expr);
     }
 
     public static bool affinity_mod(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        if (parameters is not [{ } id, { } mod]) {
+        if (parameters is not [{ } mod]) {
             throw new DramaActionArgumentException(parameters);
         }
 
-        if (game.cards.globalCharas.Find(id.Trim()) is not { } chara || !int.TryParse(mod, out var value)) {
+        if (dm.sequence.GetActor(line["actor"]) is not { owner.chara: { } actor } || !int.TryParse(mod, out var value)) {
             return false;
         }
 
-        chara.ModAffinity(pc, value);
+        actor.ModAffinity(pc, value);
         return true;
     }
 
@@ -111,9 +121,7 @@ public partial class DramaExpansion : DramaOutcome
 
     public static bool faith_join(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        if (parameters is not [{ } faith]) {
-            throw new DramaActionArgumentException(parameters);
-        }
+        RequireParameters(parameters, out var faith);
 
         if (!game.religions.dictAll.TryGetValue(faith, out var religion) || !religion.CanJoin) {
             return false;
@@ -136,10 +144,7 @@ public partial class DramaExpansion : DramaOutcome
 
     public static bool flag_check(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        if (parameters is not [{ } flag, { } expr]) {
-            throw new DramaActionArgumentException(parameters);
-        }
-
+        RequireParameters(parameters, out var flag, out var expr);
         return player.dialogFlags.TryGetValue(flag, out var value) && Compare(value, expr);
     }
 
@@ -175,8 +180,8 @@ public partial class DramaExpansion : DramaOutcome
             return true;
         }
 
-        if (dm.sequence.GetActor(line["actor"]) is { } actor) {
-            actor.owner.idPortrait = portraitId;
+        if (dm.sequence.GetActor(line["actor"]) is { owner: { } owner }) {
+            owner.idPortrait = portraitId;
         }
 
         return true;
@@ -184,8 +189,8 @@ public partial class DramaExpansion : DramaOutcome
 
     public static bool portrait_reset(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        if (dm.sequence.GetActor(line["actor"]) is { } actor) {
-            actor.owner.idPortrait = actor.owner.chara.GetIdPortrait();
+        if (dm.sequence.GetActor(line["actor"]) is { owner: { } owner }) {
+            owner.idPortrait = owner.chara.GetIdPortrait();
         }
 
         return true;

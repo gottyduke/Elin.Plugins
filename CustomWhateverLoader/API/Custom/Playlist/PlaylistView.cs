@@ -134,7 +134,7 @@ public partial class CustomPlaylist
         }
 
         var current = pl.currentItem;
-        return $"{pl.GetInstanceID()}{_detailedView}{string.Join("/", pl.ToInts())}{current.data.id}";
+        return $"{pl.UniqueString()}{_detailedView}{current.data.id}";
     }
 
     private static string BuildPlaylistString()

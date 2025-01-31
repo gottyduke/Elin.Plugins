@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Cwl.Helper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -9,13 +11,14 @@ namespace Cwl.API;
 // ReSharper disable All 
 public sealed record SerializableStockData : SerializableStockDataV2;
 
-public sealed record SerializableStockItem : SerializableStockItemV2;
+public sealed record SerializableStockItem : SerializableStockItemV3;
 
 public record SerializableStockDataV2
 {
     public List<SerializableStockItem> Items = [];
 }
 
+[Obsolete]
 public record SerializableStockDataV1
 {
     public List<SerializableStockItem> Items = [];
@@ -27,6 +30,23 @@ public enum StockItemType
     Item,
     Recipe,
     Spell,
+}
+
+public record SerializableStockItemV3 : SerializableStockItemV2
+{
+    public Thing Create(int lv = -1)
+    {
+        var thing = Type switch {
+            StockItemType.Item => ThingGen.Create(Id, ReverseId.Material(Material), lv).SetNum(Num),
+            StockItemType.Recipe => ThingGen.CreateRecipe(Id),
+            StockItemType.Spell => ThingGen.CreateSpellbook(Id, Num),
+            _ => ThingGen.Create(Id),
+        };
+
+        thing.ChangeRarity(Rarity);
+        
+        return thing;
+    }
 }
 
 public record SerializableStockItemV2 : SerializableStockItemV1

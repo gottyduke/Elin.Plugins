@@ -237,7 +237,7 @@ public sealed class MigrateDetail
             sb.AppendLine($"{time,5}ms[{count,3}] {mod.Key.title}/{mod.Key.id}");
         }
 
-        sb.AppendLine($"{elapsed}ms[{total,3}] total elapsed");
+        sb.AppendLine($"{elapsed,5}ms[{total,3}] total elapsed");
         CwlMod.Log<MigrateDetail>(sb);
     }
 

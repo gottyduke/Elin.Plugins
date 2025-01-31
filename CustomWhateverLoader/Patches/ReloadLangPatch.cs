@@ -6,6 +6,7 @@ namespace Cwl.Patches;
 [HarmonyPatch]
 internal class ReloadLangPatch
 {
+    [SwallowExceptions]
     [HarmonyPostfix]
     [HarmonyPatch(typeof(Core), nameof(Core.SetLang))]
     internal static void OnSetLang()

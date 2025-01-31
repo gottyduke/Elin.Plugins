@@ -10,8 +10,8 @@ public static class ReverseId
     public static int Material(string materialName, int fallback = -1)
     {
         var id = fallback;
-        if (EClass.sources.materials.alias.TryGetValue(materialName, out var row)) {
-            id = EClass.sources.materials.rows.IndexOf(row);
+        if (EMono.sources.materials.alias.TryGetValue(materialName, out var row)) {
+            id = EMono.sources.materials.rows.IndexOf(row);
         }
 
         return id;

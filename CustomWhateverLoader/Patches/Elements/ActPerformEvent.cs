@@ -1,8 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Cwl.API.Attributes;
+using Cwl.API.Processors;
 using Cwl.Helper.Runtime;
+using Cwl.LangMod;
 using HarmonyLib;
+using MethodTimer;
 
 namespace Cwl.Patches.Elements;
 
@@ -45,5 +50,19 @@ public class ActPerformEvent
     internal static void OnPerform(Act __instance)
     {
         OnActPerformEvent(__instance);
+    }
+
+    [Time]
+    internal static void RegisterEvents(MethodInfo method, CwlEvent[] attributes)
+    {
+        if (Array.Find(attributes, attr => attr is CwlActPerformEvent) is null) {
+            return;
+        }
+
+        Add(act => method.FastInvokeStatic(act));
+
+        var decl = method.DeclaringType!;
+        var provider = $"{decl.Assembly.GetName().Name}::{decl.Name}.{method.Name}";
+        CwlMod.Log<GameIOProcessor.GameIOProcess>("cwl_log_processor_add".Loc(nameof(Act), nameof(Act.Perform), provider));
     }
 }

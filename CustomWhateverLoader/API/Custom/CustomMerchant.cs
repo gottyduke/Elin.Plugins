@@ -57,15 +57,7 @@ public class CustomMerchant : TraitMerchant
                     continue;
                 }
 
-                var thing = item.Type switch {
-                    StockItemType.Item => ThingGen.Create(item.Id, ReverseId.Material(item.Material), ShopLv).SetNum(item.Num),
-                    StockItemType.Recipe => ThingGen.CreateRecipe(item.Id),
-                    StockItemType.Spell => ThingGen.CreateSpellbook(item.Id, item.Num),
-                    _ => ThingGen.Create(item.Id),
-                };
-
-                thing.ChangeRarity(item.Rarity);
-
+                var thing = item.Create(ShopLv);
                 inv.AddThing(thing);
 
                 if (!item.Restock) {
