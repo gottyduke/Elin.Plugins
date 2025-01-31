@@ -9,6 +9,7 @@ using Cwl.Helper.Runtime;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using Cwl.Patches.Conditions;
+using Cwl.Patches.Elements;
 using Cwl.Patches.Quests;
 using Cwl.Patches.Sources;
 using Cwl.Patches.Zones;
@@ -74,9 +75,11 @@ internal sealed partial class CwlMod
         CustomPlaylist.RebuildBGM();
         CustomPlaylist.BuildPlaylists();
 
+        // post init tasks
         yield return null;
 
         DataLoader.MergeGodTalk();
+        DataLoader.MergeFactionElements();
 
         CanContinue = "";
 
@@ -120,6 +123,7 @@ internal sealed partial class CwlMod
     {
         foreach (var (method, attrs) in AttributeQuery.MethodsWith<CwlEvent>()) {
             GameIOProcessor.RegisterEvents(method, attrs);
+            ActPerformEvent.RegisterEvents(method, attrs);
         }
 
         TraitTransformer.Add(CustomMerchant.TransformMerchant);
