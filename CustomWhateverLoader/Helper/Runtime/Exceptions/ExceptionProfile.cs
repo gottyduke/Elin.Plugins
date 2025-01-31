@@ -38,7 +38,7 @@ public class ExceptionProfile(string stackTrace)
         return GetFromStackTrace(Regex.Replace(exception.StackTrace, @"^(\s+at\s)", ""));
     }
 
-    public void StartAnalyzing()
+    public void StartAnalyzing(bool deferred = true)
     {
         if (Analyzing) {
             return;
@@ -46,7 +46,13 @@ public class ExceptionProfile(string stackTrace)
 
         Analyzing = true;
 
-        CoroutineHelper.Immediate(DeferredAnalyzer());
+        if (deferred) {
+            CoroutineHelper.Immediate(DeferredAnalyzer());
+        } else {
+            var enumerator = DeferredAnalyzer();
+            while (enumerator.MoveNext()) {
+            }
+        }
     }
 
     private IEnumerator DeferredAnalyzer()
