@@ -21,7 +21,15 @@ public class AttributeQuery
     public static IEnumerable<(MethodInfo, T[])> MethodsWith<T>(bool inherit = true) where T : Attribute
     {
         foreach (var method in TypeQualifier.Declared.SelectMany(CachedMethods.GetCachedMethods)) {
-            var attrs = method.GetCustomAttributes<T>(inherit).ToArray();
+            T[] attrs = [];
+            
+            try {
+                // because Adventure Creator mod had a dependency on UnityEditor, ffs
+                attrs = method.GetCustomAttributes<T>(inherit).ToArray();
+            } catch {
+                // noexcept
+            }
+
             if (attrs.Length > 0) {
                 yield return new(method, attrs);
             }
