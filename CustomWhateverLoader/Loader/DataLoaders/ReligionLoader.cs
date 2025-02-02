@@ -50,13 +50,10 @@ internal partial class DataLoader
     [ConsoleCommand("load_religion_elements")]
     internal static void MergeFactionElements()
     {
-        foreach (var elements in PackageIterator.GetRelocatedFilesFromPackage("Data/religion_elements.json")) {
+        var elements = PackageIterator.GetRelocatedJsonsFromPackage<SerializableReligionElement>("Data/religion_elements.json");
+        foreach (var (path, element) in elements) {
             try {
-                if (!ConfigCereal.ReadConfig<SerializableReligionElement>(elements.FullName, out var data) || data is null) {
-                    continue;
-                }
-
-                foreach (var (id, list) in data) {
+                foreach (var (id, list) in element) {
                     if (!CustomReligion.Managed.TryGetValue(id, out var custom)) {
                         continue;
                     }
@@ -65,7 +62,7 @@ internal partial class DataLoader
                     CwlMod.Log<DataLoader>("cwl_log_god_elements".Loc(list.Length, custom.id));
                 }
             } catch (Exception ex) {
-                CwlMod.ErrorWithPopup<DataLoader>("cwl_error_merge_god_elements".Loc(elements.ShortPath(), ex.Message), ex);
+                CwlMod.ErrorWithPopup<DataLoader>("cwl_error_merge_god_elements".Loc(path.ShortPath(), ex.Message), ex);
                 // noexcept
             }
         }

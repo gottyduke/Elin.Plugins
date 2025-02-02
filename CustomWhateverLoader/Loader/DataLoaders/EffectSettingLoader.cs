@@ -6,6 +6,7 @@ using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using MethodTimer;
+using ReflexCLI.Attributes;
 using UnityEngine;
 
 namespace Cwl;
@@ -13,21 +14,15 @@ namespace Cwl;
 internal partial class DataLoader
 {
     [Time]
+    [ConsoleCommand("load_effect_setting")]
     internal static void MergeEffectSetting()
     {
         var sprites = Resources.FindObjectsOfTypeAll<Sprite>();
         var guns = Core.Instance.gameSetting.effect.guns;
 
-        foreach (var gunData in PackageIterator.GetRelocatedFilesFromPackage("Data/EffectSetting.guns.json")) {
-            if (!ConfigCereal.ReadConfig<SerializableEffectSetting>(gunData.FullName, out var effectSetting) ||
-                effectSetting is null) {
-                continue;
-            }
-
-            var path = gunData.ShortPath();
-            CwlMod.CurrentLoading = $"[CWL] gun/{path}";
-
-            foreach (var (id, read) in effectSetting) {
+        var effects = PackageIterator.GetRelocatedJsonsFromPackage<SerializableEffectSetting>("Data/EffectSetting.guns.json");
+        foreach (var (path, gunData) in effects) {
+            foreach (var (id, read) in gunData) {
                 try {
                     var sprite = Array.Find(sprites, s => s.name == read.spriteId);
                     if (sprite == null) {
@@ -43,7 +38,7 @@ internal partial class DataLoader
 
                     guns[id] = data;
 
-                    CwlMod.Log<DataLoader>("cwl_log_effect_loaded".Loc(nameof(guns), id, path));
+                    CwlMod.Log<DataLoader>("cwl_log_effect_loaded".Loc(nameof(guns), id, path.ShortPath()));
                 } catch {
                     // noexcept
                 }

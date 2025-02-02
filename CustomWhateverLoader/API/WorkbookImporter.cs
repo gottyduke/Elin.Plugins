@@ -38,7 +38,7 @@ public class WorkbookImporter
         var book = new XSSFWorkbook(fs);
         var migration = MigrateDetail.GetOrAdd(book)
             .SetFile(import.GetFullFileNameWithoutExtension())
-            .SetMod(BaseModManager.Instance.packages.FirstOrDefault(p => import.FullName.StartsWith(p.dirInfo.FullName)));
+            .SetMod(BaseModManager.Instance.packages.LastOrDefault(p => import.FullName.StartsWith(p.dirInfo.FullName)));
 
         List<SourceData> dirty = [];
 

@@ -143,7 +143,7 @@ public class GameIOProcessor
             CwlMod.Log<GameIOContext>($"save {file.ShortPath()}");
 
             // migration
-            // TODO Remove after 5 versions
+            // TODO Remove after 4 versions
             var legacy = file[..^1];
             if (File.Exists(legacy)) {
                 File.Delete(legacy);

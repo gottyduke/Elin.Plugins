@@ -3,12 +3,14 @@ using Cwl.Helper.String;
 using Cwl.LangMod;
 using Cwl.Patches.Relocation;
 using MethodTimer;
+using ReflexCLI.Attributes;
 
 namespace Cwl;
 
 internal partial class DataLoader
 {
     [Time]
+    [ConsoleCommand("load_dialog")]
     internal static void PreloadDialog()
     {
         LoadDialogPatch.Cached.Clear();

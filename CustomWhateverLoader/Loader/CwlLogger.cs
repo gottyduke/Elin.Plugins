@@ -50,11 +50,14 @@ internal sealed partial class CwlMod
     internal static void WarnWithPopup<T>(object payload, object? log = null)
     {
         Warn<T>(payload);
-        if (log is not null) {
-            UnityEngine.Debug.Log(log);
+        using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToString()));
+
+        if (log is null) {
+            return;
         }
 
-        using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToString()));
+        UnityEngine.Debug.Log(log);
+        progress.Get<ProgressIndicator>().AppendHoverText(log.ToString);
     }
 
     [SwallowExceptions]
@@ -73,10 +76,13 @@ internal sealed partial class CwlMod
     internal static void ErrorWithPopup<T>(object payload, object? log = null, [CallerMemberName] string caller = "")
     {
         Error<T>(payload, caller);
-        if (log is not null) {
-            UnityEngine.Debug.Log(log);
+        using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToString(), Color: _warningColor));
+
+        if (log is null) {
+            return;
         }
 
-        using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToString(), Color: _warningColor));
+        UnityEngine.Debug.Log(log);
+        progress.Get<ProgressIndicator>().AppendHoverText(log.ToString);
     }
 }

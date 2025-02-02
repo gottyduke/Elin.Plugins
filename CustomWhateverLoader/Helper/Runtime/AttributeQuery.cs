@@ -22,7 +22,7 @@ public class AttributeQuery
     {
         foreach (var method in TypeQualifier.Declared.SelectMany(CachedMethods.GetCachedMethods)) {
             T[] attrs = [];
-            
+
             try {
                 // because Adventure Creator mod had a dependency on UnityEditor, ffs
                 attrs = method.GetCustomAttributes<T>(inherit).ToArray();

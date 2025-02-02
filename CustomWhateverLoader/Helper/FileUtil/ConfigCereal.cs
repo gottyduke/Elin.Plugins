@@ -52,7 +52,7 @@ public class ConfigCereal
                 return inferred is not null;
             }
         } catch (Exception ex) {
-            CwlMod.Error<ConfigCereal>($"failed to read config: {ex}");
+            CwlMod.Error<ConfigCereal>($"failed to read config: {ex.Message}");
             throw;
         }
 

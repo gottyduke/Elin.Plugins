@@ -2,7 +2,6 @@
 using System.Linq;
 using Cwl.API.Attributes;
 using Cwl.API.Processors;
-using Cwl.Patches.Elements;
 using MethodTimer;
 using Newtonsoft.Json;
 
@@ -53,7 +52,7 @@ public class CustomReligion(string religionId) : Religion, IChunkable
     {
         return _elements.Contains(alias);
     }
-    
+
     public bool IsFactionElement(Element element)
     {
         return IsFactionElement(element.source.alias);
