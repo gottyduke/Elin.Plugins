@@ -111,10 +111,6 @@ internal sealed partial class CwlMod
     [Time]
     private static void QueryDeclTypes()
     {
-        if (!CwlConfig.QualifyTypeName) {
-            return;
-        }
-
         // sources
         TypeQualifier.SafeQueryTypesOfAll();
     }
