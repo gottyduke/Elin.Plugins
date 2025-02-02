@@ -13,6 +13,7 @@ internal class MerchantOnBarterPatch
         __state = EClass.world.date.IsExpired(__instance.owner.c_dateStockExpire);
     }
 
+    [SwallowExceptions]
     [HarmonyPostfix]
     internal static void OnRestock(Trait __instance, bool __state)
     {
