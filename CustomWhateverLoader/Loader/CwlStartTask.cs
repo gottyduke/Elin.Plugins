@@ -105,6 +105,7 @@ internal sealed partial class CwlMod
     private static void PrebuildDispatchers()
     {
         MethodDispatcher.BuildDispatchList<Feat>("_OnApply");
+        MethodDispatcher.BuildDispatchList<Trait>("_OnBarter");
     }
 
     [Time]

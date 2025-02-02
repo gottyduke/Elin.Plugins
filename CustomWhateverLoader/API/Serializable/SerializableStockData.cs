@@ -9,16 +9,10 @@ namespace Cwl.API;
 #pragma warning disable CS0649
 #pragma warning disable CS0414
 // ReSharper disable All 
-public sealed record SerializableStockData : SerializableStockDataV2;
+public sealed record SerializableStockData : SerializableStockDataV1;
 
 public sealed record SerializableStockItem : SerializableStockItemV3;
 
-public record SerializableStockDataV2
-{
-    public List<SerializableStockItem> Items = [];
-}
-
-[Obsolete]
 public record SerializableStockDataV1
 {
     public List<SerializableStockItem> Items = [];
@@ -44,9 +38,12 @@ public record SerializableStockItemV3 : SerializableStockItemV2
         };
 
         thing.ChangeRarity(Rarity);
+        thing.c_IDTState = Identified ? 0 : 1;
         
         return thing;
     }
+
+    public bool Identified = true;
 }
 
 public record SerializableStockItemV2 : SerializableStockItemV1

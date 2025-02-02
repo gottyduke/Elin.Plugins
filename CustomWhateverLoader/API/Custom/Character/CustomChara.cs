@@ -67,7 +67,7 @@ public partial class CustomChara : Chara
 
                     break;
                 case "Stock":
-                    CustomMerchant.AddStock(r.id, sanitized[action.Length..]);
+                    CustomMerchant.AddStock(r.id, sanitized[action.Length..].TrimStart('_'));
                     break;
                 case "Drama":
                     if (@params.Length <= 1) {

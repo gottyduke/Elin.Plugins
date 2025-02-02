@@ -34,4 +34,11 @@ public static class IntrospectCopy
             dest.SetValue(target, field.GetValue(source));
         }
     }
+
+    public static T GetIntrospectCopy<T>(this T source) where T : notnull, new()
+    {
+        T val = new();
+        source.IntrospectCopyTo(val);
+        return val;
+    }
 }

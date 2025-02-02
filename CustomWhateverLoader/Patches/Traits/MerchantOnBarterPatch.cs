@@ -1,4 +1,5 @@
 ﻿using Cwl.API.Custom;
+using Cwl.Helper.Runtime;
 using HarmonyLib;
 
 namespace Cwl.Patches.Traits;
@@ -9,15 +10,25 @@ internal class MerchantOnBarterPatch
     [HarmonyPrefix]
     internal static void OnSetStock(Trait __instance, out bool __state)
     {
-        __state = __instance is CustomMerchant merchant &&
-                  EClass.world.date.IsExpired(merchant.owner.c_dateStockExpire);
+        __state = EClass.world.date.IsExpired(__instance.owner.c_dateStockExpire);
     }
 
     [HarmonyPostfix]
-    private static void ShouldGenerate(Trait __instance, bool __state)
+    internal static void OnRestock(Trait __instance, bool __state)
     {
-        if (__instance is CustomMerchant merchant && __state) {
-            merchant.Generate();
+        if (!__state || __instance.owner?.id is null or "") {
+            return;
+        }
+
+        if (__instance is CustomMerchant custom) {
+            custom._OnBarter();
+        } else {
+            var externalStock = CustomMerchant.GetStockItems(__instance.owner.id);
+            if (externalStock.Length > 0) {
+                CustomMerchant.GenerateStock(__instance.owner, externalStock);
+            }
+
+            __instance.InstanceDispatch("_OnBarter");
         }
     }
 }

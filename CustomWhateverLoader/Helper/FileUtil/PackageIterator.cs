@@ -71,6 +71,14 @@ public class PackageIterator
             .Select(b => new ExcelData(b.FullName, startIndex));
     }
 
+    public static IEnumerable<(FileInfo, T)> GetRelocatedJsonsFromPackage<T>(string relativePath) where T : new()
+    {
+        return BaseModManager.Instance.packages
+            .Where(p => p.activated && !p.builtin)
+            .Select(p => GetRelocatedJsonFromPackage<T>(relativePath, p.id))
+            .OfType<(FileInfo, T)>();
+    }
+
     public static IEnumerable<FileInfo> GetRelocatedFilesFromPackage(string relativePath)
     {
         return BaseModManager.Instance.packages
@@ -85,9 +93,15 @@ public class PackageIterator
         return excel is null ? null : new(excel.FullName, startIndex);
     }
 
+    public static (FileInfo, T)? GetRelocatedJsonFromPackage<T>(string relativePath, string modGuid) where T : new()
+    {
+        var json = GetRelocatedFileFromPackage(relativePath, modGuid);
+        return json is null || !ConfigCereal.ReadConfig<T>(json.FullName, out var data) || data is null ? null : (json, data);
+    }
+
     public static FileInfo? GetRelocatedFileFromPackage(string relativePath, string modGuid)
     {
-        var resources = GetLoadedPackagesAsMapping(modGuid).FirstOrDefault();
+        var resources = GetLoadedPackagesAsMapping(modGuid).LastOrDefault();
         return resources?.RelocateFile(relativePath);
     }
 
