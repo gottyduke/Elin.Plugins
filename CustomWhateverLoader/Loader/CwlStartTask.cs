@@ -128,6 +128,7 @@ internal sealed partial class CwlMod
         }
 
         TraitTransformer.Add(CustomMerchant.TransformMerchant);
+        TraitTransformer.Add(CustomConverter.TransformConverter);
 
         TypeResolver.Add(SafeCreateConditionPatch.ResolveCondition);
         TypeResolver.Add(SafeCreateQuestPatch.ResolveQuest);
