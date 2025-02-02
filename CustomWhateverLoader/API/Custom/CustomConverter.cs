@@ -2,6 +2,7 @@
 using System.Linq;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
+using Cwl.LangMod;
 using ReflexCLI.Attributes;
 
 namespace Cwl.API.Custom;
@@ -72,7 +73,7 @@ public class CustomConverter : TraitBrewery
             var conv = PackageIterator.GetRelocatedJsonsFromPackage<SerializableConverterData>($"Data/converter_{dataId}.json")
                 .LastOrDefault();
             if (conv.Item2 is null) {
-                CwlMod.WarnWithPopup<CustomConverter>($"cannot find converter data {dataId} for {owner.id}");
+                CwlMod.WarnWithPopup<CustomConverter>("cwl_warn_converter_missing".Loc(dataId, owner.id));
                 return;
             }
 
@@ -90,7 +91,7 @@ public class CustomConverter : TraitBrewery
             }
 
             _cached[dataId] = data;
-            CwlMod.Log<CustomConverter>($"applied converter data {dataId} on {owner.id}");
+            CwlMod.Log<CustomConverter>("cwl_log_converter_apply".Loc(dataId, owner.id));
         }
 
         Conversions = data;
@@ -103,7 +104,9 @@ public class CustomConverter : TraitBrewery
     {
         _cached.Clear();
         foreach (var card in _map.Cards) {
-            card.trait.OnSetOwner();
+            if (card.trait is CustomConverter converter) {
+                converter.OnSetOwner();
+            }
         }
     }
 
