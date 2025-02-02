@@ -45,6 +45,10 @@
             <HintPath>$(ElinGamePath)\BepInEx\core\BepInEx.Unity.dll</HintPath>
             <Private>False</Private>
         </Reference>
+        <Reference Include="ClassLibrary2">
+          <HintPath>$(ElinGamePath)\Elin_Data\Managed\ClassLibrary2.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
         <Reference Include="DOTween">
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\DOTween.dll</HintPath>
             <Private>False</Private>
@@ -91,6 +95,10 @@
         </Reference>
         <Reference Include="Plugins.BaseCore">
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.BaseCore.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Plugins.Calc">
+          <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.Calc.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Plugins.Sound">
@@ -182,6 +190,7 @@
         <Compile Include="API\Custom\Character\CharaImporter.cs"/>
         <Compile Include="API\Custom\Character\AddEqOrThing.cs"/>
         <Compile Include="API\Custom\Character\CustomChara.cs"/>
+        <Compile Include="API\Custom\CustomConverter.cs" />
         <Compile Include="API\Custom\CustomCondition.cs"/>
         <Compile Include="API\Custom\CustomElement.cs"/>
         <Compile Include="API\Custom\CustomMerchant.cs"/>
@@ -207,6 +216,7 @@
         <Compile Include="API\Processors\WorkbookProcessor.cs"/>
         <Compile Include="API\Serializable\IChunkable.cs"/>
         <Compile Include="API\Serializable\SerializableBioData.cs"/>
+        <Compile Include="API\Serializable\SerializableConverterData.cs" />
         <Compile Include="API\Serializable\SerializableEffectSetting.cs"/>
         <Compile Include="API\Serializable\SerializableModPackage.cs"/>
         <Compile Include="API\Serializable\SerializablePlaylist.cs"/>
@@ -237,6 +247,7 @@
         <Compile Include="Helper\Runtime\OverrideMethodComparer.cs" />
         <Compile Include="Helper\Runtime\TypeQualifier.cs" />
         <Compile Include="Helper\ScopeExit.cs" />
+        <Compile Include="Helper\String\CalcHelper.cs" />
         <Compile Include="Helper\String\Capitalizer.cs" />
         <Compile Include="Helper\String\FastStringWatch.cs" />
         <Compile Include="Helper\String\GameVersion.cs" />

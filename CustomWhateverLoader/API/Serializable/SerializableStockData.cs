@@ -39,7 +39,7 @@ public record SerializableStockItemV3 : SerializableStockItemV2
 
         thing.ChangeRarity(Rarity);
         thing.c_IDTState = Identified ? 0 : 1;
-        
+
         return thing;
     }
 
@@ -49,7 +49,7 @@ public record SerializableStockItemV3 : SerializableStockItemV2
 public record SerializableStockItemV2 : SerializableStockItemV1
 {
     [JsonConverter(typeof(StringEnumConverter))]
-    public Rarity Rarity = Rarity.Random;
+    public Rarity Rarity = Rarity.Normal;
 }
 
 public record SerializableStockItemV1

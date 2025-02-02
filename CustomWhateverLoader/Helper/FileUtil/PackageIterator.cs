@@ -48,6 +48,10 @@ public class PackageIterator
 
     public static IEnumerable<FileMapping> GetLoadedPackagesAsMapping(string? modGuid = null)
     {
+        if (modGuid is not null && _mappings.TryGetValue(modGuid, out var mapping)) {
+            return [mapping];
+        }
+
         return BaseModManager.Instance.packages
             .OfType<ModPackage>()
             .Where(p => p.activated && !p.builtin)
