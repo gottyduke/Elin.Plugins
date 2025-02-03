@@ -19,11 +19,14 @@ internal class CwlConsole
             chara.Destroy();
         }
 
+        // ReSharper disable once StringLiteralTypo
         foreach (var chara in EClass.game.cards.listAdv.FindAll(chara => chara is { id: "begger", c_altName: null })) {
-            chara.Destroy();
+            if (!chara.isDestroyed) {
+                chara.Destroy();
+            }
             EClass.game.cards.listAdv.Remove(chara);
         }
-        
+
         return $"vacated {beggars.Length} beggar(s)";
     }
 }

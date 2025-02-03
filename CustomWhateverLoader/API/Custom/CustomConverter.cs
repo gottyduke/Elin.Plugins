@@ -4,6 +4,7 @@ using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using ReflexCLI.Attributes;
+using UnityEngine;
 
 namespace Cwl.API.Custom;
 
@@ -22,7 +23,7 @@ public class CustomConverter : TraitBrewery
 
     public override bool CanChildDecay(Card card)
     {
-        return Conversions.ContainsKey(card.id) || AllProducts.FirstOrDefault(p => p.Id == card.id) is null;
+        return Conversions.ContainsKey(card.id) || AllProducts.All(p => p.Id != card.id);
     }
 
     [SwallowExceptions]
@@ -41,7 +42,7 @@ public class CustomConverter : TraitBrewery
         }
 
         foreach (var product in products) {
-            var thing = product.Create(card.LV);
+            var thing = product.Create(card.LV).SetNum(Mathf.Max(1, product.Num * card.Num));
 
             var food = thing.IsFood;
             CraftUtil.MixIngredients(thing, [card.Thing], food ? CraftUtil.MixType.Food : CraftUtil.MixType.General, 999, pc);

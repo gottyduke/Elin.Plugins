@@ -12,14 +12,14 @@ public static class CalcHelper
         result = default;
 
         try {
-            if (args is not null) {
-                foreach (var (k, v) in Tokenize(args)) {
-                    expression = expression.Replace(k, v);
-                }
+            var tokens = Tokenize(args);
+            var calc = Cal.Instance.SymbolicateExpression(expression, tokens.Keys.ToArray());
+
+            foreach (var (k, v) in tokens) {
+                calc.SetVariable(k, double.Parse(v));
             }
 
-            var calc = Cal.Instance.SymbolicateExpression(expression).Evaluate();
-            result = (T)Convert.ChangeType(calc, typeof(T));
+            result = (T)Convert.ChangeType(calc.Evaluate(), typeof(T));
             return true;
         } catch (Exception ex) {
             CwlMod.Warn<Cal>("cwl_error_failure".Loc(ex.Message));
@@ -28,8 +28,12 @@ public static class CalcHelper
         }
     }
 
-    public static Dictionary<string, string> Tokenize(object args)
+    public static Dictionary<string, string> Tokenize(object? args)
     {
+        if (args is null) {
+            return [];
+        }
+        
         Dictionary<string, object?> tokens = [];
         if (args is IDictionary<string, object?> input) {
             foreach (var (k, v) in input) {
