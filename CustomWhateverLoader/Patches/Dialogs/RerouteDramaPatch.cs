@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using Cwl.API.Custom;
+using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using HarmonyLib;
 
@@ -42,10 +43,8 @@ internal class RerouteDramaPatch
         try {
             chara.ShowDialog(drama);
         } catch (Exception ex) {
+            ELayerCleanup.Cleanup<LayerDrama>();
             CwlMod.ErrorWithPopup<CustomChara>("cwl_error_failure".Loc(ex.Message), ex);
-            if (ELayer.ui.TopLayer is LayerDrama layer) {
-                layer.Close();
-            }
             // noexcept
         }
 

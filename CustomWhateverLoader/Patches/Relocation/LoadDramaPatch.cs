@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
+using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
@@ -42,29 +44,40 @@ internal class LoadDramaPatch
         var sheet = dm.setup.sheet;
         var lang = Lang.langCode;
 
-        var cachedBookName = $"{CacheEntry}{book}_{lang}";
-        if (PackageIterator.TryLoadFromPackageCache(cachedBookName, out var cachedPath)) {
-            data.path = cachedPath;
-            return data.BuildList(sheet);
+        try {
+            var cachedBookName = $"{CacheEntry}{book}_{lang}";
+            if (PackageIterator.TryLoadFromPackageCache(cachedBookName, out var cachedPath)) {
+                data.path = cachedPath;
+                return data.BuildList(sheet);
+            }
+
+            var books = PackageIterator.GetLangFilesFromPackage(Pattern)
+                .Where(b => b.Contains(CacheEntry))
+                .Where(s => Path.GetFileNameWithoutExtension(s) == book)
+                .OrderBy(b => b)
+                .ToArray();
+
+            // Elona Dialog/Drama files are not in their LangCode subdirectory
+            var fallback = books.FirstOrDefault();
+            // 1.19.5 change to last to allow mapping vanilla dramas
+            var localized = books.LastOrDefault(b => b.Contains($"/{lang}/")) ?? fallback;
+
+            if (localized is null) {
+                throw new FileNotFoundException(book);
+            }
+
+            if (data.path.NormalizePath() != localized) {
+                CwlMod.Log<DramaManager>("cwl_relocate_drama".Loc(cachedBookName, Pattern, localized.ShortPath()));
+            }
+
+            PackageIterator.AddCachedPath(cachedBookName, localized);
+            data.path = localized;
+        } catch {
+            ELayerCleanup.Cleanup<LayerDrama>();
+            throw;
+            // noexcept
         }
 
-        var books = PackageIterator.GetLangFilesFromPackage(Pattern)
-            .Where(b => b.Contains(CacheEntry))
-            .Where(s => Path.GetFileNameWithoutExtension(s) == book)
-            .OrderBy(b => b)
-            .ToArray();
-
-        // Elona Dialog/Drama files are not in their LangCode subdirectory
-        var fallback = books.First();
-        // 1.19.5 change to last to allow mapping vanilla dramas
-        var localized = books.LastOrDefault(b => b.Contains($"/{lang}/")) ?? fallback;
-
-        if (data.path.NormalizePath() != localized) {
-            CwlMod.Log<DramaManager>("cwl_relocate_drama".Loc(cachedBookName, Pattern, localized.ShortPath()));
-        }
-
-        PackageIterator.AddCachedPath(cachedBookName, localized);
-        data.path = localized;
         return data.BuildList(sheet);
     }
 }

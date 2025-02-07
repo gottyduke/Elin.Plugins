@@ -1,6 +1,7 @@
 ﻿using Cwl.API.Custom;
 using Cwl.Helper.Runtime;
 using HarmonyLib;
+using UnityEngine;
 
 namespace Cwl.Patches.Traits;
 
@@ -30,6 +31,20 @@ internal class MerchantOnBarterPatch
             }
 
             __instance.InstanceDispatch("_OnBarter");
+        }
+
+        FitSize(__instance);
+    }
+
+    private static void FitSize(Trait merchant)
+    {
+        var inv = merchant.owner?.things?.Find("chest_merchant")?.things;
+        if (inv is null) {
+            return;
+        }
+
+        if (inv.Count > inv.GridSize) {
+            inv.ChangeSize(inv.width, Mathf.Min(inv.Count / inv.width + 1, 10));
         }
     }
 }

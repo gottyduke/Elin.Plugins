@@ -66,7 +66,7 @@ public class CustomMerchant : TraitMerchant
         Action<Card>? onRestocking = null)
     {
         var inv = owner.things.Find("chest_merchant");
-        if (inv == null) {
+        if (inv is null) {
             inv = ThingGen.Create("chest_merchant");
             owner.AddThing(inv);
         }

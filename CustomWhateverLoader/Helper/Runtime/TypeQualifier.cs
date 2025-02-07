@@ -47,16 +47,20 @@ public class TypeQualifier
                 return cached;
             }
 
-            var types = Declared.OfDerived(typeof(T)).ToArray();
-            var qualified = types.FirstOrDefault(t => t.FullName == unq) ??
-                            types.FirstOrDefault(t => t.Name == unq);
+            Type? qualified = null;
+            foreach (var t in Declared.OfDerived(typeof(T))) {
+                if (t.FullName == unq || t.Name == unq) {
+                    qualified = t;
+                }
 
-            // check if data had case typo...
-            if (qualified?.FullName is null) {
-                qualified ??= types.FirstOrDefault(t => t.FullName!.Equals(unq, StringComparison.InvariantCultureIgnoreCase)) ??
-                              types.FirstOrDefault(t => t.Name.Equals(unq, StringComparison.InvariantCultureIgnoreCase));
-                if (qualified?.FullName is not null) {
+                if (qualified is null && (t.FullName?.Equals(unq, StringComparison.InvariantCultureIgnoreCase) is true ||
+                                          t.Name.Equals(unq, StringComparison.InvariantCultureIgnoreCase))) {
+                    qualified = t;
                     CwlMod.WarnWithPopup<TypeQualifier>($"typo in custom type {unq}, {qualified.FullName}");
+                }
+
+                if (qualified is not null) {
+                    break;
                 }
             }
 
