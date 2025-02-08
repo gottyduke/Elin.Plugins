@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
-using System.Text.RegularExpressions;
-using ACS.Helper;
+using Cwl.Helper.Unity;
 using HarmonyLib;
 using UnityEngine;
 
@@ -40,62 +40,72 @@ internal class LoadSpritePatch
             return true;
         }
 
-        var baseFile = new FileInfo($"{data.path}.png");
-        var baseName = Path.GetFileNameWithoutExtension(baseFile.Name);
+        var baseTex = $"{data.path}.png";
+        var baseName = Path.GetFileNameWithoutExtension(baseTex);
 
-        var altTex = baseFile.Directory!
-            .GetFiles("*.png", SearchOption.TopDirectoryOnly)
-            .Where(f => f.Name != baseFile.Name && f.Name.Contains("_acs_"))
-            .Where(f => f.Name.StartsWith(baseName))
-            .OrderBy(f => f.Name)
-            .ToArray();
+        List<Sprite> sprites = [];
 
-        if (altTex.Length == 0) {
+        foreach (var (name, file) in SpriteReplacer.dictModItems) {
+            if (!name.StartsWith($"{baseName}_acs_")) {
+                continue;
+            }
+
+            try {
+                var tex = IO.LoadPNG($"{file}.png");
+                if (tex == null) {
+                    continue;
+                }
+
+                var sprite = Sprite.Create(tex, new(0f, 0f, tex.width, tex.height), new(0.5f, 0.5f * (128f / tex.height)), 100f,
+                    0u, SpriteMeshType.FullRect);
+                if (sprite == null) {
+                    continue;
+                }
+
+                var index = name.Split('_')[^1];
+                var frameName = name[..^index.Length];
+
+                if (name.Contains('-')) {
+                    var indexes = index.Split('-');
+                    int.TryParse(indexes[0], out var begin);
+                    int.TryParse(indexes[1], out var end);
+
+                    sprites.AddRange(SliceSheet(sprite, begin, end, frameName));
+                } else {
+                    int.TryParse(index, out var frame);
+                    sprite.name = tex.name =  $"{frameName}{frame:D4}";
+
+                    sprites.Add(sprite);
+                }
+            } catch (Exception ex) {
+                AcsMod.Warn($"failed to load acs sprite {file}\n{ex.Message}");
+                // noexcept
+            }
+        }
+
+        if (sprites.Count > 0) {
+            sprites.Insert(0, baseTex.LoadSprite(name: baseName)!);
+        } else {
             return true;
         }
 
-        var baseTex = IO.LoadPNG(baseFile.FullName);
-        baseTex.name = baseName;
-
-        List<Texture2D> allTex = [baseTex];
-        foreach (var alt in altTex) {
-            var tex = IO.LoadPNG(alt.FullName);
-            tex.name = alt.Name;
-            allTex.Add(tex);
-        }
-
-        data.tex = allTex[0];
-        data.sprites = allTex
-            .SelectMany(t => {
-                var index = t.name.Split("_")[^1];
-                if (!index.Contains("-")) {
-                    return [
-                        Sprite.Create(t, new(0, 0, t.width, t.height), new(0.5f, t.AdjustPivot()), 100f, 0u,
-                            SpriteMeshType.FullRect),
-                    ];
-                }
-
-                var regex = new Regex(@"\d+");
-                var matches = regex.Matches(index);
-                if (!int.TryParse(matches[0].Value, out var begin) ||
-                    !int.TryParse(matches[1].Value, out var end)) {
-                    AcsMod.Warn($"failed to create sequential frames from sheet: {t.name}");
-                    return [];
-                }
-
-                var count = end - begin + 1;
-                var width = t.width / count;
-                var sprites = new Sprite[count];
-                for (var i = 0; i < count; ++i) {
-                    sprites[i] = Sprite.Create(t, new(i * width, 0f, width, t.height),
-                        new(0.5f, t.AdjustPivot(width)), 100f, 0u, SpriteMeshType.FullRect);
-                }
-
-                return sprites;
-            })
-            .ToArray();
-        data.sprites.Do(s => s.name = s.texture.name);
+        data.sprites = sprites.ToArray();
+        data.tex = data.sprites[0].texture;
 
         return false;
+    }
+
+    private static IEnumerable<Sprite> SliceSheet(Sprite sheet, int begin, int end, string baseName)
+    {
+        var frames = end - begin + 1;
+        var width = sheet.rect.width / frames;
+        var height = sheet.rect.height;
+
+        for (var i = 0; i < frames; ++i) {
+            Rect rect = new(i * width, 0f, width, height);
+            var sprite = Sprite.Create(sheet.texture, rect, new(0.5f, 0.5f * (128f / height)), 100f, 0u, SpriteMeshType.FullRect);
+            sprite.name = $"{baseName}{i:D4}";
+            yield return sprite;
+        }
     }
 }

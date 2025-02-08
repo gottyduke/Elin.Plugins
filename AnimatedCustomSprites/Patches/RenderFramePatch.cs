@@ -1,5 +1,4 @@
 ﻿using ACS.Components;
-using ACS.Helper;
 using HarmonyLib;
 using UnityEngine;
 
@@ -19,7 +18,7 @@ internal class RenderFramePatch
             return;
         }
 
-        var acs = __instance.gameObject.GetOrAddComponent<AcsController>();
+        var acs = __instance.GetOrCreate<AcsController>();
         var frame = acs.IsPlaying ? acs.CurrentFrame() : data.sprites[0];
 
         __instance.sr.sprite = frame;

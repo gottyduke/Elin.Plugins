@@ -5,22 +5,22 @@ using UnityEngine;
 
 namespace ACS.Components;
 
-internal class AcsController : MonoBehaviour
+public class AcsController : MonoBehaviour
 {
-    internal static readonly Dictionary<string, Sprite> Cached = [];
     internal static readonly Dictionary<string, List<AcsClip>> Clips = [];
 
-    private CardActor? _actor;
     private float _elapsed;
     private bool _playing;
-    private SpriteReplacer? _replacer;
-    private SpriteRenderer? _sr;
 
-    internal int CurrentIndex { get; private set; }
-    internal AcsClip? CurrentClip { get; private set; }
-    internal bool ExternalOverride { get; set; }
-    internal float Interval => CurrentClip?.interval ?? 0f;
-    internal bool IsPlaying => _playing && _replacer?.data is not null;
+    public int CurrentIndex { get; private set; }
+    public AcsClip? CurrentClip { get; private set; }
+    public bool ExternalOverride { get; set; }
+    public float Interval => CurrentClip?.interval ?? 0f;
+    public bool IsPlaying => _playing && Replacer.data is not null;
+
+    private CardActor Actor => GetComponent<CardActor>();
+    private SpriteReplacer Replacer => Actor.owner.sourceCard.replacer;
+    private SpriteRenderer Sr => GetComponent<SpriteRenderer>();
 
     private void Update()
     {
@@ -29,22 +29,32 @@ internal class AcsController : MonoBehaviour
             return;
         }
 
-        if (!_playing || _actor?.owner is null) {
+        if (!_playing || Actor.owner is null) {
             return;
         }
 
         if (!ExternalOverride) {
-            var chara = _actor.owner as Chara;
-            if (chara is null && _actor.owner is Thing { parentCard: Chara wielder }) {
+            var chara = Actor.owner as Chara;
+            if (chara is null && Actor.owner is Thing { parentCard: Chara wielder }) {
                 chara = wielder;
             }
 
             AcsClip? newClip = null;
-            if (chara?.IsInCombat ?? false) {
-                newClip = _actor.owner.GetAcsClip(AcsAnimationType.Combat);
+            var inCombat = chara?.IsInCombat ?? false;
+            var newClipType = CurrentClip.type;
+
+            var shouldSwitchToCombat = CurrentClip.type != AcsAnimationType.Combat && inCombat;
+            var shouldSwitchToIdle = CurrentClip.type == AcsAnimationType.Combat && !inCombat;
+
+            if (shouldSwitchToCombat) {
+                newClipType = AcsAnimationType.Combat;
+            } else if (shouldSwitchToIdle) {
+                newClipType = AcsAnimationType.Idle;
             }
 
-            newClip ??= _actor.owner.GetAcsClip(AcsAnimationType.Idle);
+            if (newClipType != CurrentClip.type) {
+                newClip = Actor.owner.GetAcsClip(newClipType);
+            }
 
             if (newClip?.sprites?.Length is > 0 && newClip != CurrentClip) {
                 StartClip(newClip);
@@ -58,11 +68,15 @@ internal class AcsController : MonoBehaviour
 
         _elapsed -= Interval;
         CurrentIndex = (CurrentIndex + 1) % CurrentClip.sprites.Length;
+
+        if (CurrentIndex == 0 && ExternalOverride) {
+            ExternalOverride = false;
+        }
     }
 
     private void OnEnable()
     {
-        // pool chara has its card set 1 frame afterwards
+        // pool chara has its card set 1 frame afterward
         StartCoroutine(DelayedValidate());
     }
 
@@ -70,20 +84,16 @@ internal class AcsController : MonoBehaviour
     {
         yield return null;
 
-        _sr ??= GetComponent<SpriteRenderer>();
-        _actor ??= GetComponent<CardActor>();
-        _replacer = _actor.owner.sourceCard.replacer;
-
-        if (_replacer?.data?.sprites?.Length is null or 0) {
+        if (Replacer.data?.sprites?.Length is not > 1) {
             _playing = false;
             yield break;
         }
 
-        if (!Clips.ContainsKey(_actor.owner.id)) {
-            _actor.owner.CreateAcsClips(_replacer.data.sprites);
+        if (!Clips.ContainsKey(Actor.owner.id)) {
+            Clips[Actor.owner.id] = Actor.owner.CreateAcsClips(Replacer.data.sprites);
         }
 
-        var idleClip = _actor.owner.GetAcsClip(AcsAnimationType.Idle);
+        var idleClip = Actor.owner.GetAcsClip(AcsAnimationType.Idle);
         if (idleClip is null) {
             yield break;
         }
@@ -91,29 +101,34 @@ internal class AcsController : MonoBehaviour
         StartClip(idleClip);
     }
 
-    internal Sprite CurrentFrame()
+    public Sprite CurrentFrame()
     {
         if (!IsPlaying || CurrentClip?.sprites?.Length is not > 1) {
-            return _sr!.sprite;
+            return Sr.sprite;
         }
 
         return CurrentClip.sprites[CurrentIndex];
     }
 
-    internal void StartClip(AcsClip clip)
+    public void StartClip(AcsClip clip, bool external = false)
     {
         StopClip();
+
         CurrentClip = clip;
         _playing = CurrentClip is not null;
+
+        if (_playing) {
+            ExternalOverride = external;
+        }
     }
 
-    internal void StopClip()
+    public void StopClip()
     {
         _playing = false;
         ResetClip();
     }
 
-    internal void ResetClip()
+    public void ResetClip()
     {
         CurrentIndex = 0;
         _elapsed = 0f;

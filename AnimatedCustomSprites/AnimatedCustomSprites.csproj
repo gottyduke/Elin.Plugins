@@ -66,6 +66,10 @@
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.BaseCore.dll</HintPath>
             <Private>False</Private>
         </Reference>
+        <Reference Include="Reflex">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Reflex.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
         <Reference Include="System"/>
         <Reference Include="System.Core"/>
         <Reference Include="UnityEngine">
@@ -93,12 +97,6 @@
         <Compile Include="API\AcsClipBuilder.cs"/>
         <Compile Include="API\AcsCondition.cs"/>
         <Compile Include="Components\AcsController.cs"/>
-        <Compile Include="Helper\ChildrenIterator.cs"/>
-        <Compile Include="Helper\ComponentFetch.cs"/>
-        <Compile Include="Helper\ConfigCereal.cs"/>
-        <Compile Include="Helper\CoroutineHelper.cs"/>
-        <Compile Include="Helper\DeferredCoroutine.cs"/>
-        <Compile Include="Helper\PivotAdjust.cs"/>
         <Compile Include="Patches\LoadSpritePatch.cs"/>
         <Compile Include="Patches\RenderFramePatch.cs"/>
     </ItemGroup>
@@ -107,6 +105,13 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\CustomWhateverLoader\CustomWhateverLoader.csproj">
+            <Project>{a504bee4-ad1f-4657-81fa-bbddbbddaabb}</Project>
+            <Name>CustomWhateverLoader</Name>
+            <Private>False</Private>
+        </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

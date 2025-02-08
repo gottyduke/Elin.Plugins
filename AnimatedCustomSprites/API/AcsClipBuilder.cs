@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ACS.Components;
-using HarmonyLib;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace ACS.API;
@@ -12,71 +11,68 @@ public static class AcsClipBuilder
     /// <summary>
     ///     Create a single clip from sprites and cache the result.
     /// </summary>
-    /// <param name="sprites">series of named sprites</param>
-    /// <param name="clipName">default "loop"</param>
-    public static AcsClip CreateAcsClip(this Card owner, IEnumerable<Sprite> sprites,
-        string clipName = "idle",
-        AcsAnimationType type = AcsAnimationType.Auto,
-        float interval = 0.2f)
+    public static AcsClip CreateAcsClip(this Card owner, Sprite[] sprites,
+        string clipName = "",
+        float interval = -1f,
+        AcsAnimationType type = AcsAnimationType.Auto)
     {
-        var frames = sprites.OrderBy(s => s.name).ToArray();
-        frames.Do(f => AcsController.Cached.TryAdd(f.name, f));
+        var regex = new Regex(@"_acs_(?<clipName>.*)#(?<interval>\d+)_(?<index>\d+)");
+        var sprite = sprites[0];
+        var param = regex.Match(sprite.name);
 
-        if (type == AcsAnimationType.Auto) {
-            var param = clipName.Split("#");
-            clipName = param[0];
-
-            type = AcsAnimationType.Idle;
-            if (Enum.TryParse<AcsAnimationType>(char.ToUpper(clipName[0]) + clipName[1..], out var parsedType)) {
-                type = parsedType;
-            }
-
-            if (int.TryParse(param.ElementAtOrDefault(1), out var parsedInterval)) {
-                interval = parsedInterval / 1000f;
-            }
+        if (!param.Success) {
+            throw new ArgumentException("sprite could not be parsed");
         }
 
-        var clip = new AcsClip {
-            name = clipName,
-            interval = interval,
-            owner = owner.id,
+        var name = clipName.IsEmpty(param.Groups["clipName"].Value.ToLower());
+
+        if (type == AcsAnimationType.Auto) {
+            type = name switch {
+                "idle" => AcsAnimationType.Idle,
+                "combat" => AcsAnimationType.Combat,
+                _ => AcsAnimationType.Condition,
+            };
+        }
+
+        if (interval < 0f && !float.TryParse(param.Groups["interval"].Value, out interval)) {
+            interval = 66f;
+        }
+
+        AcsMod.Log($"created clip {owner.id}/{name}/{sprite.rect.width}x{sprite.rect.height}/{sprites.Length} frames@{interval}");
+        return new() {
+            name = name,
             type = type,
-            sprites = frames,
+            owner = owner.id,
+            interval = interval / 1000f,
+            sprites = sprites,
         };
-
-        AcsController.Clips.TryAdd(owner.id, []);
-        AcsController.Clips[owner.id].Add(clip);
-
-        AcsMod.Log($"created acs clip: {owner.id}|{clipName}|{frames.Length} frames@{interval}s");
-        return clip;
     }
 
     /// <summary>
     ///     Create assorted clips from sprites.
     /// </summary>
-    public static IEnumerable<AcsClip> CreateAcsClips(this Card owner, IEnumerable<Sprite> sprites)
+    public static List<AcsClip> CreateAcsClips(this Card owner, IEnumerable<Sprite> sprites)
     {
-        Dictionary<string, List<Sprite>> temp = [];
+        var lut = sprites.ToLookup(s => {
+            var i = s.name.LastIndexOf('_');
+            return i >= 0 ? s.name[..i] : s.name;
+        }, s => s);
 
-        foreach (var sprite in sprites) {
-            sprite.name = sprite.name.IsEmpty(sprite.texture.name);
-            if (!sprite.name.EndsWith(".png")) {
+        List<AcsClip> clips = [];
+        foreach (var clip in lut) {
+            var name = clip.Key;
+            if (!name.Contains("_acs_")) {
                 continue;
             }
 
-            var parts = sprite.name.Split('_');
-            if (parts.Length < 4 || parts[^3] != "acs") {
-                AcsMod.Warn($"skipped frame: {sprite.name}");
+            var frames = clip.OrderBy(s => s.name).ToArray();
+            if (frames.Length == 0) {
                 continue;
             }
 
-            temp.TryAdd(parts[^2], []);
-            temp[parts[^2]].Add(sprite);
+            clips.Add(owner.CreateAcsClip(frames));
         }
 
-        // force enumeration
-        return temp
-            .Select(kv => owner.CreateAcsClip(kv.Value, kv.Key))
-            .ToArray();
+        return clips;
     }
 }
