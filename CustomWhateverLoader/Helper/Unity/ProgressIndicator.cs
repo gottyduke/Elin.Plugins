@@ -183,7 +183,7 @@ public class ProgressIndicator : EMono, IPointerClickHandler, IPointerEnterHandl
             }
 
             if (_onHoverUpdate is not null) {
-                text += Hovering ? $"{_onHoverUpdate()}" : $"{_hoverDetailPrompt}";
+                text += Hovering ? $"\n{_onHoverUpdate()}" : $"\n{_hoverDetailPrompt}";
             }
 
             Pop.SetText(text, sprite, color ?? default(Color));

@@ -28,7 +28,7 @@ internal class SourceInitPatch
                 Harmony.CreateAndPatchAll(typeof(NamedImportPatch), ModInfo.Guid);
             } catch (Exception ex) {
                 CwlMod.WarnWithPopup<SourceManager>($"failed to patch Source.NamedImport, disabled\n" +
-                                                    $"{ex.Message.SplitNewline()[0]}", ex);
+                                                    $"{ex.Message.SplitLines()[0]}", ex);
                 // noexcept
             }
 
@@ -39,7 +39,7 @@ internal class SourceInitPatch
         try {
             var imports = PackageIterator.GetLangModFilesFromPackage()
                 .SelectMany(d => d.GetFiles(Pattern, SearchOption.TopDirectoryOnly))
-                .Where(f => !f.Name.Contains("cwl_migrated") && !f.Name.Contains("~$"));
+                .Where(f => !f.Name.StartsWith("cwl_") && !f.Name.Contains("~$"));
             HashSet<SourceData> dirty = [EMono.sources.elements, EMono.sources.materials];
 
             // init elements and materials first so other sheets can parse it properly

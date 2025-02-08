@@ -239,6 +239,7 @@
         <Compile Include="Helper\Runtime\Exceptions\ExceptionProfile.cs" />
         <Compile Include="Helper\Runtime\Exceptions\SourceParseException.cs" />
         <Compile Include="Helper\Runtime\Exceptions\MonoFrame.cs" />
+        <Compile Include="Helper\SourceRowComparer.cs" />
         <Compile Include="Helper\SpriteReplacerHelper.cs" />
         <Compile Include="Helper\ReverseId.cs" />
         <Compile Include="Helper\Runtime\AttributeQuery.cs" />
@@ -248,7 +249,7 @@
         <Compile Include="Helper\Runtime\TypeQualifier.cs" />
         <Compile Include="Helper\ScopeExit.cs" />
         <Compile Include="Helper\String\CalcHelper.cs" />
-        <Compile Include="Helper\String\Capitalizer.cs" />
+        <Compile Include="Helper\String\StringHelper.cs" />
         <Compile Include="Helper\String\FastStringWatch.cs" />
         <Compile Include="Helper\String\GameVersion.cs" />
         <Compile Include="Helper\String\Hashing.cs" />
@@ -327,10 +328,10 @@
         <Compile Include="Patches\Sounds\SetBGMOverridePatch.cs" />
         <Compile Include="Patches\Sounds\MergePlaylistPatch.cs" />
         <Compile Include="Patches\Sounds\MoldNamedPlaylistPatch.cs" />
-        <Compile Include="Patches\Sources\CacheImportPatch.cs" />
         <Compile Include="Patches\Sources\CellPostProcessPatch.cs" />
         <Compile Include="Patches\Sources\NamedImportPatch.cs" />
         <Compile Include="Patches\Sources\RethrowParsePatch.cs" />
+        <Compile Include="Patches\Sources\RowOverridePatch.cs" />
         <Compile Include="Patches\Sources\SafeCreateCardPatch.cs" />
         <Compile Include="Patches\Sources\SourceInitPatch.cs" />
         <Compile Include="Patches\Traits\MerchantOnBarterPatch.cs" />

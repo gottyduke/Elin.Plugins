@@ -9,9 +9,9 @@ public struct OverrideMethodComparer : IEqualityComparer<MethodInfo>
 {
     public static OverrideMethodComparer Default { get; } = new();
 
-    public bool Equals(MethodInfo lhs, MethodInfo rhs)
+    public bool Equals(MethodInfo? lhs, MethodInfo? rhs)
     {
-        return lhs.MetadataToken == rhs.MetadataToken;
+        return ReferenceEquals(lhs, rhs) || lhs?.MetadataToken == rhs?.MetadataToken;
     }
 
     public int GetHashCode(MethodInfo mi)

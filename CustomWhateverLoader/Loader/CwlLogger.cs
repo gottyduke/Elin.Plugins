@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.ThirdParty;
 using UnityEngine;
@@ -50,14 +51,15 @@ internal sealed partial class CwlMod
     internal static void WarnWithPopup<T>(object payload, object? log = null)
     {
         Warn<T>(payload);
-        using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToString()));
+        using var progress = ProgressIndicator.CreateProgressScoped(
+            () => new(payload.ToTruncateString(115)));
 
         if (log is null) {
             return;
         }
 
         UnityEngine.Debug.Log(log);
-        progress.Get<ProgressIndicator>().AppendHoverText(log.ToString);
+        progress.Get<ProgressIndicator>().AppendHoverText(() => log.ToTruncateString(115));
     }
 
     [SwallowExceptions]
@@ -76,13 +78,14 @@ internal sealed partial class CwlMod
     internal static void ErrorWithPopup<T>(object payload, object? log = null, [CallerMemberName] string caller = "")
     {
         Error<T>(payload, caller);
-        using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToString(), Color: _warningColor));
+        using var progress = ProgressIndicator.CreateProgressScoped(
+            () => new(payload.ToTruncateString(115), Color: _warningColor));
 
         if (log is null) {
             return;
         }
 
         UnityEngine.Debug.Log(log);
-        progress.Get<ProgressIndicator>().AppendHoverText(log.ToString);
+        progress.Get<ProgressIndicator>().AppendHoverText(() => log.ToTruncateString(115));
     }
 }

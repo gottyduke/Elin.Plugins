@@ -2,6 +2,7 @@
 using System.Reflection.Emit;
 using Cwl.API.Drama;
 using Cwl.Helper.Extensions;
+using Cwl.Helper.String;
 using HarmonyLib;
 
 namespace Cwl.Patches.Dialogs;
@@ -56,7 +57,7 @@ internal class DramaExpansionPatch
         item.TryAdd("actor", "tg");
         DramaExpansion.Cookie = new(__instance, item);
 
-        foreach (var expr in rawExpr.SplitNewline()) {
+        foreach (var expr in rawExpr.SplitLines()) {
             var func = DramaExpansion.BuildExpression(expr);
             if (func is null) {
                 continue;

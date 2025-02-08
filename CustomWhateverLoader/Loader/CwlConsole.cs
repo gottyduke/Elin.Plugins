@@ -24,6 +24,7 @@ internal class CwlConsole
             if (!chara.isDestroyed) {
                 chara.Destroy();
             }
+
             EClass.game.cards.listAdv.Remove(chara);
         }
 

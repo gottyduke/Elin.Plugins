@@ -60,7 +60,7 @@ public class ExceptionProfile(string stackTrace)
         var sb = new StringBuilder(stackTrace.Length);
         var lineCount = 0;
 
-        foreach (var frame in stackTrace.SplitNewline()) {
+        foreach (var frame in stackTrace.SplitLines()) {
             var mono = MonoFrame.GetFrame(frame).Parse();
             switch (mono.frameType) {
                 case MonoFrame.StackFrameType.Unknown:
@@ -90,7 +90,7 @@ public class ExceptionProfile(string stackTrace)
             yield return null;
         }
 
-        Result = sb.ToString();
+        Result = sb.ToString().TruncateAllLines(115);
         Analyzed = true;
 
         CwlMod.Log<ExceptionProfile>(Result);

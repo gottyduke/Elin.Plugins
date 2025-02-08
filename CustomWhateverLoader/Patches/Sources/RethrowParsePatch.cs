@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using Cwl.Helper.Runtime;
 using Cwl.Helper.Runtime.Exceptions;
+using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
@@ -73,7 +74,7 @@ internal class RethrowParsePatch
                 : "cwl_error_source_rethrow_def".Loc(ExcelParser.rowDefault.Cells.TryGet(id, true));
             sb.AppendLine(defValue);
 
-            sb.AppendLine(ex.InnerException?.Message.SplitNewline()[0]);
+            sb.AppendLine(ex.InnerException?.Message.SplitLines()[0]);
 
             throw new SourceParseException(sb.ToString(), ex);
         }

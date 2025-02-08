@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Cwl.Helper.Runtime.Exceptions;
+using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using Cwl.ThirdParty;
@@ -44,7 +45,7 @@ internal partial class CwlMod
             }
         }
 
-        using var scopeExit = ProgressIndicator.CreateProgressScoped(() => new(message, Color: Color.red));
+        using var scopeExit = ProgressIndicator.CreateProgressScoped(() => new(message.Truncate(115)!, Color: Color.red));
         _activeExceptions[profile.Key] = progress = scopeExit.Get<ProgressIndicator>();
 
         if (!CwlConfig.LoggingExceptionAnalyze) {

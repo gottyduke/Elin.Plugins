@@ -29,6 +29,7 @@ public class CwlConfig
 
     [ConsoleCommand] public static bool AllowProcessors => Source.AllowProcessors?.Value is true;
     [ConsoleCommand] public static bool NamedImport => Source.NamedImport?.Value is true;
+    [ConsoleCommand] public static bool OverrideSameId => Source.OverrideSameId?.Value is true;
     [ConsoleCommand] public static bool RethrowException => Source.RethrowException?.Value is true;
 
     [ConsoleCommand] public static bool SheetInspection => Source.SheetInspection?.Value is true;
@@ -167,6 +168,13 @@ public class CwlConfig
             "When importing incompatible source sheets, try importing via column name instead of order\n" +
             "当导入可能不兼容的源表时，允许CWL使用列名代替列序导入");
 
+        Source.OverrideSameId = config.Bind(
+            ModInfo.Name,
+            "Source.OverrideSameId",
+            true,
+            "When importing rows with an existing ID, replace it instead of adding duplicate rows\n" +
+            "当导入重复ID的行时，覆盖它而不是添加新同ID行");
+
         Source.RethrowException = config.Bind(
             ModInfo.Name,
             "Source.RethrowException",
@@ -226,18 +234,19 @@ public class CwlConfig
 
     internal class Patches
     {
-        internal static ConfigEntry<bool>? QualifyTypeName { get; set; }
         internal static ConfigEntry<bool>? FixBaseGameAvatar { get; set; }
+        internal static ConfigEntry<bool>? QualifyTypeName { get; set; }
         internal static ConfigEntry<bool>? SafeCreateClass { get; set; }
     }
 
     internal class Source
     {
         internal static ConfigEntry<bool>? AllowProcessors { get; set; }
-        internal static ConfigEntry<bool>? RethrowException { get; set; }
-        internal static ConfigEntry<bool>? TrimSpaces { get; set; }
         internal static ConfigEntry<bool>? NamedImport { get; set; }
+        internal static ConfigEntry<bool>? OverrideSameId { get; set; }
+        internal static ConfigEntry<bool>? RethrowException { get; set; }
         internal static ConfigEntry<bool>? SheetInspection { get; set; }
         internal static ConfigEntry<bool>? SheetMigrate { get; set; }
+        internal static ConfigEntry<bool>? TrimSpaces { get; set; }
     }
 }

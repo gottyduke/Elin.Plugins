@@ -11,6 +11,7 @@ namespace Cwl.Helper.Runtime;
 public static class CachedMethods
 {
     private static readonly Dictionary<TypeInfo, MethodInfo[]> _cached = [];
+    private static readonly Dictionary<TypeInfo, FieldInfo?> _cachedFields = [];
 
     public static MethodInfo[] GetCachedMethods(this Type type)
     {
@@ -41,6 +42,25 @@ public static class CachedMethods
             return null;
             // noexcept
         }
+    }
+
+    public static FieldInfo? GetCachedField(this Type type, string fieldName)
+    {
+        return GetCachedField(type.GetTypeInfo(), fieldName);
+    }
+
+    public static FieldInfo? GetCachedField(this TypeInfo type, string fieldName)
+    {
+        if (_cachedFields.TryGetValue(type, out var field)) {
+            return field;
+        }
+
+        return _cachedFields[type] = AccessTools.Field(type, fieldName);
+    }
+
+    public static object? GetFieldValue(this object instance, string fieldName)
+    {
+        return instance.GetType().GetCachedField(fieldName)?.GetValue(instance);
     }
 
     public static Type? TryGetType(string typeName)

@@ -33,7 +33,7 @@ public static class CalcHelper
         if (args is null) {
             return [];
         }
-        
+
         Dictionary<string, object?> tokens = [];
         if (args is IDictionary<string, object?> input) {
             foreach (var (k, v) in input) {
