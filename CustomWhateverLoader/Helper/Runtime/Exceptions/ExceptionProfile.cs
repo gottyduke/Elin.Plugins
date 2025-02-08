@@ -61,10 +61,6 @@ public class ExceptionProfile(string stackTrace)
         var lineCount = 0;
 
         foreach (var frame in stackTrace.SplitNewline()) {
-            if (MonoFrame.HasFrame(frame)) {
-                continue;
-            }
-
             var mono = MonoFrame.GetFrame(frame).Parse();
             switch (mono.frameType) {
                 case MonoFrame.StackFrameType.Unknown:

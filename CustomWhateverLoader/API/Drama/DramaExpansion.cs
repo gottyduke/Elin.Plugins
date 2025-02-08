@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Cwl.Helper;
 using Cwl.Helper.Runtime;
 using Cwl.Helper.Runtime.Exceptions;
 
@@ -82,11 +83,22 @@ public partial class DramaExpansion : DramaOutcome
 
     public static bool add_item(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        if (parameters is not [{ } id, { } material]) {
+        if (parameters is not [{ } id, { } material, { } lv, { } num] || !int.TryParse(lv, out var itemLv)) {
             throw new DramaActionArgumentException(parameters);
         }
 
-        return false;
+        if (dm.sequence.GetActor(line["actor"]) is not { owner.chara: { } actor }) {
+            throw new DramaActionInvokeException(nameof(actor));
+        }
+
+        if (!int.TryParse(num, out var itemNum)) {
+            itemNum = 1;
+        }
+
+        var item = ThingGen.Create(id, ReverseId.Material(material), itemLv).SetNum(itemNum);
+        actor.AddThing(item);
+
+        return item.id != "869";
     }
 
     public static bool affinity_check(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
@@ -187,7 +199,7 @@ public partial class DramaExpansion : DramaOutcome
         return true;
     }
 
-    public static bool portrait_reset(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    internal static bool portrait_reset(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         if (dm.sequence.GetActor(line["actor"]) is { owner: { } owner }) {
             owner.idPortrait = owner.chara.GetIdPortrait();

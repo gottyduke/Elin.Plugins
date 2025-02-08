@@ -96,10 +96,26 @@ public partial class CustomChara : Chara
             }
         }
 
-        _delayedCharaImport.Add(r.id, new(import, zones.ToArray(), equips.ToArray(), things.ToArray()));
+        _delayedCharaImport[r.id] = new(import, zones.ToArray(), equips.ToArray(), things.ToArray());
     }
 
-    public static bool CreateTaggedChara(string id, out Chara? chara, string[]? equips = null, string[]? things = null)
+    public static bool CreateTaggedChara(string id, out Chara? chara)
+    {
+        chara = null;
+        if (!sources.charas.map.TryGetValue(id, out var row)) {
+            return false;
+        }
+
+        AddChara(row);
+        return _delayedCharaImport.TryGetValue(id, out var import) && CreateTaggedChara(id, out chara, import);
+    }
+
+    public static bool CreateTaggedChara(string id, out Chara? chara, CharaImport import)
+    {
+        return CreateTaggedChara(id, out chara, import.Equips, import.Things);
+    }
+
+    public static bool CreateTaggedChara(string id, out Chara? chara, string[]? equips, string[]? things = null)
     {
         chara = null;
 
@@ -139,10 +155,5 @@ public partial class CustomChara : Chara
             return false;
             // noexcept
         }
-    }
-
-    public static bool CreateTaggedChara(string id, out Chara? chara, CharaImport import)
-    {
-        return CreateTaggedChara(id, out chara, import.Equips, import.Things);
     }
 }

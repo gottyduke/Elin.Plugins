@@ -21,10 +21,14 @@ public partial class CustomChara
 
                 thing = chara.EQ_ID(id, r: rarity);
                 thing.c_IDTState = 0;
+
                 if (!thing.isDestroyed) {
                     thing.ChangeRarity(rarity);
                     CwlMod.Log<CustomChara>("cwl_log_added_eq".Loc(id, thing.rarity.ToString(), chara.id));
-                    return;
+
+                    if (thing.isEquipped) {
+                        return;
+                    }
                 }
             }
 

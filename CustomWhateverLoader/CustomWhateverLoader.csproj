@@ -199,10 +199,6 @@
         <Compile Include="API\Custom\Playlist\CustomPlaylist.cs"/>
         <Compile Include="API\Custom\Playlist\PlaylistBuilder.cs"/>
         <Compile Include="API\Custom\Playlist\PlaylistView.cs"/>
-        <Compile Include="API\Custom\Quest\CustomQuest.cs"/>
-        <Compile Include="API\Custom\Quest\QuestConditions.cs" />
-        <Compile Include="API\Custom\Quest\QuestDetails.cs" />
-        <Compile Include="API\Custom\Quest\QuestStages.cs" />
         <Compile Include="API\Drama\ActionBuilder.cs"/>
         <Compile Include="API\Drama\ActionCookie.cs"/>
         <Compile Include="API\Drama\ActionParameter.cs" />
@@ -214,6 +210,10 @@
         <Compile Include="API\Processors\TraitTransformer.cs"/>
         <Compile Include="API\Processors\TypeResolver.cs"/>
         <Compile Include="API\Processors\WorkbookProcessor.cs"/>
+        <Compile Include="API\Quest\CustomQuest.cs" />
+        <Compile Include="API\Quest\QuestConditions.cs" />
+        <Compile Include="API\Quest\QuestDetails.cs" />
+        <Compile Include="API\Quest\QuestStages.cs" />
         <Compile Include="API\Serializable\IChunkable.cs"/>
         <Compile Include="API\Serializable\SerializableBioData.cs"/>
         <Compile Include="API\Serializable\SerializableConverterData.cs" />
@@ -261,6 +261,7 @@
         <Compile Include="Helper\Unity\ColorParser.cs" />
         <Compile Include="Helper\Unity\CoroutineHelper.cs" />
         <Compile Include="Helper\Unity\DeferredCoroutine.cs" />
+        <Compile Include="Helper\Unity\ELayerCleanup.cs" />
         <Compile Include="Helper\Unity\PixelRaycast.cs" />
         <Compile Include="Helper\Unity\ProgressIndicator.cs" />
         <Compile Include="Helper\Unity\SpriteCreator.cs" />
