@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
@@ -62,8 +61,7 @@ public class CustomMerchant : TraitMerchant
         return stocks.LastOrDefault().Item2;
     }
 
-    public static void GenerateStock(Card owner, IEnumerable<SerializableStockItem> items, bool clear = false,
-        Action<Card>? onRestocking = null)
+    public static void GenerateStock(Card owner, IEnumerable<SerializableStockItem> items, bool clear = false)
     {
         var inv = owner.things.Find("chest_merchant");
         if (inv is null) {
@@ -101,8 +99,6 @@ public class CustomMerchant : TraitMerchant
                 // noexcept
             }
         }
-
-        onRestocking?.Invoke(owner);
     }
 
     // invoked by CWL
