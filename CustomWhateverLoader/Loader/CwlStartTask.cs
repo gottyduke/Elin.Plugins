@@ -119,8 +119,19 @@ internal sealed partial class CwlMod
     private static void RegisterEvents()
     {
         foreach (var (method, attrs) in AttributeQuery.MethodsWith<CwlEvent>()) {
-            GameIOProcessor.RegisterEvents(method, attrs);
-            ActPerformEvent.RegisterEvents(method, attrs);
+            foreach (var attr in attrs) {
+                switch (attr) {
+                    case CwlGameIOEvent ioAttr:
+                        GameIOProcessor.RegisterEvents(method, ioAttr);
+                        break;
+                    case CwlActPerformEvent actAttr:
+                        ActPerformEvent.RegisterEvents(method, actAttr);
+                        break;
+                    case CwlContextMenu ctxAttr:
+                        ContextMenuHelper.RegisterEvents(method, ctxAttr);
+                        break;
+                }
+            }
         }
 
         TraitTransformer.Add(CustomMerchant.TransformMerchant);
