@@ -5,7 +5,7 @@ using Cwl.Helper.Extensions;
 using Cwl.Helper.Unity;
 using HarmonyLib;
 
-namespace Cwl.Patches;
+namespace Cwl.Patches.UIs;
 
 [HarmonyPatch]
 internal class SkipProgressTweenPatch

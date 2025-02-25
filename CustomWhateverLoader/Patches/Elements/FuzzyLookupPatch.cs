@@ -40,7 +40,7 @@ internal class FuzzyLookup
             return true;
         }
 
-        CwlMod.Log<FuzzyLookup>($"cannot find element: {id}");
+        CwlMod.Warn<FuzzyLookup>($"cannot find element: {id}");
         return false;
     }
 }

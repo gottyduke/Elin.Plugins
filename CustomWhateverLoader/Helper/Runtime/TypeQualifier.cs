@@ -5,7 +5,9 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using BepInEx;
 using Cwl.LangMod;
+using HarmonyLib;
 using UnityEngine;
+using Logger = HarmonyLib.Tools.Logger;
 
 namespace Cwl.Helper.Runtime;
 
@@ -78,8 +80,12 @@ public class TypeQualifier
     public static Type? GlobalResolve(string unresolvedStr)
     {
         var trimmedParam = unresolvedStr.Trim();
-        if (string.IsNullOrEmpty(trimmedParam)) {
+        if (trimmedParam.IsEmpty()) {
             return null;
+        }
+
+        if (_qualifiedResults.TryGetValue(trimmedParam, out var paramType)) {
+            return paramType;
         }
 
         var paramParts = trimmedParam.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -110,7 +116,7 @@ public class TypeQualifier
             typeName = typeName[..^1];
         }
 
-        var paramType = CachedMethods.TryGetType(typeName);
+        paramType = TryGetType(typeName);
         if (paramType == null) {
             return null;
         }
@@ -119,7 +125,7 @@ public class TypeQualifier
             paramType = paramType.MakeByRefType();
         }
 
-        return paramType;
+        return _qualifiedResults[trimmedParam] = paramType;
     }
 
     internal static void SafeQueryTypesOfAll()
@@ -138,6 +144,17 @@ public class TypeQualifier
                 Plugins.Remove(plugin);
                 // noexcept
             }
+        }
+    }
+
+    internal static Type? TryGetType(string typeName)
+    {
+        try {
+            Logger.ChannelFilter = Logger.LogChannel.Error;
+            return AccessTools.TypeByName(typeName);
+        } catch {
+            return null;
+            // noexcept
         }
     }
 }

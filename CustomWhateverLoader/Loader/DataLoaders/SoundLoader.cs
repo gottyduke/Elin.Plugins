@@ -154,14 +154,14 @@ internal partial class DataLoader
             }
 
             ConfigCereal.WriteConfig(meta, metafile);
-            CwlMod.Log<DataLoader>("cwl_log_sound_default_meta".Loc(id));
+            CwlMod.Debug<DataLoader>("cwl_log_sound_default_meta".Loc(id));
         }
 
         data.clip = clip;
         data.name = id;
 
         loaded = data;
-        CwlMod.Log<DataLoader>("cwl_log_sound_loaded".Loc(meta.type, id, clip.frequency, clip.channels, clip.length));
+        CwlMod.Debug<DataLoader>("cwl_log_sound_loaded".Loc(meta.type, id, clip.frequency, clip.channels, clip.length));
 
         return true;
     }

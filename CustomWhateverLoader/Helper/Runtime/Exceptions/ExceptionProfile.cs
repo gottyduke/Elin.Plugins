@@ -63,9 +63,9 @@ public class ExceptionProfile(string stackTrace)
         foreach (var frame in stackTrace.SplitLines()) {
             var mono = MonoFrame.GetFrame(frame).Parse();
             switch (mono.frameType) {
-                case MonoFrame.StackFrameType.Unknown:
-                case MonoFrame.StackFrameType.Rethrow:
-                    continue;
+                case MonoFrame.StackFrameType.Unknown or MonoFrame.StackFrameType.Rethrow:
+                    sb.AppendLine(mono.StackFrame.ToTruncateString(115));
+                    break;
                 case MonoFrame.StackFrameType.Method or MonoFrame.StackFrameType.DynamicMethod:
                     try {
                         var info = mono.Method.GetPatchInfo();

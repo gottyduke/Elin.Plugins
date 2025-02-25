@@ -36,7 +36,7 @@ internal class ReverseIdMapper
     private static SourceMaterial.Row ReverseIndexer(List<SourceMaterial.Row> rows, int index)
     {
         ReverseIdMap(ref index);
-        return rows[index];
+        return rows.TryGet(index);
     }
 
     [HarmonyPatch]

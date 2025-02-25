@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Cwl.Helper.Runtime;
@@ -47,7 +46,7 @@ public static class MethodDispatcher
                 var cache = $"{type.FullName}::{methodName}";
                 _cached.TryAdd(cache, []);
 
-                var invocable = type.GetCachedMethods().FirstOrDefault(mi => mi.Name == methodName);
+                var invocable = Array.Find(type.GetCachedMethods(), mi => mi.Name == methodName);
                 if (invocable is not null) {
                     _cached[cache].Add(invocable);
                 }

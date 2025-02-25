@@ -27,7 +27,7 @@ internal partial class DataLoader
         foreach (var talk in PackageIterator.GetRelocatedExcelsFromPackage("Data/god_talk.xlsx", 3)) {
             try {
                 foreach (var (topic, _) in map) {
-                    if (topic is "") {
+                    if (topic == "") {
                         continue;
                     }
 

@@ -85,29 +85,21 @@ public class GameIOProcessor
     }
 
     [Time]
-    internal static void RegisterEvents(MethodInfo method, CwlEvent[] attributes)
+    internal static void RegisterEvents(MethodInfo method, CwlGameIOEvent io)
     {
-        if (Array.Find(attributes, attr => attr is CwlGameIOEvent) is null) {
-            return;
-        }
+        var (save, post) = io switch {
+            CwlPreLoad => (false, false),
+            CwlPostLoad => (false, true),
+            CwlPreSave => (true, false),
+            CwlPostSave => (true, true),
+            _ => throw new NotImplementedException(io.GetType().Name),
+        };
 
-        foreach (var attr in attributes) {
-            var (save, post) = attr switch {
-                CwlPreLoad => (false, false),
-                CwlPostLoad => (false, true),
-                CwlPreSave => (true, false),
-                CwlPostSave => (true, true),
-                _ => throw new NotImplementedException(attr.GetType().Name),
-            };
+        Add(ctx => method.FastInvokeStatic(ctx), save, post);
 
-            Add(ctx => method.FastInvokeStatic(ctx), save, post);
-
-            var state = post ? "post" : "pre";
-            var type = save ? "save" : "load";
-            var decl = method.DeclaringType!;
-            var provider = $"{decl.Assembly.GetName().Name}::{decl.Name}.{method.Name}";
-            CwlMod.Log<GameIOProcess>("cwl_log_processor_add".Loc(state, type, provider));
-        }
+        var state = post ? "post" : "pre";
+        var type = save ? "save" : "load";
+        CwlMod.Log<GameIOProcess>("cwl_log_processor_add".Loc(state, type, method.GetAssemblyDetail(false)));
     }
 
     /// <summary>

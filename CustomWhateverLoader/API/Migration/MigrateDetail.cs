@@ -98,7 +98,7 @@ public sealed class MigrateDetail
     {
         switch (CurrentSheet?.MigrateStrategy) {
             case Strategy.Reorder: {
-                CwlMod.Log<MigrateDetail>("cwl_warn_misaligned_sheet".Loc(CwlConfig.Source.NamedImport!.Definition.Key));
+                CwlMod.Warn<MigrateDetail>("cwl_warn_misaligned_sheet".Loc(CwlConfig.Source.NamedImport!.Definition.Key));
                 DumpHeaders();
 
                 if (CwlConfig.SheetMigrate) {
@@ -108,7 +108,7 @@ public sealed class MigrateDetail
                 break;
             }
             case Strategy.Missing: {
-                CwlMod.Log<MigrateDetail>("cwl_warn_missing_header".Loc());
+                CwlMod.Warn("cwl_warn_missing_header".Loc());
                 DumpHeaders();
                 break;
             }

@@ -75,7 +75,7 @@ public partial class CustomChara : Chara
                     }
 
                     var drama = sanitized[(action.Length + 1)..];
-                    if (drama is not "" &&
+                    if (drama != "" &&
                         PackageIterator.GetRelocatedFilesFromPackage($"Dialog/Drama/{drama}.xlsx").Any()) {
                         DramaRoutes[r.id] = drama;
                     }
@@ -88,7 +88,7 @@ public partial class CustomChara : Chara
 
                     var bio = sanitized[(action.Length + 1)..];
                     var data = PackageIterator.GetRelocatedFilesFromPackage($"Data/bio_{bio}.json").ToArray();
-                    if (bio is not "" && data.Length > 0) {
+                    if (bio != "" && data.Length > 0) {
                         BioOverride[r.id] = data[^1].FullName;
                     }
 

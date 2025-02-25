@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reflection;
 using Cwl.API.Migration;
 using Cwl.API.Processors;
-using Cwl.Helper;
 using Cwl.Helper.Runtime.Exceptions;
 using Cwl.LangMod;
 using HarmonyLib;
@@ -47,7 +46,7 @@ public class WorkbookImporter
         List<ISheet> orderedSheets = [];
         for (var i = 0; i < book.NumberOfSheets; ++i) {
             var sheet = book.GetSheetAt(i);
-            if (sheet.SheetName is "Element") {
+            if (sheet.SheetName == "Element") {
                 orderedSheets.Insert(0, sheet);
             } else {
                 orderedSheets.Add(sheet);

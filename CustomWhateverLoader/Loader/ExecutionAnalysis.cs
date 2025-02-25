@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using Cwl.LangMod;
 
-namespace Cwl.Helper;
+namespace Cwl;
 
 internal class ExecutionAnalysis
 {
@@ -18,8 +18,8 @@ internal class ExecutionAnalysis
             return;
         }
 
-        var sb = new StringBuilder(2048);
-        sb.AppendLine("cwl_log_execution_analysis".Loc());
+        var sb = new StringBuilder(2048)
+            .AppendLine("cwl_log_execution_analysis".Loc());
 
         var methodNameWidth = _cached.Keys.Max(mi => (mi.DeclaringType?.Name.Length ?? 0) + mi.Name.Length + 7);
         var total = 0d;
