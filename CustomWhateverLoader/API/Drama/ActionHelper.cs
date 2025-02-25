@@ -7,6 +7,21 @@ namespace Cwl.API.Drama;
 
 public partial class DramaExpansion
 {
+    public static void AddTempTalk(DramaManager dm, string text, string? jump = null)
+    {
+        var talkEvent = new DramaEventTalk {
+            idActor = "tg",
+            idJump = jump ?? dm.sequence.lastlastStep.IsEmpty("end"),
+            text = text,
+            temp = true,
+            sequence = dm.sequence,
+        };
+
+        dm.lastTalk = talkEvent;
+        dm.AddEvent(talkEvent);
+        dm.sequence.tempEvents.Add(dm.lastTalk);
+    }
+
     public static bool Compare(float lhs, string expr)
     {
         return expr.Trim() switch {

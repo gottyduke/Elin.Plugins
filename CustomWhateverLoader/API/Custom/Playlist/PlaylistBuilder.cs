@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Cwl.API.Attributes;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
@@ -72,6 +73,7 @@ public partial class CustomPlaylist
 
     // TODO use a deferred mapping to support Playlist filtering
     [ConsoleCommand("rebuild")]
+    [CwlContextMenu("BGM/Rebuild", "cwl_ui_bgm_rebuild")]
     internal static void BuildPlaylists()
     {
         ClearPlaylistCache();

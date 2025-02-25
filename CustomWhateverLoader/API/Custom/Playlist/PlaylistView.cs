@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Cwl.API.Attributes;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
@@ -16,10 +17,11 @@ public partial class CustomPlaylist
 {
     private static ProgressIndicator? _bgmProgress;
     private static bool _killBgmProgress;
-    private static readonly FastString _lastBgmViewInfo = new(128);
+    private static readonly FastString _lastBgmViewInfo = new(256);
     private static bool _detailedView;
 
     [ConsoleCommand("view")]
+    [CwlContextMenu("BGM/View", "cwl_ui_bgm_view")]
     internal static string EnableBGMView()
     {
         if (!_killBgmProgress && _bgmProgress != null) {
@@ -39,6 +41,7 @@ public partial class CustomPlaylist
     }
 
     [ConsoleCommand("hide")]
+    [CwlContextMenu("BGM/Hide", "cwl_ui_bgm_hide")]
     internal static string DisableBGMView()
     {
         _killBgmProgress = true;
@@ -48,6 +51,7 @@ public partial class CustomPlaylist
     }
 
     [ConsoleCommand("next")]
+    [CwlContextMenu("BGM/Next", "cwl_ui_bgm_next")]
     internal static string NextBGM()
     {
         var pl = EClass.Sound.currentPlaylist;
@@ -56,6 +60,7 @@ public partial class CustomPlaylist
     }
 
     [ConsoleCommand("last")]
+    [CwlContextMenu("BGM/Last", "cwl_ui_bgm_last")]
     internal static string LastBGM()
     {
         var pl = EClass.Sound.currentPlaylist;
@@ -65,6 +70,7 @@ public partial class CustomPlaylist
     }
 
     [ConsoleCommand("shuffle")]
+    [CwlContextMenu("BGM/Shuffle", "cwl_ui_bgm_shuffle")]
     internal static string ShuffleBGM()
     {
         var pl = EClass.Sound.currentPlaylist;
@@ -78,8 +84,8 @@ public partial class CustomPlaylist
     [SuppressMessage("ReSharper", "Unity.UnknownResource")]
     internal static string DumpAllBGMData()
     {
-        var sb = new StringBuilder(2048);
-        sb.AppendLine("Playlist Dump");
+        var sb = new StringBuilder(2048)
+            .AppendLine("Playlist Dump");
 
         var pls = Resources.LoadAll<Playlist>($"{DataLoader.SoundPathEntry}BGM/Playlist");
         foreach (var playlist in pls) {
@@ -140,14 +146,13 @@ public partial class CustomPlaylist
     private static string BuildPlaylistString()
     {
         var newPl = EClass.Sound.currentPlaylist;
-        var sb = new StringBuilder();
-
-        sb.AppendLine(newPl.name);
-        sb.AppendLine();
-        sb.AppendLine("cwl_bgm_shuffle".Loc(newPl.shuffle));
-        sb.AppendLine("cwl_bgm_stream".Loc(CwlConfig.SeamlessStreaming));
-        sb.AppendLine("cwl_bgm_detail".Loc(_detailedView));
-        sb.AppendLine();
+        var sb = new StringBuilder()
+            .AppendLine(newPl.name)
+            .AppendLine()
+            .AppendLine("cwl_bgm_shuffle".Loc(newPl.shuffle))
+            .AppendLine("cwl_bgm_stream".Loc(CwlConfig.SeamlessStreaming))
+            .AppendLine("cwl_bgm_detail".Loc(_detailedView))
+            .AppendLine();
 
         for (var i = 0; i < newPl.list.Count; ++i) {
             var bgm = newPl.list[i];

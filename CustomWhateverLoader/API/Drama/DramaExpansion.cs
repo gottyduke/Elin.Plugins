@@ -17,9 +17,7 @@ public partial class DramaExpansion : DramaOutcome
     // build and cache an external method table from other assembly
     public static bool build_ext(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        if (parameters is not [{ } assemblyName]) {
-            throw new DramaActionArgumentException(parameters);
-        }
+        parameters.Requires(out var assemblyName);
 
         if (assemblyName != "Elin" && !CwlConfig.ExpandedActionsExternal) {
             throw new InvalidOperationException($"{CwlConfig.Dialog.ExpandedActionsAllowExternal!.Definition.Key} is disabled");
@@ -83,12 +81,11 @@ public partial class DramaExpansion : DramaOutcome
 
     public static bool add_item(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        if (parameters is not [{ } id, { } material, { } lv, { } num] || !int.TryParse(lv, out var itemLv)) {
-            throw new DramaActionArgumentException(parameters);
-        }
+        parameters.Requires(out var id, out var material, out var lv, out var num);
+        dm.RequiresActor(out var actor);
 
-        if (dm.sequence.GetActor(line["actor"]) is not { owner.chara: { } actor }) {
-            throw new DramaActionInvokeException(nameof(actor));
+        if (!int.TryParse(lv, out var itemLv)) {
+            throw new DramaActionArgumentException(parameters);
         }
 
         if (!int.TryParse(num, out var itemNum)) {
@@ -103,21 +100,18 @@ public partial class DramaExpansion : DramaOutcome
 
     public static bool affinity_check(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        if (parameters is not [{ } expr]) {
-            throw new DramaActionArgumentException(parameters);
-        }
+        parameters.Requires(out var expr);
+        dm.RequiresActor(out var actor);
 
-        return dm.sequence.GetActor(line["actor"]) is { owner.chara: { } actor } &&
-               Compare(actor._affinity, expr);
+        return Compare(actor._affinity, expr);
     }
 
     public static bool affinity_mod(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        if (parameters is not [{ } mod]) {
-            throw new DramaActionArgumentException(parameters);
-        }
+        parameters.Requires(out var mod);
+        dm.RequiresActor(out var actor);
 
-        if (dm.sequence.GetActor(line["actor"]) is not { owner.chara: { } actor } || !int.TryParse(mod, out var value)) {
+        if (!int.TryParse(mod, out var value)) {
             return false;
         }
 
@@ -133,22 +127,20 @@ public partial class DramaExpansion : DramaOutcome
 
     public static bool faith_join(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        RequireParameters(parameters, out var faith);
+        parameters.Requires(out var faith);
+        dm.RequiresActor(out var actor);
 
         if (!game.religions.dictAll.TryGetValue(faith, out var religion) || !religion.CanJoin) {
             return false;
         }
 
-        religion.JoinFaith(dm.sequence.GetActor(line["actor"]).owner.chara);
+        religion.JoinFaith(actor);
         return true;
     }
 
     public static bool faith_leave(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        var actor = dm.sequence.GetActor(line["actor"]).owner.chara;
-        if (actor is null) {
-            return false;
-        }
+        dm.RequiresActor(out var actor);
 
         actor.faith?.LeaveFaith(actor, game.religions.Eyth, Religion.ConvertType.Default);
         return true;
@@ -156,15 +148,14 @@ public partial class DramaExpansion : DramaOutcome
 
     public static bool flag_check(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        RequireParameters(parameters, out var flag, out var expr);
+        parameters.Requires(out var flag, out var expr);
+
         return player.dialogFlags.TryGetValue(flag, out var value) && Compare(value, expr);
     }
 
     public static bool flag_mod(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        if (parameters is not [{ } flag, { } expr]) {
-            throw new DramaActionArgumentException(parameters);
-        }
+        parameters.Requires(out var flag, out var expr);
 
         player.dialogFlags.TryAdd(flag, 0);
         player.dialogFlags[flag] = ArithmeticModOrSet(player.dialogFlags[flag], expr);
@@ -174,37 +165,40 @@ public partial class DramaExpansion : DramaOutcome
 
     public static bool has_tag(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        if (parameters is not [{ } id, { } tag]) {
-            throw new DramaActionArgumentException(parameters);
-        }
+        parameters.Requires(out var id, out var tag);
 
         return game.cards.globalCharas.Find(id.Trim()) is { } chara && chara.source.tag.Contains(tag);
     }
 
-    // always return true for chaining
+    public static bool join_party(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        dm.RequiresActor(out var actor);
+
+        AddTempTalk(dm, actor.GetTalkText("hired"));
+        EClass.Sound.Play("good");
+        actor.MakeAlly();
+
+        return true;
+    }
+
     public static bool portrait_set(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        if (parameters is not [{ } portraitId]) {
-            throw new DramaActionArgumentException(parameters);
-        }
+        parameters.Requires(out var portraitId);
+        dm.RequiresPerson(out var owner);
 
         if (!Portrait.modPortraits.dict.ContainsKey(portraitId)) {
-            return true;
+            return false;
         }
 
-        if (dm.sequence.GetActor(line["actor"]) is { owner: { } owner }) {
-            owner.idPortrait = portraitId;
-        }
-
+        owner.idPortrait = portraitId;
         return true;
     }
 
     internal static bool portrait_reset(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        if (dm.sequence.GetActor(line["actor"]) is { owner: { } owner }) {
-            owner.idPortrait = owner.chara.GetIdPortrait();
-        }
+        dm.RequiresPerson(out var owner);
 
+        owner.idPortrait = owner.chara.GetIdPortrait();
         return true;
     }
 }
