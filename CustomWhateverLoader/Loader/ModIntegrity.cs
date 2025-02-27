@@ -1,10 +1,11 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Cwl.API;
 using Cwl.API.Attributes;
 using Cwl.API.Processors;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
-using HarmonyLib;
 
 namespace Cwl;
 
@@ -13,8 +14,8 @@ internal class ModIntegrity
     private static SerializableModPackage[] CurrentActivated => BaseModManager.Instance.packages
         .Where(p => p.activated && !p.builtin)
         .Select(p => new SerializableModPackage {
-            modName = p.title,
-            modId = p.id,
+            ModName = p.title,
+            ModId = p.id,
         })
         .ToArray();
 
@@ -32,7 +33,7 @@ internal class ModIntegrity
 
         CoroutineHelper.Deferred(
             () => Dialog.YesNo(
-                "cwl_warn_missing_mods".Loc(missing.Join(m => $"{m.modName}, {m.modId}", "\n")),
+                "cwl_warn_missing_mods".Loc(BuildMissingList(missing)),
                 () => EClass.scene.Init(Scene.Mode.Title),
                 null,
                 "cwl_warn_missing_mods_yes",
@@ -44,5 +45,20 @@ internal class ModIntegrity
     private static void SaveModList(GameIOProcessor.GameIOContext context)
     {
         context.Save(CurrentActivated, "active_mods");
+    }
+
+    private static string BuildMissingList(IReadOnlyList<SerializableModPackage> missing)
+    {
+        var sb = new StringBuilder();
+
+        foreach (var mod in missing.Take(15)) {
+            sb.AppendLine($"{mod.ModName},  {mod.ModId}");
+        }
+
+        if (missing.Count > 15) {
+            sb.AppendLine($"+ {missing.Count - 15}...");
+        }
+
+        return sb.ToString().TrimEnd();
     }
 }
