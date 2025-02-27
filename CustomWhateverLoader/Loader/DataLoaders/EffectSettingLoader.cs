@@ -20,7 +20,7 @@ internal partial class DataLoader
         var sprites = Resources.FindObjectsOfTypeAll<Sprite>();
         var guns = Core.Instance.gameSetting.effect.guns;
 
-        var effects = PackageIterator.GetRelocatedJsonsFromPackage<SerializableEffectSetting>("Data/EffectSetting.guns.json");
+        var effects = PackageIterator.GetJsonsFromPackage<SerializableEffectSetting>("Data/EffectSetting.guns.json");
         foreach (var (path, gunData) in effects) {
             foreach (var (id, read) in gunData) {
                 try {

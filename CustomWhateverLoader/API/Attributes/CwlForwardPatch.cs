@@ -84,7 +84,7 @@ public class CwlForwardPatch : HarmonyPatch
     }
 
     [HarmonyPostfix]
-    private static void OnAttributeQualify(object attr, ref bool __result)
+    private static void OnAttributeQualify(ref bool __result, object attr)
     {
         __result = __result || attr is CwlForwardPatch;
     }

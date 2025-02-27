@@ -53,7 +53,7 @@ internal class RethrowParsePatch
 
     [Time]
     [HarmonyPrefix]
-    internal static bool RethrowParseInvoke(int id, ref object? __result, MethodInfo __originalMethod)
+    internal static bool RethrowParseInvoke(ref object? __result, int id, MethodInfo __originalMethod)
     {
         try {
             if (!_cached.TryGetValue(__originalMethod.MetadataToken, out var parser)) {
@@ -73,7 +73,6 @@ internal class RethrowParsePatch
                 ? "cwl_error_source_rethrow_row".Loc()
                 : "cwl_error_source_rethrow_def".Loc(ExcelParser.rowDefault.Cells.TryGet(id, true));
             sb.AppendLine(defValue);
-
             sb.AppendLine(ex.InnerException?.Message.SplitLines()[0]);
 
             throw new SourceParseException(sb.ToString(), ex);

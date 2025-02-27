@@ -18,7 +18,6 @@ public class MonoFrame(string stackFrame)
 
     private static readonly Dictionary<string, MonoFrame> _cached = [];
 
-
     private bool _parsed;
     public StackFrameType frameType = StackFrameType.Unknown;
 

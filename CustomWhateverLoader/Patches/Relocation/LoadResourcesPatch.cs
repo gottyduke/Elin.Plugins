@@ -36,7 +36,7 @@ public class LoadResourcesPatch
     [SwallowExceptions]
     [HarmonyPrefix]
     [HarmonyPatch(typeof(Resources), nameof(Resources.Load), typeof(string), typeof(Type))]
-    internal static bool OnRelocateResource(string path, Type systemTypeInstance, ref Object __result)
+    internal static bool OnRelocateResource(ref Object __result, string path, Type systemTypeInstance)
     {
         if (!_handlers.TryGetValue(systemTypeInstance, out var handlers)) {
             return true;

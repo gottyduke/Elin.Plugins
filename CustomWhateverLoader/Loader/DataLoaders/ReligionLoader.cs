@@ -24,7 +24,7 @@ internal partial class DataLoader
         var godTalk = EMono.sources.dataGodTalk;
         var map = godTalk.sheets[DefaultSheet].map;
 
-        foreach (var talk in PackageIterator.GetRelocatedExcelsFromPackage("Data/god_talk.xlsx", 3)) {
+        foreach (var talk in PackageIterator.GetExcelsFromPackage("Data/god_talk.xlsx", 3)) {
             try {
                 foreach (var (topic, _) in map) {
                     if (topic == "") {
@@ -50,7 +50,7 @@ internal partial class DataLoader
     [ConsoleCommand("load_religion_elements")]
     internal static void MergeFactionElements()
     {
-        var elements = PackageIterator.GetRelocatedJsonsFromPackage<SerializableReligionElement>("Data/religion_elements.json");
+        var elements = PackageIterator.GetJsonsFromPackage<SerializableReligionElement>("Data/religion_elements.json");
         foreach (var (path, element) in elements) {
             try {
                 foreach (var (id, list) in element) {

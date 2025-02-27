@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Cwl.Patches.Traits;
 
 [HarmonyPatch(typeof(Trait), nameof(Trait.OnBarter))]
-internal class MerchantOnBarterPatch
+internal class OnBarterEvent
 {
     [HarmonyPrefix]
     internal static void OnSetStock(Trait __instance, out bool __state)

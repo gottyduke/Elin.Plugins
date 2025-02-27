@@ -11,7 +11,7 @@ internal partial class DataLoader
     [Time]
     internal static void MergeCharaTalk()
     {
-        foreach (var charaTalk in PackageIterator.GetRelocatedExcelsFromPackage("Data/chara_talk.xlsx")) {
+        foreach (var charaTalk in PackageIterator.GetExcelsFromPackage("Data/chara_talk.xlsx")) {
             try {
                 MOD.listTalk.items.Add(charaTalk);
                 CwlMod.Log<DataLoader>("cwl_preload_chara_talk".Loc(charaTalk.path.ShortPath()));
@@ -25,7 +25,7 @@ internal partial class DataLoader
     [Time]
     internal static void MergeCharaTone()
     {
-        foreach (var charaTone in PackageIterator.GetRelocatedExcelsFromPackage("Data/chara_tone.xlsx")) {
+        foreach (var charaTone in PackageIterator.GetExcelsFromPackage("Data/chara_tone.xlsx")) {
             try {
                 MOD.tones.items.Add(charaTone);
                 CwlMod.Log<DataLoader>("cwl_preload_chara_tone".Loc(charaTone.path.ShortPath()));

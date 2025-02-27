@@ -69,17 +69,17 @@ public class PackageIterator
         return _mappings[package.id] = new(package, lang);
     }
 
-    public static IEnumerable<ExcelData> GetRelocatedExcelsFromPackage(string relativePath, int startIndex = 5)
+    public static IEnumerable<ExcelData> GetExcelsFromPackage(string relativePath, int startIndex = 5)
     {
         return GetRelocatedFilesFromPackage(relativePath)
             .Select(b => new ExcelData(b.FullName, startIndex));
     }
 
-    public static IEnumerable<(FileInfo, T)> GetRelocatedJsonsFromPackage<T>(string relativePath) where T : new()
+    public static IEnumerable<(FileInfo, T)> GetJsonsFromPackage<T>(string relativePath) where T : new()
     {
         return BaseModManager.Instance.packages
             .Where(p => p.activated && !p.builtin)
-            .Select(p => GetRelocatedJsonFromPackage<T>(relativePath, p.id))
+            .Select(p => GetJsonFromPackage<T>(relativePath, p.id))
             .OfType<(FileInfo, T)>();
     }
 
@@ -91,13 +91,13 @@ public class PackageIterator
             .OfType<FileInfo>();
     }
 
-    public static ExcelData? GetRelocatedExcelFromPackage(string relativePath, string modGuid, int startIndex = 5)
+    public static ExcelData? GetExcelFromPackage(string relativePath, string modGuid, int startIndex = 5)
     {
         var excel = GetRelocatedFileFromPackage(relativePath, modGuid);
         return excel is null ? null : new(excel.FullName, startIndex);
     }
 
-    public static (FileInfo, T)? GetRelocatedJsonFromPackage<T>(string relativePath, string modGuid) where T : new()
+    public static (FileInfo, T)? GetJsonFromPackage<T>(string relativePath, string modGuid) where T : new()
     {
         var json = GetRelocatedFileFromPackage(relativePath, modGuid);
         return json is null || !ConfigCereal.ReadConfig<T>(json.FullName, out var data) || data is null ? null : (json, data);

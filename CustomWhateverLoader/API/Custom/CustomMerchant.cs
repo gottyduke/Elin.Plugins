@@ -57,7 +57,7 @@ public class CustomMerchant : TraitMerchant
 
     public static SerializableStockData? GetStockData(string stockId)
     {
-        var stocks = PackageIterator.GetRelocatedJsonsFromPackage<SerializableStockData>($"Data/stock_{stockId}.json");
+        var stocks = PackageIterator.GetJsonsFromPackage<SerializableStockData>($"Data/stock_{stockId}.json");
         return stocks.LastOrDefault().Item2;
     }
 
