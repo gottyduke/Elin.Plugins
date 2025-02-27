@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using HarmonyLib;
 
 namespace Cwl.Helper.Runtime;
 
@@ -26,9 +28,12 @@ public static class MethodDispatcher
             return new(false);
         }
 
-        var dispatch = new DispatchResult(true);
-        Array.Resize(ref args, method.GetParameters().Length);
+        if (!method.GetParameters().Types().SequenceEqual(args.Select(a => a.GetType()))) {
+            CwlMod.Warn($"failed invoking {method.Name}\nunexpected parameters pack");
+            return new(false);
+        }
 
+        var dispatch = new DispatchResult(true);
         try {
             dispatch.Result = method.FastInvoke(instance, args);
         } catch (Exception ex) {

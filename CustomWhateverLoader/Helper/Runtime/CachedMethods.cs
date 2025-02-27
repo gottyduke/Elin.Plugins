@@ -37,7 +37,7 @@ public static class CachedMethods
 
             return Array.Find(type.GetCachedMethods(),
                 mi => mi.Name == methodName &&
-                      mi.GetParameters().Select(p => p.ParameterType).SequenceEqual(parameters));
+                      mi.GetParameters().Types().SequenceEqual(parameters));
         } catch {
             return null;
             // noexcept

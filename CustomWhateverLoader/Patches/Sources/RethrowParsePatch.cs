@@ -37,7 +37,7 @@ internal class RethrowParsePatch
     {
         var parsers = typeof(SourceData).GetTypeInfo().GetCachedMethods()
             .Where(mi => mi.IsStatic && _methodNames.Contains(mi.Name))
-            .Where(mi => mi.GetParameters().Select(p => p.ParameterType).SequenceEqual([typeof(int)]));
+            .Where(mi => mi.GetParameters().Types().SequenceEqual([typeof(int)]));
         var excelParsers = typeof(ExcelParser).GetTypeInfo().GetCachedMethods();
 
         foreach (var parser in parsers) {
