@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Cwl.API.Attributes;
 using Cwl.Helper.FileUtil;
+using Cwl.Helper.Runtime;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using ReflexCLI.Attributes;
@@ -11,7 +13,12 @@ namespace Cwl.API.Custom;
 [ConsoleCommandClassCustomizer("cwl.converter")]
 public class CustomConverter : TraitBrewery
 {
+    private const string AltTraitName = $"Trait{nameof(CustomConverter)}";
+
     private static readonly Dictionary<string, Dictionary<string, SerializableConversionRule[]>> _cached = [];
+
+    internal static readonly Dictionary<int, CustomConverter> Managed = [];
+    internal static List<string>? PossibleTraits;
 
     public override int DecaySpeedChild => Data.DecaySpeed;
     public override Type type => default;
@@ -33,19 +40,40 @@ public class CustomConverter : TraitBrewery
             return true;
         }
 
-        if (!Conversions.TryGetValue(card.id, out var products) || products is null) {
-            products = Conversions.GetValueOrDefault(card.sourceCard._origin, []);
+        foreach (var product in GenerateProducts(owner, card)) {
+            owner.trait.InstanceDispatch("_OnProduce", product);
+
+            pc.Say(idMsg, card, product);
+
+            owner.AddThing(product);
         }
 
-        if (products.Length == 0) {
-            return true;
+        return false;
+    }
+
+    public override void OnProduce(Card c)
+    {
+    }
+
+    public static Thing[] GenerateProducts(Card owner, Card card)
+    {
+        var converter = GetConverter(owner);
+        if (converter is null) {
+            return [];
         }
 
+        var conversions = converter.Conversions;
+        if (!conversions.TryGetValue(card.id, out var products) || products is null) {
+            products = conversions.GetValueOrDefault(card.sourceCard._origin, []);
+        }
+
+        List<Thing> generated = [];
         foreach (var product in products) {
             var thing = product.Create(card.LV).SetNum(Mathf.Max(1, product.Num * card.Num));
 
             var food = thing.IsFood;
             CraftUtil.MixIngredients(thing, [card.Thing], food ? CraftUtil.MixType.Food : CraftUtil.MixType.General, 999, pc);
+
             if (food) {
                 thing.MakeFoodRef(card);
             } else {
@@ -60,28 +88,50 @@ public class CustomConverter : TraitBrewery
                 card.Destroy();
             }
 
-            owner.AddThing(thing);
-            owner.GetRootCard().Say(idMsg, card, thing);
+            generated.Add(thing);
         }
 
-        return false;
+        return generated.ToArray();
     }
 
-    public override void OnSetOwner()
+    [ConsoleCommand("reload")]
+    [CwlContextMenu("Converter/Reload", "cwl_ui_converter_reload")]
+    public static string ReloadAllConverterData()
     {
-        var dataId = GetParam(5, owner.id);
-        if (!_cached.TryGetValue(dataId, out var data)) {
-            var conv = PackageIterator.GetRelocatedJsonsFromPackage<SerializableConverterData>($"Data/converter_{dataId}.json")
-                .LastOrDefault();
-            if (conv.Item2 is null) {
-                CwlMod.WarnWithPopup<CustomConverter>("cwl_warn_converter_missing".Loc(dataId, owner.id));
-                return;
+        _cached.Clear();
+
+        foreach (var card in _map.Cards) {
+            if (!Managed.ContainsKey(card.uid)) {
+                continue;
             }
 
-            Data = conv.Item2;
-            data = new();
+            if (!LoadConverterData(card)) {
+                Managed.Remove(card.uid);
+            }
+        }
 
-            foreach (var (id, products) in Data.Conversions) {
+        return "reloaded";
+    }
+
+    public static CustomConverter? GetConverter(Card card)
+    {
+        return Managed.GetValueOrDefault(card.uid);
+    }
+
+    public static bool LoadConverterData(Card card)
+    {
+        var converter = new CustomConverter();
+
+        var dataId = card.sourceCard.trait.TryGet(5, true) ?? card.id;
+        if (!_cached.TryGetValue(dataId, out var data)) {
+            var (_, serialized) = PackageIterator.GetJsonsFromPackage<SerializableConverterData>($"Data/converter_{dataId}.json")
+                .LastOrDefault();
+            if (serialized is null) {
+                return false;
+            }
+
+            data = _cached[dataId] = new();
+            foreach (var (id, products) in serialized.Conversions) {
                 if (id.StartsWith("origin:")) {
                     foreach (var idv in sources.things.map.Values.Where(r => r._origin == id[7..])) {
                         data[idv.id] = products;
@@ -91,29 +141,31 @@ public class CustomConverter : TraitBrewery
                 }
             }
 
-            _cached[dataId] = data;
-            CwlMod.Log<CustomConverter>("cwl_log_converter_apply".Loc(dataId, owner.id));
+            CwlMod.Log<CustomConverter>("cwl_log_converter_apply".Loc(dataId, card.id));
+            converter.Data = serialized;
         }
 
-        Conversions = data;
-        AllProducts.Clear();
-        AllProducts.UnionWith(data.Values.SelectMany(p => p));
-    }
+        converter.Conversions = data;
+        converter.AllProducts.Clear();
+        converter.AllProducts.UnionWith(data.Values.SelectMany(p => p));
 
-    [ConsoleCommand("reload")]
-    public static void ReloadAllConverterData()
-    {
-        _cached.Clear();
-        foreach (var card in _map.Cards) {
-            if (card.trait is CustomConverter converter) {
-                converter.OnSetOwner();
-            }
-        }
+        Managed[card.uid] = converter;
+        return true;
     }
 
     internal static void TransformConverter(ref string traitName, Card traitOwner)
     {
-        if (traitName == $"Trait{nameof(CustomConverter)}") {
+        PossibleTraits ??= TypeQualifier.Declared
+            .OfDerived(typeof(TraitBrewery))
+            .Select(t => t.Name)
+            .Concat([AltTraitName])
+            .ToList();
+
+        if (PossibleTraits.Contains(traitName)) {
+            LoadConverterData(traitOwner);
+        }
+
+        if (traitName == AltTraitName) {
             traitName = nameof(CustomConverter);
         }
     }
