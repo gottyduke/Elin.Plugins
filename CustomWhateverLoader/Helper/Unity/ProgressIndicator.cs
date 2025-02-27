@@ -16,6 +16,7 @@ public class ProgressIndicator : EMono, IPointerClickHandler, IPointerEnterHandl
     private string _hoverClosePrompt = "";
     private string _hoverDetailPrompt = "";
     private Func<string>? _onHoverUpdate;
+    private Action<PointerEventData>? _onPointerClick;
     private Func<string>? _onTailUpdate;
     private Outline? _outline;
     private float _remaining;
@@ -35,6 +36,8 @@ public class ProgressIndicator : EMono, IPointerClickHandler, IPointerEnterHandl
         if (eventData.button == PointerEventData.InputButton.Right) {
             Kill();
         }
+
+        _onPointerClick?.Invoke(eventData);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -142,10 +145,23 @@ public class ProgressIndicator : EMono, IPointerClickHandler, IPointerEnterHandl
         return this;
     }
 
+    public ProgressIndicator SetClickHandler(Action<PointerEventData> clickHandler)
+    {
+        _onPointerClick = clickHandler;
+        return this;
+    }
+
     public ProgressIndicator ResetProgress()
     {
         _remaining = _updater?.LingerDuration ?? 0f;
         return this;
+    }
+
+    public void Kill()
+    {
+        Pop.important = false;
+        _active.Remove(this);
+        ui.popSystem.Kill(Pop);
     }
 
     private IEnumerator UpdateProgress(float interval)
@@ -196,13 +212,6 @@ public class ProgressIndicator : EMono, IPointerClickHandler, IPointerEnterHandl
         } catch {
             // noexcept
         }
-    }
-
-    private void Kill()
-    {
-        Pop.important = false;
-        _active.Remove(this);
-        ui.popSystem.Kill(Pop);
     }
 
     private void AppendOutline()

@@ -5,6 +5,7 @@ using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using Cwl.ThirdParty;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Cwl;
 
@@ -29,6 +30,9 @@ internal partial class CwlMod
         }
 
         var profile = ExceptionProfile.GetFromStackTrace(stackTrace);
+        if (profile.Hidden) {
+            return;
+        }
 
         if (!CwlConfig.LoggingExceptionPopup) {
             return;
@@ -57,7 +61,15 @@ internal partial class CwlMod
                 profile.StartAnalyzing();
                 return profile.Result;
             })
-            .SetHoverPrompt("cwl_ui_exception_analyzing".Loc(), "cwl_ui_exception_analyze".Loc());
+            .SetHoverPrompt("cwl_ui_exception_analyzing".Loc(), "cwl_ui_exception_analyze".Loc())
+            .SetClickHandler(ped => {
+                if (ped.button != PointerEventData.InputButton.Middle) {
+                    return;
+                }
+
+                profile.Hidden = true;
+                progress.Kill();
+            });
         CoroutineHelper.Deferred(
             () => {
                 if (progress == null) {

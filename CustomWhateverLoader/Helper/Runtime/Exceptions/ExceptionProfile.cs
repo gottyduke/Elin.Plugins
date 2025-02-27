@@ -19,6 +19,7 @@ public class ExceptionProfile(string stackTrace)
     public int Occurrences { get; private set; } = 1;
     public string Result { get; private set; } = "cwl_ui_exception_analyzing".Loc();
     public int Key { get; private set; }
+    public bool Hidden { get; internal set; }
 
     public static ExceptionProfile GetFromStackTrace(string stackTrace)
     {
