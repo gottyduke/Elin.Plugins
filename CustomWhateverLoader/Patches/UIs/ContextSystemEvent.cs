@@ -30,11 +30,11 @@ internal class ContextSystemEvent
         }
 
         foreach (var popper in context.GetComponentsInChildren<UIContextMenuPopper>()) {
-            if (popper.id != "tool") {
+            if (popper.id != "etc") {
                 continue;
             }
 
-            mods.transform.parent.SetSiblingIndex(popper.transform.GetSiblingIndex() + 1);
+            mods.transform.parent.SetSiblingIndex(popper.transform.GetSiblingIndex());
             break;
         }
     }
