@@ -22,12 +22,12 @@ public class CustomReligion(string religionId) : Religion, IChunkable
 
     public static IReadOnlyCollection<CustomReligion> All => Managed.Values;
 
-    public string ChunkName => $"{typeof(CustomReligion).FullName}.{id}";
+    public string ChunkName => $"{typeof(CustomReligion).FullName}.{_id}";
+    public string FeatGodAlias => $"featGod_{_id}1";
 
     public static CustomReligion GerOrAdd(string id)
     {
-        Managed.TryAdd(id, new(id));
-        return Managed[id];
+        return Managed.GetOrCreate(id, () => new(id));
     }
 
     public CustomReligion SetMinor(bool minorGod)
