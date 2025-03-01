@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Cwl.Helper;
+using Cwl.Helper.Extensions;
 using Cwl.Helper.Runtime;
 using Cwl.Helper.Runtime.Exceptions;
 
@@ -149,25 +150,36 @@ public partial class DramaExpansion : DramaOutcome
     public static bool flag_check(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.Requires(out var flag, out var expr);
+        dm.RequiresActor(out var actor);
 
-        return player.dialogFlags.TryGetValue(flag, out var value) && Compare(value, expr);
+        return actor.IsPC
+            ? player.dialogFlags.TryGetValue(flag, out var value) && Compare(value, expr)
+            : Compare(actor.GetFlagValue(flag), expr);
     }
 
     public static bool flag_mod(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.Requires(out var flag, out var expr);
+        dm.RequiresActor(out var actor);
 
-        player.dialogFlags.TryAdd(flag, 0);
-        player.dialogFlags[flag] = ArithmeticModOrSet(player.dialogFlags[flag], expr);
+        if (actor.IsPC) {
+            player.dialogFlags.TryAdd(flag, 0);
+            player.dialogFlags[flag] = ArithmeticModOrSet(player.dialogFlags[flag], expr);
+        } else {
+            var key = flag.GetHashCode();
+            actor.mapInt.TryAdd(key, 0);
+            actor.mapInt[key] = ArithmeticModOrSet(actor.mapInt[key], expr);
+        }
 
         return true;
     }
 
     public static bool has_tag(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        parameters.Requires(out var id, out var tag);
+        parameters.Requires(out var tag);
+        dm.RequiresActor(out var actor);
 
-        return game.cards.globalCharas.Find(id.Trim()) is { } chara && chara.source.tag.Contains(tag);
+        return actor.source.tag.Contains(tag);
     }
 
     public static bool join_party(DramaManager dm, Dictionary<string, string> line, params string[] parameters)

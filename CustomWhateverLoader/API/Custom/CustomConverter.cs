@@ -41,18 +41,19 @@ public class CustomConverter : TraitBrewery
         }
 
         foreach (var product in GenerateProducts(owner, card)) {
-            owner.trait.InstanceDispatch("_OnProduce", product);
-
-            pc.Say(idMsg, card, product);
-
-            owner.AddThing(product);
+            _OnProduce((Thing)card, product);
+            if (owner.trait != this) {
+                owner.trait.InstanceDispatch("_OnProduce", card, product);
+            }
         }
 
         return false;
     }
 
-    public override void OnProduce(Card c)
+    private void _OnProduce(Thing ingredient, Thing product)
     {
+        pc.Say(idMsg, ingredient, product);
+        owner.AddThing(product);
     }
 
     public static Thing[] GenerateProducts(Card owner, Card card)
