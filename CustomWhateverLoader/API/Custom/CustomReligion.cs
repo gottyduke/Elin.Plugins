@@ -21,9 +21,9 @@ public class CustomReligion(string religionId) : Religion, IChunkable
     public override bool CanJoin => _canJoin;
 
     public static IReadOnlyCollection<CustomReligion> All => Managed.Values;
+    public string FeatGodAlias => $"featGod_{_id}1";
 
     public string ChunkName => $"{typeof(CustomReligion).FullName}.{_id}";
-    public string FeatGodAlias => $"featGod_{_id}1";
 
     public static CustomReligion GerOrAdd(string id)
     {

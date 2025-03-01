@@ -37,9 +37,16 @@ internal class SafeResolveTypePatch
     [Time]
     private static bool SafeResolveInvoke(bool resolved, Type objectType, ref Type readType, string qualified)
     {
-        if (!resolved) {
-            TypeResolver.Resolve(ref resolved, objectType, ref readType, qualified);
+        if (resolved) {
+            return true;
         }
+
+        if (readType != typeof(object)) {
+            // type collision
+            TypeResolver.WarnIncompatibleReadType(objectType, readType);
+        }
+
+        TypeResolver.Resolve(ref resolved, objectType, ref readType, qualified);
 
         return resolved;
     }

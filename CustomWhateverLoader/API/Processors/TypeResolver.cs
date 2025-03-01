@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Cwl.LangMod;
 using MethodTimer;
 
@@ -12,11 +13,11 @@ public class TypeResolver
     // objectType should be readonly, only mutate the readType and mark it as resolved
     public delegate void TypeResolve(ref bool resolved, Type objectType, ref Type readType, string qualified);
 
-    private static event TypeResolve OnTypeResolve = delegate { };
+    private static readonly List<TypeResolve> _onTypeResolve = [];
 
     public static void Add(TypeResolve resolver)
     {
-        OnTypeResolve += Process;
+        _onTypeResolve.Add(Process);
         return;
 
         void Process(ref bool resolved, Type objectType, ref Type readType, string qualified)
@@ -30,9 +31,22 @@ public class TypeResolver
         }
     }
 
+    public static void WarnIncompatibleReadType(Type objectType, Type readType)
+    {
+        CwlMod.Warn<TypeResolver>($"type resolver got incompatible types\n" +
+                                  $"expected type {objectType.AssemblyQualifiedName}\n" +
+                                  $"read type {readType.AssemblyQualifiedName}");
+    }
+
     internal static void Resolve(ref bool resolved, Type objectType, ref Type readType, string qualified)
     {
-        OnTypeResolve(ref resolved, objectType, ref readType, qualified);
+        foreach (var resolve in _onTypeResolve) {
+            if (resolved) {
+                return;
+            }
+
+            resolve(ref resolved, objectType, ref readType, qualified);
+        }
     }
 
     /// <summary>

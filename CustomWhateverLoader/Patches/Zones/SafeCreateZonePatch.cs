@@ -21,7 +21,7 @@ internal class SafeCreateZonePatch
             return;
         }
 
-        if (objectType != typeof(Spatial) || readType != typeof(object)) {
+        if (objectType != typeof(Spatial)) {
             return;
         }
 

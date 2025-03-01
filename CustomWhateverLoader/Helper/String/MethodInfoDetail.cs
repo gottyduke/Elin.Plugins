@@ -21,15 +21,15 @@ public static class MethodInfoDetail
     public static void AppendPatchInfo(this StringBuilder sb, PatchInfo patchInfo)
     {
         foreach (var patch in patchInfo.prefixes) {
-            sb.AppendLine($"\t|Prefix: {patch.PatchMethod.GetDetail()}");
+            sb.AppendLine($"\t+Prefix: {patch.PatchMethod.GetAssemblyDetail(false)}");
         }
 
         foreach (var patch in patchInfo.postfixes) {
-            sb.AppendLine($"\t|Postfix: {patch.PatchMethod.GetDetail()}");
+            sb.AppendLine($"\t+Postfix: {patch.PatchMethod.GetAssemblyDetail(false)}");
         }
 
         foreach (var patch in patchInfo.transpilers) {
-            sb.AppendLine($"\t|Transpiler: {patch.PatchMethod.GetDetail()}");
+            sb.AppendLine($"\t+Transpiler: {patch.PatchMethod.GetAssemblyDetail(false)}");
         }
     }
 }

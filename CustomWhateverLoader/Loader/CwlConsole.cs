@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Cwl.API.Attributes;
 using ReflexCLI.Attributes;
 
 namespace Cwl;
@@ -7,6 +8,7 @@ namespace Cwl;
 internal class CwlConsole
 {
     [ConsoleCommand("vacate_beggar")]
+    [CwlContextMenu("CWL/BeggarBegone", "cwl_ui_vacate_beggar")]
     internal static string BegoneOfYouBeggars()
     {
         // Because noa wrote so

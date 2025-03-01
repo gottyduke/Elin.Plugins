@@ -56,7 +56,7 @@ internal class SafeCreateConditionPatch
             return;
         }
 
-        if (objectType != typeof(Condition) || readType != typeof(object)) {
+        if (objectType != typeof(Condition)) {
             return;
         }
 

@@ -22,7 +22,7 @@ internal class SafeCreateQuestPatch
             return;
         }
 
-        if (objectType != typeof(Quest) || readType != typeof(object)) {
+        if (objectType != typeof(Quest)) {
             return;
         }
 
