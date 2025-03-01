@@ -9,8 +9,6 @@ namespace Cwl;
 public class CwlConfig
 {
     [ConsoleCommand] public static bool LoggingVerbose => Logging.Verbose?.Value is true;
-    [ConsoleCommand] public static bool LoggingExceptionAnalyze => Logging.ExceptionAnalyze?.Value is true;
-    [ConsoleCommand] public static bool LoggingExceptionPopup => Logging.ExceptionPopup?.Value is true;
 
     [ConsoleCommand] public static bool SeamlessStreaming => BGM.SeamlessStreaming?.Value is true;
 
@@ -22,6 +20,9 @@ public class CwlConfig
     [ConsoleCommand] public static bool ExpandedActionsExternal => Dialog.ExpandedActionsAllowExternal?.Value is true;
     [ConsoleCommand] public static bool NoOverlappingSounds => Dialog.NoOverlappingSounds?.Value is true;
     [ConsoleCommand] public static bool VariableQuote => Dialog.VariableQuote?.Value is true;
+
+    [ConsoleCommand] public static bool ExceptionAnalyze => Exceptions.Analyze?.Value is true;
+    [ConsoleCommand] public static bool ExceptionPopup => Exceptions.Popup?.Value is true;
 
     [ConsoleCommand] public static bool QualifyTypeName => Patches.QualifyTypeName?.Value is true;
     [ConsoleCommand] public static bool FixBaseGameAvatar => Patches.FixBaseGameAvatar?.Value is true;
@@ -54,25 +55,25 @@ public class CwlConfig
             "Measure the extra loading time added by CWL, this is displayed in Player.log\n" +
             "记录CWL运行时间");
 
-        Logging.ExceptionAnalyze = config.Bind(
+        Exceptions.Analyze = config.Bind(
             ModInfo.Name,
-            "Logging.ExceptionAnalyze",
+            "Exceptions.Analyze",
             true,
             "Analyze the unhandled exception during gameplay and log the results\n" +
             "分析游戏运行时抛出的异常");
 
-        Logging.ExceptionPopup = config.Bind(
+        Exceptions.Popup = config.Bind(
             ModInfo.Name,
-            "Logging.ExceptionPopup",
+            "Exceptions.Popup",
             true,
             "Display a popup for the analyzed unhandled exception\n" +
-            "在游戏中显示游戏运行时抛出的异常");
+            "在游戏中显示运行时抛出的异常");
 
 #if DEBUG
         Logging.Verbose.Value = true;
         Logging.Execution.Value = true;
-        Logging.ExceptionAnalyze.Value = true;
-        Logging.ExceptionPopup.Value = true;
+        Exceptions.Analyze.Value = true;
+        Exceptions.Popup.Value = true;
 #endif
 
         BGM.SeamlessStreaming = config.Bind(
@@ -208,8 +209,6 @@ public class CwlConfig
     {
         internal static ConfigEntry<bool>? Verbose { get; set; }
         internal static ConfigEntry<bool>? Execution { get; set; }
-        internal static ConfigEntry<bool>? ExceptionAnalyze { get; set; }
-        internal static ConfigEntry<bool>? ExceptionPopup { get; set; }
     }
 
     internal class BGM
@@ -230,6 +229,13 @@ public class CwlConfig
         internal static ConfigEntry<bool>? ExpandedActionsAllowExternal { get; set; }
         internal static ConfigEntry<bool>? NoOverlappingSounds { get; set; }
         internal static ConfigEntry<bool>? VariableQuote { get; set; }
+    }
+
+    internal class Exceptions
+    {
+        internal static ConfigEntry<bool>? Analyze { get; set; }
+        internal static ConfigEntry<bool>? AutoFix { get; set; }
+        internal static ConfigEntry<bool>? Popup { get; set; }
     }
 
     internal class Patches

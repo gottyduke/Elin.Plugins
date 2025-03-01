@@ -23,6 +23,8 @@ public class MonoFrame(string stackFrame)
 
     public MethodInfo? Method { get; private set; }
     public string StackFrame => stackFrame;
+    public string SanitizedMethodCall { get; private set; } = "";
+    public string SanitizedParameters { get; private set; } = "";
 
     public static MonoFrame GetFrame(string frame)
     {
@@ -46,11 +48,13 @@ public class MonoFrame(string stackFrame)
         }
 
         var raw = stackFrame.Trim();
+        SanitizeFrame();
+
         // explicit dmd, discard mono jit
         if (raw.StartsWith("Rethrow as")) {
             frameType = StackFrameType.Rethrow;
         } else {
-            Method = ExtractMethod(raw);
+            Method = ExtractMethod();
             frameType = Method is null ? StackFrameType.Unknown :
                 raw.StartsWith("(wrapper dynamic-method)") ? StackFrameType.DynamicMethod : StackFrameType.Method;
         }
@@ -60,28 +64,28 @@ public class MonoFrame(string stackFrame)
     }
 
     [SwallowExceptions]
-    public static MethodInfo? ExtractMethod(string stackFrame)
+    public MethodInfo? ExtractMethod()
+    {
+        if (!TryParseDynamicMethod(SanitizedMethodCall, out var typeName, out var methodName)) {
+            return ParseNormalMethod(SanitizedMethodCall, ParseParameters(SanitizedParameters));
+        }
+
+        var pack = SanitizedParameters.Split(',');
+        var reparsePacks = string.Join(',', pack.Skip(1));
+        return CachedMethods.GetCachedMethod(typeName, methodName, ParseParameters(reparsePacks));
+    }
+
+    public string[] SanitizeFrame()
     {
         var raw = Regex.Replace(stackFrame, @"^\(wrapper dynamic-method\)\s*", "");
         raw = Regex.Replace(raw, @"\s+\(at .+\)$", "");
 
-        // Zone.RefreshPlaylist ()
-        //Zone.DMD<Zone::CreatePlaylist>(Zone,System.Collections.Generic.List`1<int>&,Playlist)
         var parts = raw.Split('(', 2, StringSplitOptions.RemoveEmptyEntries);
-        if (parts.Length != 2) {
-            return null;
-        }
+        SanitizedMethodCall = parts[0];
+        SanitizedParameters = parts[1].Trim('(', ')', ' ');
+        ;
 
-        var partialMethodCall = parts[0].Trim();
-        var partialParameters = parts[1].Trim('(', ')', ' ');
-
-        if (!TryParseDynamicMethod(partialMethodCall, out var typeName, out var methodName)) {
-            return ParseNormalMethod(partialMethodCall, ParseParameters(partialParameters));
-        }
-
-        var pack = partialParameters.Split(',');
-        partialParameters = string.Join(',', pack.Skip(1));
-        return CachedMethods.GetCachedMethod(typeName, methodName, ParseParameters(partialParameters));
+        return parts;
     }
 
     [SwallowExceptions]
