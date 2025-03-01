@@ -5,7 +5,7 @@ namespace Cwl.Helper.Extensions;
 
 public static class DictExt
 {
-    public static int NextUniqueKey<T>(this Dictionary<int, T> dict, int begin = -1, int step = -1)
+    public static int NextUniqueKey<TValue>(this Dictionary<int, TValue> dict, int begin = -1, int step = -1)
     {
         var key = begin;
         while (dict.ContainsKey(key)) {
@@ -28,5 +28,20 @@ public static class DictExt
         }
 
         return hash;
+    }
+
+    public static void TryAdd<TValue>(this Dictionary<int, TValue> dict, string key, TValue value)
+    {
+        dict.TryAdd(key.GetHashCode(), value);
+    }
+
+    public static bool ContainsKey<TValue>(this Dictionary<int, TValue> dict, string key)
+    {
+        return dict.ContainsKey(key.GetHashCode());
+    }
+
+    public static bool TryGetValue<TValue>(this Dictionary<int, TValue> dict, string key, out TValue value)
+    {
+        return dict.TryGetValue(key.GetHashCode(), out value);
     }
 }
