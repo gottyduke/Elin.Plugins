@@ -182,6 +182,7 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="API\Attributes\CwlActPerformEvent.cs" />
+        <Compile Include="API\Attributes\CwlContextMenu.cs" />
         <Compile Include="API\Attributes\CwlDramaExpansion.cs" />
         <Compile Include="API\Attributes\CwlEvent.cs"/>
         <Compile Include="API\Attributes\CwlForwardPatch.cs"/>
@@ -225,7 +226,6 @@
         <Compile Include="API\Serializable\SerializableSoundData.cs"/>
         <Compile Include="API\Serializable\SerializableStockData.cs"/>
         <Compile Include="API\WorkbookImporter.cs"/>
-        <Compile Include="Helper\ExecutionAnalysis.cs"/>
         <Compile Include="Helper\Extensions\CodeMatchExt.cs"/>
         <Compile Include="Helper\Extensions\DictExt.cs"/>
         <Compile Include="Helper\Extensions\GameDateExt.cs" />
@@ -233,12 +233,15 @@
         <Compile Include="Helper\FileUtil\ConfigCereal.cs"/>
         <Compile Include="Helper\FileUtil\FileMapping.cs" />
         <Compile Include="Helper\FileUtil\PackageIterator.cs"/>
-        <Compile Include="Helper\IntrospectCopy.cs"/>
+        <Compile Include="Helper\Runtime\DebugSampler.cs" />
         <Compile Include="Helper\Runtime\Exceptions\BeggarException.cs" />
         <Compile Include="Helper\Runtime\Exceptions\DramaException.cs" />
         <Compile Include="Helper\Runtime\Exceptions\ExceptionProfile.cs" />
         <Compile Include="Helper\Runtime\Exceptions\SourceParseException.cs" />
         <Compile Include="Helper\Runtime\Exceptions\MonoFrame.cs" />
+        <Compile Include="Helper\Runtime\IntrospectCopy.cs" />
+        <Compile Include="Helper\Runtime\Stubs\MethodStub.cs" />
+        <Compile Include="Helper\Runtime\Stubs\MethodStubHelper.cs" />
         <Compile Include="Helper\SourceRowComparer.cs" />
         <Compile Include="Helper\SpriteReplacerHelper.cs" />
         <Compile Include="Helper\ReverseId.cs" />
@@ -260,6 +263,7 @@
         <Compile Include="Helper\Unity\AudioClipStream.cs" />
         <Compile Include="Helper\Unity\ChildrenIterator.cs" />
         <Compile Include="Helper\Unity\ColorParser.cs" />
+        <Compile Include="Helper\Unity\ContextMenuHelper.cs" />
         <Compile Include="Helper\Unity\CoroutineHelper.cs" />
         <Compile Include="Helper\Unity\DeferredCoroutine.cs" />
         <Compile Include="Helper\Unity\ELayerCleanup.cs" />
@@ -282,6 +286,7 @@
         <Compile Include="Loader\DataLoaders\EffectSettingLoader.cs" />
         <Compile Include="Loader\DataLoaders\ReligionLoader.cs" />
         <Compile Include="Loader\DataLoaders\SoundLoader.cs" />
+        <Compile Include="Loader\ExecutionAnalysis.cs" />
         <Compile Include="Loader\ModIntegrity.cs" />
         <Compile Include="Patches\Charas\BioOverridePatch.cs" />
         <Compile Include="Patches\Charas\RepositionPortraitPatch.cs" />
@@ -324,7 +329,6 @@
         <Compile Include="Patches\Relocation\LoadDramaPatch.cs" />
         <Compile Include="Patches\Relocation\LoadResourcesPatch.cs" />
         <Compile Include="Patches\SafeSceneInitPatch.cs" />
-        <Compile Include="Patches\SkipProgressTweenPatch.cs" />
         <Compile Include="Patches\Sounds\SetBGMOverridePatch.cs" />
         <Compile Include="Patches\Sounds\MergePlaylistPatch.cs" />
         <Compile Include="Patches\Sounds\MoldNamedPlaylistPatch.cs" />
@@ -334,11 +338,14 @@
         <Compile Include="Patches\Sources\RowOverridePatch.cs" />
         <Compile Include="Patches\Sources\SafeCreateCardPatch.cs" />
         <Compile Include="Patches\Sources\SourceInitPatch.cs" />
-        <Compile Include="Patches\Traits\MerchantOnBarterPatch.cs" />
+        <Compile Include="Patches\Traits\ConverterEvent.cs" />
+        <Compile Include="Patches\Traits\OnBarterEvent.cs" />
         <Compile Include="Patches\Traits\SafeCreateTraitPatch.cs" />
+        <Compile Include="Patches\UIs\ContextSystemEvent.cs" />
+        <Compile Include="Patches\UIs\DirectPopperPatch.cs" />
+        <Compile Include="Patches\UIs\SkipProgressTweenPatch.cs" />
         <Compile Include="Patches\Zones\SafeCreateZonePatch.cs" />
         <Compile Include="Patches\Zones\SetZoneRowPatch.cs" />
-        <Compile Include="ThirdParty\EfficientInvoker.cs" />
         <Compile Include="ThirdParty\Glance.cs" />
     </ItemGroup>
     <ItemGroup>

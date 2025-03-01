@@ -9,6 +9,9 @@ namespace Cwl.Patches.Elements;
 [HarmonyPatch]
 internal class FuzzyLookup
 {
+    private static Dictionary<string, SourceElement.Row> _lookup = [];
+    private static int _hash = -1;
+
     [HarmonyTranspiler]
     [HarmonyPatch(typeof(Core), nameof(Core.GetElement))]
     internal static IEnumerable<CodeInstruction> OnGetElementIl(IEnumerable<CodeInstruction> instructions)
@@ -22,25 +25,26 @@ internal class FuzzyLookup
             .InstructionEnumeration();
     }
 
-    private static bool TryFuzzyGetValue(Dictionary<string, SourceElement.Row> alias, string id, out SourceElement.Row row)
+    private static bool TryFuzzyGetValue(Dictionary<string, SourceElement.Row> aliasMap, string alias, out SourceElement.Row row)
     {
-        id = id.IsEmpty("_void");
-        if (alias.TryGetValue(id, out row)) {
+        alias = alias.IsEmpty("_void");
+
+        var newHash = aliasMap.GetContentHashCode();
+        if (_hash != newHash) {
+            _lookup = new(aliasMap, StringComparer.OrdinalIgnoreCase);
+            _hash = newHash;
+        }
+
+        if (aliasMap.TryGetValue(alias, out row)) {
             return true;
         }
 
-        // O(n) + strlen^2
-        foreach (var (name, ele) in alias) {
-            if (!string.Equals(name, id, StringComparison.InvariantCultureIgnoreCase)) {
-                continue;
-            }
-
-            row = ele;
-            CwlMod.Log<FuzzyLookup>($"{id} => {name}");
+        if (_lookup.TryGetValue(alias, out row)) {
+            CwlMod.Log<FuzzyLookup>($"{alias} => {row.alias}");
             return true;
         }
 
-        CwlMod.Warn<FuzzyLookup>($"cannot find element: {id}");
+        CwlMod.Warn<FuzzyLookup>($"cannot find element: {alias}");
         return false;
     }
 }
