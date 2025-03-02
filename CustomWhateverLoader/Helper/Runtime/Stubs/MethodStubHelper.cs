@@ -113,21 +113,28 @@ public class MethodStubHelper(MethodInfo targetMethod)
         }
 
         var virtualStubs = _cachedVirtual[methodBase] = [];
-
-        var cm = new CodeMatcher(instructions)
+        return new CodeMatcher(instructions)
+            .Advance(1)
             .MatchStartForward(new OpCodeContains(nameof(OpCodes.Call)))
             .Repeat(cm => {
+                if (cm.Operand is not MethodInfo mi) {
+                    return;
+                }
+
+                // constrained
+                var prev = cm.InstructionAt(-1);
+                var constrained = prev.opcode == OpCodes.Constrained;
+                if (constrained) {
+                    cm.Advance(-1);
+                }
+
+                var vmiKey = $"{mi.GetDetail(false)}/{cm.Pos}";
+                if (virtualStubs.TryGetValue(vmiKey, out var helper)) {
+                    return;
+                }
+
                 try {
-                    if (cm.Operand is not MethodInfo mi) {
-                        return;
-                    }
-
-                    var vmiKey = $"{mi.GetDetail(false)}/{cm.Pos}";
-                    if (virtualStubs.TryGetValue(vmiKey, out var helper)) {
-                        return;
-                    }
-
-                    helper = virtualStubs[vmiKey] = new(mi) {
+                    helper = new(mi) {
                         Name = vmiKey,
                         IsVirtual = true,
                     };
@@ -140,16 +147,23 @@ public class MethodStubHelper(MethodInfo targetMethod)
                         cm.Labels.Clear();
                     }
 
+                    if (constrained) {
+                        cm.Advance(1);
+                    }
+
                     cm.Advance(1);
                     cm.Insert(
                         Transpilers.EmitDelegate(() => helper.Stub?.End()));
 
                     _nestedStubs.Add(helper);
+                } catch {
+                    return;
                 } finally {
                     cm.Advance(1);
                 }
-            });
 
-        return cm.InstructionEnumeration();
+                virtualStubs[vmiKey] = helper;
+            })
+            .InstructionEnumeration();
     }
 }
