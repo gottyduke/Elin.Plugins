@@ -42,7 +42,7 @@ public class CustomConverter : TraitBrewery
 
         foreach (var product in GenerateProducts(owner, card)) {
             _OnProduce((Thing)card, product);
-            if (owner.trait != this) {
+            if (owner.trait is not CustomConverter) {
                 owner.trait.InstanceDispatch("_OnProduce", card, product);
             }
         }
@@ -96,7 +96,7 @@ public class CustomConverter : TraitBrewery
     }
 
     [ConsoleCommand("reload")]
-    [CwlContextMenu("Converter/Reload", "cwl_ui_converter_reload")]
+    [CwlContextMenu("cwl_ui_converter/cwl_ui_converter_reload")]
     public static string ReloadAllConverterData()
     {
         _cached.Clear();
