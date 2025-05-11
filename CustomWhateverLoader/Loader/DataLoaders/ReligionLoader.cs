@@ -35,7 +35,7 @@ internal partial class DataLoader
 
                     talk.sheets[DefaultSheet].map.GetValueOrDefault(topic)?
                         .Where(kv => kv.Key != "id")
-                        .Do(map[topic].TryAdd);
+                        .Do(kv => map[topic][kv.Key] = kv.Value);
                 }
 
                 CwlMod.Log<DataLoader>("cwl_preload_god_talk".Loc(talk.path.ShortPath()));
