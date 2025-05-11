@@ -51,8 +51,7 @@ internal sealed partial class CwlMod
     internal static void WarnWithPopup<T>(object payload, object? log = null)
     {
         Warn<T>(payload);
-        using var progress = ProgressIndicator.CreateProgressScoped(
-            () => new(payload.ToTruncateString(115)));
+        using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToTruncateString(115)));
 
         if (log is null) {
             return;
@@ -78,8 +77,8 @@ internal sealed partial class CwlMod
     internal static void ErrorWithPopup<T>(object payload, object? log = null, [CallerMemberName] string caller = "")
     {
         Error<T>(payload, caller);
-        using var progress = ProgressIndicator.CreateProgressScoped(
-            () => new(payload.ToTruncateString(115), Color: _warningColor));
+        using var progress =
+            ProgressIndicator.CreateProgressScoped(() => new(payload.ToTruncateString(115), Color: _warningColor));
 
         if (log is null) {
             return;

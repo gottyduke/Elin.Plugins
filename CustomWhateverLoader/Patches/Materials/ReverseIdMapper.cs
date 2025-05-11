@@ -32,6 +32,7 @@ internal class ReverseIdMapper
         if (id == -1) {
             id = 0;
         }
+
         idMat = id;
     }
 

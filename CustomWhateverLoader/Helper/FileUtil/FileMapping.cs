@@ -38,7 +38,7 @@ public class FileMapping
             return;
         }
 
-        var resources = Directory.GetDirectories(langMod).ToArray();
+        var resources = Directory.GetDirectories(langMod);
         if (resources.Length == 0) {
             return;
         }
