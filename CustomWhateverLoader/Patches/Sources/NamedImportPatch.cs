@@ -73,8 +73,8 @@ internal class NamedImportPatch
 
                 var rowType = rowCreator.DeclaringType!;
 
-                cm.SetInstructionAndAdvance(Transpilers.EmitDelegate<Action<object>>(
-                    row => RelaxedImport(row, id, field!, parser!, rowType, extraParser)));
+                cm.SetInstructionAndAdvance(Transpilers.EmitDelegate<Action<object>>(row =>
+                    RelaxedImport(row, id, field!, parser!, rowType, extraParser)));
 
                 _expected.TryAdd(rowType, []);
                 if (_expected[rowType].All(c => c.Index != id)) {

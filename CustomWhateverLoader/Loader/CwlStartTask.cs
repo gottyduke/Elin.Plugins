@@ -8,6 +8,7 @@ using Cwl.Helper.FileUtil;
 using Cwl.Helper.Runtime;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
+using Cwl.Patches.Charas;
 using Cwl.Patches.Conditions;
 using Cwl.Patches.Elements;
 using Cwl.Patches.Quests;
@@ -59,8 +60,8 @@ internal sealed partial class CwlMod
 
     private IEnumerator LoadTask()
     {
-        using var progress = ProgressIndicator.CreateProgressScoped(
-            () => new("cwl_log_loading".Loc(ModInfo.Version, CurrentLoading, CanContinue.Loc())));
+        using var progress = ProgressIndicator.CreateProgressScoped(() =>
+            new("cwl_log_loading".Loc(ModInfo.Version, CurrentLoading, CanContinue.Loc())));
 
         PrebuildDispatchers();
         DramaExpansion.BuildActionList();
@@ -130,6 +131,9 @@ internal sealed partial class CwlMod
                         break;
                     case CwlContextMenu ctxAttr:
                         ContextMenuHelper.RegisterEvents(method, ctxAttr);
+                        break;
+                    case CwlCharaOnCreateEvent charaAttr:
+                        CharaOnCreateEvent.RegisterEvents(method, charaAttr);
                         break;
                 }
             }

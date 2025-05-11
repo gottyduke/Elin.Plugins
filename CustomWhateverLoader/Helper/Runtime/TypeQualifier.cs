@@ -93,14 +93,17 @@ public class TypeQualifier
             return null;
         }
 
+        var typeName = ProcessStandardGenerics(paramParts[0]);
+        if (_aliasMapping.TryGetValue(typeName, out var type)) {
+            typeName = typeName.Replace(typeName, type.FullName);
+        }
+
         // DMD
-        var typeName = paramParts[0];
         var dmdGeneric = Regex.Match(typeName, "<([^>]+)>");
         if (dmdGeneric.Success) {
             foreach (var alias in dmdGeneric.Groups[1].Value.Split(',')) {
-                var trimmedAlias = alias.Trim();
-                if (_aliasMapping.TryGetValue(trimmedAlias, out var type)) {
-                    typeName = typeName.Replace(trimmedAlias, type.FullName);
+                if (GlobalResolve(alias) is { } aliasType) {
+                    typeName = typeName.Replace(alias, aliasType.FullName);
                 }
             }
 
@@ -126,6 +129,50 @@ public class TypeQualifier
         }
 
         return _qualifiedResults[trimmedParam] = paramType;
+    }
+
+    private static string ProcessStandardGenerics(string typeName)
+    {
+        var match = Regex.Match(typeName, @"^(?<main>.*?)(?<!`)`(?<arity>\d+)\[(?<args>.*)\]$");
+        if (!match.Success) {
+            return typeName;
+        }
+
+        var main = match.Groups["main"].Value;
+        var arity = match.Groups["arity"].Value;
+        var args = match.Groups["args"].Value;
+
+        List<string> processedArgs = [];
+        foreach (var arg in SplitGenericArgs(args)) {
+            var processedArg = arg.Trim();
+            var resolvedType = TryGetType(processedArg) ?? TryGetType("System." + processedArg);
+
+            processedArgs.Add(resolvedType?.FullName ?? processedArg);
+        }
+
+        return $"{main}`{arity}[{string.Join(",", processedArgs.Select(a => $"[{a}]"))}]";
+    }
+
+    private static IEnumerable<string> SplitGenericArgs(string args)
+    {
+        var bracketLevel = 0;
+        var lastSplit = 0;
+        for (var i = 0; i < args.Length; ++i) {
+            switch (args[i]) {
+                case '[':
+                    bracketLevel++;
+                    break;
+                case ']':
+                    bracketLevel--;
+                    break;
+                case ',' when bracketLevel == 0:
+                    yield return args[lastSplit..(i - lastSplit)];
+                    lastSplit = i + 1;
+                    break;
+            }
+        }
+
+        yield return args[lastSplit..];
     }
 
     internal static void SafeQueryTypesOfAll()

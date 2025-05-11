@@ -114,16 +114,19 @@ public class MethodStubHelper(MethodInfo targetMethod)
 
         var virtualStubs = _cachedVirtual[methodBase] = [];
         return new CodeMatcher(instructions)
-            .Advance(1)
             .MatchStartForward(new OpCodeContains(nameof(OpCodes.Call)))
             .Repeat(cm => {
                 if (cm.Operand is not MethodInfo mi) {
                     return;
                 }
 
-                // constrained
-                var prev = cm.InstructionAt(-1);
-                var constrained = prev.opcode == OpCodes.Constrained;
+                var constrained = false;
+                if (cm.Pos > 0) {
+                    // constrained
+                    var prev = cm.InstructionAt(-1);
+                    constrained = prev.opcode == OpCodes.Constrained;
+                }
+
                 if (constrained) {
                     cm.Advance(-1);
                 }

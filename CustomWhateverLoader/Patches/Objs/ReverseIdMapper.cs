@@ -22,5 +22,8 @@ internal class ReverseIdMapper
     {
         var objs = EMono.sources.objs;
         id = objs.rows.IndexOf(objs.map.GetValueOrDefault(id));
+        if (id == -1) {
+            id = 0;
+        }
     }
 }

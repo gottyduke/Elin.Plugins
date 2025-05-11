@@ -206,7 +206,7 @@ public partial class DramaExpansion : DramaOutcome
         return true;
     }
 
-    internal static bool portrait_reset(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    public static bool portrait_reset(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         dm.RequiresPerson(out var owner);
 

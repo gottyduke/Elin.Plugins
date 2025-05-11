@@ -30,7 +30,8 @@ public class CustomConverter : TraitBrewery
 
     public override bool CanChildDecay(Card card)
     {
-        return Conversions.ContainsKey(card.id) || AllProducts.All(p => p.Id != card.id);
+        var managed = Managed.GetValueOrDefault(owner.uid) ?? new();
+        return managed.Conversions.ContainsKey(card.id) || managed.AllProducts.All(p => p.Id != card.id);
     }
 
     [SwallowExceptions]

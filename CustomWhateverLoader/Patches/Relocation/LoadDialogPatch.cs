@@ -43,7 +43,7 @@ internal class LoadDialogPatch
                     continue;
                 }
 
-                data.sheets[sheetName].map.TryAdd(topic, cells);
+                data.sheets[sheetName].map[topic] = cells;
             }
         }
     }
