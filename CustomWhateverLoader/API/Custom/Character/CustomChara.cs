@@ -36,9 +36,10 @@ public partial class CustomChara : Chara
             return;
         }
 
-        var import = r.trait[0] switch {
+        var trait = r.trait.TryGet(0);
+        var import = trait switch {
             "Adventurer" or "AdventurerBacker" => ImportType.Adventurer,
-            _ when r.trait[0].StartsWith("Merchant") => ImportType.Merchant,
+            not null when trait.StartsWith("Merchant") => ImportType.Merchant,
             _ => ImportType.Commoner,
         };
 
