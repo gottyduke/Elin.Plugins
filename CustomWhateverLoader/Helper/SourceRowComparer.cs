@@ -22,6 +22,6 @@ public struct SourceRowComparer : IEqualityComparer<SourceData.BaseRow>
 
     public int GetHashCode(SourceData.BaseRow row)
     {
-        return row.GetType().GetCachedField("id")?.GetValue(row)?.GetHashCode() ?? 0;
+        return row.GetFieldValue("id")?.GetHashCode() ?? 0;
     }
 }
