@@ -55,9 +55,8 @@ internal class DynamicDramaEvaluation
                 .MatchStartForward(
                     new OperandContains(OpCodes.Callvirt, nameof(DramaEventTalk.AddChoice)))
                 .Repeat(cm => cm
-                    .InsertAndAdvance(
-                        Transpilers.EmitDelegate(AttachActiveCondition))
-                    .RemoveInstruction())
+                    .SetInstructionAndAdvance(
+                        Transpilers.EmitDelegate(AttachActiveCondition)))
                 .InstructionEnumeration();
         }
 
@@ -66,23 +65,23 @@ internal class DynamicDramaEvaluation
             return true;
         }
 
-        private static DramaChoice AttachActiveCondition(DramaEventTalk talk, DramaChoice choice)
+        private static void AttachActiveCondition(DramaEventTalk talk, DramaChoice choice)
         {
-            // can't use ActiveConditions because lastTalk is re-used
-            var ifs = ActiveConditions[talk] = () => (DramaExpansion.Cookie?.Line ?? [])
-                .Where(kv => kv.Key.StartsWith("if") && !kv.Value.IsEmpty())
-                .Select(kv => kv.Value)
-                .All(talk.manager.CheckIF);
+            // can't use ActiveConditions in delegate because lastTalk is re-used
+            DramaEventConditionPatch.OnInstantiateDramaEvent(talk);
 
+            var active = ActiveConditions[talk];
             var prev = choice.activeCondition;
-            choice.IF = string.Empty;
 
-            return choice.SetCondition(() => ifs() && (prev?.Invoke() ?? true));
+            choice.IF = string.Empty;
+            choice.SetCondition(() => active() && (prev?.Invoke() ?? true));
+
+            talk.AddChoice(choice);
         }
     }
 
     [HarmonyPatch]
-    internal class DramaEventAttachIfPatch
+    internal class DramaEventConditionPatch
     {
         internal static bool Prepare()
         {
@@ -97,15 +96,13 @@ internal class DynamicDramaEvaluation
         [HarmonyPostfix]
         internal static void OnInstantiateDramaEvent(DramaEvent __instance)
         {
-            if (DramaExpansion.Cookie is not { Dm: { } dm, Line: { } item }) {
-                return;
-            }
-
             // allow multiple if(n) where n > 2
-            ActiveConditions[__instance] = () => item
-                .Where(kv => kv.Key.StartsWith("if") && !kv.Value.IsEmpty())
-                .Select(kv => kv.Value)
-                .All(dm.CheckIF);
+            ActiveConditions[__instance] = DramaExpansion.Cookie is not { Dm: { } dm, Line: { } item }
+                ? () => true
+                : () => item
+                    .Where(kv => kv.Key.StartsWith("if") && !kv.Value.IsEmpty())
+                    .Select(kv => kv.Value)
+                    .All(dm.CheckIF);
         }
     }
 
@@ -123,7 +120,7 @@ internal class DynamicDramaEvaluation
         }
 
         [HarmonyPrefix]
-        internal static bool ExternalCheckIfOnPlay(DramaEvent __instance, ref bool __result)
+        internal static bool ExternalCheckIfOnPlay(DramaEvent __instance)
         {
             return !ActiveConditions.TryGetValue(__instance, out var condition) || condition();
         }

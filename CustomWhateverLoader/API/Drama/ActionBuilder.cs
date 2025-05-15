@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using Cwl.API.Attributes;
 using Cwl.Helper.Runtime;
+using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
+using ReflexCLI.Attributes;
 
 namespace Cwl.API.Drama;
 
@@ -23,19 +26,20 @@ public partial class DramaExpansion
 
     [Time]
     [SwallowExceptions]
-    internal static void BuildActionList(string assemblyName = "")
+    [ConsoleCommand("build_action_list")]
+    internal static string BuildActionList(string assemblyName = "")
     {
         IEnumerable<MethodInfo> methods;
 
         var external = assemblyName != "";
         if (external) {
             if (!_built.TryAdd($"ext.cwl_stub_{assemblyName}", null)) {
-                return;
+                return "";
             }
 
             var asm = Array.Find(AppDomain.CurrentDomain.GetAssemblies(), a => a.GetName().Name == assemblyName);
             if (asm is null) {
-                return;
+                return "";
             }
 
             CwlMod.Log<DramaExpansion>("cwl_log_drama_build_ext".Loc(assemblyName));
@@ -59,7 +63,26 @@ public partial class DramaExpansion
             count++;
         }
 
-        CwlMod.Log<DramaExpansion>("cwl_log_drama_build".Loc(count));
+        var log = "cwl_log_drama_build".Loc(count);
+        CwlMod.Log<DramaExpansion>(log);
+
+        return log;
+    }
+
+    [ConsoleCommand("dump_action_list")]
+    internal static string DumpActionList()
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("dumping action list");
+
+        foreach (var (action, provider) in Actions) {
+            sb.AppendLine($"{action,-30}{provider.GetAssemblyDetail(false)}");
+        }
+
+        var log = sb.ToString();
+        CwlMod.Log<DramaExpansion>(log);
+
+        return log;
     }
 
     internal static Func<DramaManager, Dictionary<string, string>, bool>? BuildExpression(string? expression)
