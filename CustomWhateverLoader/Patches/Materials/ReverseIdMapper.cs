@@ -29,10 +29,6 @@ internal class ReverseIdMapper
     {
         var mat = EMono.sources.materials;
         var id = mat.rows.IndexOf(mat.map.GetValueOrDefault(idMat));
-        if (id == -1) {
-            id = 0;
-        }
-
         idMat = id;
     }
 
@@ -46,7 +42,7 @@ internal class ReverseIdMapper
     [HarmonyPatch]
     internal class RecipeMaterialIdMapper
     {
-        internal static IEnumerable<MethodInfo> TargetMethods()
+        internal static IEnumerable<MethodBase> TargetMethods()
         {
             return [
                 ..OverrideMethodComparer.FindAllOverrides(typeof(Recipe), nameof(Recipe.GetColorMaterial)),
@@ -68,10 +64,10 @@ internal class ReverseIdMapper
             return new CodeMatcher(instructions)
                 .MatchEndForward(
                     new OperandMatch(OpCodes.Callvirt, o => o.ToString().Contains("List<SourceMaterial+Row>::get_Item")))
-                .Repeat(cm => cm
-                    .SetInstructionAndAdvance(
-                        Transpilers.EmitDelegate(ReverseIndexer))
-                )
+                .Repeat(cm => {
+                    cm.SetInstructionAndAdvance(
+                        Transpilers.EmitDelegate(ReverseIndexer));
+                })
                 .InstructionEnumeration();
         }
     }

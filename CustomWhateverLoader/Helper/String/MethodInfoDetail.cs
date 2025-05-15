@@ -8,13 +8,13 @@ public static class MethodInfoDetail
 {
     public static string GetDetail(this MethodInfo methodInfo, bool full = true)
     {
-        var decl = methodInfo.ReflectedType!;
+        var decl = methodInfo.DeclaringType!;
         return $"{(full ? decl.FullName : decl.Name)}.{methodInfo.Name}";
     }
 
     public static string GetAssemblyDetail(this MethodInfo methodInfo, bool full = true)
     {
-        var decl = methodInfo.ReflectedType!;
+        var decl = methodInfo.DeclaringType!;
         return $"{decl.Assembly.GetName().Name}::{methodInfo.GetDetail(full)}";
     }
 

@@ -58,7 +58,7 @@ internal sealed partial class CwlMod
         }
 
         UnityEngine.Debug.Log(log);
-        progress.Get<ProgressIndicator>().AppendHoverText(() => log.ToTruncateString(450));
+        progress.Get<ProgressIndicator>().AppendHoverText(() => log.ToTruncateString(450).TruncateAllLines(115));
     }
 
     [SwallowExceptions]
@@ -85,6 +85,6 @@ internal sealed partial class CwlMod
         }
 
         UnityEngine.Debug.Log(log);
-        progress.Get<ProgressIndicator>().AppendHoverText(() => log.ToTruncateString(450));
+        progress.Get<ProgressIndicator>().AppendHoverText(() => log.ToTruncateString(450).TruncateAllLines(115));
     }
 }

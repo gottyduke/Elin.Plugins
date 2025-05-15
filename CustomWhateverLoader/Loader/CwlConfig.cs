@@ -16,7 +16,7 @@ public class CwlConfig
     [ConsoleCommand] public static bool CacheSheets => Caching.Sheets?.Value is true;
     [ConsoleCommand] public static bool CacheSprites => Caching.Sprites?.Value is true;
 
-    [ConsoleCommand] public static bool DynamicCheckIf => Dialog.DynamicCheckIf?.Value is true;
+    [ConsoleCommand] public static bool DynamicCheckIf => Dialog.DynamicCheckIf?.Value is true && false;
     [ConsoleCommand] public static bool ExpandedActions => Dialog.ExpandedActions?.Value is true;
     [ConsoleCommand] public static bool ExpandedActionsExternal => Dialog.ExpandedActionsAllowExternal?.Value is true;
     [ConsoleCommand] public static bool NoOverlappingSounds => Dialog.NoOverlappingSounds?.Value is true;
