@@ -9,7 +9,7 @@ public partial class DramaExpansion
 {
     public static bool add_item(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        parameters.RequiresMoreThan(1);
+        parameters.RequiresAtleast(1);
         parameters.RequiresOpt(out var id, out var material, out var lv, out var num);
         dm.RequiresActor(out var actor);
 
@@ -37,6 +37,7 @@ public partial class DramaExpansion
         return true;
     }
 
+    // nodiscard
     public static bool cure_condition(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.Requires(out var alias);
@@ -51,9 +52,11 @@ public partial class DramaExpansion
             if (condition.value <= 0) {
                 condition.Kill();
             }
+
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     public static bool remove_condition(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
@@ -86,7 +89,7 @@ public partial class DramaExpansion
 
     public static bool mod_flag(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        parameters.RequiresMoreThan(1);
+        parameters.RequiresAtleast(1);
         parameters.Requires(out var flag, out var expr);
         dm.RequiresActor(out var actor);
 
@@ -102,7 +105,7 @@ public partial class DramaExpansion
         return true;
     }
 
-    public static bool faith_join(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    public static bool join_faith(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.RequiresOpt(out var faith);
         dm.RequiresActor(out var actor);

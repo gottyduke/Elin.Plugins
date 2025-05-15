@@ -5,7 +5,7 @@ namespace Cwl.API.Drama;
 
 public static class ActionParameterHelper
 {
-    public static void RequiresMoreThan(this string[] parameters, int count)
+    public static void RequiresAtleast(this string[] parameters, int count)
     {
         if (parameters.Length < count) {
             throw new DramaActionArgumentException(parameters);
@@ -14,20 +14,20 @@ public static class ActionParameterHelper
 
     public static void Requires(this string[] parameters, out string a1)
     {
-        parameters.RequiresMoreThan(1);
+        parameters.RequiresAtleast(1);
         a1 = parameters[0];
     }
 
     public static void Requires(this string[] parameters, out string a1, out string a2)
     {
-        parameters.RequiresMoreThan(2);
+        parameters.RequiresAtleast(2);
         a1 = parameters[0];
         a2 = parameters[1];
     }
 
     public static void Requires(this string[] parameters, out string a1, out string a2, out string a3)
     {
-        parameters.RequiresMoreThan(3);
+        parameters.RequiresAtleast(3);
         a1 = parameters[0];
         a2 = parameters[1];
         a3 = parameters[2];
@@ -35,7 +35,7 @@ public static class ActionParameterHelper
 
     public static void Requires(this string[] parameters, out string a1, out string a2, out string a3, out string a4)
     {
-        parameters.RequiresMoreThan(4);
+        parameters.RequiresAtleast(4);
         a1 = parameters[0];
         a2 = parameters[1];
         a3 = parameters[2];

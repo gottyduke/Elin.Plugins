@@ -17,7 +17,7 @@ public partial class DramaExpansion
     // nodiscard
     public static bool if_flag(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        parameters.RequiresMoreThan(1);
+        parameters.RequiresAtleast(1);
         parameters.RequiresOpt(out var flag, out var optExpr);
         dm.RequiresActor(out var actor);
 
@@ -32,7 +32,7 @@ public partial class DramaExpansion
     // nodiscard
     public static bool if_condition(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        parameters.RequiresMoreThan(1);
+        parameters.RequiresAtleast(1);
         parameters.RequiresOpt(out var alias, out var optExpr);
         dm.RequiresActor(out var actor);
 
@@ -57,7 +57,7 @@ public partial class DramaExpansion
     // nodiscard
     public static bool if_location(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        parameters.RequiresMoreThan(1);
+        parameters.RequiresAtleast(1);
         parameters.RequiresOpt(out var zoneId, out var optLevel);
         dm.RequiresActor(out var actor);
 

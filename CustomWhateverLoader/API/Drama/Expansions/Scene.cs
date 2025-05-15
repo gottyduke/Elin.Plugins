@@ -20,15 +20,17 @@ public partial class DramaExpansion
 
     public static bool move_zone(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        parameters.Requires(out var zoneName);
+        parameters.RequiresAtleast(1);
+        parameters.RequiresOpt(out var zoneId, out var lv);
         dm.RequiresActor(out var actor);
 
+        var zoneName = $"{zoneId.Value}/{lv.Get("0")}";
         if (!CustomChara.ValidateZone(zoneName, out var targetZone) || targetZone is null) {
             return false;
         }
 
         actor.MoveZone(targetZone, new ZoneTransition {
-            state = ZoneTransition.EnterState.Center,
+            state = ZoneTransition.EnterState.RandomVisit,
         });
 
         return true;
@@ -60,7 +62,7 @@ public partial class DramaExpansion
 
     public static bool play_emote(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        parameters.RequiresMoreThan(1);
+        parameters.RequiresAtleast(1);
         parameters.RequiresOpt(out var emoteId, out var optDuration);
         dm.RequiresActor(out var actor);
 
