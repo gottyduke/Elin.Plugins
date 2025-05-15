@@ -17,7 +17,7 @@ internal class DramaExpansionPatch
 
     [HarmonyTranspiler]
     [HarmonyPatch(typeof(DramaManager), nameof(DramaManager.ParseLine))]
-    internal static IEnumerable<CodeInstruction> OnParseAction(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+    internal static IEnumerable<CodeInstruction> OnParseActionIl(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
         return new CodeMatcher(instructions, generator)
             .MatchEndForward(
@@ -55,7 +55,6 @@ internal class DramaExpansionPatch
 
         // default actor
         item.TryAdd("actor", "tg");
-        DramaExpansion.Cookie = new(__instance, item);
 
         foreach (var expr in rawExpr.SplitLines()) {
             var func = DramaExpansion.BuildExpression(expr);

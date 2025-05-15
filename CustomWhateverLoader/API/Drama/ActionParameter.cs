@@ -50,12 +50,12 @@ public static class ActionParameterHelper
         person = owner;
     }
 
-    public static void RequiresActor(this DramaManager dm, out Chara person)
+    public static void RequiresActor(this DramaManager dm, out Chara actor)
     {
-        if (dm.sequence.GetActor(DramaExpansion.Cookie?.Line["actor"] ?? "tg") is not { owner.chara: { } actor }) {
+        if (dm.sequence.GetActor(DramaExpansion.Cookie?.Line["actor"] ?? "tg") is not { owner.chara: { } chara }) {
             throw new DramaActionInvokeException("actor");
         }
 
-        person = actor;
+        actor = chara;
     }
 }

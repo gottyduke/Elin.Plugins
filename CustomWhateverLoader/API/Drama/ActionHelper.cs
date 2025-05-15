@@ -59,6 +59,7 @@ public partial class DramaExpansion
     private static bool SafeInvoke(ActionWrapper action, DramaManager dm, Dictionary<string, string> item, params string[] pack)
     {
         try {
+            Cookie = new(dm, item);
             var result = action.Method.FastInvokeStatic(dm, item, pack);
             return result is not null && (bool)result;
         } catch (Exception ex) {
