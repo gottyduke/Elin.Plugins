@@ -12,10 +12,12 @@ using Cwl.Patches.Charas;
 using Cwl.Patches.Conditions;
 using Cwl.Patches.Elements;
 using Cwl.Patches.Quests;
+using Cwl.Patches.Relocation;
 using Cwl.Patches.Sources;
 using Cwl.Patches.Zones;
 using HarmonyLib;
 using MethodTimer;
+using UnityEngine;
 
 namespace Cwl;
 
@@ -65,6 +67,10 @@ internal sealed partial class CwlMod
 
         PrebuildDispatchers();
         DramaExpansion.BuildActionList();
+
+        LoadResourcesPatch.AddHandler<SoundData>(DataLoader.RelocateSound);
+        LoadResourcesPatch.AddHandler<Sprite>(DataLoader.RelocateSprite);
+        //LoadResourcesPatch.AddHandler<Effect>(DataLoader.RelocateEffect);
 
         DataLoader.MergeCharaTalk();
         DataLoader.MergeCharaTone();
