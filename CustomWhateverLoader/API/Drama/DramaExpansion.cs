@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Cwl.API.Custom;
 using Cwl.Helper;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.Runtime;
@@ -25,6 +26,7 @@ public partial class DramaExpansion : DramaOutcome
         }
 
         BuildActionList(assemblyName);
+
         return true;
     }
 
@@ -94,7 +96,7 @@ public partial class DramaExpansion : DramaOutcome
         }
 
         var item = ThingGen.Create(id, ReverseId.Material(material), itemLv).SetNum(itemNum);
-        actor.AddThing(item);
+        actor.Pick(item);
 
         return item.id != "869";
     }
@@ -117,12 +119,14 @@ public partial class DramaExpansion : DramaOutcome
         }
 
         actor.ModAffinity(pc, value);
+
         return true;
     }
 
     public static bool debug_invoke(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         pc.Say($"debug_invoke : {dm.tg.Name}");
+
         return true;
     }
 
@@ -136,6 +140,7 @@ public partial class DramaExpansion : DramaOutcome
         }
 
         religion.JoinFaith(actor);
+
         return true;
     }
 
@@ -144,6 +149,7 @@ public partial class DramaExpansion : DramaOutcome
         dm.RequiresActor(out var actor);
 
         actor.faith?.LeaveFaith(actor, game.religions.Eyth, Religion.ConvertType.Default);
+
         return true;
     }
 
@@ -186,9 +192,82 @@ public partial class DramaExpansion : DramaOutcome
     {
         dm.RequiresActor(out var actor);
 
-        AddTempTalk(dm, actor.GetTalkText("hired"));
         EClass.Sound.Play("good");
         actor.MakeAlly();
+
+        return true;
+    }
+
+    public static bool move_tile(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.Requires(out var xOffset, out var yOffset);
+        dm.RequiresActor(out var actor);
+
+        var point = actor.pos.Add(new(xOffset.AsInt(0), yOffset.AsInt(0)));
+        var result = actor.TryMove(point, false);
+
+        return result == Card.MoveResult.Success;
+    }
+
+    public static bool move_zone(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.Requires(out var zoneName);
+        dm.RequiresActor(out var target);
+
+        if (!CustomChara.ValidateZone(zoneName, out var targetZone) || targetZone is null) {
+            return false;
+        }
+
+        target.MoveZone(targetZone, new ZoneTransition {
+            state = ZoneTransition.EnterState.Center,
+        });
+
+        return true;
+    }
+
+    public static bool play_anime(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.Requires(out var animeId);
+        dm.RequiresActor(out var actor);
+
+        if (!Enum.TryParse(animeId, out AnimeID anime)) {
+            return false;
+        }
+
+        actor.PlayAnime(anime, true);
+
+        return true;
+    }
+
+    public static bool play_effect(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.Requires(out var effectId);
+        dm.RequiresActor(out var actor);
+
+        actor.PlayEffect(effectId);
+
+        return true;
+    }
+
+    public static bool play_emote(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.Requires(out var emoteId, out var durationStr);
+        dm.RequiresActor(out var actor);
+
+        if (!Enum.TryParse(emoteId, out Emo emote)) {
+            return false;
+        }
+
+        actor.ShowEmo(emote, durationStr.AsFloat(1f), false);
+
+        return true;
+    }
+
+    public static bool play_screen_effect(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.Requires(out var effectId);
+
+        ScreenEffect.Play(effectId);
 
         return true;
     }
@@ -203,6 +282,7 @@ public partial class DramaExpansion : DramaOutcome
         }
 
         owner.idPortrait = portraitId;
+
         return true;
     }
 
@@ -211,6 +291,7 @@ public partial class DramaExpansion : DramaOutcome
         dm.RequiresPerson(out var owner);
 
         owner.idPortrait = owner.chara.GetIdPortrait();
+
         return true;
     }
 }
