@@ -49,6 +49,9 @@ internal class MergePlaylistPatch
                 }
             }
 
+            if (TryPersistBossBgm(zone.Boss)) {
+            }
+
             if (!TryStreaming(merged)) {
                 sm.SwitchPlaylist(merged);
             }
@@ -87,15 +90,20 @@ internal class MergePlaylistPatch
         return true;
     }
 
+    private static bool TryPersistBossBgm(Chara boss)
+    {
+        return true;
+    }
+
     private static void DeferredRefresh()
     {
-        EClass._zone?.RefreshBGM();
+        EClass.core.game?.activeZone?.RefreshBGM();
         _lotDeferred = null;
     }
 
     private static bool ShouldRefresh()
     {
-        var lot = EClass.pc?.pos?.cell?.room?.lot;
+        var lot = EClass.core.game?.player?.chara?.pos?.cell?.room?.lot;
         return !EClass.core.IsGameStarted || lot is null || lot != _lotDeferred;
     }
 }

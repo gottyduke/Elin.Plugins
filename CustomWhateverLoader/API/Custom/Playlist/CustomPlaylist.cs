@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Cwl.API.Attributes;
 using Cwl.API.Processors;
 using Cwl.Helper.String;
 using Cwl.LangMod;
+using HarmonyLib;
 using UnityEngine;
 
 namespace Cwl.API.Custom;
@@ -43,7 +45,7 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
             }
 
             var zoneName = zone.GetType().Name;
-            var baseName = GetBasePlaylistName(mold.name, zoneName);
+            var baseName = GetBasePlaylistName(mold.name);
 
             var plName = "CWL_Merged_Global_";
             if (baseName != "") {
@@ -69,7 +71,7 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
                 list.RemoveAll(lists.ListRemove.Contains);
                 list.AddRange(lists.ListMerge);
 
-                shuffle = shuffle || lists.Shuffle;
+                shuffle |= lists.Shuffle;
             }
 
             var dict = Core.Instance.refs.dictBGM;
@@ -93,16 +95,13 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
         return mold ?? EClass.Sound.plBlank;
     }
 
-    private static CustomPlaylist MergeOverrides(IEnumerable<CustomPlaylist> overrides, string zoneName)
+    public static CustomPlaylist MergeOverrides(IEnumerable<CustomPlaylist> overrides, string zoneName)
     {
         var lists = overrides.ToArray();
-
-        List<string> names = [];
-        foreach (var pl in lists) {
-            names.Add(pl.Name);
-        }
-
-        names.Add(zoneName);
+        var names = lists
+            .Select(p => p.Name)
+            .AddItem(zoneName)
+            .ToArray();
 
         var cacheName = $"{string.Join("_", names)}/{lists.Length}";
         if (_cached.TryGetValue(cacheName, out var playlist)) {
@@ -129,10 +128,15 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
         return _cached[cacheName] = playlist;
     }
 
-    private static string GetBasePlaylistName(string fullName, string zoneName)
+    private static bool ShouldPersistBossBgm()
     {
-        var name = fullName.Replace("Playlist_", "").Replace(zoneName, "") + "_";
-        return name[..name.IndexOf('_')];
+        return false;
+    }
+
+    private static string GetBasePlaylistName(string fullName)
+    {
+        var match = Regex.Match(fullName, "Playlist_(.*?)_Zone_");
+        return match.Success ? match.Groups[1].Value : "";
     }
 
     [CwlPostLoad]
