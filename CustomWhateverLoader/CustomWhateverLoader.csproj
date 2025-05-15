@@ -238,6 +238,7 @@
         <Compile Include="Helper\Extensions\LinqExt.cs" />
         <Compile Include="Helper\Extensions\ParserExt.cs" />
         <Compile Include="Helper\Extensions\PointExt.cs" />
+        <Compile Include="Helper\Extensions\ZoneExt.cs" />
         <Compile Include="Helper\FileUtil\ConfigCereal.cs" />
         <Compile Include="Helper\FileUtil\FileMapping.cs" />
         <Compile Include="Helper\FileUtil\PackageIterator.cs" />
@@ -311,6 +312,7 @@
         <Compile Include="Patches\Dialogs\DynamicDramaEvaluation.cs" />
         <Compile Include="Patches\Dialogs\OverlapSoundPatch.cs" />
         <Compile Include="Patches\Dialogs\RerouteDramaPatch.cs" />
+        <Compile Include="Patches\Dialogs\SafePlayDramaPatch.cs" />
         <Compile Include="Patches\Dialogs\SafeUpdateDramaPatch.cs" />
         <Compile Include="Patches\Dialogs\VariableQuotePatch.cs" />
         <Compile Include="Patches\Elements\ActPerformEvent.cs" />
