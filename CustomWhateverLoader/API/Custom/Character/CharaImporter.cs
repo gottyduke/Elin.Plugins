@@ -9,21 +9,45 @@ namespace Cwl.API.Custom;
 
 public partial class CustomChara
 {
-    private static Zone[]? _zones;
-
     public static bool ValidateZone(string zoneFullName, out Zone? zone, bool randomFallback = false)
     {
-        _zones ??= game.spatials.map.Values
+        var zones = game.spatials.map.Values
             .OfType<Zone>()
             .ToArray();
 
-        var matchName = zoneFullName;
-        zone = Array.Find(_zones, z => z is not Zone_Dungeon && z.GetType().Name == matchName);
-        if (zone is null && zoneFullName != "Zone_*" && !randomFallback) {
+        var matchZone = zoneFullName;
+        var byLv = zoneFullName.LastIndexOf('/');
+        if (byLv != -1 && byLv < zoneFullName.Length - 1) {
+            matchZone = zoneFullName[..byLv];
+            byLv = zoneFullName[(zoneFullName.LastIndexOf('/') + 1)..].AsInt(0);
+        } else {
+            matchZone = matchZone.Replace("/", "");
+            byLv = 0;
+        }
+
+        var byId = matchZone.Replace("Zone_", "");
+
+        zone = null;
+        foreach (var zoneCandidate in zones) {
+            if (zoneCandidate.GetType().Name != matchZone && zoneCandidate.id != byId) {
+                continue;
+            }
+
+            try {
+                zone = zoneCandidate.FindOrCreateZone(byLv);
+            } catch {
+                zone = null;
+                // noexcept
+            }
+
+            break;
+        }
+
+        if (zone is null && byId != "*" && !randomFallback) {
             return false;
         }
 
-        zone ??= Array.FindAll(_zones, z => z.CanSpawnAdv).RandomItem();
+        zone ??= Array.FindAll(zones, z => z.CanSpawnAdv).RandomItem();
         return zone is not null;
     }
 
@@ -66,16 +90,16 @@ public partial class CustomChara
                 foreach (var zone in addZones) {
                     var toAddZone = zone;
 
-                    if (import.Type == ImportType.Adventurer) {
+                    if (import.Type is ImportType.Adventurer or ImportType.Merchant) {
                         if (game.cards.globalCharas.Find(id) is { } exist) {
-                            if (listAdv.Find(c => c.id == id) is null) {
+                            if (import.Type is ImportType.Adventurer && listAdv.Find(c => c.id == id) is null) {
                                 // register exist chara as adv
                                 listAdv.Add(exist);
                                 CwlMod.Log<CustomChara>("cwl_log_added_adv".Loc(id, (exist.homeZone ?? exist.currentZone).Name));
                             }
 
                             CwlMod.Log<CustomChara>(skipLoc.Loc(id));
-                            break;
+                            continue;
                         }
 
                         toAddZone = import.Zones[0];
