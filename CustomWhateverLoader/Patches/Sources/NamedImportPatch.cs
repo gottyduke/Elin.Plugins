@@ -24,7 +24,7 @@ internal class NamedImportPatch
         return CwlConfig.NamedImport;
     }
 
-    internal static IEnumerable<MethodInfo> TargetMethods()
+    internal static IEnumerable<MethodBase> TargetMethods()
     {
         return WorkbookImporter.Sources
             .Select(MethodInfo? (sf) => sf.FieldType.GetRuntimeMethod("CreateRow", []))

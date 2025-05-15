@@ -40,7 +40,7 @@ public class ActPerformEvent
         }
     }
 
-    internal static IEnumerable<MethodInfo> TargetMethods()
+    internal static IEnumerable<MethodBase> TargetMethods()
     {
         return OverrideMethodComparer.FindAllOverrides(typeof(Act), nameof(Act.Perform))
             .Where(mi => mi.DeclaringType != typeof(DynamicAct) && mi.DeclaringType != typeof(DynamicAIAct));

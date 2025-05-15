@@ -7,7 +7,6 @@ using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
-using Cwl.Patches.Relocation;
 using MethodTimer;
 using ReflexCLI.Attributes;
 using UnityEngine;
@@ -31,7 +30,6 @@ internal partial class DataLoader
     {
         if (LastBgmIndex == 0) {
             LastBgmIndex = Core.Instance.refs.bgms.Count;
-            LoadResourcesPatch.AddHandler<SoundData>(RelocateSound);
         } else {
             // hot reload
             ClearSoundCache();
@@ -83,9 +81,9 @@ internal partial class DataLoader
         CwlMod.Log<DataLoader>($"removed {count} cached bgm entries");
     }
 
-    private static bool RelocateSound(string path, ref Object loaded)
+    internal static bool RelocateSound(string path, ref Object? loaded)
     {
-        if (!path.StartsWith(SoundPathEntry)) {
+        if (!path.StartsWith(SoundPathEntry, StringComparison.InvariantCultureIgnoreCase)) {
             return false;
         }
 

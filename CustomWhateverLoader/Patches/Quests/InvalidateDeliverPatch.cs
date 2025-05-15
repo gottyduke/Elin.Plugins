@@ -13,7 +13,7 @@ internal class InvalidateItemPatch
 {
     private const string FallbackItem = "generator_snowman";
 
-    internal static IEnumerable<MethodInfo> TargetMethods()
+    internal static IEnumerable<MethodBase> TargetMethods()
     {
         return OverrideMethodComparer.FindAllOverridesGetter(typeof(QuestDeliver), nameof(QuestDeliver.sourceThing));
     }
@@ -40,7 +40,7 @@ internal static class InvalidateDestThingPatch
     private static readonly List<Thing> _cleanup = [];
     private static bool _queued;
 
-    internal static IEnumerable<MethodInfo> TargetMethods()
+    internal static IEnumerable<MethodBase> TargetMethods()
     {
         return OverrideMethodComparer.FindAllOverrides(typeof(QuestDeliver), nameof(QuestDeliver.IsDestThing), typeof(Thing));
     }

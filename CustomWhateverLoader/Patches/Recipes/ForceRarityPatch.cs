@@ -8,7 +8,7 @@ namespace Cwl.Patches.Recipes;
 [HarmonyPatch]
 internal class ForceRarityPatch
 {
-    internal static IEnumerable<MethodInfo> TargetMethods()
+    internal static IEnumerable<MethodBase> TargetMethods()
     {
         return OverrideMethodComparer.FindAllOverrides(typeof(Card), nameof(Card.OnCreate), typeof(int));
     }

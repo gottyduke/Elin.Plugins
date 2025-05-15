@@ -10,7 +10,7 @@ namespace Cwl.Patches.Relocation;
 [HarmonyPatch]
 public class LoadResourcesPatch
 {
-    public delegate bool RelocationHandler<T>(string path, ref T loaded);
+    public delegate bool RelocationHandler<T>(string path, ref T? loaded);
 
     private static readonly Dictionary<Type, List<RelocationHandler<Object>>> _handlers = [];
 
@@ -20,7 +20,7 @@ public class LoadResourcesPatch
         _handlers[typeof(T)].Add(SafeLoad);
         return;
 
-        bool SafeLoad(string path, ref Object loaded)
+        bool SafeLoad(string path, ref Object? loaded)
         {
             try {
                 return handler(path, ref loaded);
@@ -34,20 +34,22 @@ public class LoadResourcesPatch
     }
 
     [SwallowExceptions]
-    [HarmonyPrefix]
+    [HarmonyPostfix]
     [HarmonyPatch(typeof(Resources), nameof(Resources.Load), typeof(string), typeof(Type))]
-    internal static bool OnRelocateResource(ref Object __result, string path, Type systemTypeInstance)
+    internal static void OnRelocateResource(ref Object? __result, string path, Type systemTypeInstance)
     {
+        if (__result != null) {
+            return;
+        }
+
         if (!_handlers.TryGetValue(systemTypeInstance, out var handlers)) {
-            return true;
+            return;
         }
 
         foreach (var handler in handlers) {
             if (handler(path, ref __result)) {
-                return false;
+                return;
             }
         }
-
-        return true;
     }
 }

@@ -16,6 +16,7 @@ public class CwlConfig
     [ConsoleCommand] public static bool CacheSheets => Caching.Sheets?.Value is true;
     [ConsoleCommand] public static bool CacheSprites => Caching.Sprites?.Value is true;
 
+    [ConsoleCommand] public static bool DynamicCheckIf => Dialog.DynamicCheckIf?.Value is true;
     [ConsoleCommand] public static bool ExpandedActions => Dialog.ExpandedActions?.Value is true;
     [ConsoleCommand] public static bool ExpandedActionsExternal => Dialog.ExpandedActionsAllowExternal?.Value is true;
     [ConsoleCommand] public static bool NoOverlappingSounds => Dialog.NoOverlappingSounds?.Value is true;
@@ -103,6 +104,13 @@ public class CwlConfig
             true,
             "Cache sprites created by CWL instead of creating new from textures\n" +
             "缓存CWL生成的贴图而不是每次重新构建");
+
+        Dialog.DynamicCheckIf = config.Bind(
+            ModInfo.Name,
+            "Dialog.DynamicCheckIf",
+            true,
+            "Dynamically re-evaluate if conditions during drama play instead of only once on load\n" +
+            "剧情演出时动态判断if条件而非仅在加载时判断一次");
 
         Dialog.ExpandedActions = config.Bind(
             ModInfo.Name,
@@ -225,6 +233,7 @@ public class CwlConfig
 
     internal class Dialog
     {
+        internal static ConfigEntry<bool>? DynamicCheckIf { get; set; }
         internal static ConfigEntry<bool>? ExpandedActions { get; set; }
         internal static ConfigEntry<bool>? ExpandedActionsAllowExternal { get; set; }
         internal static ConfigEntry<bool>? NoOverlappingSounds { get; set; }

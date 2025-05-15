@@ -13,7 +13,7 @@ internal class ConverterEvent
     [HarmonyPatch]
     internal class CanDecaySubEvent
     {
-        internal static IEnumerable<MethodInfo> TargetMethods()
+        internal static IEnumerable<MethodBase> TargetMethods()
         {
             return OverrideMethodComparer
                 .FindAllOverrides(typeof(TraitBrewery), nameof(TraitBrewery.CanChildDecay), typeof(Card))
@@ -41,7 +41,7 @@ internal class ConverterEvent
     [HarmonyPatch]
     internal class OnDecaySubEvent
     {
-        internal static IEnumerable<MethodInfo> TargetMethods()
+        internal static IEnumerable<MethodBase> TargetMethods()
         {
             return OverrideMethodComparer
                 .FindAllOverrides(typeof(TraitBrewery), nameof(TraitBrewery.OnChildDecay), typeof(Card), typeof(bool))

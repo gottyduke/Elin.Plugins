@@ -17,7 +17,7 @@ internal class RowOverridePatch
         return CwlConfig.OverrideSameId;
     }
 
-    internal static IEnumerable<MethodInfo> TargetMethods()
+    internal static IEnumerable<MethodBase> TargetMethods()
     {
         return OverrideMethodComparer.FindAllOverrides(typeof(SourceData), nameof(SourceData.Init));
     }
@@ -52,7 +52,7 @@ internal class RowOverridePatch
             if (seen.Add(row)) {
                 uniqueRows.Add(row);
             } else {
-                CwlMod.Log<SourceData.BaseRow>($"de-duplicated row: {row.GetFieldValue("id")}");
+                CwlMod.Debug($"de-duplicated row: {row.GetFieldValue("id")}");
             }
         }
 
