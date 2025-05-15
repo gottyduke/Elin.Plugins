@@ -14,7 +14,7 @@ internal class CwlConsole
         // Because noa wrote so
         // ReSharper disable once StringLiteralTypo
         var beggars = EClass.game.cards.globalCharas.Values
-            .Where(chara => chara is { id: "begger", c_altName: null })
+            .Where(chara => chara.id == "begger")
             .ToArray();
 
         foreach (var chara in beggars) {
@@ -22,7 +22,7 @@ internal class CwlConsole
         }
 
         // ReSharper disable once StringLiteralTypo
-        foreach (var chara in EClass.game.cards.listAdv.FindAll(chara => chara is { id: "begger", c_altName: null })) {
+        foreach (var chara in EClass.game.cards.listAdv.FindAll(chara => chara.id == "begger")) {
             if (!chara.isDestroyed) {
                 chara.Destroy();
             }
