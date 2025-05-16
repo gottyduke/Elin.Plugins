@@ -1,4 +1,6 @@
-﻿namespace Cwl.Helper.Extensions;
+﻿using Cwl.LangMod;
+
+namespace Cwl.Helper.Extensions;
 
 public static class ZoneExt
 {
@@ -14,7 +16,7 @@ public static class ZoneExt
         newZone.x = zone.x;
         newZone.y = zone.y;
 
-        CwlMod.Log<SpatialGen>($"instantiating new zone {zone.Name} / {lv}");
+        CwlMod.Log<SpatialGen>("cwl_log_spatial_gen".Loc(zone.Name, lv));
 
         return newZone;
     }

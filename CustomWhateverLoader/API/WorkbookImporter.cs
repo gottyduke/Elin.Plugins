@@ -57,7 +57,7 @@ public class WorkbookImporter
             try {
                 var sourceField = Sources.FirstOrDefault(f => f.FieldType.Name == $"Source{sheet.SheetName}" ||
                                                               f.FieldType.Name == $"Lang{sheet.SheetName}");
-                if (sourceField is null) {
+                if (sourceField?.GetValue(EMono.sources) is not SourceData source) {
                     CwlMod.Log<WorkbookImporter>("cwl_log_sheet_skip".Loc(sheet.SheetName));
                     continue;
                 }
@@ -66,9 +66,8 @@ public class WorkbookImporter
 
                 var sheetName = $"{sourceField.Name}:{import.Name}/{sheet.SheetName}";
                 CwlMod.Log<WorkbookImporter>("cwl_log_sheet".Loc(sheet.SheetName));
-
-                if (sourceField.GetValue(EMono.sources) is not SourceData source ||
-                    !source.ImportData(sheet, import.Name, true)) {
+                
+                if (!source.ImportData(sheet, import.Name, true)) {
                     throw new SourceParseException("cwl_error_source_except".Loc(sheetName));
                 }
 

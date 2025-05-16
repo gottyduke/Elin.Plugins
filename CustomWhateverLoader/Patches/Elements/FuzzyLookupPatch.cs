@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using Cwl.Helper.Extensions;
+using Cwl.LangMod;
 using HarmonyLib;
 
 namespace Cwl.Patches.Elements;
@@ -44,7 +45,7 @@ internal class FuzzyLookup
             return true;
         }
 
-        CwlMod.Warn<FuzzyLookup>($"cannot find element: {alias}");
+        CwlMod.Warn<FuzzyLookup>("cwl_warn_fuzzy_lookup".Loc(alias));
         return false;
     }
 }
