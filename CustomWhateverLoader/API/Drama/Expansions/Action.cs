@@ -107,11 +107,11 @@ public partial class DramaExpansion
 
     public static bool join_faith(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        parameters.RequiresOpt(out var faith);
+        parameters.RequiresOpt(out var faithId);
         dm.RequiresActor(out var actor);
 
-        if (faith.Provided) {
-            if (!game.religions.dictAll.TryGetValue(faith.Value, out var religion) || !religion.CanJoin) {
+        if (faithId.Provided) {
+            if (!game.religions.dictAll.TryGetValue(faithId.Value, out var religion) || !religion.CanJoin) {
                 return false;
             }
 

@@ -1,20 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Cwl.API.Custom;
+using Cwl.API.Drama;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using HarmonyLib;
 
 namespace Cwl.Patches.Dialogs;
 
-[HarmonyPatch]
+[HarmonyPatch(typeof(DramaEventMethod), nameof(DramaEventMethod.Play))]
 internal class SafePlayDramaPatch
 {
-    internal static MethodInfo TargetMethod()
-    {
-        return AccessTools.Method(typeof(DramaEventMethod), nameof(DramaEventMethod.Play));
-    }
-
     [HarmonyReversePatch(HarmonyReversePatchType.Snapshot)]
     internal static bool _Play(DramaEventMethod __instance)
     {

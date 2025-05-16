@@ -15,21 +15,6 @@ public partial class DramaExpansion
     }
 
     // nodiscard
-    public static bool if_flag(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
-    {
-        parameters.RequiresAtleast(1);
-        parameters.RequiresOpt(out var flag, out var optExpr);
-        dm.RequiresActor(out var actor);
-
-        var flagVal = flag.Value;
-        var expr = optExpr.Get(">=1");
-
-        return actor.IsPC
-            ? player.dialogFlags.TryGetValue(flagVal, out var value) && Compare(value, expr)
-            : Compare(actor.GetFlagValue(flagVal), expr);
-    }
-
-    // nodiscard
     public static bool if_condition(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.RequiresAtleast(1);
@@ -46,14 +31,32 @@ public partial class DramaExpansion
     }
 
     // nodiscard
-    public static bool if_tag(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    public static bool if_faith(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        parameters.Requires(out var tag);
+        parameters.RequiresAtleast(1);
+        parameters.RequiresOpt(out var faithId, out var rankExpr);
         dm.RequiresActor(out var actor);
 
-        return actor.source.tag.Contains(tag);
+        var faith = actor.faith;
+
+        return faith.id == faithId.Value && Compare(faith.giftRank, rankExpr.Get(">=0"));
     }
 
+    // nodiscard
+    public static bool if_flag(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.RequiresAtleast(1);
+        parameters.RequiresOpt(out var flag, out var optExpr);
+        dm.RequiresActor(out var actor);
+
+        var flagVal = flag.Value;
+        var expr = optExpr.Get(">=1");
+
+        return actor.IsPC
+            ? player.dialogFlags.TryGetValue(flagVal, out var value) && Compare(value, expr)
+            : Compare(actor.GetFlagValue(flagVal), expr);
+    }
+    
     // nodiscard
     public static bool if_location(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
@@ -64,5 +67,14 @@ public partial class DramaExpansion
         var zone = actor.currentZone;
 
         return zone.id == zoneId.Value && (!optLevel.Provided || zone.lv.ToString() == optLevel.Get("0"));
+    }
+
+    // nodiscard
+    public static bool if_tag(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.Requires(out var tag);
+        dm.RequiresActor(out var actor);
+
+        return actor.source.tag.Contains(tag);
     }
 }

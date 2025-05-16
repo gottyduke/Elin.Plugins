@@ -15,14 +15,6 @@ internal class DynamicDramaEvaluation
 {
     internal static readonly Dictionary<DramaEvent, Func<bool>> ActiveConditions = [];
 
-    [HarmonyPrefix]
-    [HarmonyPatch(typeof(DramaManager), nameof(DramaManager.ParseLine))]
-    internal static void OnParseLineItem(DramaManager __instance, Dictionary<string, string> item)
-    {
-        //! cookie must be set first to share parse state between patches
-        DramaExpansion.Cookie = new(__instance, item);
-    }
-
     [HarmonyPostfix]
     [HarmonyPatch(typeof(DramaSequence), nameof(DramaSequence.Exit))]
     internal static void OnSequenceExit()
