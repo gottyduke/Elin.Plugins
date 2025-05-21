@@ -9,7 +9,7 @@ internal static class ModInfo
     // for legacy reason...
     internal const string Guid = "dk.elinplugins.forcepixelsize";
     internal const string Name = "Variable Sprite Support";
-    internal const string Version = "1.5";
+    internal const string Version = "1.6";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]

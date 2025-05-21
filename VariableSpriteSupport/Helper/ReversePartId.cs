@@ -18,6 +18,6 @@ public static class ReversePartId
     public static string GetPartId(this Texture2D texture)
     {
         var part = _cache.FirstOrDefault(p => p.modTextures.Values.Any(mi => mi.cache == texture));
-        return part?.idFull ?? string.Empty;
+        return part?.idFull ?? "";
     }
 }

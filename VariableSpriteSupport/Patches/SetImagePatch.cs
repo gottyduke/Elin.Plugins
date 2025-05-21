@@ -6,10 +6,10 @@ namespace VSS.Patches;
 internal class SetImagePatch
 {
     [HarmonyPostfix]
-    [HarmonyPatch(typeof(ItemGeneral), nameof(ItemGeneral.SetChara), typeof(Chara))]
+    [HarmonyPatch(typeof(ItemGeneral), nameof(ItemGeneral.SetChara))]
     internal static void OnSetImage(ItemGeneral __instance, Chara c)
     {
-        if (!c.IsPCC) {
+        if (!c.IsPC) {
             return;
         }
 

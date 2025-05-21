@@ -6,6 +6,8 @@ namespace VSS.Patches;
 [HarmonyPatch]
 internal class UpdateSpritePatch
 {
+    private static readonly int _mainTex = Shader.PropertyToID("_MainTex");
+
     [HarmonyPostfix]
     [HarmonyPatch(typeof(TestActor), nameof(TestActor.UpdateSprite))]
     internal static void OnUpdateSprite(TestActor __instance)
