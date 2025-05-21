@@ -7,10 +7,10 @@ namespace Cwl.API.Drama;
 
 public partial class DramaExpansion
 {
-    public static void AddTempTalk(DramaManager dm, string text, string? jump = null)
+    public static void AddTempTalk(DramaManager dm, string text, string actor = "tg", string? jump = null)
     {
         var talkEvent = new DramaEventTalk {
-            idActor = "tg",
+            idActor = actor,
             idJump = jump ?? dm.sequence.lastlastStep.IsEmpty("end"),
             text = text,
             temp = true,
@@ -20,20 +20,6 @@ public partial class DramaExpansion
         dm.lastTalk = talkEvent;
         dm.AddEvent(talkEvent);
         dm.sequence.tempEvents.Add(dm.lastTalk);
-    }
-
-    public static bool Compare(float lhs, string expr)
-    {
-        return expr.Trim() switch {
-            ['>', .. { } raw] when float.TryParse(raw, out var rhs) => lhs > rhs,
-            ['>', '=', .. { } raw] when float.TryParse(raw, out var rhs) => lhs >= rhs,
-            ['=', .. { } raw] when float.TryParse(raw, out var rhs) => Mathf.Approximately(lhs, rhs),
-            ['=', '=', .. { } raw] when float.TryParse(raw, out var rhs) => Mathf.Approximately(lhs, rhs),
-            ['!', '=', .. { } raw] when float.TryParse(raw, out var rhs) => !Mathf.Approximately(lhs, rhs),
-            ['<', '=', .. { } raw] when float.TryParse(raw, out var rhs) => lhs <= rhs,
-            ['<', .. { } raw] when float.TryParse(raw, out var rhs) => lhs < rhs,
-            _ => false,
-        };
     }
 
     public static float ArithmeticModOrSet(float lhs, string expr)
@@ -51,9 +37,32 @@ public partial class DramaExpansion
         };
     }
 
+    public static bool Compare(float lhs, string expr)
+    {
+        return expr.Trim() switch {
+            ['>', .. { } raw] when float.TryParse(raw, out var rhs) => lhs > rhs,
+            ['>', '=', .. { } raw] when float.TryParse(raw, out var rhs) => lhs >= rhs,
+            ['=', .. { } raw] when float.TryParse(raw, out var rhs) => Mathf.Approximately(lhs, rhs),
+            ['=', '=', .. { } raw] when float.TryParse(raw, out var rhs) => Mathf.Approximately(lhs, rhs),
+            ['!', '=', .. { } raw] when float.TryParse(raw, out var rhs) => !Mathf.Approximately(lhs, rhs),
+            ['<', '=', .. { } raw] when float.TryParse(raw, out var rhs) => lhs <= rhs,
+            ['<', .. { } raw] when float.TryParse(raw, out var rhs) => lhs < rhs,
+            _ => false,
+        };
+    }
+
     public static int ArithmeticModOrSet(int lhs, string expr)
     {
         return (int)ArithmeticModOrSet((float)lhs, expr);
+    }
+
+    public static void Goto(string step)
+    {
+        if (Cookie?.Dm is not { } dm || !dm.sequence.steps.ContainsKey(step)) {
+            return;
+        }
+
+        dm.sequence.Play(step);
     }
 
     private static bool SafeInvoke(ActionWrapper action, DramaManager dm, Dictionary<string, string> item, params string[] pack)

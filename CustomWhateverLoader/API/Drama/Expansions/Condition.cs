@@ -31,6 +31,15 @@ public partial class DramaExpansion
     }
 
     // nodiscard
+    public static bool if_element(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.Requires(out var alias, out var expr);
+        dm.RequiresActor(out var actor);
+
+        return actor.HasElement(alias) && Compare(actor.elements.GetElement(alias).Value, expr);
+    }
+
+    // nodiscard
     public static bool if_faith(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.RequiresAtleast(1);
@@ -56,9 +65,9 @@ public partial class DramaExpansion
             ? player.dialogFlags.TryGetValue(flagVal, out var value) && Compare(value, expr)
             : Compare(actor.GetFlagValue(flagVal), expr);
     }
-    
+
     // nodiscard
-    public static bool if_location(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    public static bool if_zone(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.RequiresAtleast(1);
         parameters.RequiresOpt(out var zoneId, out var optLevel);
@@ -67,6 +76,14 @@ public partial class DramaExpansion
         var zone = actor.currentZone;
 
         return zone.id == zoneId.Value && (!optLevel.Provided || zone.lv.ToString() == optLevel.Get("0"));
+    }
+
+    public static bool if_race(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.Requires(out var race);
+        dm.RequiresActor(out var actor);
+
+        return actor.race.id == race;
     }
 
     // nodiscard
