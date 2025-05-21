@@ -43,9 +43,9 @@ internal class SetMaterialRowPatch
         try {
             foreach (var tag in tags) {
                 if (tag.StartsWith("_Main")) {
-                    main = Regex.Replace(tag, @"_Main|\(|\)", "").ParseColorHex();
+                    main = Regex.Replace(tag, @"_Main|\(|\)", "").ToColor();
                 } else if (tag.StartsWith("_Alt")) {
-                    alt = Regex.Replace(tag, @"_Alt|\(|\)", "").ParseColorHex();
+                    alt = Regex.Replace(tag, @"_Alt|\(|\)", "").ToColor();
                 }
             }
         } catch (Exception ex) {

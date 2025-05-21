@@ -22,7 +22,7 @@ public static class StringHelper
 
     public static string? Truncate(this string input, int length)
     {
-        return input is null or "" || input.Length <= length ? input : $"{input[..length]} ...";
+        return input.IsEmpty() || input.Length <= length ? input : $"{input[..length]} ...";
     }
 
     public static string TruncateAllLines(this string input, int length)

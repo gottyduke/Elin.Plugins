@@ -66,7 +66,7 @@ public class WorkbookImporter
 
                 var sheetName = $"{sourceField.Name}:{import.Name}/{sheet.SheetName}";
                 CwlMod.Log<WorkbookImporter>("cwl_log_sheet".Loc(sheet.SheetName));
-                
+
                 if (!source.ImportData(sheet, import.Name, true)) {
                     throw new SourceParseException("cwl_error_source_except".Loc(sheetName));
                 }

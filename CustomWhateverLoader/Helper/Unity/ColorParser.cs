@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using Cwl.LangMod;
+using HarmonyLib;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace Cwl.Helper.Unity;
@@ -19,19 +23,5 @@ public static class ColorParser
         }
 
         return new(parsed[0], parsed[1], parsed[2], parsed[3]);
-    }
-
-    public static Color ParseColorHex(this string hex)
-    {
-        var bits = hex.Trim().Replace("0x", "").Replace("#", "").ToCharArray();
-        Array.Resize(ref bits, 8);
-
-        var r = byte.Parse(bits[..2], NumberStyles.HexNumber);
-        var g = byte.Parse(bits[2..4], NumberStyles.HexNumber);
-        var b = byte.Parse(bits[4..6], NumberStyles.HexNumber);
-        var a = byte.Parse(bits[6..8], NumberStyles.HexNumber);
-
-        const float byteMax = byte.MaxValue;
-        return new(r / byteMax, g / byteMax, b / byteMax, a / byteMax);
     }
 }

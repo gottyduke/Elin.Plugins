@@ -13,7 +13,7 @@ public static class ParamParser
 
         Array.Resize(ref parsed, expected);
         for (var i = 0; i < parsed.Length; ++i) {
-            parsed[i] ??= useNull ? null : string.Empty;
+            parsed[i] ??= useNull ? null : "";
         }
 
         return parsed;

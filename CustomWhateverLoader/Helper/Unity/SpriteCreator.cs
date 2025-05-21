@@ -14,7 +14,7 @@ public static class SpriteCreator
     public static Sprite? LoadSprite(this string path, Vector2? pivot = null, string? name = null, int resizeWidth = 0,
         int resizeHeight = 0)
     {
-        if (path is null or "") {
+        if (path.IsEmpty()) {
             return null;
         }
 

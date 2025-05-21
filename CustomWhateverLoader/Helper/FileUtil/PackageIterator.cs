@@ -111,7 +111,7 @@ public class PackageIterator
 
     public static bool TryLoadFromPackageCache(string cacheName, out string path)
     {
-        path = string.Empty;
+        path = "";
         return CwlConfig.CachePaths && _cachedPaths.TryGetValue(cacheName, out path) && File.Exists(path);
     }
 
