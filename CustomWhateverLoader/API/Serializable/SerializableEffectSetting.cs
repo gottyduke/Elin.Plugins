@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Cwl.Helper.Unity;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace Cwl.API;
@@ -8,7 +10,14 @@ namespace Cwl.API;
 // ReSharper disable All 
 public sealed class SerializableEffectSetting : Dictionary<string, SerializableEffectData>;
 
-public sealed record SerializableEffectData : SerializableEffectDataV1;
+public sealed record SerializableEffectData : SerializazbleEffectDataV2;
+
+public record SerializazbleEffectDataV2 : SerializableEffectDataV1
+{
+    public string idSprite = "ranged_gun";
+    public string caneColor = "";
+    public bool caneColorBlend = false;
+}
 
 // use lowercase naming for introspect copy
 public record SerializableEffectDataV1
@@ -19,5 +28,5 @@ public record SerializableEffectDataV1
     public string idEffect = "gunfire";
     public string idSound = "attack_gun";
     public int num = 1;
-    public string spriteId = "ranged_gun";
+    public string spriteId = "";
 }
