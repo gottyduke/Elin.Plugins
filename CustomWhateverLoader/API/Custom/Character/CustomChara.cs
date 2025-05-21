@@ -18,6 +18,7 @@ public partial class CustomChara : Chara
         Merchant,
     }
 
+    private static readonly Dictionary<string, ImportType> _cachedTraitTypes = [];
     private static readonly Dictionary<string, CharaImport> _delayedCharaImport = [];
     internal static readonly Dictionary<string, string> DramaRoutes = [];
     internal static readonly Dictionary<string, string> BioOverride = [];
@@ -36,12 +37,15 @@ public partial class CustomChara : Chara
             return;
         }
 
-        var trait = r.trait.TryGet(0, true);
-        var import = trait switch {
-            "Adventurer" or "AdventurerBacker" => ImportType.Adventurer,
-            not null when trait.StartsWith("Merchant") => ImportType.Merchant,
-            _ => ImportType.Commoner,
-        };
+        var trait = r.trait.TryGet(0, true) ?? "Chara";
+        if (!_cachedTraitTypes.TryGetValue(trait, out var import)) {
+            var traitType = ClassCache.Create<Trait>($"{nameof(Trait)}{trait}", "Elin");
+            _cachedTraitTypes[trait] = import = traitType switch {
+                TraitAdventurer => ImportType.Adventurer,
+                TraitMerchant => ImportType.Merchant,
+                _ => ImportType.Commoner,
+            };
+        }
 
         List<string> zones = [];
         List<string> equips = [];

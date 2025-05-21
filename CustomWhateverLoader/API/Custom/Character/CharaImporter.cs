@@ -90,9 +90,9 @@ public partial class CustomChara
                 foreach (var zone in addZones) {
                     var toAddZone = zone;
 
-                    if (import.Type is ImportType.Adventurer or ImportType.Merchant) {
+                    if (import.Type is ImportType.Adventurer) {
                         if (game.cards.globalCharas.Find(id) is { } exist) {
-                            if (import.Type is ImportType.Adventurer && listAdv.Find(c => c.id == id) is null) {
+                            if (listAdv.Find(c => c.id == id) is null) {
                                 // register exist chara as adv
                                 listAdv.Add(exist);
                                 CwlMod.Log<CustomChara>("cwl_log_added_adv".Loc(id, (exist.homeZone ?? exist.currentZone).Name));
