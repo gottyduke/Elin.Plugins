@@ -3,6 +3,7 @@ using System.Linq;
 using Cwl.API.Custom;
 using Cwl.Helper.Unity;
 using HarmonyLib;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Cwl.Patches.Charas;
@@ -13,7 +14,8 @@ internal class RepositionPortraitPatch
     // calculated from all game npc average
     private const float AverageDistance = 54.5f;
 
-    private static readonly Dictionary<int, float> _cached = [];
+    private static readonly Dictionary<int, float> _cachedDownward = [];
+    private static readonly Dictionary<int, float> _cachedUpward = [];
 
     [SwallowExceptions]
     [HarmonyPostfix]
@@ -47,30 +49,44 @@ internal class RepositionPortraitPatch
         Reposition(__instance.button1.icon, c.uid);
     }
 
+    internal static float CacheRaycastDist(Sprite sprite, int uid, bool downward = true)
+    {
+        var cache = downward ? _cachedDownward : _cachedUpward;
+        if (cache.TryGetValue(uid, out var dist)) {
+            return dist;
+        }
+
+        var rect = sprite.rect;
+        var startX = (int)(rect.width / 2);
+        var startY = downward ? (int)rect.height : 0;
+        var directionY = downward ? -1 : 1;
+
+        dist = sprite.NearestPerceivableMulticast(4, 4,
+            startX,
+            startY,
+            directionY: directionY
+        );
+
+        return cache[uid] = dist;
+    }
+
     private static void Reposition(Image image, int uid)
     {
         var sprite = image.sprite;
         var scaler = sprite.rect.height / 128f;
 
-        if (!_cached.TryGetValue(uid, out var yOffset)) {
-            // do a 4 x 4 raycasts from top to bottom to determine the distance to adjust the portrait
-            // I hate raycasts
-            var dist = sprite.NearestPerceivableMulticast(4, 4,
-                (int)sprite.rect.width / 2,
-                (int)sprite.rect.height,
-                directionY: -1);
+        var dist = CacheRaycastDist(sprite, uid);
 
-            // in case some mods used non-standard sizes
-            var scaledAverageDistance = AverageDistance * scaler;
-            var scaledDist = dist / scaler;
-            if (scaledDist is > AverageDistance or <= 0f) {
-                return;
-            }
-
-            _cached[uid] = yOffset = (scaledAverageDistance - scaledDist) / 2;
+        // in case some mods used non-standard sizes
+        var scaledAverageDistance = AverageDistance * scaler;
+        var scaledDist = dist / scaler;
+        if (scaledDist is > AverageDistance or <= 0f) {
+            return;
         }
 
+        var yOffset = (scaledAverageDistance - scaledDist) / 2;
         var pos = image.transform.localPosition;
+
         image.transform.localPosition = pos with { y = pos.y / scaler - yOffset };
     }
 }
