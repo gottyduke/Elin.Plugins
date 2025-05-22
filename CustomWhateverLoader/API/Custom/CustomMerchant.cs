@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
@@ -95,7 +96,8 @@ public class CustomMerchant : TraitMerchant
                 }
 
                 player.noRestocks[owner.id] = noRestocks;
-            } catch {
+            } catch (Exception ex) {
+                CwlMod.Warn<CustomMerchant>(ex.Message);
                 // noexcept
             }
         }

@@ -144,7 +144,7 @@ public class CwlConfig
             ModInfo.Name,
             "Patches.FixBaseGameAvatar",
             true,
-            "When repositioning custom character icon positions, let CWL fix base game characters too\n" +
+            "When repositioning custom character icons, let CWL fix base game characters too\n" +
             "E.g. fairy icons are usually clipping through upper border\n" +
             "在重新定位自定义角色头像位置时，让CWL也修复游戏本体角色头像位置。例如，妖精角色的头像通常会超出边界");
 

@@ -56,8 +56,8 @@ public record SerializableStockItemV2 : SerializableStockItemV1
 
 public record SerializableStockItemV1
 {
-    public string Id = string.Empty;
-    public string Material = string.Empty;
+    public string Id = "";
+    public string Material = "";
     public int Num = 1;
     public bool Restock = true;
 

@@ -33,12 +33,7 @@ public partial class CustomChara
                 continue;
             }
 
-            try {
-                zone = zoneCandidate.FindOrCreateZone(byLv);
-            } catch {
-                zone = null;
-                // noexcept
-            }
+            zone = zoneCandidate.FindOrCreateZone(byLv);
 
             break;
         }
