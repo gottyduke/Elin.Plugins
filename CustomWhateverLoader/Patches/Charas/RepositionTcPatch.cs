@@ -26,7 +26,8 @@ internal class RepositionTcPatch
     private static bool IsSpriteReplacerBased(TC tc)
     {
         var renderer = tc.render;
-        return renderer is { actor: { isPCC: false } actor, usePass: false } && actor.sr != null;
+        return renderer is { actor: { isPCC: false } actor, usePass: false } &&
+               actor.owner.sourceCard.idRenderData.StartsWith("@");
     }
 
     [HarmonyPatch]
