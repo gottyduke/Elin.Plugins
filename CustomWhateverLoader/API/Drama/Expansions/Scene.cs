@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Cwl.API.Attributes;
 using Cwl.API.Custom;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.Runtime.Exceptions;
@@ -34,7 +35,7 @@ public partial class DramaExpansion
         return true;
     }
 
-    // nodiscard
+    [CwlNodiscard]
     public static bool move_zone(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.RequiresAtleast(1);
@@ -123,6 +124,27 @@ public partial class DramaExpansion
         }
 
         owner.idPortrait = id;
+
+        return true;
+    }
+
+    [CwlNodiscard]
+    public static bool show_book(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.Requires(out var book, out var category);
+
+        if (BookList.dict is null) {
+            BookList.Init();
+        }
+
+        if (!BookList.dict!.TryGetValue(category, out var books) ||
+            !books.TryGetValue(book, out var item)) {
+            return false;
+        }
+
+        var isParchment = category == "Scroll";
+        var bookUi = EClass.ui.AddLayer<LayerHelp>(isParchment ? "LayerParchment" : "LayerBook").book;
+        bookUi.Show((isParchment ? "Scroll/" : "Book/") + item.id, null, item.title, item);
 
         return true;
     }

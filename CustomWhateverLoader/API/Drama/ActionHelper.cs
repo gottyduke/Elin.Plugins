@@ -32,9 +32,15 @@ public partial class DramaExpansion
             ['*', .. { } raw] when float.TryParse(raw, out var rhs) => lhs * rhs,
             ['x', .. { } raw] when float.TryParse(raw, out var rhs) => lhs * rhs,
             ['/', .. { } raw] when float.TryParse(raw, out var rhs) => lhs / rhs,
+            ['=', .. { } raw] when float.TryParse(raw, out var rhs) => rhs,
             { } raw when float.TryParse(raw, out var rhs) => rhs,
             _ => lhs,
         };
+    }
+
+    public static int ArithmeticModOrSet(int lhs, string expr)
+    {
+        return (int)ArithmeticModOrSet((float)lhs, expr);
     }
 
     public static bool Compare(float lhs, string expr)
@@ -49,11 +55,6 @@ public partial class DramaExpansion
             ['<', .. { } raw] when float.TryParse(raw, out var rhs) => lhs < rhs,
             _ => false,
         };
-    }
-
-    public static int ArithmeticModOrSet(int lhs, string expr)
-    {
-        return (int)ArithmeticModOrSet((float)lhs, expr);
     }
 
     public static void Goto(string step)

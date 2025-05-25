@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using Cwl.API.Attributes;
 using Cwl.Helper.Extensions;
 
 namespace Cwl.API.Drama;
 
 public partial class DramaExpansion
 {
-    // nodiscard
+    [CwlNodiscard]
     public static bool if_affinity(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.Requires(out var valueExpr);
@@ -14,7 +15,7 @@ public partial class DramaExpansion
         return Compare(actor._affinity, valueExpr);
     }
 
-    // nodiscard
+    [CwlNodiscard]
     public static bool if_condition(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.RequiresAtleast(1);
@@ -30,7 +31,7 @@ public partial class DramaExpansion
         return false;
     }
 
-    // nodiscard
+    [CwlNodiscard]
     public static bool if_element(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.Requires(out var alias, out var valueExpr);
@@ -39,7 +40,7 @@ public partial class DramaExpansion
         return actor.HasElement(alias) && Compare(actor.elements.GetElement(alias).Value, valueExpr);
     }
 
-    // nodiscard
+    [CwlNodiscard]
     public static bool if_faith(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.RequiresAtleast(1);
@@ -51,7 +52,7 @@ public partial class DramaExpansion
         return faith.id == faithId.Value && Compare(faith.giftRank, optExpr.Get(">=0"));
     }
 
-    // nodiscard
+    [CwlNodiscard]
     public static bool if_flag(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.RequiresAtleast(1);
@@ -66,7 +67,7 @@ public partial class DramaExpansion
             : Compare(actor.GetFlagValue(flagVal), expr);
     }
 
-    // nodiscard
+    [CwlNodiscard]
     public static bool if_keyitem(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.RequiresAtleast(1);
@@ -76,7 +77,7 @@ public partial class DramaExpansion
                player.keyItems.TryGetValue(key.id, out var keyCount) && Compare(keyCount, optExpr.Get(">0"));
     }
 
-    // nodiscard
+    [CwlNodiscard]
     public static bool if_race(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.Requires(out var race);
@@ -85,7 +86,7 @@ public partial class DramaExpansion
         return actor.race.id == race;
     }
 
-    // nodiscard
+    [CwlNodiscard]
     public static bool if_tag(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.Requires(out var tag);
@@ -94,7 +95,7 @@ public partial class DramaExpansion
         return actor.source.tag.Contains(tag);
     }
 
-    // nodiscard
+    [CwlNodiscard]
     public static bool if_zone(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.RequiresAtleast(1);

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Cwl.API.Attributes;
 using Cwl.Helper;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.Runtime.Exceptions;
@@ -27,17 +28,6 @@ public partial class DramaExpansion
         return true;
     }
 
-    public static bool add_element(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
-    {
-        parameters.RequiresAtleast(1);
-        parameters.RequiresOpt(out var alias, out var power);
-        dm.RequiresActor(out var actor);
-
-        actor.AddElement(alias.Get(""), power.Get("1").AsInt(1));
-
-        return true;
-    }
-
     public static bool add_temp_talk(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.Requires(out var topic);
@@ -58,7 +48,7 @@ public partial class DramaExpansion
         return true;
     }
 
-    // nodiscard
+    [CwlNodiscard]
     public static bool cure_condition(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.Requires(out var alias);
@@ -108,6 +98,33 @@ public partial class DramaExpansion
         return true;
     }
 
+    public static bool mod_element(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.RequiresAtleast(1);
+        parameters.RequiresOpt(out var alias, out var power);
+        dm.RequiresActor(out var actor);
+
+        actor.AddElement(alias.Get(""), power.Get("1").AsInt(1));
+
+        return true;
+    }
+
+    [CwlNodiscard]
+    public static bool mod_element_exp(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.Requires(out var alias, out var expr);
+        dm.RequiresActor(out var actor);
+
+        if (actor.elements.GetOrCreateElement(alias) is not { } element) {
+            return false;
+        }
+
+        var add = ArithmeticModOrSet(element.vExp, expr) - element.vExp;
+        actor.ModExp(element.id, add);
+
+        return true;
+    }
+
     public static bool mod_flag(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.RequiresAtleast(1);
@@ -126,7 +143,7 @@ public partial class DramaExpansion
         return true;
     }
 
-    // nodiscard
+    [CwlNodiscard]
     public static bool mod_keyitem(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.RequiresAtleast(1);
