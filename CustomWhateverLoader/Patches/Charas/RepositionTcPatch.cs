@@ -9,25 +9,18 @@ namespace Cwl.Patches.Charas;
 [HarmonyPatch]
 internal class RepositionTcPatch
 {
-    private static readonly Dictionary<int, float> _cached = [];
-
-    private static float CacheRaycastDistTwoWay(Sprite sprite, int uid)
+    private static float CacheRaycastDistTwoWay(Sprite sprite)
     {
-        if (_cached.TryGetValue(uid, out var dist)) {
-            return dist;
-        }
+        var distUp = RepositionPortraitPatch.CacheRaycastDist(sprite, false);
+        var distDown = RepositionPortraitPatch.CacheRaycastDist(sprite);
 
-        var distUp = RepositionPortraitPatch.CacheRaycastDist(sprite, uid, false);
-        var distDown = RepositionPortraitPatch.CacheRaycastDist(sprite, uid);
-
-        return _cached[uid] = distDown - distUp;
+        return distDown - distUp;
     }
 
     private static bool IsSpriteReplacerBased(TC tc)
     {
         var renderer = tc.render;
-        return renderer is { actor: { isPCC: false } actor, usePass: false } &&
-               !actor.owner.c_idSpriteReplacer.IsEmpty();
+        return renderer is { actor.isPCC: false, usePass: false };
     }
 
     [HarmonyPatch]
@@ -46,34 +39,38 @@ internal class RepositionTcPatch
             }
 
             var actor = __instance.render.actor;
-            var uid = actor.owner.uid;
             var sprite = actor.sr.sprite;
 
-            var yOffset = CacheRaycastDistTwoWay(sprite, uid) + TC._setting.textPos.y;
-            const float wiggleRoom = 2f;
+            var yOffset = CacheRaycastDistTwoWay(sprite) + TC._setting.textPos.y;
 
-            __result.y -= yOffset - wiggleRoom;
+            var data = __instance.render.data;
+            var scaler = data.size.y / 0.64f;
+
+            __result.y -= yOffset * scaler;
         }
     }
 
     [HarmonyPatch]
     internal class TcOrbitRefreshPatch
     {
-        internal static IEnumerable<MethodBase> TargetMethods()
-        {
-            return OverrideMethodComparer.FindAllOverrides(typeof(TCOrbit), nameof(TCOrbit.Refresh));
-        }
-
         [HarmonyPostfix]
-        internal static void OnRefreshOrbit(TCOrbit __instance)
+        [HarmonyPatch(typeof(TCOrbitChara), nameof(TCOrbitChara.OnSetOwner))]
+        internal static void OnInstantiateOrbit(TCOrbitChara __instance)
         {
             if (!IsSpriteReplacerBased(__instance)) {
                 return;
             }
 
-            var pos = __instance.transform.position;
+            var actor = __instance.render.actor;
+            var sprite = actor.sr.sprite;
+
+            var yOffset = CacheRaycastDistTwoWay(sprite) / 100f;
+
             var data = __instance.render.data;
-            __instance.transform.position = pos with { y = pos.y - data.offset.y + data.size.y };
+            var scaler = data.size.y / 0.64f;
+
+            var pos = __instance.goIcon.transform.localPosition;
+            __instance.goIcon.transform.localPosition = pos with { y = pos.y - yOffset * scaler };
         }
     }
 }

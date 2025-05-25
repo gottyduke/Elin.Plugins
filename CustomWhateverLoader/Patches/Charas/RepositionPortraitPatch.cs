@@ -34,7 +34,7 @@ internal class RepositionPortraitPatch
             return;
         }
 
-        Reposition(__instance.imageChara, c.uid);
+        Reposition(__instance.imageChara);
     }
 
     [SwallowExceptions]
@@ -46,13 +46,14 @@ internal class RepositionPortraitPatch
             return;
         }
 
-        Reposition(__instance.button1.icon, c.uid);
+        Reposition(__instance.button1.icon);
     }
 
-    internal static float CacheRaycastDist(Sprite sprite, int uid, bool downward = true)
+    internal static float CacheRaycastDist(Sprite sprite, bool downward = true)
     {
         var cache = downward ? _cachedDownward : _cachedUpward;
-        if (cache.TryGetValue(uid, out var dist)) {
+        var id = sprite.GetInstanceID();
+        if (cache.TryGetValue(id, out var dist)) {
             return dist;
         }
 
@@ -67,15 +68,15 @@ internal class RepositionPortraitPatch
             directionY: directionY
         );
 
-        return cache[uid] = dist;
+        return cache[id] = dist;
     }
 
-    private static void Reposition(Image image, int uid)
+    private static void Reposition(Image image)
     {
         var sprite = image.sprite;
         var scaler = sprite.rect.height / 128f;
 
-        var dist = CacheRaycastDist(sprite, uid);
+        var dist = CacheRaycastDist(sprite);
 
         // in case some mods used non-standard sizes
         var scaledAverageDistance = AverageDistance * scaler;
