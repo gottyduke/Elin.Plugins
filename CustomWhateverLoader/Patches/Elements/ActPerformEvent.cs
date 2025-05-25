@@ -15,17 +15,16 @@ public class ActPerformEvent
 {
     public delegate void OnActPerform(Act act);
 
-    private static bool _applied;
+    private static bool _patched;
 
     private static event OnActPerform OnActPerformEvent = delegate { };
 
     public static void Add(OnActPerform process)
     {
-        if (!_applied) {
+        if (!_patched) {
             Harmony.CreateAndPatchAll(typeof(ActPerformEvent), ModInfo.Guid);
+            _patched = true;
         }
-
-        _applied = true;
 
         OnActPerformEvent += Process;
         return;

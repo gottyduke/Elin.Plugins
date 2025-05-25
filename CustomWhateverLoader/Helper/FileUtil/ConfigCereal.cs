@@ -65,11 +65,11 @@ public class ConfigCereal
         try {
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
 
-            var fmt = compact == CompactLevel.TextIndent ? Formatting.Indented : Formatting.None;
+            var fmt = compact is CompactLevel.TextIndent ? Formatting.Indented : Formatting.None;
             var json = JsonConvert.SerializeObject(data, fmt);
             using var fs = new FileStream(path, FileMode.Create);
 
-            if (compact == CompactLevel.Compress) {
+            if (compact is CompactLevel.Compress) {
                 using var lz4 = new LZ4Stream(fs, CompressionMode.Compress);
                 using var sw = new StreamWriter(lz4);
                 sw.Write(json);

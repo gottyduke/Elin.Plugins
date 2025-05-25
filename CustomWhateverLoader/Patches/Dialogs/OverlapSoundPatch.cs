@@ -9,7 +9,7 @@ namespace Cwl.Patches.Dialogs;
 [HarmonyPatch]
 internal class OverlapSoundPatch
 {
-    private static bool _applied;
+    private static bool _patched;
     private static SoundSource? _lastPlayed;
 
     internal static bool Prepare()
@@ -22,11 +22,11 @@ internal class OverlapSoundPatch
     [HarmonyPatch(typeof(DramaManager), nameof(DramaManager.ParseLine))]
     internal static IEnumerable<CodeInstruction> OnSoundPlayIl(IEnumerable<CodeInstruction> instructions)
     {
-        if (_applied) {
+        if (_patched) {
             return instructions;
         }
 
-        _applied = true;
+        _patched = true;
 
         var cm = new CodeMatcher(instructions);
         CodeMatch[] soundSwitch = [

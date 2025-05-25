@@ -10,27 +10,33 @@ internal class CwlConsole
 {
     [ConsoleCommand("vacate_beggar")]
     [CwlContextMenu("CWL/BeggarBegone", "cwl_ui_vacate_beggar")]
-    internal static string BegoneOfYouBeggars()
+    internal static string BegoneOfYouBeggars(bool onlyAdv = true)
     {
-        // Because noa wrote so
-        // ReSharper disable once StringLiteralTypo
-        var beggars = EClass.game.cards.globalCharas.Values
-            .Where(chara => chara.id == "begger")
-            .ToArray();
+        var destroyed = 0;
 
-        foreach (var chara in beggars) {
-            chara.Destroy();
+        if (!onlyAdv) {
+            // Because noa wrote so
+            // ReSharper disable once StringLiteralTypo
+            var beggars = EClass.game.cards.globalCharas.Values
+                .Where(chara => chara.id == "begger")
+                .ToArray();
+
+            foreach (var chara in beggars) {
+                chara.Destroy();
+                destroyed++;
+            }
         }
 
         // ReSharper disable once StringLiteralTypo
         foreach (var chara in EClass.game.cards.listAdv.FindAll(chara => chara.id == "begger")) {
             if (!chara.isDestroyed) {
                 chara.Destroy();
+                destroyed++;
             }
 
             EClass.game.cards.listAdv.Remove(chara);
         }
 
-        return "cwl_log_hobo_begone".Loc(beggars.Length);
+        return "cwl_log_hobo_begone".Loc(destroyed);
     }
 }

@@ -13,17 +13,16 @@ internal class CharaOnCreateEvent
 {
     public delegate void OnCharaCreate(Chara chara);
 
-    private static bool _applied;
+    private static bool _patched;
 
     private static event OnCharaCreate OnCharaCreateEvent = delegate { };
 
     public static void Add(OnCharaCreate process)
     {
-        if (!_applied) {
-            //Harmony.CreateAndPatchAll(typeof(CharaOnCreateEvent), ModInfo.Guid);
+        if (!_patched) {
+            Harmony.CreateAndPatchAll(typeof(CharaOnCreateEvent), ModInfo.Guid);
+            _patched = true;
         }
-
-        _applied = true;
 
         OnCharaCreateEvent += Process;
         return;

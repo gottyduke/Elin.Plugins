@@ -65,7 +65,7 @@ internal class DynamicDramaEvaluation
             var active = ActiveConditions[talk];
             var prev = choice.activeCondition;
 
-            choice.IF = string.Empty;
+            choice.IF = "";
             choice.SetCondition(() => active() && (prev?.Invoke() ?? true));
 
             talk.AddChoice(choice);
