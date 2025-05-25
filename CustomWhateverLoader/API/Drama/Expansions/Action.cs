@@ -27,6 +27,17 @@ public partial class DramaExpansion
         return true;
     }
 
+    public static bool add_element(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.RequiresAtleast(1);
+        parameters.RequiresOpt(out var alias, out var power);
+        dm.RequiresActor(out var actor);
+
+        actor.AddElement(alias.Get(""), power.Get("1").AsInt(1));
+
+        return true;
+    }
+
     public static bool add_temp_talk(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.Requires(out var topic);
@@ -115,6 +126,23 @@ public partial class DramaExpansion
         return true;
     }
 
+    // nodiscard
+    public static bool mod_keyitem(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.RequiresAtleast(1);
+        parameters.RequiresOpt(out var keyId, out var expr);
+
+        if (!sources.keyItems.alias.TryGetValue(keyId.Value, out var key)) {
+            return false;
+        }
+
+        var keys = player.keyItems;
+        keys.TryAdd(key.id, 0);
+        keys[key.id] = ArithmeticModOrSet(keys[key.id], expr.Get("1"));
+
+        return true;
+    }
+
     public static bool join_faith(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.RequiresOpt(out var faithId);
@@ -137,7 +165,7 @@ public partial class DramaExpansion
     {
         dm.RequiresActor(out var actor);
 
-        EClass.Sound.Play("good");
+        Sound.Play("good");
         actor.MakeAlly();
 
         return true;

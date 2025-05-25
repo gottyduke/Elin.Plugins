@@ -2,11 +2,27 @@
 using System.Collections.Generic;
 using Cwl.API.Custom;
 using Cwl.Helper.Extensions;
+using Cwl.Helper.Runtime.Exceptions;
 
 namespace Cwl.API.Drama;
 
 public partial class DramaExpansion
 {
+    public static bool move_next_to(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.Requires(out var targetId);
+        dm.RequiresActor(out var actor);
+
+        if (dm.sequence.GetActor(targetId) is not { owner.chara: { } target }) {
+            throw new DramaActionInvokeException("target");
+        }
+
+        var point = target.pos.GetNearestPoint(allowChara: true, ignoreCenter: true);
+        actor.TryMove(point, false);
+
+        return true;
+    }
+
     public static bool move_tile(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.Requires(out var xOffset, out var yOffset);
@@ -18,6 +34,7 @@ public partial class DramaExpansion
         return true;
     }
 
+    // nodiscard
     public static bool move_zone(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.RequiresAtleast(1);
@@ -81,6 +98,16 @@ public partial class DramaExpansion
         parameters.Requires(out var effectId);
 
         ScreenEffect.Play(effectId);
+
+        return true;
+    }
+
+    public static bool pop_text(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.Requires(out var text);
+        dm.RequiresActor(out var actor);
+
+        actor.renderer.Say(text);
 
         return true;
     }

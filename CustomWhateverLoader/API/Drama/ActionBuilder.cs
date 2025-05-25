@@ -108,7 +108,7 @@ public partial class DramaExpansion
         var parameters = parse.Groups["params"].Value.IsEmpty("");
         var pack = funcName switch {
             nameof(and) or nameof(or) or nameof(not) => Regex.Matches(parameters, @"\w+\(.*?\)").Select(m => m.Value),
-            _ => parameters.Split(",", StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()),
+            _ => parameters.Split([',', '，'], StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()),
         };
 
         return _expressions[expression] = (dm, line) => SafeInvoke(func, dm, line, pack.ToArray());

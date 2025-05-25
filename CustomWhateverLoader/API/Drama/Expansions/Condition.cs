@@ -8,10 +8,10 @@ public partial class DramaExpansion
     // nodiscard
     public static bool if_affinity(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        parameters.Requires(out var expr);
+        parameters.Requires(out var valueExpr);
         dm.RequiresActor(out var actor);
 
-        return Compare(actor._affinity, expr);
+        return Compare(actor._affinity, valueExpr);
     }
 
     // nodiscard
@@ -33,22 +33,22 @@ public partial class DramaExpansion
     // nodiscard
     public static bool if_element(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        parameters.Requires(out var alias, out var expr);
+        parameters.Requires(out var alias, out var valueExpr);
         dm.RequiresActor(out var actor);
 
-        return actor.HasElement(alias) && Compare(actor.elements.GetElement(alias).Value, expr);
+        return actor.HasElement(alias) && Compare(actor.elements.GetElement(alias).Value, valueExpr);
     }
 
     // nodiscard
     public static bool if_faith(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.RequiresAtleast(1);
-        parameters.RequiresOpt(out var faithId, out var rankExpr);
+        parameters.RequiresOpt(out var faithId, out var optExpr);
         dm.RequiresActor(out var actor);
 
         var faith = actor.faith;
 
-        return faith.id == faithId.Value && Compare(faith.giftRank, rankExpr.Get(">=0"));
+        return faith.id == faithId.Value && Compare(faith.giftRank, optExpr.Get(">=0"));
     }
 
     // nodiscard
@@ -67,17 +67,16 @@ public partial class DramaExpansion
     }
 
     // nodiscard
-    public static bool if_zone(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    public static bool if_keyitem(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.RequiresAtleast(1);
-        parameters.RequiresOpt(out var zoneId, out var optLevel);
-        dm.RequiresActor(out var actor);
+        parameters.RequiresOpt(out var keyId, out var optExpr);
 
-        var zone = actor.currentZone;
-
-        return zone.id == zoneId.Value && (!optLevel.Provided || zone.lv.ToString() == optLevel.Get("0"));
+        return sources.keyItems.alias.TryGetValue(keyId.Value, out var key) &&
+               player.keyItems.TryGetValue(key.id, out var keyCount) && Compare(keyCount, optExpr.Get(">0"));
     }
 
+    // nodiscard
     public static bool if_race(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.Requires(out var race);
@@ -93,5 +92,17 @@ public partial class DramaExpansion
         dm.RequiresActor(out var actor);
 
         return actor.source.tag.Contains(tag);
+    }
+
+    // nodiscard
+    public static bool if_zone(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.RequiresAtleast(1);
+        parameters.RequiresOpt(out var zoneId, out var optLevel);
+        dm.RequiresActor(out var actor);
+
+        var zone = actor.currentZone;
+
+        return zone.id == zoneId.Value && (!optLevel.Provided || zone.lv.ToString() == optLevel.Get("0"));
     }
 }

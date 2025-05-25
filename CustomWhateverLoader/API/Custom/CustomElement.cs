@@ -4,6 +4,7 @@ using System.Linq;
 using Cwl.API.Attributes;
 using Cwl.API.Processors;
 using Cwl.Helper;
+using Cwl.Helper.Extensions;
 using Cwl.LangMod;
 using Cwl.Patches;
 using MethodTimer;
@@ -53,18 +54,7 @@ public class CustomElement : Element
                 continue;
             }
 
-            switch (element.group) {
-                case nameof(FEAT):
-                    player.chara.SetFeat(element.id);
-                    break;
-                case nameof(ABILITY) or nameof(SPELL):
-                    player.chara.GainAbility(element.id);
-                    break;
-                default:
-                    continue;
-            }
-
-            CwlMod.Log<CustomElement>("cwl_log_ele_gain".Loc(element.id, player.chara.Name));
+            player.chara.AddElement(element.alias);
         }
     }
 
