@@ -1,5 +1,5 @@
 ﻿using System;
-using Cwl.API.Custom;
+using Cwl.Helper.Runtime.Exceptions;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using HarmonyLib;
@@ -22,7 +22,7 @@ internal class SafePlayDramaPatch
             __result = _Play(__instance);
         } catch (Exception ex) {
             ELayerCleanup.Cleanup<LayerDrama>();
-            CwlMod.ErrorWithPopup<CustomChara>("cwl_error_failure".Loc(ex.Message), ex);
+            ExceptionProfile.GetFromStackTrace(ex).CreateAndPop("cwl_warn_drama_play_ex".Loc(ex.GetType().Name));
             // noexcept
         }
 

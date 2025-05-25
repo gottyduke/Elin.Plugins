@@ -27,7 +27,7 @@ internal class RepositionTcPatch
     {
         var renderer = tc.render;
         return renderer is { actor: { isPCC: false } actor, usePass: false } &&
-               actor.owner.sourceCard.idRenderData.StartsWith("@");
+               !actor.owner.c_idSpriteReplacer.IsEmpty();
     }
 
     [HarmonyPatch]

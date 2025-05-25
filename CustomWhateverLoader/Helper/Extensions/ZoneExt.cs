@@ -20,7 +20,7 @@ public static class ZoneExt
 
             CwlMod.Log<SpatialGen>("cwl_log_spatial_gen".Loc(zone.Name, lv));
 
-            return newZone; 
+            return newZone;
         } catch (Exception ex) {
             CwlMod.Warn<SpatialGen>("cwl_error_failure".Loc(ex.Message));
             return null;

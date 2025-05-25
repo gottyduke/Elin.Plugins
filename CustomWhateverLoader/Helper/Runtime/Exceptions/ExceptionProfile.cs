@@ -148,9 +148,10 @@ public class ExceptionProfile(string stackTrace)
             yield return null;
         }
 
-        Result = sb.ToString().TruncateAllLines(115);
+        Result = sb.ToString();
         CwlMod.Log<ExceptionProfile>(Result);
 
+        Result = Result.TruncateAllLines(115);
         Analyzed = true;
     }
 

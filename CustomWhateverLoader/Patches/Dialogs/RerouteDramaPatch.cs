@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using Cwl.API.Custom;
+using Cwl.Helper.Runtime.Exceptions;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using HarmonyLib;
@@ -44,7 +45,7 @@ internal class RerouteDramaPatch
             chara.ShowDialog(drama);
         } catch (Exception ex) {
             ELayerCleanup.Cleanup<LayerDrama>();
-            CwlMod.ErrorWithPopup<CustomChara>("cwl_error_failure".Loc(ex.Message), ex);
+            ExceptionProfile.GetFromStackTrace(ex).CreateAndPop("cwl_error_failure".Loc(ex.GetType().Name));
             // noexcept
         }
 

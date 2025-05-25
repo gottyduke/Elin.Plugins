@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Cwl.API.Attributes;
+using Cwl.LangMod;
 using ReflexCLI.Attributes;
 
 namespace Cwl;
@@ -30,6 +31,6 @@ internal class CwlConsole
             EClass.game.cards.listAdv.Remove(chara);
         }
 
-        return $"vacated {beggars.Length} beggar(s)";
+        return "cwl_log_hobo_begone".Loc(beggars.Length);
     }
 }
