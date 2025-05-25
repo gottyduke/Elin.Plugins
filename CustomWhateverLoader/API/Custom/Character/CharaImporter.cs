@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Cwl.Helper.Extensions;
 using Cwl.LangMod;
@@ -15,35 +16,37 @@ public partial class CustomChara
             .OfType<Zone>()
             .ToArray();
 
-        var matchZone = zoneFullName;
-        var byLv = zoneFullName.LastIndexOf('/');
-        if (byLv != -1 && byLv < zoneFullName.Length - 1) {
-            matchZone = zoneFullName[..byLv];
-            byLv = zoneFullName[(zoneFullName.LastIndexOf('/') + 1)..].AsInt(0);
-        } else {
-            matchZone = matchZone.Replace("/", "");
-            byLv = 0;
-        }
-
+        var (matchZone, byLv) = ParseZoneFullName(zoneFullName);
         var byId = matchZone.Replace("Zone_", "");
 
-        zone = null;
-        foreach (var zoneCandidate in zones) {
-            if (zoneCandidate.GetType().Name != matchZone && zoneCandidate.id != byId) {
-                continue;
-            }
+        zone = zones.FirstOrDefault(z => z.GetType().Name == matchZone || z.id == byId)?.FindOrCreateZone(byLv);
 
-            zone = zoneCandidate.FindOrCreateZone(byLv);
-
-            break;
+        if (zone is not null) {
+            return true;
         }
 
-        if (zone is null && byId != "*" && !randomFallback) {
+        if (byId != "*" && !randomFallback) {
             return false;
         }
 
-        zone ??= Array.FindAll(zones, z => z.CanSpawnAdv).RandomItem();
+        var spawnableZones = Array.FindAll(zones, z => z.CanSpawnAdv);
+        zone = spawnableZones.RandomItem();
+
         return zone is not null;
+    }
+
+    private static (string, int) ParseZoneFullName(string zoneFullName)
+    {
+        var byLv = zoneFullName.LastIndexOf('/');
+        if (byLv == -1 || byLv >= zoneFullName.Length - 1) {
+            return (zoneFullName.Replace("/", ""), 0);
+        }
+
+        var lv = zoneFullName[(byLv + 1)..];
+        return (
+            zoneFullName[..byLv],
+            lv.AsInt(0)
+        );
     }
 
     public static void SpawnAtZone(Chara chara, string zoneFullName)
@@ -69,76 +72,68 @@ public partial class CustomChara
     internal static void AddDelayedChara()
     {
         var listAdv = game.cards.listAdv;
-        var charas = game.cards.globalCharas.Values.ToLookup(c => c.id, c => (c.homeZone ?? c.currentZone)?.GetType().Name);
+        var charas = game.cards.globalCharas.Values
+            .GroupBy(c => c.id)
+            .ToDictionary(cg => cg.Key, cg => new HashSet<Zone>(cg.Select(c => c.homeZone ?? c.currentZone)));
 
         foreach (var (id, import) in _delayedCharaImport) {
             if (!SafeSceneInitPatch.SafeToCreate) {
                 return;
             }
 
+            charas.TryAdd(id, []);
+
             try {
-                var skipLoc = import.Type == ImportType.Adventurer ? "cwl_log_skipped_adv" : "cwl_log_skipped_cm";
-                var addZones = import.Zones
-                    .MissingFrom(charas[id], _ => CwlMod.Log<CustomChara>(skipLoc.Loc(id)))
-                    .OfType<string>();
+                var isAdv = import.Type is ImportType.Adventurer;
 
-                foreach (var zone in addZones) {
-                    var toAddZone = zone;
+                var skipLoc = isAdv ? "cwl_log_skipped_adv" : "cwl_log_skipped_cm";
+                var addLoc = isAdv ? "cwl_log_added_adv" : "cwl_log_added_cm";
 
-                    if (import.Type is ImportType.Adventurer) {
-                        if (game.cards.globalCharas.Find(id) is { } exist) {
-                            if (listAdv.Find(c => c.id == id) is null) {
-                                // register exist chara as adv
-                                listAdv.Add(exist);
-                                CwlMod.Log<CustomChara>("cwl_log_added_adv".Loc(id, (exist.homeZone ?? exist.currentZone).Name));
-                            }
-
-                            CwlMod.Log<CustomChara>(skipLoc.Loc(id));
-                            continue;
-                        }
-
-                        toAddZone = import.Zones[0];
+                List<Zone> toAddZones = [];
+                var present = 0;
+                foreach (var toImport in import.Zones) {
+                    if (!ValidateZone(toImport, out var zone, true) || zone is null) {
+                        CwlMod.WarnWithPopup<CustomChara>("cwl_error_zone_invalid".Loc(id, toImport));
+                        continue;
                     }
 
-                    string? invalidZone = null;
-                    if (!ValidateZone(toAddZone, out var destZone) || destZone is null) {
-                        invalidZone = toAddZone;
-                        toAddZone = "Zone_*";
+                    if (!charas[id].Contains(zone)) {
+                        toAddZones.Add(zone);
+                    } else {
+                        present++;
+                        CwlMod.Log<CustomChara>(skipLoc.Loc(id));
                     }
+                }
 
-                    if (toAddZone.EndsWith("*")) {
-                        if (game.cards.globalCharas.Values.Count(c => c.id == id) >= import.Zones.Length) {
+                for (var i = 0; i < import.Zones.Length - present; ++i) {
+                    var toAddZone = toAddZones[i];
+
+                    if (isAdv) {
+                        if (game.cards.globalCharas.Find(id) is not null) {
                             CwlMod.Log<CustomChara>(skipLoc.Loc(id));
                             break;
                         }
+
+                        toAddZone = toAddZones[0];
                     }
 
                     if (!CreateTaggedChara(id, out var chara, import) || chara is null) {
                         break;
                     }
 
-                    if (invalidZone is not null) {
-                        CwlMod.WarnWithPopup<CustomChara>("cwl_error_zone_invalid".Loc(id, invalidZone));
-                    }
-
                     SpawnAtZone(chara, toAddZone);
 
-                    var loc = "cwl_log_added_cm";
-                    if (import.Type == ImportType.Adventurer) {
+                    if (isAdv) {
                         listAdv.Add(chara);
-                        loc = "cwl_log_added_adv";
                     }
 
-                    CwlMod.Log<CustomChara>(loc.Loc(id, chara.homeZone.Name));
+                    CwlMod.Log<CustomChara>(addLoc.Loc(id, chara.homeZone.Name));
                 }
             } catch (Exception ex) {
                 CwlMod.WarnWithPopup<CustomChara>("cwl_error_failure".Loc(ex.Message), ex);
                 // noexcept
             }
         }
-
-        // purge beggars
-        listAdv.RemoveAll(c => c.id == "beggar");
     }
 
     // 1.18 allow duplicate import based on zone

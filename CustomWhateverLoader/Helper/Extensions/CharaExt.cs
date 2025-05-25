@@ -16,10 +16,10 @@ public static class CharaExt
     {
         switch (element.group) {
             case nameof(FEAT):
-                chara.SetFeat(element.id, msg: true);
+                chara.SetFeat(element.id, power, true);
                 break;
             case nameof(ABILITY) or nameof(SPELL):
-                chara.GainAbility(element.id);
+                chara.GainAbility(element.id, power);
                 break;
         }
 
@@ -41,14 +41,14 @@ public static class CharaExt
 
     public static Element? AddElement(this Chara chara, string alias, int power = 1)
     {
-        return EClass.sources.elements.alias.TryGetValue(alias, out var element)
+        return EMono.sources.elements.alias.TryGetValue(alias, out var element)
             ? AddElement(chara, element)
             : null;
     }
 
     public static Element? AddElement(this Chara chara, int id, int power = 1)
     {
-        return EClass.sources.elements.map.TryGetValue(id, out var element)
+        return EMono.sources.elements.map.TryGetValue(id, out var element)
             ? AddElement(chara, element)
             : null;
     }

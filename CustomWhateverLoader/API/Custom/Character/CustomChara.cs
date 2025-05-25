@@ -16,6 +16,7 @@ public partial class CustomChara : Chara
         Commoner,
         Adventurer,
         Merchant,
+        Unique,
     }
 
     private static readonly Dictionary<string, ImportType> _cachedTraitTypes = [];
@@ -43,6 +44,7 @@ public partial class CustomChara : Chara
             _cachedTraitTypes[trait] = import = traitType switch {
                 TraitAdventurer => ImportType.Adventurer,
                 TraitMerchant => ImportType.Merchant,
+                TraitUniqueChara => ImportType.Unique,
                 _ => ImportType.Commoner,
             };
         }
