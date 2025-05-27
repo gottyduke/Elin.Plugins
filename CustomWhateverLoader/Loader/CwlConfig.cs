@@ -25,8 +25,9 @@ public class CwlConfig
     [ConsoleCommand] public static bool ExceptionAnalyze => Exceptions.Analyze?.Value is true;
     [ConsoleCommand] public static bool ExceptionPopup => Exceptions.Popup?.Value is true;
 
-    [ConsoleCommand] public static bool QualifyTypeName => Patches.QualifyTypeName?.Value is true;
     [ConsoleCommand] public static bool FixBaseGameAvatar => Patches.FixBaseGameAvatar?.Value is true;
+    [ConsoleCommand] public static bool FixBaseGamePopup => Patches.FixBaseGamePopup?.Value is true;
+    [ConsoleCommand] public static bool QualifyTypeName => Patches.QualifyTypeName?.Value is true;
     [ConsoleCommand] public static bool SafeCreateClass => Patches.SafeCreateClass?.Value is true;
 
     [ConsoleCommand] public static bool AllowProcessors => Source.AllowProcessors?.Value is true;
@@ -146,7 +147,15 @@ public class CwlConfig
             true,
             "When repositioning custom character icons, let CWL fix base game characters too\n" +
             "E.g. fairy icons are usually clipping through upper border\n" +
-            "在重新定位自定义角色头像位置时，让CWL也修复游戏本体角色头像位置。例如，妖精角色的头像通常会超出边界");
+            "在重新调整自定义角色头像位置时，让CWL也修复游戏本体角色头像位置。例如，妖精角色的头像通常会超出边界");
+
+        Patches.FixBaseGamePopup = config.Bind(
+            ModInfo.Name,
+            "Patches.FixBaseGamePopup",
+            true,
+            "When repositioning custom character pop ups, let CWL fix base game characters too\n" +
+            "E.g. using custom skins will result the speech bubble and emote icons shown way above their heads\n" +
+            "在重新调整自定义角色气泡位置时，让CWL也修复游戏本体角色气泡位置。例如，更改贴图皮肤的角色的气泡框会显示的很高");
 
         Patches.QualifyTypeName = config.Bind(
             ModInfo.Name,
@@ -250,6 +259,7 @@ public class CwlConfig
     internal class Patches
     {
         internal static ConfigEntry<bool>? FixBaseGameAvatar { get; set; }
+        internal static ConfigEntry<bool>? FixBaseGamePopup { get; set; }
         internal static ConfigEntry<bool>? QualifyTypeName { get; set; }
         internal static ConfigEntry<bool>? SafeCreateClass { get; set; }
     }

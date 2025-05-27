@@ -38,6 +38,10 @@ internal class RepositionTcPatch
                 return;
             }
 
+            if (!CwlConfig.FixBaseGamePopup && !__instance.owner.sourceCard.idRenderData.StartsWith("@")) {
+                return;
+            }
+
             var actor = __instance.render.actor;
             var sprite = actor.sr.sprite;
 
@@ -58,6 +62,10 @@ internal class RepositionTcPatch
         internal static void OnInstantiateOrbit(TCOrbitChara __instance)
         {
             if (!IsSpriteReplacerBased(__instance)) {
+                return;
+            }
+
+            if (!CwlConfig.FixBaseGamePopup && !__instance.owner.sourceCard.idRenderData.StartsWith("@")) {
                 return;
             }
 
