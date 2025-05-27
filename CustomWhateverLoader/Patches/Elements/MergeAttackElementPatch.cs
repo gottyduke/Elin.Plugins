@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using HarmonyLib;
 using MethodTimer;
 
@@ -12,8 +13,10 @@ internal class MergeAttackElementPatch
     [HarmonyPatch(typeof(SourceManager), nameof(SourceManager.Init))]
     internal static void OnInitAttackElement(SourceManager __instance)
     {
+        HashSet<SourceElement.Row> existingAttackElements = new(Element.ListAttackElements);
+
         Element.ListAttackElements.AddRange(__instance.elements.rows
-            .Where(r => !Element.ListAttackElements.Contains(r))
-            .Where(r => r.categorySub == "eleAttack"));
+            .Where(r => r.categorySub == "eleAttack" &&
+                        !existingAttackElements.Contains(r)));
     }
 }

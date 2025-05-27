@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using HarmonyLib;
 
 namespace Cwl.Helper.Runtime;
 
@@ -13,23 +11,9 @@ public static class MethodDispatcher
 
     public static DispatchResult InstanceDispatch<T>(this T instance, string methodName, params object[] args)
     {
-        if (instance is null) {
-            return new(false);
-        }
-
-        var cache = $"{instance.GetType().FullName}::{methodName}";
-        if (!_cached.ContainsKey(cache) && !_queried.Contains(cache)) {
-            // build from instance runtime type info
-            BuildDispatchList<T>(methodName);
-            _queried.Add(cache);
-        }
-
-        if (!_cached.TryGetValue(cache, out var method)) {
-            return new(false);
-        }
-
-        if (!method.GetParameters().Types().SequenceEqual(args.Select(a => a.GetType()))) {
-            CwlMod.Warn($"failed invoking {method.Name}\nunexpected parameters pack");
+        if (instance is null ||
+            !TryGetMethod(instance, methodName, out var method) ||
+            !ValidateParameters(method, args)) {
             return new(false);
         }
 
@@ -38,11 +22,50 @@ public static class MethodDispatcher
             dispatch.Result = method.FastInvoke(instance, args);
         } catch (Exception ex) {
             dispatch.Exception = ex;
-            CwlMod.Warn($"failed invoking {method.Name}\n{ex}");
-            // noexcept
+            CwlMod.Warn($"Invocation failed: {ex}");
         }
 
         return dispatch;
+    }
+
+    private static bool TryGetMethod<T>(T instance, string methodName, out MethodInfo method)
+    {
+        var cacheKey = $"{instance!.GetType().FullName!}::{methodName}";
+        if (_cached.TryGetValue(cacheKey, out method)) {
+            return true;
+        }
+
+        if (_queried.Contains(cacheKey)) {
+            return false;
+        }
+
+        BuildDispatchList<T>(methodName);
+        _queried.Add(cacheKey);
+
+        return _cached.TryGetValue(cacheKey, out method);
+    }
+
+    private static bool ValidateParameters(MethodInfo method, object[] args)
+    {
+        var parameters = method.GetParameters();
+        if (parameters.Length != args.Length) {
+            CwlMod.Warn($"parameter count mismatch for {method.Name}: expected {parameters.Length}, got {args.Length}");
+            return false;
+        }
+
+        for (var i = 0; i < parameters.Length; ++i) {
+            var paramType = parameters[i].ParameterType;
+            var arg = args[i];
+
+            if (paramType.IsInstanceOfType(arg)) {
+                continue;
+            }
+
+            CwlMod.Warn($"parameter {i} type mismatch: expected {paramType.Name}, got {arg.GetType().Name}");
+            return false;
+        }
+
+        return true;
     }
 
     internal static void BuildDispatchList<T>(string methodName)
