@@ -95,7 +95,7 @@ public partial class DramaExpansion
             return cached;
         }
 
-        var parse = Regex.Match(expression.Replace("\"", ""), @"^(?<func>\w+)\((?<params>.*)?\)$");
+        var parse = Regex.Match(expression, @"^\s*(?<func>\w+)\s*\(\s*(?<params>.*)\s*\)\s*$");
         if (!parse.Success) {
             return null;
         }
@@ -107,11 +107,48 @@ public partial class DramaExpansion
 
         var parameters = parse.Groups["params"].Value.IsEmpty("");
         var pack = funcName switch {
-            nameof(and) or nameof(or) or nameof(not) => Regex.Matches(parameters, @"\w+\(.*?\)").Select(m => m.Value),
-            _ => parameters.Split([',', '，'], StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()),
+            nameof(and) or nameof(or) or nameof(not) => SplitLogicalParameters(parameters),
+            _ => SplitNormalParameters(parameters),
         };
 
         return _expressions[expression] = (dm, line) => SafeInvoke(func, dm, line, pack.ToArray());
+    }
+
+    private static IEnumerable<string> SplitNormalParameters(string parameters)
+    {
+        var matches = Regex.Matches(parameters, """(\"(?<content>.*?)\"|(?<content>[^,]+))""");
+        foreach (Match m in matches) {
+            var content = m.Groups["content"].Value.Trim();
+            yield return content;
+        }
+    }
+
+    private static IEnumerable<string> SplitLogicalParameters(string parameters)
+    {
+        var depth = 0;
+        var sb = new StringBuilder();
+
+        foreach (var c in parameters) {
+            switch (c) {
+                case '(':
+                    depth++;
+                    break;
+                case ')':
+                    depth--;
+                    break;
+                case ',' when depth == 0:
+                    yield return sb.ToString().Trim();
+                    sb.Clear();
+                    break;
+                default:
+                    sb.Append(c);
+                    break;
+            }
+        }
+
+        if (sb.Length > 0) {
+            yield return sb.ToString().Trim();
+        }
     }
 
     private delegate bool DramaAction(DramaManager dm, Dictionary<string, string> line, params string[] parameters);

@@ -43,6 +43,16 @@ public partial class DramaExpansion
         return (int)ArithmeticModOrSet((float)lhs, expr);
     }
 
+    public static float ArithmeticDiff(float lhs, string expr)
+    {
+        return ArithmeticModOrSet(lhs, expr) - lhs;
+    }
+
+    public static int ArithmeticDiff(int lhs, string expr)
+    {
+        return ArithmeticModOrSet(lhs, expr) - lhs;
+    }
+
     public static bool Compare(float lhs, string expr)
     {
         return expr.Trim() switch {

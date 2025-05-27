@@ -10,7 +10,7 @@ public partial class DramaExpansion
 {
     public static bool add_item(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        parameters.RequiresAtleast(1);
+        parameters.RequiresAtLeast(1);
         parameters.RequiresOpt(out var id, out var material, out var lv, out var num);
         dm.RequiresActor(out var actor);
 
@@ -28,6 +28,7 @@ public partial class DramaExpansion
         return true;
     }
 
+    // TODO doc
     public static bool add_temp_talk(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.Requires(out var topic);
@@ -80,82 +81,6 @@ public partial class DramaExpansion
                 condition.Kill();
             }
         }
-
-        return true;
-    }
-
-    public static bool mod_affinity(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
-    {
-        parameters.Requires(out var mod);
-        dm.RequiresActor(out var actor);
-
-        if (!int.TryParse(mod, out var value)) {
-            return false;
-        }
-
-        actor.ModAffinity(pc, value);
-
-        return true;
-    }
-
-    public static bool mod_element(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
-    {
-        parameters.RequiresAtleast(1);
-        parameters.RequiresOpt(out var alias, out var power);
-        dm.RequiresActor(out var actor);
-
-        actor.AddElement(alias.Get(""), power.Get("1").AsInt(1));
-
-        return true;
-    }
-
-    [CwlNodiscard]
-    public static bool mod_element_exp(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
-    {
-        parameters.Requires(out var alias, out var expr);
-        dm.RequiresActor(out var actor);
-
-        if (actor.elements.GetOrCreateElement(alias) is not { } element) {
-            return false;
-        }
-
-        var add = ArithmeticModOrSet(element.vExp, expr) - element.vExp;
-        actor.ModExp(element.id, add);
-
-        return true;
-    }
-
-    public static bool mod_flag(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
-    {
-        parameters.RequiresAtleast(1);
-        parameters.Requires(out var flag, out var expr);
-        dm.RequiresActor(out var actor);
-
-        if (actor.IsPC) {
-            player.dialogFlags.TryAdd(flag, 0);
-            player.dialogFlags[flag] = ArithmeticModOrSet(player.dialogFlags[flag], expr);
-        } else {
-            var key = flag.GetHashCode();
-            actor.mapInt.TryAdd(key, 0);
-            actor.mapInt[key] = ArithmeticModOrSet(actor.mapInt[key], expr);
-        }
-
-        return true;
-    }
-
-    [CwlNodiscard]
-    public static bool mod_keyitem(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
-    {
-        parameters.RequiresAtleast(1);
-        parameters.RequiresOpt(out var keyId, out var expr);
-
-        if (!sources.keyItems.alias.TryGetValue(keyId.Value, out var key)) {
-            return false;
-        }
-
-        var keys = player.keyItems;
-        keys.TryAdd(key.id, 0);
-        keys[key.id] = ArithmeticModOrSet(keys[key.id], expr.Get("1"));
 
         return true;
     }

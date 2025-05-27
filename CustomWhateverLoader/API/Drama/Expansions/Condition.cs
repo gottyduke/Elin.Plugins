@@ -18,7 +18,7 @@ public partial class DramaExpansion
     [CwlNodiscard]
     public static bool if_condition(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        parameters.RequiresAtleast(1);
+        parameters.RequiresAtLeast(1);
         parameters.RequiresOpt(out var alias, out var optExpr);
         dm.RequiresActor(out var actor);
 
@@ -29,6 +29,15 @@ public partial class DramaExpansion
         }
 
         return false;
+    }
+
+    [CwlNodiscard]
+    public static bool if_currency(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.Requires(out var currency, out var expr);
+        dm.RequiresActor(out var actor);
+
+        return Compare(actor.GetCurrency(currency), expr);
     }
 
     [CwlNodiscard]
@@ -43,7 +52,7 @@ public partial class DramaExpansion
     [CwlNodiscard]
     public static bool if_faith(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        parameters.RequiresAtleast(1);
+        parameters.RequiresAtLeast(1);
         parameters.RequiresOpt(out var faithId, out var optExpr);
         dm.RequiresActor(out var actor);
 
@@ -53,9 +62,17 @@ public partial class DramaExpansion
     }
 
     [CwlNodiscard]
+    public static bool if_fame(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.Requires(out var expr);
+
+        return Compare(player.fame, expr);
+    }
+
+    [CwlNodiscard]
     public static bool if_flag(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        parameters.RequiresAtleast(1);
+        parameters.RequiresAtLeast(1);
         parameters.RequiresOpt(out var flag, out var optExpr);
         dm.RequiresActor(out var actor);
 
@@ -70,7 +87,7 @@ public partial class DramaExpansion
     [CwlNodiscard]
     public static bool if_keyitem(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        parameters.RequiresAtleast(1);
+        parameters.RequiresAtLeast(1);
         parameters.RequiresOpt(out var keyId, out var optExpr);
 
         return sources.keyItems.alias.TryGetValue(keyId.Value, out var key) &&
@@ -98,7 +115,7 @@ public partial class DramaExpansion
     [CwlNodiscard]
     public static bool if_zone(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        parameters.RequiresAtleast(1);
+        parameters.RequiresAtLeast(1);
         parameters.RequiresOpt(out var zoneId, out var optLevel);
         dm.RequiresActor(out var actor);
 

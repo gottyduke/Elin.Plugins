@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cwl.API.Attributes;
 using Cwl.API.Custom;
 using Cwl.Helper.Extensions;
@@ -18,7 +19,7 @@ public partial class DramaExpansion
             throw new DramaActionInvokeException("target");
         }
 
-        var point = target.pos.GetNearestPoint(allowChara: true, ignoreCenter: true);
+        var point = target.pos.GetNearestPoint(allowChara: false, ignoreCenter: true);
         actor.TryMove(point, false);
 
         return true;
@@ -38,7 +39,7 @@ public partial class DramaExpansion
     [CwlNodiscard]
     public static bool move_zone(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        parameters.RequiresAtleast(1);
+        parameters.RequiresAtLeast(1);
         parameters.RequiresOpt(out var zoneId, out var lv);
         dm.RequiresActor(out var actor);
 
@@ -80,7 +81,7 @@ public partial class DramaExpansion
 
     public static bool play_emote(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        parameters.RequiresAtleast(1);
+        parameters.RequiresAtLeast(1);
         parameters.RequiresOpt(out var emoteId, out var optDuration);
         dm.RequiresActor(out var actor);
 
@@ -119,8 +120,20 @@ public partial class DramaExpansion
         dm.RequiresPerson(out var owner);
 
         var id = portraitId.Get("cwl_not_provided");
-        if (!portraitId.Provided || !Portrait.modPortraits.dict.ContainsKey(id)) {
+        if (!portraitId.Provided) {
             id = owner.chara.GetIdPortrait();
+        } else {
+            var portrait = portraitId.Value;
+            var actorId = owner.id.IsEmpty(owner.chara?.id);
+            HashSet<string> ids = [
+                $"UN_{actorId}_{portrait}.png",
+                $"{portrait}.png",
+                $"{actorId}_{portrait}.png",
+            ];
+
+            if (ids.FirstOrDefault(Portrait.allIds.Contains) is { } matchId) {
+                id = matchId[..^4];
+            }
         }
 
         owner.idPortrait = id;
