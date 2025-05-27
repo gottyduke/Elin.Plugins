@@ -27,10 +27,6 @@ internal class SetElementRowPatch
             return;
         }
 
-        if (CustomElement.Managed.ContainsKey(r.id)) {
-            return;
-        }
-
         var qualified = TypeQualifier.TryQualify<Element>(r.type, r.alias);
         if (qualified?.FullName is null) {
             return;

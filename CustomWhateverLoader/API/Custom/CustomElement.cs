@@ -31,7 +31,9 @@ public class CustomElement : Element
 
             if (CwlConfig.QualifyTypeName) {
                 r.type = qualified;
-                CwlMod.Log<CustomElement>("cwl_log_custom_type".Loc(nameof(Element), r.id, r.type));
+                if (!Managed.ContainsKey(r.id)) {
+                    CwlMod.Log<CustomElement>("cwl_log_custom_type".Loc(nameof(Element), r.id, r.type));
+                }
             }
 
             Managed[r.id] = r;
