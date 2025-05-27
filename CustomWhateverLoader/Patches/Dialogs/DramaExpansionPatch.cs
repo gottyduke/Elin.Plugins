@@ -54,7 +54,7 @@ internal class DramaExpansionPatch
         }
 
         // default actor
-        item.TryAdd("actor", "tg");
+        item["actor"] = item["actor"].IsEmpty("tg");
 
         foreach (var expr in rawExpr.SplitLines()) {
             var func = DramaExpansion.BuildExpression(expr);
