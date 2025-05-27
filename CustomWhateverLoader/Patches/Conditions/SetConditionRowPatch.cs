@@ -16,10 +16,6 @@ internal class SetConditionRowPatch
             return;
         }
 
-        if (CustomCondition.Managed.ContainsKey(r.id)) {
-            return;
-        }
-
         var qualified = TypeQualifier.TryQualify<BaseCondition>(r.type, r.alias);
         if (qualified?.FullName is null) {
             return;

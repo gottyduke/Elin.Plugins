@@ -59,10 +59,10 @@ internal class BioOverridePatch
     }
 
     [CwlCharaOnCreateEvent]
-    internal static void OnCharaInstantiation(Chara __instance)
+    internal static void OnCharaInstantiation(Chara chara)
     {
-        if (!CustomChara.BioOverride.TryGetValue(__instance.id, out var file) ||
-            _cached.ContainsKey(__instance.HashKey())) {
+        if (!CustomChara.BioOverride.TryGetValue(chara.id, out var file) ||
+            _cached.ContainsKey(chara.HashKey())) {
             return;
         }
 
@@ -72,15 +72,15 @@ internal class BioOverridePatch
             }
 
             if (bio.Birthday != FallbackRowId) {
-                __instance.bio.birthDay = bio.Birthday;
+                chara.bio.birthDay = bio.Birthday;
             }
 
             if (bio.Birthmonth != FallbackRowId) {
-                __instance.bio.birthMonth = bio.Birthmonth;
+                chara.bio.birthMonth = bio.Birthmonth;
             }
 
             if (bio.Birthyear != FallbackRowId) {
-                __instance.bio.birthYear = bio.Birthyear;
+                chara.bio.birthYear = bio.Birthyear;
             }
 
             var langWord = EMono.sources.langWord.map;
@@ -90,37 +90,37 @@ internal class BioOverridePatch
                 name = "",
             });
 
-            __instance.bio.idAdvDad = FallbackRowId;
-            __instance.bio.idDad = langWord.NextUniqueKey();
-            langWord[__instance.bio.idDad] = new() {
-                id = __instance.bio.idDad,
+            chara.bio.idAdvDad = FallbackRowId;
+            chara.bio.idDad = langWord.NextUniqueKey();
+            langWord[chara.bio.idDad] = new() {
+                id = chara.bio.idDad,
                 name_JP = bio.Dad_JP.Split("@")[0],
                 name = bio.Dad.Split("@")[0],
             };
 
-            __instance.bio.idAdvMom = FallbackRowId;
-            __instance.bio.idMom = langWord.NextUniqueKey();
-            langWord[__instance.bio.idMom] = new() {
-                id = __instance.bio.idMom,
+            chara.bio.idAdvMom = FallbackRowId;
+            chara.bio.idMom = langWord.NextUniqueKey();
+            langWord[chara.bio.idMom] = new() {
+                id = chara.bio.idMom,
                 name_JP = bio.Mom_JP.Split("@")[0],
                 name = bio.Mom.Split("@")[0],
             };
 
-            __instance.bio.idHome = langWord.NextUniqueKey();
-            langWord[__instance.bio.idHome] = new() {
-                id = __instance.bio.idHome,
+            chara.bio.idHome = langWord.NextUniqueKey();
+            langWord[chara.bio.idHome] = new() {
+                id = chara.bio.idHome,
                 name_JP = bio.Birthplace_JP,
                 name = bio.Birthplace,
             };
 
-            __instance.bio.idLoc = langWord.NextUniqueKey();
-            langWord[__instance.bio.idLoc] = new() {
-                id = __instance.bio.idLoc,
+            chara.bio.idLoc = langWord.NextUniqueKey();
+            langWord[chara.bio.idLoc] = new() {
+                id = chara.bio.idLoc,
                 name_JP = bio.Birthlocation_JP,
                 name = bio.Birthlocation,
             };
 
-            _cached[__instance.HashKey()] = bio;
+            _cached[chara.HashKey()] = bio;
         } catch (Exception ex) {
             CwlMod.WarnWithPopup<CustomChara>("cwl_error_failure".Loc(ex.Message), ex);
             // noexcept

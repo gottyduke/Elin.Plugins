@@ -16,11 +16,19 @@ internal class RefitDialogChoicePatch
         var scaler = 5f * EMono.screen.Zoom;
 
         foreach (var choice in choices) {
+            if (choice.button == null) {
+                continue;
+            }
+
             var csf = choice.button.GetComponent<ContentSizeFitter>();
             csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             csf.enabled = true;
 
             var text = choice.button.mainText;
+            if (text == null) {
+                continue;
+            }
+
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
             text.verticalOverflow = VerticalWrapMode.Truncate;
 
@@ -28,6 +36,9 @@ internal class RefitDialogChoicePatch
             text.rectTransform.sizeDelta = size with { x = choice.button.Rect().sizeDelta.x - 10f * scaler, y = size.y + scaler };
         }
 
-        __instance.dialog.transChoices.GetComponent<VerticalLayoutGroup>().spacing = scaler;
+        var trans = __instance.dialog.transChoices;
+        if (trans != null) {
+            trans.GetComponent<VerticalLayoutGroup>().spacing = scaler;
+        }
     }
 }

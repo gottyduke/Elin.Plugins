@@ -3,22 +3,23 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
-using Cwl.Helper.Runtime;
 using Cwl.Helper.Runtime.Stubs;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using ReflexCLI.Attributes;
 
-namespace Cwl.Helper;
+namespace Cwl.Helper.Runtime;
 
 [ConsoleCommandClassCustomizer("cwl.stub")]
 public class DebugSampler : MethodStub
 {
     private static readonly HashSet<MethodStubHelper> _stubs = [];
     private static readonly Stopwatch _sw = Stopwatch.StartNew();
-    private static readonly FastString _lastSamplerInfo = new(256);
+    private static readonly FastString _lastSamplerInfo = new(1024);
+    private static MethodInfo? _lastAttached;
     private static ProgressIndicator? _samplerProgress;
     private static bool _killSamplerProgress;
     private static int _keepCount;
@@ -118,6 +119,8 @@ public class DebugSampler : MethodStub
                 info.Enable();
                 _stubs.Add(info);
             }
+
+            _lastAttached = method;
         }
 
         EnableSamplerView();
@@ -134,6 +137,10 @@ public class DebugSampler : MethodStub
             info.Disable();
             _stubs.Remove(info);
         }
+
+        _lastAttached = null;
+
+        ClearSamplerInfo();
     }
 
     [ConsoleCommand("dump")]
@@ -179,7 +186,8 @@ public class DebugSampler : MethodStub
         var sb = new StringBuilder()
             .AppendLine("cwl_ui_stub_info".Loc())
             .AppendLine("cwl_ui_stub_header".Loc())
-            .AppendLine();
+            .AppendLine()
+            .AppendLine(_lastAttached!.GetAssemblyDetail(false));
 
         var tally = (long)WatchSamplerInfo();
         if (tally == 0) {
@@ -192,6 +200,7 @@ public class DebugSampler : MethodStub
                     Percentage = (double)(s.Stub as DebugSampler)!.Total / tally,
                 })
                 .OrderByDescending(s => s.Percentage)
+                .Take(20)
                 .ToArray();
 
             foreach (var entry in filtered) {

@@ -45,7 +45,10 @@ internal class RerouteDramaPatch
             chara.ShowDialog(drama);
         } catch (Exception ex) {
             ELayerCleanup.Cleanup<LayerDrama>();
-            ExceptionProfile.GetFromStackTrace(ex).CreateAndPop("cwl_error_failure".Loc(ex.GetType().Name));
+
+            var exp = ExceptionProfile.GetFromStackTrace(ex);
+            exp.StartAnalyzing();
+            exp.CreateAndPop("cwl_error_failure".Loc(ex.GetType().Name));
             // noexcept
         }
 

@@ -22,7 +22,10 @@ internal class SafePlayDramaPatch
             __result = _Play(__instance);
         } catch (Exception ex) {
             ELayerCleanup.Cleanup<LayerDrama>();
-            ExceptionProfile.GetFromStackTrace(ex).CreateAndPop("cwl_warn_drama_play_ex".Loc(ex.GetType().Name));
+
+            var exp = ExceptionProfile.GetFromStackTrace(ex);
+            exp.StartAnalyzing();
+            exp.CreateAndPop("cwl_warn_drama_play_ex".Loc(ex.GetType().Name));
             // noexcept
         }
 

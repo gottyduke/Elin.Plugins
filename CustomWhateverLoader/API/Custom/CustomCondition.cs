@@ -18,7 +18,9 @@ public class CustomCondition : Condition
 
             if (CwlConfig.QualifyTypeName) {
                 r.type = qualified;
-                CwlMod.Log<CustomCondition>("cwl_log_custom_type".Loc(nameof(Condition), r.id, r.type));
+                if (!Managed.ContainsKey(r.id)) {
+                    CwlMod.Log<CustomCondition>("cwl_log_custom_type".Loc(nameof(Condition), r.id, r.type));
+                }
             }
 
             SanitizePhase(r);
