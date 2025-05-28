@@ -56,7 +56,7 @@ public class ExceptionProfile(string stackTrace)
             }
         }
 
-        using var scopeExit = ProgressIndicator.CreateProgressScoped(() => new(message.Truncate(115)!, Color: Color.red));
+        using var scopeExit = ProgressIndicator.CreateProgressScoped(() => new(message, Color: Color.red));
         progress = _activeExceptions[Key] = scopeExit.Get<ProgressIndicator>();
 
         if (!CwlConfig.ExceptionAnalyze) {

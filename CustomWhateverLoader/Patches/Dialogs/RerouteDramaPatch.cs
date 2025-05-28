@@ -48,7 +48,7 @@ internal class RerouteDramaPatch
 
             var exp = ExceptionProfile.GetFromStackTrace(ex);
             exp.StartAnalyzing();
-            exp.CreateAndPop("cwl_error_failure".Loc(ex.GetType().Name));
+            exp.CreateAndPop("cwl_error_failure".Loc(ex.Message));
             // noexcept
         }
 

@@ -1,4 +1,5 @@
 ﻿using Cwl.Helper.Runtime.Exceptions;
+using Cwl.Helper.String;
 using Cwl.ThirdParty;
 using UnityEngine;
 
@@ -31,6 +32,6 @@ internal partial class CwlMod
             return;
         }
 
-        profile.CreateAndPop(message);
+        profile.CreateAndPop(message.TruncateAllLines(125));
     }
 }

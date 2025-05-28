@@ -25,7 +25,7 @@ internal class SafeUpdateDramaPatch
 
             var exp = ExceptionProfile.GetFromStackTrace(ex);
             exp.StartAnalyzing();
-            exp.CreateAndPop("cwl_warn_drama_play_ex".Loc(ex.GetType().Name));
+            exp.CreateAndPop("cwl_warn_drama_play_ex".Loc(ex.Message));
             // noexcept
         }
 
