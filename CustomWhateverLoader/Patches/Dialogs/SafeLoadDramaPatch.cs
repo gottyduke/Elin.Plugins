@@ -28,8 +28,16 @@ internal class SafeLoadDramaPatch
         var textEn = item["text_EN"];
         var textJp = item["text_JP"];
 
+        if (textLocalize.IsEmpty()) {
+            item["text"] = textEn.IsEmpty(textJp.IsEmpty("<empty>"));
+        }
+
+        if (textEn.IsEmpty()) {
+            item["text_EN"] = textLocalize.IsEmpty(textJp.IsEmpty("<empty>"));
+        }
+
         if (textJp.IsEmpty()) {
-            item["text_JP"] = textEn.IsEmpty(textLocalize.IsEmpty("<empty>"));
+            item["text_JP"] = textLocalize.IsEmpty(textEn.IsEmpty("<empty>"));
         }
     }
 }

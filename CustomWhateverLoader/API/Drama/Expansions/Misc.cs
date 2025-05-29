@@ -53,14 +53,25 @@ public partial class DramaExpansion
         return true;
     }
 
+    public static bool mod_fame(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.Requires(out var expr);
+
+        player.ModFame(ArithmeticDiff(player.fame, expr));
+
+        return true;
+    }
+
     public static bool mod_flag(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
-        parameters.Requires(out var flag, out var expr);
+        parameters.RequiresAtLeast(1);
+        parameters.RequiresOpt(out var flag, out var optExpr);
         dm.RequiresActor(out var actor);
 
+        var expr = optExpr.Get("=1");
         if (actor.IsPC) {
-            player.dialogFlags.TryAdd(flag, 0);
-            player.dialogFlags[flag] = ArithmeticModOrSet(player.dialogFlags[flag], expr);
+            player.dialogFlags.TryAdd(flag.Value, 0);
+            player.dialogFlags[flag.Value] = ArithmeticModOrSet(player.dialogFlags[flag.Value], expr);
         } else {
             var key = flag.GetHashCode();
             actor.mapInt.TryAdd(key, 0);

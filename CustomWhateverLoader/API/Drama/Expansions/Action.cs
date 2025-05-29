@@ -15,7 +15,7 @@ public partial class DramaExpansion
         dm.RequiresActor(out var actor);
 
         if (!int.TryParse(lv.Get("-1"), out var itemLv)) {
-            throw new DramaActionArgumentException(parameters);
+            itemLv = -1;
         }
 
         if (!int.TryParse(num.Get("1"), out var itemNum)) {

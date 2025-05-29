@@ -34,7 +34,7 @@ public partial class DramaExpansion : DramaOutcome
     public static bool emit_call(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         if (parameters is not [{ } methodName, .. { } pack]) {
-            throw new DramaActionArgumentException(parameters);
+            return false;
         }
 
         if (!_built.TryGetValue(methodName, out var action) || action is null) {
@@ -44,9 +44,7 @@ public partial class DramaExpansion : DramaOutcome
         object? result;
         if (!methodName.StartsWith("ext.")) {
             if (pack.Length != action.ParameterCount) {
-                var methodGroup = $"[{methodName}]({string.Join(",", parameters)})";
-                throw new DramaActionInvokeException($"failed emitting call {methodGroup}\n" +
-                                                     $"requires {action.ParameterCount} parameter(s).");
+                throw new DramaActionArgumentException(action.ParameterCount, pack);
             }
 
             CwlMod.Debug<DramaExpansion>($"emit call [{methodName}]({string.Join(",", parameters)})");

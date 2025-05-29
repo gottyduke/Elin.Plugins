@@ -61,6 +61,30 @@
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\LZ4.dll</HintPath>
             <Private>False</Private>
         </Reference>
+        <Reference Include="Mono.Cecil">
+          <HintPath>$(ElinGamePath)\BepInEx\core\Mono.Cecil.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Mono.Cecil.Mdb">
+          <HintPath>$(ElinGamePath)\BepInEx\core\Mono.Cecil.Mdb.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Mono.Cecil.Pdb">
+          <HintPath>$(ElinGamePath)\BepInEx\core\Mono.Cecil.Pdb.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Mono.Cecil.Rocks">
+          <HintPath>$(ElinGamePath)\BepInEx\core\Mono.Cecil.Rocks.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="MonoMod.RuntimeDetour">
+          <HintPath>$(ElinGamePath)\BepInEx\core\MonoMod.RuntimeDetour.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="MonoMod.Utils">
+          <HintPath>$(ElinGamePath)\BepInEx\core\MonoMod.Utils.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
         <Reference Include="mscorlib">
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\mscorlib.dll</HintPath>
             <Private>False</Private>
@@ -196,6 +220,7 @@
         <Compile Include="API\Custom\CustomCondition.cs"/>
         <Compile Include="API\Custom\CustomElement.cs"/>
         <Compile Include="API\Custom\CustomMerchant.cs"/>
+        <Compile Include="API\Custom\CustomQuest.cs" />
         <Compile Include="API\Custom\CustomReligion.cs"/>
         <Compile Include="API\Custom\CustomZone.cs"/>
         <Compile Include="API\Custom\Playlist\CustomPlaylist.cs"/>
@@ -217,7 +242,6 @@
         <Compile Include="API\Processors\TraitTransformer.cs" />
         <Compile Include="API\Processors\TypeResolver.cs" />
         <Compile Include="API\Processors\WorkbookProcessor.cs" />
-        <Compile Include="API\Quest\CustomQuest.cs" />
         <Compile Include="API\Serializable\IChunkable.cs" />
         <Compile Include="API\Serializable\SerializableBioData.cs" />
         <Compile Include="API\Serializable\SerializableConverterData.cs" />
@@ -353,6 +377,7 @@
         <Compile Include="Patches\Sounds\MergePlaylistPatch.cs" />
         <Compile Include="Patches\Sounds\MoldNamedPlaylistPatch.cs" />
         <Compile Include="Patches\Sources\CellPostProcessPatch.cs" />
+        <Compile Include="Patches\Sources\ClassCacheThunk.cs" />
         <Compile Include="Patches\Sources\NamedImportPatch.cs" />
         <Compile Include="Patches\Sources\RethrowParsePatch.cs" />
         <Compile Include="Patches\Sources\RowOverridePatch.cs" />

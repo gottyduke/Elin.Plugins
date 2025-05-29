@@ -8,7 +8,7 @@ public static class ActionParameterHelper
     public static void RequiresAtLeast(this string[] parameters, int count)
     {
         if (parameters.Length < count) {
-            throw new DramaActionArgumentException(parameters);
+            throw new DramaActionArgumentException(count, parameters);
         }
     }
 

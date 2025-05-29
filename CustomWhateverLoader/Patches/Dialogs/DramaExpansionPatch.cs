@@ -37,7 +37,7 @@ internal class DramaExpansionPatch
     [SwallowExceptions]
     private static bool ExternalInvoke(DramaManager __instance, Dictionary<string, string> item)
     {
-        if (!item.TryGetValue("action", out var action) || action is not ("invoke*" or "inject")) {
+        if (!item.TryGetValue("action", out var action) || action is not ("invoke*" or "inject" or "i*")) {
             return false;
         }
 
