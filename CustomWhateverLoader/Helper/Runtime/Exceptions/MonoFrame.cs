@@ -77,13 +77,11 @@ public class MonoFrame(string stackFrame)
 
     public string[] SanitizeFrame()
     {
-        var raw = Regex.Replace(stackFrame, @"^\(wrapper dynamic-method\)\s*", "");
-        raw = Regex.Replace(raw, @"\s+\(at .+\)$", "");
-
+        var raw = stackFrame.Replace("(wrapper dynamic-method) ", "").Replace(" at ", "");
         var parts = raw.Split('(', 2, StringSplitOptions.RemoveEmptyEntries);
-        SanitizedMethodCall = parts[0];
+
+        SanitizedMethodCall = parts[0].TrimStart();
         SanitizedParameters = parts[1].Trim('(', ')', ' ');
-        ;
 
         return parts;
     }

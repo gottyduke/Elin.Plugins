@@ -21,15 +21,21 @@ public static class MethodInfoDetail
     public static void AppendPatchInfo(this StringBuilder sb, PatchInfo patchInfo)
     {
         foreach (var patch in patchInfo.prefixes) {
-            sb.AppendLine($"\t+Prefix: {patch.PatchMethod.GetAssemblyDetail(false)}");
+            sb.Append("\t<color=#2f2d2d>+PREFIX: <color=#7676a7>");
+            sb.Append(patch.PatchMethod.DeclaringType!.Assembly.GetName().Name);
+            sb.AppendLine($"</color>::{patch.PatchMethod.GetDetail(false)}</color>");
         }
 
         foreach (var patch in patchInfo.postfixes) {
-            sb.AppendLine($"\t+Postfix: {patch.PatchMethod.GetAssemblyDetail(false)}");
+            sb.Append("\t<color=#2f2d2d>+POSTFIX: <color=#7676a7>");
+            sb.Append(patch.PatchMethod.DeclaringType!.Assembly.GetName().Name);
+            sb.AppendLine($"</color>::{patch.PatchMethod.GetDetail(false)}</color>");
         }
 
         foreach (var patch in patchInfo.transpilers) {
-            sb.AppendLine($"\t+Transpiler: {patch.PatchMethod.GetAssemblyDetail(false)}");
+            sb.Append("\t<color=#2f2d2d>+TRANSPILER: <color=#7676a7>");
+            sb.Append(patch.PatchMethod.DeclaringType!.Assembly.GetName().Name);
+            sb.AppendLine($"</color>::{patch.PatchMethod.GetDetail(false)}</color>");
         }
     }
 }

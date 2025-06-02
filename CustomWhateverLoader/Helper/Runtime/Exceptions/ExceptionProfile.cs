@@ -117,6 +117,11 @@ public class ExceptionProfile(string stackTrace)
         var lineCount = 0;
 
         foreach (var frame in stackTrace.SplitLines()) {
+            if (frame.IsEmpty()) {
+                // skip reverse patch stubs
+                continue;
+            }
+
             var mono = MonoFrame.GetFrame(frame).Parse();
             Frames.Add(mono);
 
@@ -149,7 +154,8 @@ public class ExceptionProfile(string stackTrace)
         }
 
         Result = sb.ToString();
-        CwlMod.Log<ExceptionProfile>(Result);
+        CwlMod.Log<ExceptionProfile>(
+            sb.Replace("<color=#2f2d2d>", "").Replace("<color=#7676a7>", "").Replace("</color>", ""));
 
         Result = Result.TruncateAllLines(115);
         Analyzed = true;
