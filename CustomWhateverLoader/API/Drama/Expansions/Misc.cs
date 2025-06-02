@@ -93,7 +93,19 @@ public partial class DramaExpansion
 
         var keys = player.keyItems;
         keys.TryAdd(key.id, 0);
-        keys[key.id] = ArithmeticModOrSet(keys[key.id], expr.Get("1"));
+
+        var old = keys[key.id];
+        var val = ArithmeticModOrSet(keys[key.id], expr.Get("=1"));
+
+        if (old < val) {
+            SE.Play("keyitem");
+            Msg.Say("get_keyItem", key.GetName());
+        } else if (old > val) {
+            SE.Play("keyitem_lose");
+            Msg.Say("lose_keyItem", key.GetName());
+        }
+
+        keys[key.id] = val;
 
         return true;
     }

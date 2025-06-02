@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Cwl.API.Attributes;
 using Cwl.Helper.Runtime;
 using Cwl.Helper.Runtime.Exceptions;
 using ReflexCLI.Attributes;
@@ -29,8 +30,8 @@ public partial class DramaExpansion : DramaOutcome
         return true;
     }
 
-    // nodiscard
     // emit a call
+    [CwlNodiscard]
     public static bool emit_call(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         if (parameters is not [{ } methodName, .. { } pack]) {
@@ -59,7 +60,7 @@ public partial class DramaExpansion : DramaOutcome
         return result is not null && (bool)result;
     }
 
-    // nodiscard
+    [CwlNodiscard]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool and(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
@@ -67,7 +68,7 @@ public partial class DramaExpansion : DramaOutcome
         return parameters.All(expr => BuildExpression(expr)!(dm, line));
     }
 
-    // nodiscard
+    [CwlNodiscard]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool or(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
@@ -75,7 +76,7 @@ public partial class DramaExpansion : DramaOutcome
         return parameters.Any(expr => BuildExpression(expr)!(dm, line));
     }
 
-    // nodiscard
+    [CwlNodiscard]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool not(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
