@@ -127,7 +127,7 @@ public class ExceptionProfile(string stackTrace)
 
             switch (mono.frameType) {
                 case MonoFrame.StackFrameType.Unknown or MonoFrame.StackFrameType.Rethrow:
-                    sb.AppendLine(mono.SanitizedMethodCall.ToTruncateString(115));
+                    sb.AppendLine(mono.SanitizedMethodCall.ToTruncateString(150));
                     break;
                 case MonoFrame.StackFrameType.Method or MonoFrame.StackFrameType.DynamicMethod:
                     try {
@@ -154,10 +154,9 @@ public class ExceptionProfile(string stackTrace)
         }
 
         Result = sb.ToString();
-        CwlMod.Log<ExceptionProfile>(
-            sb.Replace("<color=#2f2d2d>", "").Replace("<color=#7676a7>", "").Replace("</color>", ""));
+        CwlMod.Log<ExceptionProfile>(Result);
 
-        Result = Result.TruncateAllLines(115);
+        Result = Result.TruncateAllLines(150);
         Analyzed = true;
     }
 

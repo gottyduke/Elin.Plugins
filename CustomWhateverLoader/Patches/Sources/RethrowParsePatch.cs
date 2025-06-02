@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Cwl.API.Migration;
 using Cwl.Helper.Runtime;
 using Cwl.Helper.Runtime.Exceptions;
 using Cwl.LangMod;
@@ -47,6 +48,11 @@ internal class RethrowParsePatch
 
         var row = ExcelParser.row;
         var sb = new StringBuilder();
+
+        if (SourceInitPatch.SafeToCreate && MigrateDetail.CurrentDetail is { } detail) {
+            sb.Append($"<color=#2f2d2d>{detail.Mod!.id}</color> // ");
+            sb.AppendLine($"<color=#7676a7>{detail.CurrentSheet!.Sheet!.SheetName}</color>");
+        }
 
         var expectedType = __originalMethod.ReturnType.Name;
         var rawValue = row.Cells.TryGet(id, true);

@@ -34,6 +34,8 @@ public sealed class MigrateDetail
 
     private static readonly Dictionary<IWorkbook, MigrateDetail> _cached = [];
 
+    internal static MigrateDetail? CurrentDetail { get; private set; }
+    
     public MigrateSheet? CurrentSheet { get; private set; }
     public BaseModPackage? Mod { get; private set; }
     public string SheetFile { get; private set; } = "";
@@ -46,7 +48,7 @@ public sealed class MigrateDetail
     public static MigrateDetail GetOrAdd(IWorkbook book)
     {
         _cached.TryAdd(book, new());
-        return _cached[book];
+        return CurrentDetail = _cached[book];
     }
 
     public MigrateDetail StartNewSheet(ISheet sheet, List<HeaderCell> expected)
@@ -92,6 +94,7 @@ public sealed class MigrateDetail
     public static void Clear()
     {
         _cached.Clear();
+        CurrentDetail = null;
     }
 
     public void FinalizeMigration()
@@ -115,6 +118,7 @@ public sealed class MigrateDetail
         }
 
         CurrentSheet = null;
+        CurrentDetail = null;
     }
 
     public void ReorderSheet()

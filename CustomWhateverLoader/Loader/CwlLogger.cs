@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.ThirdParty;
@@ -13,7 +14,7 @@ internal sealed partial class CwlMod
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Log(object payload)
     {
-        UnityEngine.Debug.Log($"[CWL][INFO] {payload}");
+        LogInternal($"[CWL][INFO] {payload}");
     }
 
     internal static void Log<T>(object payload)
@@ -24,7 +25,7 @@ internal sealed partial class CwlMod
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Debug(object payload, [CallerMemberName] string caller = "")
     {
-        UnityEngine.Debug.Log($"[CWL][DEBUG] [{caller}] {payload}");
+        LogInternal($"[CWL][DEBUG] [{caller}] {payload}");
     }
 
     internal static void Debug<T>(object payload, [CallerMemberName] string caller = "")
@@ -39,7 +40,7 @@ internal sealed partial class CwlMod
     [SwallowExceptions]
     internal static void Warn(object payload)
     {
-        UnityEngine.Debug.Log($"[CWL][WARN] {payload}");
+        LogInternal($"[CWL][WARN] {payload}");
         Glance.Dispatch(payload);
     }
 
@@ -51,21 +52,21 @@ internal sealed partial class CwlMod
     internal static void WarnWithPopup<T>(object payload, object? log = null)
     {
         Warn<T>(payload);
-        using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToTruncateString(115)));
+        using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToTruncateString(150)));
 
         if (log is null) {
             return;
         }
 
-        UnityEngine.Debug.Log(log);
-        progress.Get<ProgressIndicator>().AppendHoverText(() => log.ToTruncateString(450).TruncateAllLines(115));
+        LogInternal(log);
+        progress.Get<ProgressIndicator>().AppendHoverText(() => log.ToTruncateString(450).TruncateAllLines(150));
     }
 
     [SwallowExceptions]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Error(object payload, [CallerMemberName] string caller = "")
     {
-        UnityEngine.Debug.Log($"[CWL][ERROR] [{caller}] {payload}");
+        LogInternal($"[CWL][ERROR] [{caller}] {payload}");
         Glance.Dispatch(payload);
     }
 
@@ -78,13 +79,18 @@ internal sealed partial class CwlMod
     {
         Error<T>(payload, caller);
         using var progress =
-            ProgressIndicator.CreateProgressScoped(() => new(payload.ToTruncateString(115), Color: _warningColor));
+            ProgressIndicator.CreateProgressScoped(() => new(payload.ToTruncateString(150), Color: _warningColor));
 
         if (log is null) {
             return;
         }
 
-        UnityEngine.Debug.Log(log);
-        progress.Get<ProgressIndicator>().AppendHoverText(() => log.ToTruncateString(450).TruncateAllLines(115));
+        LogInternal(log);
+        progress.Get<ProgressIndicator>().AppendHoverText(() => log.ToTruncateString(450).TruncateAllLines(150));
+    }
+
+    private static void LogInternal(object log)
+    {
+        UnityEngine.Debug.Log(Regex.Replace(log.ToString(), "<color(=[^>]*)?>|</color>", ""));
     }
 }
