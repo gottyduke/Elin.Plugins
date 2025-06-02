@@ -37,7 +37,8 @@ internal class DramaExpansionPatch
     [SwallowExceptions]
     private static bool ExternalInvoke(DramaManager __instance, Dictionary<string, string> item)
     {
-        if (!item.TryGetValue("action", out var action) || action is not ("invoke*" or "inject" or "i*")) {
+        if (!item.TryGetValue("action", out var action) ||
+            action is not ("invoke*" or "inject" or "i*")) {
             return false;
         }
 
@@ -46,19 +47,19 @@ internal class DramaExpansionPatch
         }
 
         if (action == "inject") {
-            if (rawExpr == "Unique") {
-                InjectUniqueRumor(__instance);
+            if (rawExpr != "Unique") {
+                return false;
             }
 
-            return false;
+            DramaExpansion.InjectUniqueRumor();
+            return true;
         }
 
         // default actor
         item["actor"] = item["actor"].IsEmpty("tg");
 
         foreach (var expr in rawExpr.SplitLines()) {
-            var func = DramaExpansion.BuildExpression(expr);
-            if (func is null) {
+            if (DramaExpansion.BuildExpression(expr) is not { } func) {
                 continue;
             }
 
@@ -72,37 +73,5 @@ internal class DramaExpansionPatch
         }
 
         return true;
-    }
-
-    [SwallowExceptions]
-    private static void InjectUniqueRumor(DramaManager dm)
-    {
-        var chara = dm.tg.chara;
-        var rumors = Lang.GetDialog("unique", chara.id);
-        if (rumors.Length == 1 && rumors[0] == chara.id) {
-            return;
-        }
-
-        var rumor = GetUniqueRumor(chara, dm.enableTone);
-
-        dm.CustomEvent(dm.sequence.Exit);
-
-        var choice = new DramaChoice("letsTalk".lang(), dm.setup.step);
-        dm.lastTalk.AddChoice(choice);
-        dm._choices.Add(choice);
-
-        choice.SetOnClick(() => {
-            var firstText = rumor;
-            dm.sequence.firstTalk.funcText = () => firstText;
-            rumor = GetUniqueRumor(chara, dm.enableTone);
-            chara.affinity.OnTalkRumor();
-            choice.forceHighlight = true;
-        });
-    }
-
-    private static string GetUniqueRumor(Chara chara, bool tone = false)
-    {
-        var dialog = Lang.GetDialog("unique", chara.id).RandomItem();
-        return tone ? chara.ApplyTone(dialog) : dialog;
     }
 }

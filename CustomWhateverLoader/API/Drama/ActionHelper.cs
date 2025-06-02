@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Cwl.Helper.Extensions;
 using Cwl.Helper.Runtime;
 using UnityEngine;
 
@@ -7,8 +9,13 @@ namespace Cwl.API.Drama;
 
 public partial class DramaExpansion
 {
-    public static void AddTempTalk(DramaManager dm, string text, string actor = "tg", string? jump = null)
+    public static void AddTempTalk(string text, string actor = "tg", string? jump = null)
     {
+        if (Cookie?.Dm is not { } dm ||
+            (jump is not null && !dm.sequence.steps.ContainsKey(jump))) {
+            return;
+        }
+
         var talkEvent = new DramaEventTalk {
             idActor = actor,
             idJump = jump ?? dm.sequence.lastlastStep.IsEmpty("end"),
@@ -74,6 +81,47 @@ public partial class DramaExpansion
         }
 
         dm.sequence.Play(step);
+    }
+
+    public static void InjectUniqueRumor()
+    {
+        if (Cookie?.Dm is not { } dm ||
+            dm.tg?.hasChara is not true) {
+            return;
+        }
+
+        var chara = dm.tg.chara;
+        var rumors = Lang.GetDialog("unique", chara.id);
+        if (rumors.Length == 1 && rumors[0] == chara.id) {
+            return;
+        }
+
+        var lastTalk = dm.lastTalk;
+
+        dm.CustomEvent(dm.sequence.Exit);
+
+        var choice = new DramaChoice("letsTalk".lang(), dm.sequence.steps.Last().Key.IsEmpty(dm.setup.step));
+        dm.lastTalk.AddChoice(choice);
+        dm._choices.Add(choice);
+
+        var rumor = chara.GetUniqueRumor(dm.enableTone);
+        choice.SetOnClick(() => {
+            var firstText = rumor;
+            dm.sequence.firstTalk.funcText = () => firstText;
+            rumor = chara.GetUniqueRumor(dm.enableTone);
+            chara.affinity.OnTalkRumor();
+            choice.forceHighlight = true;
+        });
+
+        var tempRarity = chara.rarity;
+        chara.rarity = Rarity.Artifact;
+
+        try {
+            dm.AddCustomEvents("Unique");
+        } finally {
+            chara.rarity = tempRarity;
+            dm.lastTalk = lastTalk;
+        }
     }
 
     private static bool SafeInvoke(ActionWrapper action, DramaManager dm, Dictionary<string, string> item, params string[] pack)
