@@ -35,7 +35,7 @@ public sealed class MigrateDetail
     private static readonly Dictionary<IWorkbook, MigrateDetail> _cached = [];
 
     internal static MigrateDetail? CurrentDetail { get; private set; }
-    
+
     public MigrateSheet? CurrentSheet { get; private set; }
     public BaseModPackage? Mod { get; private set; }
     public string SheetFile { get; private set; } = "";

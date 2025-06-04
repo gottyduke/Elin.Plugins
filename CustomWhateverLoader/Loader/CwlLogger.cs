@@ -1,5 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.ThirdParty;
@@ -91,6 +90,6 @@ internal sealed partial class CwlMod
 
     private static void LogInternal(object log)
     {
-        UnityEngine.Debug.Log(Regex.Replace(log.ToString(), "<color(=[^>]*)?>|</color>", ""));
+        UnityEngine.Debug.Log(log.RemoveColorTag());
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
-using Cwl.Patches.Relocation;
+using Cwl.Patches.Dialogs;
 using MethodTimer;
 using ReflexCLI.Attributes;
 

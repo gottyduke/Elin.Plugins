@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using HarmonyLib;
 
 namespace Cwl.Helper.String;
@@ -20,14 +21,14 @@ public static class StringHelper
         return buf;
     }
 
-    public static string? Truncate(this string input, int length)
+    public static string Truncate(this string input, int length)
     {
         return input.IsEmpty() || input.Length <= length ? input : $"{input[..length]} ...";
     }
 
     public static string TruncateAllLines(this string input, int length)
     {
-        return input.SplitLines().Select(s => s.Truncate(length)).Join(s => s, "\n");
+        return input.SplitLines().Select(s => s.RemoveColorTag().Truncate(length)).Join(s => s, "\n");
     }
 
     public static string[] SplitLines(this string input)
@@ -37,6 +38,11 @@ public static class StringHelper
 
     public static string ToTruncateString(this object input, int length)
     {
-        return input.ToString().Truncate(length)!;
+        return input.RemoveColorTag().Truncate(length);
+    }
+
+    public static string RemoveColorTag(this object input)
+    {
+        return Regex.Replace(input.ToString(), "<color(=[^>]*)?>|</color>", "");
     }
 }
