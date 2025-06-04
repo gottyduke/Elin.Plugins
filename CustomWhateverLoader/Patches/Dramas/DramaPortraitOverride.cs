@@ -2,7 +2,7 @@
 using HarmonyLib;
 using UnityEngine;
 
-namespace Cwl.Patches.Dialogs;
+namespace Cwl.Patches.Dramas;
 
 [HarmonyPatch]
 internal class DramaPortraitOverride

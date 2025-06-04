@@ -1,16 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.FileUtil;
+using Cwl.Helper.Runtime.Exceptions;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
 
-namespace Cwl.Patches.Relocation;
+namespace Cwl.Patches.Dramas;
 
 [HarmonyPatch]
 internal class LoadDramaPatch
@@ -71,12 +73,56 @@ internal class LoadDramaPatch
 
             PackageIterator.AddCachedPath(cachedBookName, localized);
             data.path = localized;
-        } catch {
+        } catch (Exception ex) {
             ELayerCleanup.Cleanup<LayerDrama>();
-            throw;
+
+            var exp = ExceptionProfile.GetFromStackTrace(ex);
+            exp.StartAnalyzing();
+            exp.CreateAndPop("cwl_warn_drama_play_ex".Loc(ex.Message));
             // noexcept
         }
 
         return data.BuildList(sheet);
+    }
+
+    private static List<Dictionary<string, string>> SanitizeId(List<Dictionary<string, string>> lists)
+    {
+        if (lists.Count == 0) {
+            return lists;
+        }
+
+        HashSet<string> allIds = new([..lists.Select(kv => kv["id"])], StringComparer.Ordinal);
+
+        var nextId = allIds.Count;
+        for (var i = lists.Count - 1; i >= 0; --i) {
+            var dict = lists[i];
+            var id = dict["id"];
+
+            if (id.IsEmpty()) {
+                if (!dict["text"].IsEmpty()) {
+                    dict["id"] = GetNewId();
+                }
+
+                continue;
+            }
+
+            if (allIds.Add(id)) {
+                continue;
+            }
+
+            dict["id"] = GetNewId();
+        }
+
+        return lists;
+
+        string GetNewId()
+        {
+            string newId;
+            do {
+                newId = $"cwl_dm_id_{nextId++}";
+            } while (!allIds.Add(newId));
+
+            return newId;
+        }
     }
 }

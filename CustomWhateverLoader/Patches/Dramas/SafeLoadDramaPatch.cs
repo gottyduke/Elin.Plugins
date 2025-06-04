@@ -2,7 +2,7 @@
 using Cwl.API.Drama;
 using HarmonyLib;
 
-namespace Cwl.Patches.Dialogs;
+namespace Cwl.Patches.Dramas;
 
 [HarmonyPatch]
 internal class SafeLoadDramaPatch
@@ -20,7 +20,7 @@ internal class SafeLoadDramaPatch
 
     private static void SyncTexts(Dictionary<string, string> item)
     {
-        if (!item.TryGetValue("id", out var id) || id.IsEmpty()) {
+        if (item["id"].IsEmpty()) {
             return;
         }
 

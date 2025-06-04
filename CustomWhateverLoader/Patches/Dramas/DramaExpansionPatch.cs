@@ -5,7 +5,7 @@ using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
 using HarmonyLib;
 
-namespace Cwl.Patches.Dialogs;
+namespace Cwl.Patches.Dramas;
 
 [HarmonyPatch]
 internal class DramaExpansionPatch
@@ -47,12 +47,11 @@ internal class DramaExpansionPatch
         }
 
         if (action == "inject") {
-            if (rawExpr != "Unique") {
-                return false;
+            if (rawExpr == "Unique") {
+                DramaExpansion.InjectUniqueRumor();
             }
 
-            DramaExpansion.InjectUniqueRumor();
-            return true;
+            return false;
         }
 
         // default actor

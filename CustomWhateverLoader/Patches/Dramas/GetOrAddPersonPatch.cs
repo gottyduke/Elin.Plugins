@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using HarmonyLib;
 
-namespace Cwl.Patches.Dialogs;
+namespace Cwl.Patches.Dramas;
 
 [HarmonyPatch]
 internal class GetOrAddPersonPatch

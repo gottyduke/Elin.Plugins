@@ -5,7 +5,7 @@ using Cwl.Helper.Extensions;
 using HarmonyLib;
 using MethodTimer;
 
-namespace Cwl.Patches.Relocation;
+namespace Cwl.Patches.Dialogs;
 
 [HarmonyPatch]
 internal class LoadDialogPatch

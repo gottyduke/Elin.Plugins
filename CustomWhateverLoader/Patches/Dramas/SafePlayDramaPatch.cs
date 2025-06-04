@@ -4,7 +4,7 @@ using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using HarmonyLib;
 
-namespace Cwl.Patches.Dialogs;
+namespace Cwl.Patches.Dramas;
 
 [HarmonyPatch(typeof(DramaEventMethod), nameof(DramaEventMethod.Play))]
 internal class SafePlayDramaPatch

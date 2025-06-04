@@ -7,7 +7,7 @@ using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using HarmonyLib;
 
-namespace Cwl.Patches.Dialogs;
+namespace Cwl.Patches.Dramas;
 
 [HarmonyPatch]
 internal class RerouteDramaPatch

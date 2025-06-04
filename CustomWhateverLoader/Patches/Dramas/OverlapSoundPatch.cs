@@ -4,7 +4,7 @@ using System.Reflection.Emit;
 using Cwl.Helper.Extensions;
 using HarmonyLib;
 
-namespace Cwl.Patches.Dialogs;
+namespace Cwl.Patches.Dramas;
 
 [HarmonyPatch]
 internal class OverlapSoundPatch
