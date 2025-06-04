@@ -128,9 +128,8 @@ public partial class CustomChara : Chara
 
         try {
             chara = CharaGen.Create(id);
-            // Because noa wrote so
-            // ReSharper disable once StringLiteralTypo
-            if (chara.id == "begger") {
+            // 23.149 changed beggar to chicken, what noa
+            if (chara.id == "chicken") {
                 throw new BeggarException(id);
             }
 

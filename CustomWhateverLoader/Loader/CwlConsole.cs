@@ -14,10 +14,9 @@ internal class CwlConsole
     {
         var destroyed = 0;
 
-        // Because noa wrote so
-        // ReSharper disable once StringLiteralTypo
+        // 23.149 changed beggar to chicken, what noa
         var beggars = EClass.game.cards.globalCharas.Values
-            .Where(chara => chara.id == "begger")
+            .Where(chara => chara.id == "chicken")
             .ToArray();
 
         foreach (var chara in beggars) {
@@ -26,7 +25,7 @@ internal class CwlConsole
         }
 
         // ReSharper disable once StringLiteralTypo
-        foreach (var chara in EClass.game.cards.listAdv.FindAll(chara => chara.id == "begger")) {
+        foreach (var chara in EClass.game.cards.listAdv.FindAll(chara => chara.id == "chicken")) {
             if (!chara.isDestroyed) {
                 chara.Destroy();
                 destroyed++;
