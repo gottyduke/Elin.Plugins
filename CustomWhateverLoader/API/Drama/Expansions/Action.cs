@@ -31,9 +31,9 @@ public partial class DramaExpansion
     public static bool add_temp_talk(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.Requires(out var topic);
-        dm.RequiresActor(out var actor);
+        dm.RequiresActor(out _);
 
-        AddTempTalk(dm, topic, line["actor"], line["jump"]);
+        AddTempTalk(topic, line["actor"], line["jump"]);
 
         return true;
     }

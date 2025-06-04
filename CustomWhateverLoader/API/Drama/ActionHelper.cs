@@ -92,16 +92,24 @@ public partial class DramaExpansion
 
         var chara = dm.tg.chara;
         var rumors = Lang.GetDialog("unique", chara.id);
-        if (rumors.Length == 1 && rumors[0] == chara.id) {
-            return;
+        var hasTopic = rumors.Length > 1 || rumors.TryGet(0, true) != chara.id;
+        var humanSpeak = chara.IsHumanSpeak || pc.HasElement(FEAT.featAnimalLover);
+        var hasRumor = !chara.IsUnique || hasTopic;
+
+        if (humanSpeak && hasRumor) {
+            if (!dm.customEventsAdded) {
+                return;
+            }
         }
 
-        var lastTalk = dm.lastTalk;
+        if (!hasTopic) {
+            return;
+        }
 
         dm.CustomEvent(dm.sequence.Exit);
 
         var choice = new DramaChoice("letsTalk".lang(), dm.sequence.steps.Last().Key.IsEmpty(dm.setup.step));
-        dm.lastTalk.AddChoice(choice);
+        dm.lastTalk.choices.Add(choice);
         dm._choices.Add(choice);
 
         var rumor = chara.GetUniqueRumor(dm.enableTone);
@@ -111,17 +119,7 @@ public partial class DramaExpansion
             rumor = chara.GetUniqueRumor(dm.enableTone);
             chara.affinity.OnTalkRumor();
             choice.forceHighlight = true;
-        });
-
-        var tempRarity = chara.rarity;
-        chara.rarity = Rarity.Artifact;
-
-        try {
-            dm.AddCustomEvents("Unique");
-        } finally {
-            chara.rarity = tempRarity;
-            dm.lastTalk = lastTalk;
-        }
+        }).SetCondition(() => chara.interest > 0);
     }
 
     private static bool SafeInvoke(ActionWrapper action, DramaManager dm, Dictionary<string, string> item, params string[] pack)

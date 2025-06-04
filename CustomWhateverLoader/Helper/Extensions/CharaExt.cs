@@ -42,14 +42,20 @@ public static class CharaExt
     public static Element? AddElement(this Chara chara, string alias, int power = 1)
     {
         return EMono.sources.elements.alias.TryGetValue(alias, out var element)
-            ? AddElement(chara, element)
+            ? AddElement(chara, element, power)
             : null;
     }
 
     public static Element? AddElement(this Chara chara, int id, int power = 1)
     {
         return EMono.sources.elements.map.TryGetValue(id, out var element)
-            ? AddElement(chara, element)
+            ? AddElement(chara, element, power)
             : null;
+    }
+
+    public static string GetUniqueRumor(this Chara chara, bool tone = false)
+    {
+        var dialog = Lang.GetDialog("unique", chara.id).RandomItem();
+        return tone ? chara.ApplyTone(dialog) : dialog;
     }
 }

@@ -30,9 +30,9 @@ public static class DictExt
         return hash;
     }
 
-    public static void TryAdd<TValue>(this Dictionary<int, TValue> dict, string key, TValue value)
+    public static void Set<TValue>(this Dictionary<int, TValue> dict, string key, TValue value)
     {
-        dict.TryAdd(key.GetHashCode(), value);
+        dict[key.GetHashCode()] = value;
     }
 
     public static bool ContainsKey<TValue>(this Dictionary<int, TValue> dict, string key)

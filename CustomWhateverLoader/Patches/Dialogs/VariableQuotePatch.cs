@@ -31,7 +31,7 @@ internal class VariableQuotePatch
     private static bool VariantStartsWith(string lhs, string rhs)
     {
         var row = EMono.sources.langGeneral.map["_bracketTalk"];
-        string[] quotes = [
+        HashSet<string> quotes = [
             "\"",
             "「",
             "“",
