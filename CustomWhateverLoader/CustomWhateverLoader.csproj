@@ -236,6 +236,7 @@
         <Compile Include="API\Drama\Expansions\Misc.cs" />
         <Compile Include="API\Drama\Expansions\Quest.cs" />
         <Compile Include="API\Drama\Expansions\Scene.cs" />
+        <Compile Include="API\Drama\ValueStack.cs" />
         <Compile Include="API\Migration\MigrateDetail.cs" />
         <Compile Include="API\Processors\GameIOProcessor.cs" />
         <Compile Include="API\Processors\SheetProcessor.cs" />

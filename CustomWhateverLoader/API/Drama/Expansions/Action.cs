@@ -7,6 +7,7 @@ namespace Cwl.API.Drama;
 
 public partial class DramaExpansion
 {
+    // + item
     public static bool add_item(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.RequiresAtLeast(1);
@@ -23,6 +24,8 @@ public partial class DramaExpansion
 
         var item = ThingGen.Create(id.Get("ash3"), ReverseId.Material(material.Get("wood")), itemLv).SetNum(itemNum);
         actor.Pick(item);
+
+        Push(item);
 
         return true;
     }
@@ -68,6 +71,17 @@ public partial class DramaExpansion
         }
 
         return false;
+    }
+
+    public static bool equip_item(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.RequiresAtLeast(1);
+        dm.RequiresActor(out var actor);
+
+        add_item(dm, line, parameters);
+        actor.body.Equip(Pop<Thing>());
+
+        return true;
     }
 
     public static bool remove_condition(DramaManager dm, Dictionary<string, string> line, params string[] parameters)

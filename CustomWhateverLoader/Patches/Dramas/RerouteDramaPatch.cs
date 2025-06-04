@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using Cwl.API.Custom;
+using Cwl.API.Drama;
 using Cwl.Helper.Runtime.Exceptions;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
@@ -42,6 +43,8 @@ internal class RerouteDramaPatch
         }
 
         try {
+            DramaExpansion.Clear();
+
             chara.ShowDialog(drama);
         } catch (Exception ex) {
             ELayerCleanup.Cleanup<LayerDrama>();
