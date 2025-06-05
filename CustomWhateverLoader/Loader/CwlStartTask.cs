@@ -12,6 +12,7 @@ using Cwl.Patches.Charas;
 using Cwl.Patches.Conditions;
 using Cwl.Patches.Elements;
 using Cwl.Patches.Quests;
+using Cwl.Patches.Recipes;
 using Cwl.Patches.Relocation;
 using Cwl.Patches.Sources;
 using Cwl.Patches.Zones;
@@ -35,12 +36,10 @@ internal sealed partial class CwlMod
             return;
         }
 
-        var patched = 0;
         var harmony = new Harmony(ModInfo.Guid);
         foreach (var patch in typeof(CwlMod).Assembly.DefinedTypes) {
             try {
                 harmony.CreateClassProcessor(patch).Patch();
-                patched++;
             } catch (Exception ex) {
                 Error<CwlMod>($"failed to patch {patch.Name}\n{ex.InnerException}");
                 // noexcept
@@ -50,8 +49,6 @@ internal sealed partial class CwlMod
         if (CwlConfig.TrimSpaces) {
             CellPostProcessPatch.Add(c => c?.Trim());
         }
-
-        Log<CwlMod>($"applied {patched} patches");
     }
 
     [Time]
@@ -142,8 +139,8 @@ internal sealed partial class CwlMod
                     case CwlContextMenu ctxAttr:
                         ContextMenuHelper.RegisterEvents(method, ctxAttr);
                         break;
-                    case CwlCharaOnCreateEvent charaAttr:
-                        CharaOnCreateEvent.RegisterEvents(method, charaAttr);
+                    case CwlOnCreateEvent charaAttr:
+                        CardOnCreateEvent.RegisterEvents(method, charaAttr);
                         break;
                 }
             }

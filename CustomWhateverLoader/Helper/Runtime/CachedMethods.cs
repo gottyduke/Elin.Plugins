@@ -31,7 +31,7 @@ public static class CachedMethods
     {
         try {
             var type = TypeQualifier.GlobalResolve(typeName);
-            if (type is null) {
+            if (type?.IsGenericType is not false) {
                 return null;
             }
 

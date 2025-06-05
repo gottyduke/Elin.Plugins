@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Cwl.API.Attributes;
@@ -11,21 +12,13 @@ using MethodTimer;
 
 namespace Cwl.Patches.Elements;
 
+[HarmonyPatch]
 public class ActPerformEvent
 {
-    public delegate void OnActPerform(Act act);
+    private static event Action<Act> OnActPerformEvent = delegate { };
 
-    private static bool _patched;
-
-    private static event OnActPerform OnActPerformEvent = delegate { };
-
-    public static void Add(OnActPerform process)
+    public static void Add(Action<Act> process)
     {
-        if (!_patched) {
-            Harmony.CreateAndPatchAll(typeof(ActPerformEvent), ModInfo.Guid);
-            _patched = true;
-        }
-
         OnActPerformEvent += Process;
         return;
 
@@ -33,7 +26,8 @@ public class ActPerformEvent
         {
             try {
                 process(act);
-            } catch {
+            } catch (Exception ex) {
+                CwlMod.Warn<ActPerformEvent>("cwl_warn_processor".Loc("act_perform", act.GetType().Name, ex));
                 // noexcept
             }
         }
