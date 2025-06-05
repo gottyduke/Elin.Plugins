@@ -6,9 +6,11 @@ using Cwl.Helper.Runtime.Exceptions;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using MethodTimer;
+using ReflexCLI.Attributes;
 
 namespace Cwl.API.Custom;
 
+[ConsoleCommandClassCustomizer("cwl")]
 public partial class CustomChara : Chara
 {
     public enum ImportType
@@ -161,5 +163,15 @@ public partial class CustomChara : Chara
             return false;
             // noexcept
         }
+    }
+
+    [ConsoleCommand("spawn")]
+    public static string SpawnTagged(string id)
+    {
+        if (CreateTaggedChara(id, out var chara) && chara is not null) {
+            return chara.Name;
+        }
+
+        return "uwu failed";
     }
 }

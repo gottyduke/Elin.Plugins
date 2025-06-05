@@ -38,7 +38,11 @@ public class CoroutineHelper : MonoBehaviour
     /// <param name="frames"></param>
     public static void Deferred(Action action, int frames = 1)
     {
-        Instance.StartDeferredCoroutine(action, frames);
+        if (frames == 1) {
+            Core.Instance.actionsNextFrame.Add(action);
+        } else {
+            Instance.StartDeferredCoroutine(action, frames);
+        }
     }
 
     /// <summary>
