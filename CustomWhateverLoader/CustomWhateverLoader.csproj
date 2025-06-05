@@ -206,7 +206,7 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="API\Attributes\CwlActPerformEvent.cs"/>
-        <Compile Include="API\Attributes\CwlCharaCreationEvent.cs"/>
+        <Compile Include="API\Attributes\CwlOnCreateEvent.cs" />
         <Compile Include="API\Attributes\CwlContextMenu.cs"/>
         <Compile Include="API\Attributes\CwlDramaExpansion.cs"/>
         <Compile Include="API\Attributes\CwlEvent.cs"/>
@@ -323,7 +323,6 @@
         <Compile Include="Loader\ExecutionAnalysis.cs" />
         <Compile Include="Loader\ModIntegrity.cs" />
         <Compile Include="Patches\Charas\BioOverridePatch.cs" />
-        <Compile Include="Patches\Charas\OnCreateEvent.cs" />
         <Compile Include="Patches\Charas\MultipleBossPatch.cs" />
         <Compile Include="Patches\Charas\NerdAdvPatch.cs" />
         <Compile Include="Patches\Charas\RepositionTcPatch.cs" />
@@ -363,6 +362,7 @@
         <Compile Include="Patches\Quests\InvalidateDeliverPatch.cs" />
         <Compile Include="Patches\Quests\SafeCreateQuestPatch.cs" />
         <Compile Include="Patches\Quests\SetQuestRowPatch.cs" />
+        <Compile Include="Patches\Recipes\ForcePurityPatch.cs" />
         <Compile Include="Patches\Recipes\ForceRarityPatch.cs" />
         <Compile Include="Patches\Recipes\SetRecipeRowPatch.cs" />
         <Compile Include="Patches\Religions\FactionElementPatch.cs" />
@@ -379,6 +379,7 @@
         <Compile Include="Patches\Sounds\MergePlaylistPatch.cs" />
         <Compile Include="Patches\Sounds\MoldNamedPlaylistPatch.cs" />
         <Compile Include="Patches\Sources\CellPostProcessPatch.cs" />
+        <Compile Include="Patches\Sources\CardOnCreateEvent.cs" />
         <Compile Include="Patches\Sources\ClassCacheThunk.cs" />
         <Compile Include="Patches\Sources\NamedImportPatch.cs" />
         <Compile Include="Patches\Sources\RethrowParsePatch.cs" />

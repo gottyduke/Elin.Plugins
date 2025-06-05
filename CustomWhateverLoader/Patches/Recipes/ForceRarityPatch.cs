@@ -1,21 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
-using Cwl.Helper.Runtime;
-using HarmonyLib;
+﻿using Cwl.API.Attributes;
 
 namespace Cwl.Patches.Recipes;
 
-[HarmonyPatch]
 internal class ForceRarityPatch
 {
-    internal static IEnumerable<MethodBase> TargetMethods()
-    {
-        return OverrideMethodComparer.FindAllOverrides(typeof(Card), nameof(Card.OnCreate), typeof(int));
-    }
-
-    [SwallowExceptions]
-    [HarmonyPrefix]
-    internal static void OnResetRarity(Card __instance)
+    [CwlThingOnCreateEvent]
+    internal static void OnResetRarity(Thing __instance)
     {
         var row = __instance.sourceCard;
         if (row is null) {
