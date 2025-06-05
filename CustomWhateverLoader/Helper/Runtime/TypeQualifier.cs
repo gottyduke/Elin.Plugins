@@ -70,8 +70,7 @@ public class TypeQualifier
                 continue;
             }
 
-            _qualifiedResults[unq] = qualified;
-            return qualified;
+            return _qualifiedResults[unq] = qualified;
         }
 
         return null;

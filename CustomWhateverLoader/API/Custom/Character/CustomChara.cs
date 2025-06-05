@@ -168,10 +168,11 @@ public partial class CustomChara : Chara
     [ConsoleCommand("spawn")]
     public static string SpawnTagged(string id)
     {
-        if (CreateTaggedChara(id, out var chara) && chara is not null) {
-            return chara.Name;
+        if (!CreateTaggedChara(id, out var chara) || chara is null) {
+            return "uwu failed";
         }
 
-        return "uwu failed";
+        _zone.AddCard(chara, pc.pos);
+        return chara.Name;
     }
 }
