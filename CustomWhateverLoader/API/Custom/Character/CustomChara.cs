@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cwl.API.Attributes;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.Runtime.Exceptions;
 using Cwl.Helper.String;
@@ -27,8 +28,12 @@ public partial class CustomChara : Chara
     public static IReadOnlyCollection<string> All => _delayedCharaImport.Keys;
 
     [Time]
-    public static void AddChara(SourceChara.Row r)
+    public static void AddChara(SourceChara.Row r, bool @override = true)
     {
+        if (!@override && _delayedCharaImport.ContainsKey(r.id)) {
+            return;
+        }
+
         var tags = r.tag
             .Select(t => t.Trim())
             .Where(t => t.StartsWith("add"))
@@ -133,24 +138,7 @@ public partial class CustomChara : Chara
                 throw new BeggarException(id);
             }
 
-            equips ??= [];
-            things = [
-                ..equips,
-                ..things ?? [],
-            ];
-
-            if (things.Length <= 0) {
-                return true;
-            }
-
-            chara.RemoveThings();
-
-            for (var i = 0; i < things.Length; ++i) {
-                var @params = things[i].Parse("#", 2);
-                var doEquip = i < equips.Length;
-
-                AddEqOrThing(chara, @params[0]!, @params[1], doEquip);
-            }
+            // 1.20.28 deprecated the in place add eq or thing code
 
             return true;
         } catch (Exception ex) {
@@ -160,6 +148,34 @@ public partial class CustomChara : Chara
             CwlMod.ErrorWithPopup<CustomChara>("cwl_error_chara_gen".Loc(id), ex);
             return false;
             // noexcept
+        }
+    }
+
+    [CwlCharaOnCreateEvent]
+    private static void ApplyTags(Chara chara)
+    {
+        AddChara(chara.source, false);
+
+        if (!_delayedCharaImport.TryGetValue(chara.id, out var import)) {
+            return;
+        }
+
+        string[] things = [
+            ..import.Equips,
+            ..import.Things,
+        ];
+
+        if (things.Length <= 0) {
+            return;
+        }
+
+        chara.RemoveThings();
+
+        for (var i = 0; i < things.Length; ++i) {
+            var @params = things[i].Parse("#", 2);
+            var doEquip = i < import.Equips.Length;
+
+            AddEqOrThing(chara, @params[0]!, @params[1], doEquip);
         }
     }
 }

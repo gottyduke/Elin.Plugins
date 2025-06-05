@@ -13,7 +13,7 @@ namespace Cwl.Patches.Charas;
 internal class RestoreCharaData
 {
     private const string SourceIdEntry = "cwl_source_chara_id";
-    private static List<(Chara, SourceChara.Row)>? _restore = null;
+    private static List<(Chara, SourceChara.Row)>? _restore;
 
     [CwlCharaOnCreateEvent]
     internal static void SetOrRestoreCharaData(Chara chara)
