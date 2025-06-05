@@ -27,15 +27,15 @@ public static class MethodInfoDetail
     public static void AppendPatchInfo(this StringBuilder sb, PatchInfo patchInfo)
     {
         foreach (var patch in patchInfo.prefixes) {
-            sb.Append($"\t<color=#2f2d2d>+PREFIX: {patch.PatchMethod.GetAssemblyDetailColor(false)}</color>");
+            sb.AppendLine($"\t<color=#2f2d2d>+PREFIX: {patch.PatchMethod.GetAssemblyDetailColor(false)}</color>");
         }
 
         foreach (var patch in patchInfo.postfixes) {
-            sb.Append($"\t<color=#2f2d2d>+POSTFIX: {patch.PatchMethod.GetAssemblyDetailColor(false)}</color>");
+            sb.AppendLine($"\t<color=#2f2d2d>+POSTFIX: {patch.PatchMethod.GetAssemblyDetailColor(false)}</color>");
         }
 
         foreach (var patch in patchInfo.transpilers) {
-            sb.Append($"\t<color=#2f2d2d>+TRANSPILER: {patch.PatchMethod.GetAssemblyDetailColor(false)}</color>");
+            sb.AppendLine($"\t<color=#2f2d2d>+TRANSPILER: {patch.PatchMethod.GetAssemblyDetailColor(false)}</color>");
         }
     }
 }

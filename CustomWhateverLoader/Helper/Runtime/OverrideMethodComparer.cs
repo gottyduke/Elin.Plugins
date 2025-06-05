@@ -25,8 +25,7 @@ public struct OverrideMethodComparer : IEqualityComparer<MethodBase>
         return type.Assembly.GetTypes()
             .Concat(TypeQualifier.Declared)
             .OfDerived(type)
-            .Select(t => CachedMethods.GetCachedMethod(t.FullName!, methodName, parameterTypes))
-            .OfType<MethodBase>()
+            .Select(t => t.GetRuntimeMethod(methodName, parameterTypes))
             .Distinct(Default);
     }
 

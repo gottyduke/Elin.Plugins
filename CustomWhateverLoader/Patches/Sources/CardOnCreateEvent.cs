@@ -44,7 +44,8 @@ internal class CardOnCreateEvent
     internal static IEnumerable<MethodBase> TargetMethods()
     {
         return [
-            ..OverrideMethodComparer.FindAllOverrides(typeof(Card), "OnDeserialized"),
+            AccessTools.Method(typeof(Card), "OnDeserialized"),
+            AccessTools.Method(typeof(Chara), "OnDeserialized"),
             AccessTools.Method(typeof(Card), nameof(Card.Create)),
         ];
     }

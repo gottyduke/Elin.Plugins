@@ -127,7 +127,7 @@ public class ExceptionProfile(string stackTrace)
 
             switch (mono.frameType) {
                 case MonoFrame.StackFrameType.Unknown or MonoFrame.StackFrameType.Rethrow:
-                    sb.AppendLine(mono.SanitizedMethodCall.Replace("Elin::", "").ToTruncateString(150));
+                    sb.AppendLine(mono.SanitizedMethodCall.ToTruncateString(150));
                     break;
                 case MonoFrame.StackFrameType.Method or MonoFrame.StackFrameType.DynamicMethod:
                     try {
