@@ -2,8 +2,8 @@
 using System.IO;
 using System.Reflection;
 using Cwl.API.Attributes;
+using Cwl.Helper;
 using Cwl.Helper.FileUtil;
-using Cwl.Helper.Runtime;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using MethodTimer;
@@ -58,7 +58,7 @@ public class GameIOProcessor
             } catch (Exception ex) {
                 var state = post ? "post" : "pre";
                 var type = save ? "save" : "load";
-                CwlMod.Warn<GameIOProcessor>("cwl_warn_processor".Loc(state, type, ex));
+                CwlMod.WarnWithPopup<GameIOProcessor>("cwl_warn_processor".Loc(state, type, ex.Message), ex);
                 // noexcept
             }
         }

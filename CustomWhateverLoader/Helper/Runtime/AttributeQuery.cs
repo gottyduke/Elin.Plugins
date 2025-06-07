@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Cwl.Helper.Runtime;
+namespace Cwl.Helper;
 
 public class AttributeQuery
 {

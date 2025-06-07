@@ -1,4 +1,4 @@
-﻿namespace Cwl.Helper.Runtime.Stubs;
+﻿namespace Cwl.Helper.Stubs;
 
 public abstract class MethodStub
 {

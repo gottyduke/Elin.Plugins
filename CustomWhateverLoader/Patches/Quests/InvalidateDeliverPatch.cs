@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Cwl.Helper.Runtime;
+using Cwl.Helper;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using HarmonyLib;

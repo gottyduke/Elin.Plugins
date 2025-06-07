@@ -6,7 +6,7 @@ using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
 using HarmonyLib;
 
-namespace Cwl.Helper.Runtime.Stubs;
+namespace Cwl.Helper.Stubs;
 
 public class MethodStubHelper(MethodInfo targetMethod)
 {

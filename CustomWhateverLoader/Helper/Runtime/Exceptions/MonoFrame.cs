@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
-namespace Cwl.Helper.Runtime.Exceptions;
+namespace Cwl.Helper.Exceptions;
 
 public class MonoFrame(string stackFrame)
 {

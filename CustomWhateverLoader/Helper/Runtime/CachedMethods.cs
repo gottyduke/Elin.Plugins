@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using HarmonyLib;
 
-namespace Cwl.Helper.Runtime;
+namespace Cwl.Helper;
 
 public static class CachedMethods
 {

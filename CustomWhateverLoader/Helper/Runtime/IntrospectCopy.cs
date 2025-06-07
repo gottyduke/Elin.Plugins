@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 
-namespace Cwl.Helper.Runtime;
+namespace Cwl.Helper;
 
 public static class IntrospectCopy
 {

@@ -10,7 +10,7 @@ using HarmonyLib.Public.Patching;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Cwl.Helper.Runtime.Exceptions;
+namespace Cwl.Helper.Exceptions;
 
 public class ExceptionProfile(string stackTrace)
 {

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using Cwl.API.Custom;
-using Cwl.Helper.Runtime;
+using Cwl.Helper;
 using HarmonyLib;
 
 namespace Cwl.Patches.Traits;

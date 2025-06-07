@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Cwl.Helper.Runtime;
+namespace Cwl.Helper;
 
 public static class MethodDispatcher
 {

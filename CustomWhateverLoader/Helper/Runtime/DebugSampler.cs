@@ -5,13 +5,13 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Cwl.Helper.Runtime.Stubs;
 using Cwl.Helper.String;
+using Cwl.Helper.Stubs;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using ReflexCLI.Attributes;
 
-namespace Cwl.Helper.Runtime;
+namespace Cwl.Helper;
 
 [ConsoleCommandClassCustomizer("cwl.stub")]
 public class DebugSampler : MethodStub

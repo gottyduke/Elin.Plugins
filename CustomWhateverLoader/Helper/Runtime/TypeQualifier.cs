@@ -9,7 +9,7 @@ using HarmonyLib;
 using UnityEngine;
 using Logger = HarmonyLib.Tools.Logger;
 
-namespace Cwl.Helper.Runtime;
+namespace Cwl.Helper;
 
 public class TypeQualifier
 {

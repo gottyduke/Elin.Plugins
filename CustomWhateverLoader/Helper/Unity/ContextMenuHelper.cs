@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Cwl.API.Attributes;
-using Cwl.Helper.Runtime;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using MethodTimer;
@@ -53,7 +52,7 @@ public class ContextMenuHelper
                     ProgressIndicator.CreateProgressScoped(() => new(result.ToString()), 5f);
                 }
             } catch (Exception ex) {
-                CwlMod.Warn<ContextMenuHelper>("cwl_warn_processor".Loc("context_menu", entry, ex));
+                CwlMod.WarnWithPopup<ContextMenuHelper>("cwl_warn_processor".Loc("context_menu", entry, ex.Message), ex);
                 // noexcept
             }
         }
