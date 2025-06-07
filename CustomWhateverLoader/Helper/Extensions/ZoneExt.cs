@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Cwl.LangMod;
 
 namespace Cwl.Helper.Extensions;
@@ -26,5 +27,44 @@ public static class ZoneExt
             return null;
             // noexcept
         }
+    }
+
+    public static bool ValidateZone(this string zoneFullName, out Zone? zone, bool randomFallback = false)
+    {
+        var zones = EClass.game.spatials.map.Values
+            .OfType<Zone>()
+            .ToArray();
+
+        var (matchZone, byLv) = ParseZoneFullName(zoneFullName);
+        var byId = matchZone.Replace("Zone_", "");
+
+        zone = zones.FirstOrDefault(z => z.GetType().Name == matchZone || z.id == byId)?.FindOrCreateZone(byLv);
+
+        if (zone is not null) {
+            return true;
+        }
+
+        if (byId != "*" && !randomFallback) {
+            return false;
+        }
+
+        var spawnableZones = Array.FindAll(zones, z => z.CanSpawnAdv);
+        zone = spawnableZones.RandomItem();
+
+        return zone is not null;
+    }
+
+    private static (string, int) ParseZoneFullName(string zoneFullName)
+    {
+        var byLv = zoneFullName.LastIndexOfAny(['/', '@']);
+        if (byLv == -1 || byLv >= zoneFullName.Length - 1) {
+            return (zoneFullName.Replace("/", "").Replace("@", ""), 0);
+        }
+
+        var lv = zoneFullName[(byLv + 1)..];
+        return (
+            zoneFullName[..byLv],
+            lv.AsInt(0)
+        );
     }
 }

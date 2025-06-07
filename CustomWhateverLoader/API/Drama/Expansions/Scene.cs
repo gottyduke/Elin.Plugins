@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cwl.API.Attributes;
-using Cwl.API.Custom;
+using Cwl.Helper.Exceptions;
 using Cwl.Helper.Extensions;
-using Cwl.Helper.Runtime.Exceptions;
 
 namespace Cwl.API.Drama;
 
@@ -44,7 +43,7 @@ public partial class DramaExpansion
         dm.RequiresActor(out var actor);
 
         var zoneName = $"{zoneId.Value}/{lv.Get("0")}";
-        if (!CustomChara.ValidateZone(zoneName, out var targetZone) || targetZone is null) {
+        if (!zoneName.ValidateZone(out var targetZone) || targetZone is null) {
             return false;
         }
 

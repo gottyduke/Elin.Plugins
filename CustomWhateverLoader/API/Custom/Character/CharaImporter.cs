@@ -10,48 +10,9 @@ namespace Cwl.API.Custom;
 
 public partial class CustomChara
 {
-    public static bool ValidateZone(string zoneFullName, out Zone? zone, bool randomFallback = false)
-    {
-        var zones = game.spatials.map.Values
-            .OfType<Zone>()
-            .ToArray();
-
-        var (matchZone, byLv) = ParseZoneFullName(zoneFullName);
-        var byId = matchZone.Replace("Zone_", "");
-
-        zone = zones.FirstOrDefault(z => z.GetType().Name == matchZone || z.id == byId)?.FindOrCreateZone(byLv);
-
-        if (zone is not null) {
-            return true;
-        }
-
-        if (byId != "*" && !randomFallback) {
-            return false;
-        }
-
-        var spawnableZones = Array.FindAll(zones, z => z.CanSpawnAdv);
-        zone = spawnableZones.RandomItem();
-
-        return zone is not null;
-    }
-
-    private static (string, int) ParseZoneFullName(string zoneFullName)
-    {
-        var byLv = zoneFullName.LastIndexOf('/');
-        if (byLv == -1 || byLv >= zoneFullName.Length - 1) {
-            return (zoneFullName.Replace("/", ""), 0);
-        }
-
-        var lv = zoneFullName[(byLv + 1)..];
-        return (
-            zoneFullName[..byLv],
-            lv.AsInt(0)
-        );
-    }
-
     public static void SpawnAtZone(Chara chara, string zoneFullName)
     {
-        if (!ValidateZone(zoneFullName, out var destZone, true) || destZone is null) {
+        if (!zoneFullName.ValidateZone(out var destZone, true) || destZone is null) {
             return;
         }
 
@@ -92,7 +53,7 @@ public partial class CustomChara
                 List<Zone> toAddZones = [];
                 var present = 0;
                 foreach (var toImport in import.Zones) {
-                    if (!ValidateZone(toImport, out var zone, true) || zone is null) {
+                    if (!toImport.ValidateZone(out var zone, true) || zone is null) {
                         CwlMod.WarnWithPopup<CustomChara>("cwl_error_zone_invalid".Loc(id, toImport));
                         continue;
                     }
