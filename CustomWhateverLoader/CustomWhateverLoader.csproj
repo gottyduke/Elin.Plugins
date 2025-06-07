@@ -331,6 +331,7 @@
         <Compile Include="Patches\Charas\SetCharaRowPatch.cs" />
         <Compile Include="Patches\Conditions\SafeCreateConditionPatch.cs" />
         <Compile Include="Patches\Conditions\SetConditionRowPatch.cs" />
+        <Compile Include="Patches\Dialogs\AllowUniqueTalkPatch.cs" />
         <Compile Include="Patches\Dialogs\LoadDialogPatch.cs" />
         <Compile Include="Patches\Dialogs\SafePopTalkPatch.cs" />
         <Compile Include="Patches\Dialogs\VariableQuotePatch.cs" />

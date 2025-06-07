@@ -12,6 +12,7 @@ public class CwlConfig
 
     [ConsoleCommand] public static bool SeamlessStreaming => BGM.SeamlessStreaming?.Value is true;
 
+    [ConsoleCommand] public static bool CacheTalks => Caching.Talks?.Value is true;
     [ConsoleCommand] public static bool CacheTypes => Caching.Types?.Value is true;
     [ConsoleCommand] public static bool CachePaths => Caching.Paths?.Value is true;
     [ConsoleCommand] public static bool CacheSheets => Caching.Sheets?.Value is true;
@@ -85,6 +86,13 @@ public class CwlConfig
             true,
             "When switching to a new playlist, if current playing BGM is included in the new playlist, seamlessly stream it\n" +
             "当切换播放列表时，如果当前播放的曲目在新播放列表中，则尝试无缝衔接");
+
+        Caching.Talks = config.Bind(
+            ModInfo.Name,
+            "Caching.Talks",
+            true,
+            "Cache GetDialog/HasTopic talks instead of loading & building map everytime\n" +
+            "缓存GetDialog/HasTopic构建的对话文本表而不是每次都重新加载+构建");
 
         Caching.Types = config.Bind(
             ModInfo.Name,
@@ -243,6 +251,7 @@ public class CwlConfig
 
     internal class Caching
     {
+        internal static ConfigEntry<bool>? Talks { get; set; }
         internal static ConfigEntry<bool>? Types { get; set; }
         internal static ConfigEntry<bool>? Paths { get; set; }
         internal static ConfigEntry<bool>? Sheets { get; set; }

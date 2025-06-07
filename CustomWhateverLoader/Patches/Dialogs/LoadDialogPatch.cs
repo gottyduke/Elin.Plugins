@@ -11,6 +11,7 @@ namespace Cwl.Patches.Dialogs;
 internal class LoadDialogPatch
 {
     internal static readonly List<ExcelData> Cached = [];
+    private static readonly Dictionary<string, Dictionary<string, ExcelData.Sheet>> _built = [];
 
     internal static IEnumerable<MethodInfo> TargetMethods()
     {
@@ -33,6 +34,23 @@ internal class LoadDialogPatch
 
     [Time]
     private static void BuildRelocatedMap(ExcelData data, string sheetName)
+    {
+        // using caching here will disable vanilla dialog hot reload
+        // I doubt anyone uses it, not with CWL anyway, hehe
+        if (!CwlConfig.CacheTalks) {
+            MergeDialogs(data, sheetName);
+            return;
+        }
+
+        if (_built.TryGetValue(sheetName, out var built)) {
+            data.sheets = built;
+        } else {
+            MergeDialogs(data, sheetName);
+            _built[sheetName] = data.sheets;
+        }
+    }
+
+    private static void MergeDialogs(ExcelData data, string sheetName)
     {
         data.BuildMap(sheetName);
 
