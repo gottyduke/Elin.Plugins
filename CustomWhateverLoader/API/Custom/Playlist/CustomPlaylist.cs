@@ -44,15 +44,18 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
                 return ScriptableObject.CreateInstance<Playlist>();
             }
 
-            var zoneName = zone.GetType().Name;
-            var baseName = GetBasePlaylistName(mold.name);
+            var zoneTypeName = zone.GetType().Name;
+            var basePlaylistName = GetBasePlaylistName(mold.name);
 
             var plName = "CWL_Merged_Global_";
-            if (baseName != "") {
-                plName += $"{baseName}_";
+            if (basePlaylistName != "") {
+                plName += $"{basePlaylistName}_";
             }
 
-            plName += zoneName;
+            plName += $"Zone_{zone.id}";
+            if (zone is not Region) {
+                plName += $"@{zone.lv}";
+            }
 
             var cacheName = $"{plName}_{mold.UniqueString()}";
             if (_merged.TryGetValue(cacheName, out var playlist)) {
@@ -63,16 +66,17 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
             playlist = mold.Instantiate();
             playlist.list.Clear();
 
-            string[] orders = ["Global", baseName, zoneName];
-            var shuffle = false;
-            foreach (var order in orders) {
-                var lists = MergeOverrides(Lut[order], zoneName);
+            string[] orders = [
+                "Global",
+                basePlaylistName,
+                zoneTypeName,
+                // id override
+                $"Zone_{zone.id}",
+                // with id@level override
+                $"Zone_{zone.id}@{zone.lv}",
+            ];
 
-                list.RemoveAll(lists.ListRemove.Contains);
-                list.AddRange(lists.ListMerge);
-
-                shuffle |= lists.Shuffle;
-            }
+            var shuffle = MergeOverridesInOrder(list, orders, zoneTypeName);
 
             var dict = Core.Instance.refs.dictBGM;
             foreach (var id in list) {
@@ -95,7 +99,22 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
         return mold ?? EClass.Sound.plBlank;
     }
 
-    public static CustomPlaylist MergeOverrides(IEnumerable<CustomPlaylist> overrides, string zoneName)
+    public static bool MergeOverridesInOrder(List<int> list, string[] orders, string zoneTypeName)
+    {
+        var shuffle = false;
+        foreach (var order in orders) {
+            var lists = MergeOverridesSingular(Lut[order], zoneTypeName);
+
+            list.RemoveAll(lists.ListRemove.Contains);
+            list.AddRange(lists.ListMerge);
+
+            shuffle |= lists.Shuffle;
+        }
+
+        return shuffle;
+    }
+
+    public static CustomPlaylist MergeOverridesSingular(IEnumerable<CustomPlaylist> overrides, string zoneName)
     {
         var lists = overrides.ToArray();
         var names = lists
@@ -135,7 +154,7 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
 
     private static string GetBasePlaylistName(string fullName)
     {
-        var match = Regex.Match(fullName, "Playlist_(.*?)_Zone_");
+        var match = Regex.Match(fullName, "Playlist_(.*?)_");
         return match.Success ? match.Groups[1].Value : "";
     }
 
