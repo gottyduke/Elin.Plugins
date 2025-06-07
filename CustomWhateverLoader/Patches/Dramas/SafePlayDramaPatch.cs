@@ -6,29 +6,24 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Dramas;
 
-[HarmonyPatch(typeof(DramaEventMethod), nameof(DramaEventMethod.Play))]
+[HarmonyPatch]
 internal class SafePlayDramaPatch
 {
-    [HarmonyReversePatch(HarmonyReversePatchType.Snapshot)]
-    internal static bool _Play(DramaEventMethod __instance)
+    [HarmonyFinalizer]
+    [HarmonyPatch(typeof(DramaEventMethod), nameof(DramaEventMethod.Play))]
+    internal static Exception? OnPlay(DramaEventMethod __instance, Exception? __exception)
     {
-        throw new NotImplementedException("cwl_stub");
-    }
-
-    [HarmonyPrefix]
-    internal static bool OnPlay(DramaEventMethod __instance, ref bool __result)
-    {
-        try {
-            __result = _Play(__instance);
-        } catch (Exception ex) {
-            ELayerCleanup.Cleanup<LayerDrama>();
-
-            var exp = ExceptionProfile.GetFromStackTrace(ex);
-            exp.StartAnalyzing();
-            exp.CreateAndPop("cwl_warn_drama_play_ex".Loc(ex.Message));
-            // noexcept
+        if (__exception is null) {
+            return null;
         }
 
-        return false;
+        ELayerCleanup.Cleanup<LayerDrama>();
+
+        var exp = ExceptionProfile.GetFromStackTrace(__exception);
+        exp.StartAnalyzing();
+        exp.CreateAndPop("cwl_warn_drama_play_ex".Loc(__exception.Message));
+
+        // noexcept
+        return null;
     }
 }
