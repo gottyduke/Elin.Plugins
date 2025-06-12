@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
-using Cwl.API.Attributes;
 using Cwl.Helper;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.Unity;
@@ -15,7 +14,8 @@ internal class RestoreCharaData
     private const string SourceIdEntry = "cwl_source_chara_id";
     private static List<(Chara, SourceChara.Row)>? _restore;
 
-    [CwlCharaOnCreateEvent]
+    // disabled for now cuz probably not needed
+    //[CwlCharaOnCreateEvent]
     internal static void SetOrRestoreCharaData(Chara chara)
     {
         if (!chara.mapStr.TryGetValue(SourceIdEntry, out var sourceId)) {

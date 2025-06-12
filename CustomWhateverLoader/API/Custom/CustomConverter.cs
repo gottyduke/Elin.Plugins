@@ -97,7 +97,7 @@ public class CustomConverter : TraitBrewery
     }
 
     [ConsoleCommand("reload")]
-    [CwlContextMenu("cwl_ui_converter/cwl_ui_converter_reload")]
+    [CwlContextMenu("CWL/cwl_ui_converter/cwl_ui_converter_reload")]
     public static string ReloadAllConverterData()
     {
         _cached.Clear();

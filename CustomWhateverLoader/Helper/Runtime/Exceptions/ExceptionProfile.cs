@@ -134,7 +134,7 @@ public class ExceptionProfile(string stackTrace)
                         var info = mono.Method.GetPatchInfo();
 
                         if (lineCount <= 15 || info is not null) {
-                            sb.AppendLine(mono.Method!.GetAssemblyDetailColor());
+                            sb.AppendLine(mono.DetailedMethodCall);
                             lineCount++;
                         }
 

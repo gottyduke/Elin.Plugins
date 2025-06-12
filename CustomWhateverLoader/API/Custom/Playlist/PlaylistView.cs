@@ -22,7 +22,7 @@ public partial class CustomPlaylist
 
     [ConsoleCommand("view")]
     [CwlContextMenu("BGM/View", "cwl_ui_bgm_view")]
-    internal static string EnableBGMView()
+    public static string EnableBGMView()
     {
         if (!_killBgmProgress && _bgmProgress != null) {
             _detailedView = !_detailedView;
@@ -42,7 +42,7 @@ public partial class CustomPlaylist
 
     [ConsoleCommand("hide")]
     [CwlContextMenu("BGM/Hide", "cwl_ui_bgm_hide")]
-    internal static string DisableBGMView()
+    public static string DisableBGMView()
     {
         _killBgmProgress = true;
         _bgmProgress = null;
@@ -52,7 +52,7 @@ public partial class CustomPlaylist
 
     [ConsoleCommand("next")]
     [CwlContextMenu("BGM/Next", "cwl_ui_bgm_next")]
-    internal static string NextBGM()
+    public static string NextBGM()
     {
         var pl = EClass.Sound.currentPlaylist;
         pl.Play();
@@ -61,7 +61,7 @@ public partial class CustomPlaylist
 
     [ConsoleCommand("last")]
     [CwlContextMenu("BGM/Last", "cwl_ui_bgm_last")]
-    internal static string LastBGM()
+    public static string LastBGM()
     {
         var pl = EClass.Sound.currentPlaylist;
         pl.nextIndex = (pl.nextIndex - 2 + pl.list.Count) % pl.list.Count;
@@ -71,7 +71,7 @@ public partial class CustomPlaylist
 
     [ConsoleCommand("shuffle")]
     [CwlContextMenu("BGM/Shuffle", "cwl_ui_bgm_shuffle")]
-    internal static string ShuffleBGM()
+    public static string ShuffleBGM()
     {
         var pl = EClass.Sound.currentPlaylist;
         pl.nextIndex = EClass.rnd(pl.list.Count);
@@ -82,7 +82,7 @@ public partial class CustomPlaylist
 
     [ConsoleCommand("dump")]
     [SuppressMessage("ReSharper", "Unity.UnknownResource")]
-    internal static string DumpAllBGMData()
+    public static string DumpAllBGMData()
     {
         var sb = new StringBuilder(2048)
             .AppendLine("Playlist Dump");

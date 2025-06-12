@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Cwl.Helper.String;
 
 namespace Cwl.Helper.Exceptions;
 
@@ -25,6 +26,7 @@ public class MonoFrame(string stackFrame)
     public string StackFrame => stackFrame;
     public string SanitizedMethodCall { get; private set; } = "";
     public string SanitizedParameters { get; private set; } = "";
+    public string DetailedMethodCall { get; private set; } = "";
 
     public static MonoFrame GetFrame(string frame)
     {
@@ -58,6 +60,12 @@ public class MonoFrame(string stackFrame)
             frameType = Method is null ? StackFrameType.Unknown :
                 raw.StartsWith("(wrapper dynamic-method)") ? StackFrameType.DynamicMethod : StackFrameType.Method;
         }
+
+        DetailedMethodCall = frameType switch {
+            StackFrameType.Method or StackFrameType.DynamicMethod
+                when Method is not null => Method.GetAssemblyDetailColor(false),
+            _ => SanitizedMethodCall,
+        };
 
         _parsed = true;
         return this;

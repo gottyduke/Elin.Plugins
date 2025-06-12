@@ -52,10 +52,7 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
                 plName += $"{basePlaylistName}_";
             }
 
-            plName += $"Zone_{zone.id}";
-            if (zone is not Region) {
-                plName += $"@{zone.lv}";
-            }
+            plName += $"Zone_{zone.id}@{zone.lv}";
 
             var cacheName = $"{plName}_{mold.UniqueString()}";
             if (_merged.TryGetValue(cacheName, out var playlist)) {
