@@ -78,6 +78,10 @@ public class TypeQualifier
 
     public static Type? GlobalResolve(string unresolvedStr)
     {
+        if (unresolvedStr.StartsWith("at <")) {
+            return null;
+        }
+
         var trimmedParam = unresolvedStr.Trim();
         if (trimmedParam.IsEmpty()) {
             return null;
@@ -98,15 +102,16 @@ public class TypeQualifier
         }
 
         // DMD
-        var dmdGeneric = Regex.Match(typeName, "<([^>]+)>");
-        if (dmdGeneric.Success) {
-            foreach (var alias in dmdGeneric.Groups[1].Value.Split(',')) {
+        var hasGeneric = Regex.Match(typeName, "<([^>]+)>");
+        List<Type> generics = [];
+        if (hasGeneric.Success) {
+            foreach (var alias in hasGeneric.Groups[1].Value.Split(',')) {
                 if (GlobalResolve(alias) is { } aliasType) {
-                    typeName = typeName.Replace(alias, aliasType.FullName);
+                    generics.Add(aliasType);
                 }
             }
 
-            typeName = typeName.Replace('<', '[').Replace('>', ']');
+            typeName = typeName.Replace(hasGeneric.Groups[0].Value, "");
         }
 
         // DMD NestType
@@ -121,6 +126,11 @@ public class TypeQualifier
         paramType = TryGetType(typeName);
         if (paramType == null) {
             return null;
+        }
+
+        // Generic
+        if (generics.Count > 0) {
+            paramType = paramType.MakeGenericType(generics.ToArray());
         }
 
         if (refParam) {

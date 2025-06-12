@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Cwl.Helper.String;
@@ -78,8 +77,10 @@ public class MonoFrame(string stackFrame)
             return ParseNormalMethod(SanitizedMethodCall, ParseParameters(SanitizedParameters));
         }
 
-        var pack = SanitizedParameters.Split(',');
-        var reparsePacks = string.Join(',', pack.Skip(1));
+        var index = SanitizedParameters.IndexOf(',');
+        var reparsePacks = index >= 0
+            ? SanitizedParameters[(index + 1)..]
+            : "";
         return CachedMethods.GetCachedMethod(typeName, methodName, ParseParameters(reparsePacks));
     }
 
