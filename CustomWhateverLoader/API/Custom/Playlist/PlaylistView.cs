@@ -7,6 +7,7 @@ using Cwl.API.Attributes;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
+using HarmonyLib;
 using ReflexCLI.Attributes;
 using UnityEngine;
 
@@ -78,6 +79,16 @@ public partial class CustomPlaylist
         pl.Shuffle();
         pl.Play();
         return pl.currentItem.data._name;
+    }
+
+    [ConsoleCommand("addKnown")]
+    [CwlContextMenu("BGM/AddKnown", "cwl_ui_bgm_add_known")]
+    public static string AddPlaylistToKnown()
+    {
+        var pl = EClass.Sound.currentPlaylist;
+        var prev = EClass.player.knownBGMs.Count;
+        EClass.player.knownBGMs.UnionWith(pl.ToInts());
+        return $"added {EClass.player.knownBGMs.Count - prev} new BGM(s) to known list";
     }
 
     [ConsoleCommand("dump")]
