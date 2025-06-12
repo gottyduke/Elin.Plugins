@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cwl.API.Attributes;
 using Cwl.Helper.Exceptions;
+using Cwl.Helper.Extensions;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
@@ -135,24 +137,7 @@ public partial class CustomChara : Chara
                 throw new BeggarException(id);
             }
 
-            equips ??= [];
-            things = [
-                ..equips,
-                ..things ?? [],
-            ];
-
-            if (things.Length <= 0) {
-                return true;
-            }
-
-            chara.RemoveThings();
-
-            for (var i = 0; i < things.Length; ++i) {
-                var @params = things[i].Parse("#", 2);
-                var doEquip = i < equips.Length;
-
-                AddEqOrThing(chara, @params[0]!, @params[1], doEquip);
-            }
+            // apply tags automatically
 
             return true;
         } catch (Exception ex) {
@@ -162,6 +147,41 @@ public partial class CustomChara : Chara
             CwlMod.ErrorWithPopup<CustomChara>("cwl_error_chara_gen".Loc(id), ex);
             return false;
             // noexcept
+        }
+    }
+
+    [CwlCharaOnCreateEvent]
+    internal static void ApplyTags(Chara chara)
+    {
+        if (chara.GetFlagValue("cwl_tags_applied") != 0 ||
+            !_delayedCharaImport.TryGetValue(chara.id, out var import)) {
+            return;
+        }
+
+        chara.SetFlagValue("cwl_tags_applied");
+
+        foreach (var tag in chara.source.tag) {
+            if (tag.StartsWith("addFlag_")) {
+                chara.SetFlagValue(tag[8..]);
+            }
+        }
+
+        string[] things = [
+            ..import.Equips,
+            ..import.Things,
+        ];
+
+        if (things.Length <= 0) {
+            return;
+        }
+
+        chara.RemoveThings();
+
+        for (var i = 0; i < things.Length; ++i) {
+            var @params = things[i].Parse("#", 2);
+            var doEquip = i < import.Equips.Length;
+
+            AddEqOrThing(chara, @params[0]!, @params[1], doEquip);
         }
     }
 
