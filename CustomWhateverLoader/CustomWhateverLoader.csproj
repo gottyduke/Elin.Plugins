@@ -375,7 +375,9 @@
         <Compile Include="Patches\Relocation\LoadBookPatch.cs" />
         <Compile Include="Patches\Relocation\LoadResourcesPatch.cs" />
         <Compile Include="Patches\SafeSceneInitPatch.cs" />
+        <Compile Include="Patches\Sounds\AudibleTopicTextPatch.cs" />
         <Compile Include="Patches\Sounds\BossBgmEvent.cs" />
+        <Compile Include="Patches\Sounds\ExpandedTapePatch.cs" />
         <Compile Include="Patches\Sounds\SetBGMOverridePatch.cs" />
         <Compile Include="Patches\Sounds\MergePlaylistPatch.cs" />
         <Compile Include="Patches\Sounds\MoldNamedPlaylistPatch.cs" />
