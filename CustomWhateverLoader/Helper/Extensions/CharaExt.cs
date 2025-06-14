@@ -58,4 +58,19 @@ public static class CharaExt
         var dialog = Lang.GetDialog("unique", chara.id).RandomItem();
         return tone ? chara.ApplyTone(dialog) : dialog;
     }
+
+    public static void DestroyImmediate(this Chara chara)
+    {
+        var branch = EClass.BranchOrHomeBranch;
+        if (branch?.members.Contains(chara) is true) {
+            branch.RemoveMemeber(chara);
+        }
+
+        var adv = EClass.game.cards.listAdv;
+        if (adv.Contains(chara)) {
+            adv.Remove(chara);
+        }
+
+        chara.Destroy();
+    }
 }

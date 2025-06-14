@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Cwl.API.Attributes;
+using Cwl.Helper.Extensions;
 using Cwl.LangMod;
 using ReflexCLI.Attributes;
 
@@ -12,28 +13,15 @@ internal class CwlConsole
     [CwlContextMenu("CWL/BeggarBegone", "cwl_ui_vacate_beggar")]
     internal static string BegoneOfYouBeggars()
     {
-        var destroyed = 0;
-
         // 23.149 changed beggar to chicken, what noa
         var beggars = EClass.game.cards.globalCharas.Values
             .Where(chara => chara.id == "chicken")
             .ToArray();
 
         foreach (var chara in beggars) {
-            chara.Destroy();
-            destroyed++;
+            chara.DestroyImmediate();
         }
 
-        // ReSharper disable once StringLiteralTypo
-        foreach (var chara in EClass.game.cards.listAdv.FindAll(chara => chara.id == "chicken")) {
-            if (!chara.isDestroyed) {
-                chara.Destroy();
-                destroyed++;
-            }
-
-            EClass.game.cards.listAdv.Remove(chara);
-        }
-
-        return "cwl_log_hobo_begone".Loc(destroyed);
+        return "cwl_log_hobo_begone".Loc(beggars.Length);
     }
 }
