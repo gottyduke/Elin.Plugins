@@ -5,7 +5,7 @@ using HarmonyLib;
 namespace Cwl.Patches.Dramas;
 
 [HarmonyPatch]
-internal class SafeLoadDramaPatch
+internal class SyncDramaTextPatch
 {
     [HarmonyPrefix]
     [HarmonyPatch(typeof(DramaManager), nameof(DramaManager.ParseLine))]
@@ -20,17 +20,22 @@ internal class SafeLoadDramaPatch
 
     private static void SyncTexts(Dictionary<string, string> item)
     {
-        if (item["id"].IsEmpty()) {
+        var id = item["id"];
+        if (id.IsEmpty()) {
             return;
+        }
+
+        item.TryAdd("text", "");
+        item.TryAdd("text_EN", "");
+        item.TryAdd("text_JP", "");
+
+        if (item.TryGetValue($"text_{Lang.langCode}", out var textLang)) {
+            DramaExpansion.Cookie!.Dm.dictLocalize[id] = item["text"] = textLang;
         }
 
         var textLocalize = item["text"];
         var textEn = item["text_EN"];
         var textJp = item["text_JP"];
-
-        if (textLocalize.IsEmpty()) {
-            item["text"] = textEn.IsEmpty(textJp.IsEmpty("<empty>"));
-        }
 
         if (textEn.IsEmpty()) {
             item["text_EN"] = textLocalize.IsEmpty(textJp.IsEmpty("<empty>"));

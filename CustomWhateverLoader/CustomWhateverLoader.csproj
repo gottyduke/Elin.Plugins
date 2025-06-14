@@ -341,7 +341,7 @@
         <Compile Include="Patches\Dramas\LoadDramaPatch.cs" />
         <Compile Include="Patches\Dramas\OverlapSoundPatch.cs" />
         <Compile Include="Patches\Dramas\RerouteDramaPatch.cs" />
-        <Compile Include="Patches\Dramas\SafeLoadDramaPatch.cs" />
+        <Compile Include="Patches\Dramas\SyncDramaTextPatch.cs" />
         <Compile Include="Patches\Dramas\SafePlayDramaPatch.cs" />
         <Compile Include="Patches\Dramas\SafeUpdateDramaPatch.cs" />
         <Compile Include="Patches\Effects\CaneTintPatch.cs" />
