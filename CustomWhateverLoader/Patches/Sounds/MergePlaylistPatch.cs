@@ -38,7 +38,7 @@ internal class MergePlaylistPatch
         try {
             var merged = CustomPlaylist.GeneratePlaylistForZone(mold, zone);
             if (merged == null || merged.list.Count == 0) {
-                sm.SwitchPlaylist(mold);
+                sm.SwitchPlaylist(mold, stopBGM);
                 return;
             }
 
@@ -53,10 +53,10 @@ internal class MergePlaylistPatch
             }
 
             if (!TryStreaming(merged)) {
-                sm.SwitchPlaylist(merged);
+                sm.SwitchPlaylist(merged, stopBGM);
             }
         } catch (Exception ex) {
-            sm.SwitchPlaylist(mold);
+            sm.SwitchPlaylist(mold, stopBGM);
             CwlMod.WarnWithPopup<CustomPlaylist>("cwl_error_failure".Loc(ex.Message), ex);
             // noexcept
         }

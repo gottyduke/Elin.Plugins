@@ -74,9 +74,9 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
             ];
 
             var shuffle = MergeOverridesInOrder(list, orders, zoneTypeName);
-
             var dict = Core.Instance.refs.dictBGM;
-            foreach (var id in list) {
+
+            foreach (var id in list.Distinct()) {
                 if (!dict.TryGetValue(id, out var bgm) || bgm?.clip == null) {
                     continue;
                 }
