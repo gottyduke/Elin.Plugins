@@ -34,22 +34,20 @@ public class LoadResourcesPatch
     }
 
     [SwallowExceptions]
-    [HarmonyPostfix]
+    [HarmonyPrefix]
     [HarmonyPatch(typeof(Resources), nameof(Resources.Load), typeof(string), typeof(Type))]
-    internal static void OnRelocateResource(ref Object? __result, string path, Type systemTypeInstance)
+    internal static bool OnRelocateResource(ref Object? __result, string path, Type systemTypeInstance)
     {
-        if (__result != null) {
-            return;
-        }
-
         if (!_handlers.TryGetValue(systemTypeInstance, out var handlers)) {
-            return;
+            return true;
         }
 
         foreach (var handler in handlers) {
-            if (handler(path, ref __result)) {
-                return;
+            if (handler(path, ref __result) && __result != null) {
+                return false;
             }
         }
+
+        return true;
     }
 }
