@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reflection.Emit;
+using Cwl.API.Attributes;
 using Cwl.API.Custom;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.Extensions;
@@ -83,5 +84,48 @@ internal class SafeCreateElementPatch
         row.detail = "cwl_type_safety_desc".Loc();
 
         return new CustomElement();
+    }
+
+    [CwlCharaOnCreateEvent]
+    internal static void InvalidateElements(Chara chara)
+    {
+        var doReplace = false;
+        List<string> safeActs = [];
+
+        foreach (var act in chara.source.actCombat) {
+            var actId = act.Split("/")[0];
+            if (EClass.sources.elements.alias.ContainsKey(actId)) {
+                safeActs.Add(act);
+            } else {
+                doReplace = true;
+                CwlMod.WarnWithPopup<CustomElement>("cwl_warn_fix_actCombat".Loc(actId, chara.id));
+            }
+        }
+
+        if (doReplace) {
+            chara.source.actCombat = safeActs.ToArray();
+        }
+
+        var list = chara._listAbility;
+        var map = EClass.sources.elements.map;
+
+        if (list is null) {
+            return;
+        }
+
+        for (var i = list.Count - 1; i >= 0; --i) {
+            if (map.ContainsKey(list[i])) {
+                continue;
+            }
+
+            var id = list[i];
+            list.RemoveAt(i);
+
+            CwlMod.WarnWithPopup<CustomElement>("cwl_warn_fix_listAbility".Loc(id, chara.id));
+        }
+
+        if (list.Count == 0) {
+            chara._listAbility = null;
+        }
     }
 }
