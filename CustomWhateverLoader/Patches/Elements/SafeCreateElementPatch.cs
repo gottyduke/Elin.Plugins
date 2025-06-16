@@ -7,6 +7,7 @@ using Cwl.Helper.Extensions;
 using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
+using UnityEngine;
 
 namespace Cwl.Patches.Elements;
 
@@ -89,12 +90,13 @@ internal class SafeCreateElementPatch
     [CwlCharaOnCreateEvent]
     internal static void InvalidateElements(Chara chara)
     {
+        var elements = EClass.sources.elements;
         var doReplace = false;
         List<string> safeActs = [];
 
         foreach (var act in chara.source.actCombat) {
             var actId = act.Split("/")[0];
-            if (EClass.sources.elements.alias.ContainsKey(actId)) {
+            if (elements.alias.ContainsKey(actId)) {
                 safeActs.Add(act);
             } else {
                 doReplace = true;
@@ -107,20 +109,17 @@ internal class SafeCreateElementPatch
         }
 
         var list = chara._listAbility;
-        var map = EClass.sources.elements.map;
-
         if (list is null) {
             return;
         }
 
         for (var i = list.Count - 1; i >= 0; --i) {
-            if (map.ContainsKey(list[i])) {
+            var id = Mathf.Abs(list[i]);
+            if (elements.map.ContainsKey(id)) {
                 continue;
             }
 
-            var id = list[i];
             list.RemoveAt(i);
-
             CwlMod.WarnWithPopup<CustomElement>("cwl_warn_fix_listAbility".Loc(id, chara.id));
         }
 
