@@ -20,7 +20,7 @@ internal class AllowUniqueTalkPatch
                 new(OpCodes.Newobj))
             .ThrowIfInvalid("failed to match hasTopic & humanSpeak")
             .Advance(-1)
-            .SetOpcodeAndAdvance(OpCodes.Nop)
+            .SetOpcodeAndAdvance(OpCodes.Pop)
             .InstructionEnumeration();
     }
 }
