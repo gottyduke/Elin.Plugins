@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection.Emit;
 using Cwl.Helper.Extensions;
+using Cwl.Helper.String;
 using HarmonyLib;
 using OpCodes = System.Reflection.Emit.OpCodes;
 
@@ -9,6 +10,11 @@ namespace Cwl.Patches.Elements;
 [HarmonyPatch]
 internal class SafeValueBonusPatch
 {
+    internal static bool Prepare()
+    {
+        return GameVersion.IsBelow(0, 23, 154);
+    }
+
     [HarmonyTranspiler]
     [HarmonyPatch(typeof(ElementContainerCard), nameof(ElementContainerCard.ValueBonus))]
     internal static IEnumerable<CodeInstruction> OnReadMapCharaIl(IEnumerable<CodeInstruction> instructions)
