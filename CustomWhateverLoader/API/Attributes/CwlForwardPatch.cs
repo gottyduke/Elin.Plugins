@@ -21,11 +21,11 @@ public class CwlForwardPatch : HarmonyPatch
 
     private CwlForwardPatch(int enableAfter)
     {
-        _compatible = enableAfter <= GameVersion.Int();
+        _compatible = !GameVersion.IsBelow(enableAfter);
     }
 
-    public CwlForwardPatch(int major, int minor, int patch)
-        : this(major * 1000000 + minor * 1000 + patch)
+    public CwlForwardPatch(int major, int minor, int batch)
+        : this(major * 1000000 + minor * 1000 + batch)
     {
     }
 

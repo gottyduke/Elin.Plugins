@@ -82,7 +82,7 @@ public class CustomConverter : TraitBrewery
                 thing.MakeRefFrom(card);
             }
 
-            if (product.PriceAdd.TryEvaluate<int>(out var added, new { @base = card.GetValue() })) {
+            if (product.PriceAdd.TryEvaluate(out int added, new { @base = card.GetValue() })) {
                 thing.c_priceAdd = added;
             }
 

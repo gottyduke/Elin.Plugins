@@ -8,10 +8,6 @@ public class SpriteReplacerHelper
 {
     public static Sprite? AppendSpriteSheet(string id, int resizeWidth = 0, int resizeHeight = 0, string pattern = "@")
     {
-        if (SpriteSheet.dict.TryGetValue(id, out var tile)) {
-            return tile;
-        }
-
         var replacers = SpriteReplacer.dictModItems;
         if (!replacers.TryGetValue(id, out var file) && pattern != "") {
             var matched = replacers
@@ -20,12 +16,17 @@ public class SpriteReplacerHelper
             file ??= matched.Value;
         }
 
-        tile = file?.LoadSprite(name: id, resizeWidth: resizeWidth, resizeHeight: resizeHeight);
+        var tile = file?.LoadSprite(name: id, resizeWidth: resizeWidth, resizeHeight: resizeHeight);
         if (tile == null) {
             return null;
         }
 
-        SpriteSheet.Add(tile);
-        return tile;
+        if (SpriteSheet.dict.TryGetValue(id, out var exist) && 
+            exist.texture.width == tile.texture.width &&
+            exist.texture.height == tile.texture.height) {
+            return exist;
+        }
+
+        return SpriteSheet.dict[tile.name] = tile;
     }
 }

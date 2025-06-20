@@ -86,8 +86,7 @@
             <Private>False</Private>
         </Reference>
         <Reference Include="mscorlib">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\mscorlib.dll</HintPath>
-            <Private>False</Private>
+          <HintPath>$(ElinGamePath)\Elin_Data\Managed\mscorlib.dll</HintPath>
         </Reference>
         <Reference Include="netstandard">
             <HintPath>$(ElinGamePath)\Elin_Data\Managed\netstandard.dll</HintPath>
@@ -353,6 +352,7 @@
         <Compile Include="Patches\Elements\MergeAttackElementPatch.cs" />
         <Compile Include="Patches\Elements\SafeCreateElementPatch.cs" />
         <Compile Include="Patches\Elements\SetElementRowPatch.cs" />
+        <Compile Include="Patches\Elements\SafeValueBonusPatch.cs" />
         <Compile Include="Patches\GameSaveLoad\GameLoadEvent.cs" />
         <Compile Include="Patches\GameSaveLoad\GameSaveEvent.cs" />
         <Compile Include="Patches\GameSaveLoad\SafeResolveTypePatch.cs" />
