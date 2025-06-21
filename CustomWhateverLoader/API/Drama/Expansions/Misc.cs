@@ -33,7 +33,7 @@ public partial class DramaExpansion
         parameters.RequiresOpt(out var alias, out var power);
         dm.RequiresActor(out var actor);
 
-        actor.AddElement(alias.Get(""), power.Get("1").AsInt(1));
+        actor.AddElement(alias.Get(""), power.AsInt(1));
 
         return true;
     }

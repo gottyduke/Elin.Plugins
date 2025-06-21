@@ -88,7 +88,7 @@ public partial class DramaExpansion
             return false;
         }
 
-        var duration = optDuration.Get("1f").AsFloat(1f);
+        var duration = optDuration.AsFloat(1f);
         actor.ShowEmo(emote, duration, false);
 
         return true;

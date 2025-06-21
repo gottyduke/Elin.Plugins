@@ -1,5 +1,6 @@
 ﻿using System;
 using Cwl.Helper.Exceptions;
+using Cwl.Helper.Extensions;
 
 namespace Cwl.API.Drama;
 
@@ -96,6 +97,16 @@ public static class ActionParameterHelper
         public string Get(string fallback)
         {
             return value.IsEmpty(fallback);
+        }
+
+        public int AsInt(int fallback = 0)
+        {
+            return value?.AsInt(fallback) ?? fallback;
+        }
+
+        public float AsFloat(float fallback = 0f)
+        {
+            return value?.AsFloat(fallback) ?? fallback;
         }
     }
 }
