@@ -7,16 +7,16 @@ namespace Cwl.Helper.String;
 
 public static class StringHelper
 {
-    public static ArraySegment<char> Capitalize(this ArraySegment<char> input)
+    public static ReadOnlySpan<char> Capitalize(this ReadOnlySpan<char> input)
     {
-        ArraySegment<char> buf = input.ToArray();
+        Span<char> buf = input.ToArray();
         buf[0] = char.ToUpper(buf[0]);
         return buf;
     }
 
-    public static ArraySegment<char> Capitalize(this string input)
+    public static ReadOnlySpan<char> Capitalize(this string input)
     {
-        ArraySegment<char> buf = input.ToCharArray();
+        Span<char> buf = input.ToCharArray();
         buf[0] = char.ToUpper(buf[0]);
         return buf;
     }

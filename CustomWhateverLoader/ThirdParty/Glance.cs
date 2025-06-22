@@ -30,7 +30,7 @@ internal class Glance
         _unavailable = _glance == null;
     }
 
-    private static ArraySegment<string> PopAll()
+    private static ReadOnlySpan<string> PopAll()
     {
         var current = _queued.ToArray();
         _queued.Clear();

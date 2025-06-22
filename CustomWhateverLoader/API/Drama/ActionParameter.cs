@@ -108,5 +108,15 @@ public static class ActionParameterHelper
         {
             return value?.AsFloat(fallback) ?? fallback;
         }
+
+        public double AsDouble(double fallback = 0d)
+        {
+            return value?.AsDouble(fallback) ?? fallback;
+        }
+
+        public bool AsBool(bool fallback = false)
+        {
+            return value?.AsBool(fallback) ?? fallback;
+        }
     }
 }
