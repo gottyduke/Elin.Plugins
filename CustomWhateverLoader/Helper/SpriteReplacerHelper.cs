@@ -21,7 +21,7 @@ public class SpriteReplacerHelper
             return null;
         }
 
-        if (SpriteSheet.dict.TryGetValue(id, out var exist) && 
+        if (SpriteSheet.dict.TryGetValue(id, out var exist) &&
             exist.texture.width == tile.texture.width &&
             exist.texture.height == tile.texture.height) {
             return exist;

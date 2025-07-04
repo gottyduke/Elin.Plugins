@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cwl.API.Attributes;
-using Cwl.Helper.Exceptions;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
@@ -133,13 +132,8 @@ public partial class CustomChara : Chara
         try {
             chara = CharaGen.Create(id);
             // 23.149 changed beggar to chicken, what noa
-            if (chara.id == "chicken") {
-                throw new BeggarException(id);
-            }
-
+            return chara.id != "chicken";
             // apply tags automatically
-
-            return true;
         } catch (Exception ex) {
             chara?.Destroy();
             chara = null;

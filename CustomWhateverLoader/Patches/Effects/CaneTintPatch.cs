@@ -39,8 +39,8 @@ internal class CaneTintPatch
             return mainColor;
         }
 
-        return effect.caneColorBlend ? 
-            Color.Lerp(mainColor, @override, 0.5f) : 
-            @override;
+        return effect.caneColorBlend
+            ? Color.Lerp(mainColor, @override, 0.5f)
+            : @override;
     }
 }

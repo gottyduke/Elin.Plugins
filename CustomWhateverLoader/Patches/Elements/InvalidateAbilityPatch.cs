@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Cwl.API.Attributes;
 using Cwl.API.Custom;
 using Cwl.LangMod;
 using UnityEngine;
@@ -8,7 +7,6 @@ namespace Cwl.Patches.Elements;
 
 internal class InvalidateAbilityPatch
 {
-    [CwlCharaOnCreateEvent]
     internal static void InvalidateElements(Chara chara)
     {
         var elements = EClass.sources.elements;

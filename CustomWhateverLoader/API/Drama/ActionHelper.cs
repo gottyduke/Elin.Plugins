@@ -94,7 +94,7 @@ public partial class DramaExpansion
         var rumors = Lang.GetDialog("unique", chara.id);
         var hasTopic = rumors.Length > 1 || rumors.TryGet(0, true) != chara.id;
 
-        if (!hasTopic || !dm.customEventsAdded ) {
+        if (!hasTopic || !dm.customEventsAdded) {
             return;
         }
 
