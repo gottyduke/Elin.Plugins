@@ -266,7 +266,6 @@
         <Compile Include="Helper\FileUtil\FileMapping.cs" />
         <Compile Include="Helper\FileUtil\PackageIterator.cs" />
         <Compile Include="Helper\Runtime\DebugSampler.cs" />
-        <Compile Include="Helper\Runtime\Exceptions\BeggarException.cs" />
         <Compile Include="Helper\Runtime\Exceptions\DramaException.cs" />
         <Compile Include="Helper\Runtime\Exceptions\ExceptionProfile.cs" />
         <Compile Include="Helper\Runtime\Exceptions\SourceParseException.cs" />
@@ -341,9 +340,7 @@
         <Compile Include="Patches\Dramas\LoadDramaPatch.cs" />
         <Compile Include="Patches\Dramas\OverlapSoundPatch.cs" />
         <Compile Include="Patches\Dramas\RerouteDramaPatch.cs" />
-        <Compile Include="Patches\Dramas\SyncDramaTextPatch.cs" />
         <Compile Include="Patches\Dramas\SafePlayDramaPatch.cs" />
-        <Compile Include="Patches\Dramas\SafeUpdateDramaPatch.cs" />
         <Compile Include="Patches\Effects\CaneTintPatch.cs" />
         <Compile Include="Patches\Elements\ActPerformEvent.cs" />
         <Compile Include="Patches\Elements\FeatApplyEvent.cs" />
@@ -383,6 +380,7 @@
         <Compile Include="Patches\Sounds\SetBGMOverridePatch.cs" />
         <Compile Include="Patches\Sounds\MergePlaylistPatch.cs" />
         <Compile Include="Patches\Sounds\MoldNamedPlaylistPatch.cs" />
+        <Compile Include="Patches\Sources\BuildLinedListPatch.cs" />
         <Compile Include="Patches\Sources\CellPostProcessPatch.cs" />
         <Compile Include="Patches\Sources\CardOnCreateEvent.cs" />
         <Compile Include="Patches\Sources\ClassCacheThunk.cs" />

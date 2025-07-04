@@ -32,14 +32,15 @@ public class DramaParseLineException(DramaExpansion.ActionCookie cookie, Excepti
         var bookPath = cacheEntry.Value.path.ShortPath();
         var setup = dm.setup;
 
-        var sb = new StringBuilder()
+        return new StringBuilder()
             .AppendLine(inner.Message)
+            .AppendLine()
             .AppendLine($"{setup.person.Name} / {setup.person.chara.id}")
-            .AppendLine(bookPath)
+            .Append(bookPath)
+            .AppendLine(_line.TryGetValue("cwl_row_num", out var line) ? $"#{line}" : "")
             .AppendLine($"{Index("step")} {Index("jump")} {Index("if")} {Index("actor")} {Index("id")}")
-            .AppendLine($"{Index("action")} {Index("param")}");
-
-        return sb.ToString();
+            .AppendLine($"{Index("action")} {Index("param")}")
+            .ToString();
     }
 
     private static string Index(string column)
