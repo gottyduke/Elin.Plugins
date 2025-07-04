@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Cwl.Helper.String;
@@ -17,6 +18,12 @@ public class MonoFrame(string stackFrame)
     }
 
     private static readonly Dictionary<string, MonoFrame> _cached = [];
+
+    private static readonly HashSet<string> _vendorExclusion = [
+        "Elin.",
+        "UnityEngine.",
+        "Plugins.",
+    ];
 
     private bool _parsed;
     public StackFrameType frameType = StackFrameType.Unknown;
@@ -62,7 +69,10 @@ public class MonoFrame(string stackFrame)
 
         DetailedMethodCall = frameType switch {
             StackFrameType.Method or StackFrameType.DynamicMethod
-                when Method is not null => Method.GetAssemblyDetailColor(false),
+                when Method is { DeclaringType: not null } mi
+                => _vendorExclusion.Any(mi.DeclaringType.Assembly.ManifestModule.Name.StartsWith)
+                    ? mi.GetDetail(false)
+                    : mi.GetAssemblyDetailColor(false),
             _ => SanitizedMethodCall,
         };
 
@@ -73,23 +83,24 @@ public class MonoFrame(string stackFrame)
     [SwallowExceptions]
     public MethodInfo? ExtractMethod()
     {
-        if (!TryParseDynamicMethod(SanitizedMethodCall, out var typeName, out var methodName)) {
-            return ParseNormalMethod(SanitizedMethodCall, ParseParameters(SanitizedParameters));
-        }
-
-        var index = SanitizedParameters.IndexOf(',');
-        var reparsePacks = index >= 0
-            ? SanitizedParameters[(index + 1)..]
-            : "";
-        return CachedMethods.GetCachedMethod(typeName, methodName, ParseParameters(reparsePacks));
+        var parameters = ParseParameters(SanitizedParameters);
+        return !TryParseDynamicMethod(SanitizedMethodCall, out var typeName, out var methodName)
+            ? ParseNormalMethod(SanitizedMethodCall, parameters)
+            : CachedMethods.GetCachedMethod(typeName, methodName, parameters) ??
+              CachedMethods.GetCachedMethod(typeName, methodName, parameters[1..]);
     }
 
     public string[] SanitizeFrame()
     {
-        var raw = stackFrame.Replace("(wrapper dynamic-method) ", "").Replace(" at ", "");
+        var raw = Regex.Replace(stackFrame, @"\(wrapper[^\)]*\)\s", "").Replace(" at ", "");
         var parts = raw.Split('(', 2, StringSplitOptions.RemoveEmptyEntries);
 
-        SanitizedMethodCall = parts[0].TrimStart();
+        SanitizedMethodCall = parts[0].Trim();
+        var seg = parts[1].LastIndexOf(')');
+        if (seg != -1) {
+            parts[1] = parts[1][..seg];
+        }
+
         SanitizedParameters = parts[1].Trim('(', ')', ' ');
 
         return parts;
@@ -98,10 +109,13 @@ public class MonoFrame(string stackFrame)
     [SwallowExceptions]
     private static Type[] ParseParameters(string parameters)
     {
+        if (parameters.IsEmpty()) {
+            return [];
+        }
+
         List<Type> paramTypes = [];
-        var paramStrings = parameters.Split(',', StringSplitOptions.RemoveEmptyEntries);
-        foreach (var paramStr in paramStrings) {
-            var type = TypeQualifier.GlobalResolve(paramStr);
+        foreach (var paramStr in TypeQualifier.SplitParameters(parameters)) {
+            var type = TypeQualifier.GlobalResolve(paramStr.Trim());
             if (type is not null) {
                 paramTypes.Add(type);
             }

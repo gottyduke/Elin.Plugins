@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using System.Reflection.Emit;
 using Cwl.API.Drama;
+using Cwl.Helper.Exceptions;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
 using HarmonyLib;
@@ -15,8 +18,12 @@ internal class DramaExpansionPatch
         return CwlConfig.ExpandedActions;
     }
 
+    internal static MethodBase TargetMethod()
+    {
+        return AccessTools.Method(typeof(DramaManager), nameof(DramaManager.ParseLine));
+    }
+
     [HarmonyTranspiler]
-    [HarmonyPatch(typeof(DramaManager), nameof(DramaManager.ParseLine))]
     internal static IEnumerable<CodeInstruction> OnParseActionIl(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
         return new CodeMatcher(instructions, generator)
@@ -34,9 +41,22 @@ internal class DramaExpansionPatch
             .InstructionEnumeration();
     }
 
+    [HarmonyFinalizer]
+    internal static Exception? RethrowParseLine(Exception? __exception)
+    {
+        if (__exception is not null && DramaExpansion.Cookie is { } cookie) {
+            __exception = new DramaParseLineException(cookie, __exception);
+        }
+
+        return __exception;
+    }
+
     [SwallowExceptions]
     private static bool ExternalInvoke(DramaManager __instance, Dictionary<string, string> item)
     {
+        //! cookie must be set first to share parse state between patches
+        DramaExpansion.Cookie = new(__instance, item);
+
         if (!item.TryGetValue("action", out var action) ||
             action is not ("invoke*" or "inject" or "i*")) {
             return false;

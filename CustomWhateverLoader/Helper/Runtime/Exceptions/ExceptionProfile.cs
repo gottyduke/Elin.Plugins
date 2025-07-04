@@ -40,7 +40,7 @@ public class ExceptionProfile(string stackTrace)
 
     public static ExceptionProfile GetFromStackTrace(Exception exception)
     {
-        return GetFromStackTrace(Regex.Replace(exception.StackTrace, @"^(\s+at\s)", ""));
+        return GetFromStackTrace(Regex.Replace(exception.StackTrace.IsEmpty(""), @"^(\s+at\s)", ""));
     }
 
     public void CreateAndPop(string message)

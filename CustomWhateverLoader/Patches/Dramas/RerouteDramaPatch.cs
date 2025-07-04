@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection.Emit;
 using Cwl.API.Custom;
 using Cwl.API.Drama;
-using Cwl.Helper.Exceptions;
-using Cwl.Helper.Unity;
-using Cwl.LangMod;
 using HarmonyLib;
 
 namespace Cwl.Patches.Dramas;
@@ -42,18 +38,8 @@ internal class RerouteDramaPatch
             return false;
         }
 
-        try {
-            DramaExpansion.Clear();
-
-            chara.ShowDialog(drama);
-        } catch (Exception ex) {
-            ELayerCleanup.Cleanup<LayerDrama>();
-
-            var exp = ExceptionProfile.GetFromStackTrace(ex);
-            exp.StartAnalyzing();
-            exp.CreateAndPop("cwl_error_failure".Loc(ex.Message));
-            // noexcept
-        }
+        DramaExpansion.Clear();
+        chara.ShowDialog(drama);
 
         return true;
     }

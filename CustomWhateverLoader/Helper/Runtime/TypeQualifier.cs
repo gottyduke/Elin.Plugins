@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using BepInEx;
 using Cwl.LangMod;
@@ -91,12 +92,11 @@ public class TypeQualifier
             return paramType;
         }
 
-        var paramParts = trimmedParam.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        if (paramParts.Length == 0) {
-            return null;
+        if (!trimmedParam.EndsWith('>')) {
+            trimmedParam = trimmedParam.Split(' ', StringSplitOptions.RemoveEmptyEntries)[0];
         }
 
-        var typeName = ProcessStandardGenerics(paramParts[0]);
+        var typeName = ProcessStandardGenerics(trimmedParam);
         if (_aliasMapping.TryGetValue(typeName, out var type)) {
             typeName = typeName.Replace(typeName, type.FullName);
         }
@@ -162,19 +162,19 @@ public class TypeQualifier
         return $"{main}`{arity}[{string.Join(",", processedArgs.Select(a => $"[{a}]"))}]";
     }
 
-    private static IEnumerable<string> SplitGenericArgs(string args)
+    public static IEnumerable<string> SplitGenericArgs(string args)
     {
-        var bracketLevel = 0;
+        var depth = 0;
         var lastSplit = 0;
         for (var i = 0; i < args.Length; ++i) {
             switch (args[i]) {
                 case '[':
-                    bracketLevel++;
+                    depth++;
                     break;
                 case ']':
-                    bracketLevel--;
+                    depth--;
                     break;
-                case ',' when bracketLevel == 0:
+                case ',' when depth == 0:
                     yield return args[lastSplit..(i - lastSplit)];
                     lastSplit = i + 1;
                     break;
@@ -182,6 +182,39 @@ public class TypeQualifier
         }
 
         yield return args[lastSplit..];
+    }
+
+    public static List<string> SplitParameters(string input)
+    {
+        var segments = new List<string>();
+        var current = new StringBuilder();
+        var depth = 0;
+
+        foreach (var c in input) {
+            switch (c) {
+                case '<':
+                    depth++;
+                    current.Append(c);
+                    break;
+                case '>':
+                    depth--;
+                    current.Append(c);
+                    break;
+                case ',' when depth == 0:
+                    segments.Add(current.ToString());
+                    current.Clear();
+                    break;
+                default:
+                    current.Append(c);
+                    break;
+            }
+        }
+
+        if (current.Length > 0) {
+            segments.Add(current.ToString());
+        }
+
+        return segments;
     }
 
     internal static void SafeQueryTypesOfAll()
