@@ -90,6 +90,6 @@ internal sealed partial class CwlMod
 
     private static void LogInternal(object log)
     {
-        UnityEngine.Debug.Log(log.RemoveColorTag());
+        UnityEngine.Debug.Log(log.RemoveTagColor());
     }
 }

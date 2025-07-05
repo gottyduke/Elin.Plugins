@@ -6,6 +6,7 @@ using System.Text;
 using Cwl.API.Migration;
 using Cwl.Helper;
 using Cwl.Helper.Exceptions;
+using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
@@ -50,8 +51,8 @@ internal class RethrowParsePatch
         var sb = new StringBuilder();
 
         if (SourceInitPatch.SafeToCreate && MigrateDetail.CurrentDetail is { } detail) {
-            sb.Append($"<color=#2f2d2d>{detail.Mod!.id}</color> // ");
-            sb.AppendLine($"<color=#7676a7>{detail.CurrentSheet!.Sheet!.SheetName}</color>");
+            sb.Append($"{detail.Mod!.id.TagColor(0x2f2d2d)} // ");
+            sb.AppendLine(detail.CurrentSheet!.Sheet!.SheetName.TagColor(0x7676a7));
         }
 
         var expectedType = __originalMethod.ReturnType.Name;

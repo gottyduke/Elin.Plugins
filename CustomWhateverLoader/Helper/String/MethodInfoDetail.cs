@@ -21,21 +21,21 @@ public static class MethodInfoDetail
     public static string GetAssemblyDetailColor(this MethodInfo methodInfo, bool full = true)
     {
         var decl = methodInfo.DeclaringType!;
-        return $"<color=#7676a7>{decl.Assembly.GetName().Name}</color>::{methodInfo.GetDetail(full)}";
+        return $"{decl.Assembly.GetName().Name.TagColor(0x7676a7)}::{methodInfo.GetDetail(full)}";
     }
 
     public static void AppendPatchInfo(this StringBuilder sb, PatchInfo patchInfo)
     {
         foreach (var patch in patchInfo.prefixes) {
-            sb.AppendLine($"\t<color=#2f2d2d>+PREFIX: {patch.PatchMethod.GetAssemblyDetailColor(false)}</color>");
+            sb.AppendLine($"\t+PREFIX: {patch.PatchMethod.GetAssemblyDetailColor(false)}".TagColor(0x2f2d2d));
         }
 
         foreach (var patch in patchInfo.postfixes) {
-            sb.AppendLine($"\t<color=#2f2d2d>+POSTFIX: {patch.PatchMethod.GetAssemblyDetailColor(false)}</color>");
+            sb.AppendLine($"\t+POSTFIX: {patch.PatchMethod.GetAssemblyDetailColor(false)}".TagColor(0x2f2d2d));
         }
 
         foreach (var patch in patchInfo.transpilers) {
-            sb.AppendLine($"\t<color=#2f2d2d>+TRANSPILER: {patch.PatchMethod.GetAssemblyDetailColor(false)}</color>");
+            sb.AppendLine($"\t+TRANSPILER: {patch.PatchMethod.GetAssemblyDetailColor(false)}".TagColor(0x2f2d2d));
         }
     }
 }
