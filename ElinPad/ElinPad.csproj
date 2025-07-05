@@ -1,0 +1,702 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"
+            Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"/>
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{A504BEE4-AD1F-BEEB-BEEA-70E3DFE162FE}</ProjectGuid>
+        <OutputType>Library</OutputType>
+        <RootNamespace>ElinPad</RootNamespace>
+        <AssemblyName>ElinPad</AssemblyName>
+        <ReferencePath>$(ElinGamePath)/Elin_Data/Managed</ReferencePath>
+        <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+        <LangVersion>preview</LangVersion>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>$(ElinGamePath)\Package\Mod_$(AssemblyName)\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>$(ElinGamePath)\Package\Mod_$(AssemblyName)\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="0Harmony">
+            <HintPath>$(ElinGamePath)\BepInEx\core\0Harmony.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Accessibility">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Accessibility.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="AeLa.EasyFeedback">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\AeLa.EasyFeedback.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="AeLa.EasyFeedback.Demo">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\AeLa.EasyFeedback.Demo.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Assembly-CSharp">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Assembly-CSharp.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Assembly-CSharp-firstpass">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="BepInEx.Core">
+            <HintPath>$(ElinGamePath)\BepInEx\core\BepInEx.Core.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="BepInEx.Unity">
+            <HintPath>$(ElinGamePath)\BepInEx\core\BepInEx.Unity.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="ClassLibrary2">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\ClassLibrary2.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="com.rlabrecque.steamworks.net">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\com.rlabrecque.steamworks.net.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="DemiLib">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\DemiLib.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="DOTween">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\DOTween.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="DOTweenPro">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\DOTweenPro.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Elin">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Elin.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Heathen.Core">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Heathen.Core.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Heathen.Steamworks">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Heathen.Steamworks.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="ICSharpCode.SharpZipLib">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\ICSharpCode.SharpZipLib.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="INIFileParser">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\INIFileParser.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Ionic.Zip.Unity">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Ionic.Zip.Unity.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="LZ4">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\LZ4.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Mono.Data.Sqlite">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Mono.Data.Sqlite.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Mono.Posix">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Mono.Posix.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Mono.Security">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Mono.Security.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Mono.WebBrowser">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Mono.WebBrowser.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="mscorlib">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\mscorlib.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="NaturalStringExtensions">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\NaturalStringExtensions.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="netstandard">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\netstandard.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Newtonsoft.Json">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Newtonsoft.Json.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Novell.Directory.Ldap">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Novell.Directory.Ldap.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="NPOI">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\NPOI.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="NPOI.OOXML">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\NPOI.OOXML.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="NPOI.OpenXml4Net">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\NPOI.OpenXml4Net.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="NPOI.OpenXmlFormats">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\NPOI.OpenXmlFormats.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Ookii.Dialogs">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Ookii.Dialogs.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Plugins">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Plugins.ActorSystem">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.ActorSystem.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Plugins.BaseCore">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.BaseCore.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Plugins.Calc">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.Calc.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Plugins.Dungen">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.Dungen.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Plugins.NameGen">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.NameGen.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Plugins.NoiseSystem">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.NoiseSystem.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Plugins.Sound">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.Sound.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Plugins.Tween">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.Tween.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Plugins.UI">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.UI.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Plugins.Util">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.Util.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Pluralize.NET">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Pluralize.NET.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="PrecisionCats">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\PrecisionCats.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Reflex">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Reflex.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Sirenix.OdinInspector.Attributes">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Sirenix.OdinInspector.Attributes.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System"/>
+        <Reference Include="System.ComponentModel.Composition">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\System.ComponentModel.Composition.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System.ComponentModel.DataAnnotations">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\System.ComponentModel.DataAnnotations.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System.Configuration">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\System.Configuration.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System.Core"/>
+        <Reference Include="System.Data">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\System.Data.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System.Data.DataSetExtensions">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\System.Data.DataSetExtensions.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System.Design">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\System.Design.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System.DirectoryServices">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\System.DirectoryServices.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System.Drawing">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\System.Drawing.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System.Drawing.Design">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\System.Drawing.Design.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System.EnterpriseServices">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\System.EnterpriseServices.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System.Memory">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\System.Memory.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System.Numerics">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\System.Numerics.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System.Runtime.Serialization">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\System.Runtime.Serialization.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System.Runtime.Serialization.Formatters.Soap">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\System.Runtime.Serialization.Formatters.Soap.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System.Security">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\System.Security.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System.ServiceModel.Internals">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\System.ServiceModel.Internals.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System.Transactions">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\System.Transactions.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System.Web">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\System.Web.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System.Web.ApplicationServices">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\System.Web.ApplicationServices.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System.Web.Services">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\System.Web.Services.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System.Xml">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\System.Xml.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="System.Xml.Linq">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\System.Xml.Linq.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UniTask">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UniTask.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UniTask.Addressables">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UniTask.Addressables.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UniTask.DOTween">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UniTask.DOTween.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UniTask.Linq">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UniTask.Linq.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UniTask.TextMeshPro">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UniTask.TextMeshPro.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Unity.Mathematics">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Unity.Mathematics.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="Unity.TextMeshPro">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Unity.TextMeshPro.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.AccessibilityModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.AccessibilityModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.AIModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.AIModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.AndroidJNIModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.AndroidJNIModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.AnimationModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.ARModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.ARModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.AssetBundleModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.AudioModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.ClothModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.ClothModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.ClusterInputModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.ClusterInputModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.ClusterRendererModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.ClusterRendererModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.CoreModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.CrashReportingModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.CrashReportingModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.DirectorModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.DirectorModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.DSPGraphModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.DSPGraphModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.GameCenterModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.GameCenterModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.GIModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.GIModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.GridModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.GridModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.HotReloadModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.HotReloadModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.ImageConversionModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.IMGUIModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.InputLegacyModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.InputModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.InputModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.JSONSerializeModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.JSONSerializeModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.LocalizationModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.LocalizationModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.NVIDIAModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.NVIDIAModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.ParticleSystemModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.PerformanceReportingModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.PerformanceReportingModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.Physics2DModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.Physics2DModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.PhysicsModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.ProfilerModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.ProfilerModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.ScreenCaptureModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.ScreenCaptureModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.SharedInternalsModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.SharedInternalsModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.SpriteMaskModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.SpriteMaskModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.SpriteShapeModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.SpriteShapeModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.StreamingModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.StreamingModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.SubstanceModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.SubstanceModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.SubsystemsModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.SubsystemsModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.TerrainModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.TerrainModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.TerrainPhysicsModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.TerrainPhysicsModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.TextCoreFontEngineModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.TextCoreFontEngineModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.TextCoreTextEngineModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.TextCoreTextEngineModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.TextRenderingModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.TilemapModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.TilemapModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.TLSModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.TLSModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.UI">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UI.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.UIElementsModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UIElementsModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.UIElementsNativeModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UIElementsNativeModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.UIModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.UmbraModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UmbraModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.UNETModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UNETModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.UnityAnalyticsCommonModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UnityAnalyticsCommonModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.UnityAnalyticsModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UnityAnalyticsModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.UnityConnectModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UnityConnectModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.UnityCurlModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UnityCurlModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.UnityTestProtocolModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UnityTestProtocolModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.UnityWebRequestAudioModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.UnityWebRequestModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.UnityWebRequestTextureModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.UnityWebRequestWWWModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.VehiclesModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.VehiclesModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.VFXModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.VFXModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.VideoModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.VideoModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.VirtualTexturingModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.VirtualTexturingModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.VRModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.VRModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.WindModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.WindModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="UnityEngine.XRModule">
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.XRModule.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="API\Event\IPadEventHandler.cs"/>
+        <Compile Include="API\Event\PadEventType.cs"/>
+        <Compile Include="API\IIteratorContext.cs"/>
+        <Compile Include="API\IScriptRef.cs"/>
+        <Compile Include="API\IUiAnchor.cs"/>
+        <Compile Include="API\PadAxisState.cs"/>
+        <Compile Include="API\PadButtonState.cs"/>
+        <Compile Include="API\Route\IPadRoute.cs"/>
+        <Compile Include="API\Scheme\IPadLayeredScheme.cs"/>
+        <Compile Include="API\Scheme\IPadMapping.cs"/>
+        <Compile Include="API\Scheme\IPadScheme.cs"/>
+        <Compile Include="Components\PadController.cs"/>
+        <Compile Include="Components\PadEventManager.cs"/>
+        <Compile Include="Components\PadTrackInput.cs"/>
+        <Compile Include="ElinPad\Config.cs"/>
+        <Compile Include="ElinPad\Debug.cs"/>
+        <Compile Include="ElinPad\Logger.cs"/>
+        <Compile Include="ElinPad\ElinPad.cs"/>
+        <Compile Include="Implementation\Event\PadAxisEventArgs.cs"/>
+        <Compile Include="Implementation\Event\PadButtonEventArgs.cs"/>
+        <Compile Include="Implementation\Event\PadEventArgs.cs"/>
+        <Compile Include="Implementation\IteratorContext.cs"/>
+        <Compile Include="Implementation\Scheme\ControlScheme.cs"/>
+        <Compile Include="Implementation\Scheme\LayeredScheme.cs"/>
+        <Compile Include="Implementation\ScriptRef.cs"/>
+        <Compile Include="Implementation\SkinnableScriptRef.cs"/>
+        <Compile Include="Implementation\UiAnchor.cs"/>
+        <Compile Include="Native\Gamepad.cs"/>
+        <Compile Include="Native\GamepadIndex.cs"/>
+        <Compile Include="Native\GamepadState.cs"/>
+        <Compile Include="Native\GamepadButton.cs"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\CustomWhateverLoader\CustomWhateverLoader.csproj">
+            <Project>{a504bee4-ad1f-4657-81fa-bbddbbddaabb}</Project>
+            <Name>CustomWhateverLoader</Name>
+            <Private>False</Private>
+        </ProjectReference>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="MethodTimer.Fody" Version="3.2.3">
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.183">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="PolySharp" Version="1.15.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="SwallowExceptions.Fody" Version="1.0.1">
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="FodyWeavers.xml"/>
+        <AdditionalFiles Include="Native\NativeMethods.json"/>
+        <AdditionalFiles Include="Native\NativeMethods.txt"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="LangMod\CN\"/>
+        <Folder Include="LangMod\EN\"/>
+        <Folder Include="Patches\LayerAnchor\"/>
+    </ItemGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
+    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+           Other similar extension points exist, see Microsoft.Common.targets.
+      <Target Name="BeforeBuild">
+      </Target>
+      <Target Name="AfterBuild">
+      </Target>
+      -->
+</Project>

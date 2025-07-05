@@ -23,7 +23,7 @@ internal sealed partial class ElinPad
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Debug(object payload, [CallerMemberName] string caller = "")
     {
-        if (!PadConfig.LoggingVerbose) {
+        if (!EpConfig.DebuggingVerbose) {
             return;
         }
 
@@ -32,7 +32,6 @@ internal sealed partial class ElinPad
 
     internal static void Debug<T>(object payload, [CallerMemberName] string caller = "")
     {
-
         Debug($"[{typeof(T).Name}] {payload}", caller);
     }
 
@@ -88,6 +87,6 @@ internal sealed partial class ElinPad
 
     private static void LogInternal(object log)
     {
-        UnityEngine.Debug.Log(log.RemoveColorTag());
+        UnityEngine.Debug.Log(log.RemoveTagColor());
     }
 }

@@ -293,7 +293,6 @@
         <Compile Include="Helper\String\PathTruncation.cs" />
         <Compile Include="Helper\Unity\AudioClipStream.cs" />
         <Compile Include="Helper\Unity\ChildrenIterator.cs" />
-        <Compile Include="Helper\Unity\ColorParser.cs" />
         <Compile Include="Helper\Unity\ContextMenuHelper.cs" />
         <Compile Include="Helper\Unity\CoroutineHelper.cs" />
         <Compile Include="Helper\Unity\DeferredCoroutine.cs" />
@@ -380,7 +379,6 @@
         <Compile Include="Patches\Sounds\SetBGMOverridePatch.cs" />
         <Compile Include="Patches\Sounds\MergePlaylistPatch.cs" />
         <Compile Include="Patches\Sounds\MoldNamedPlaylistPatch.cs" />
-        <Compile Include="Patches\Sources\BuildLinedListPatch.cs" />
         <Compile Include="Patches\Sources\CellPostProcessPatch.cs" />
         <Compile Include="Patches\Sources\CardOnCreateEvent.cs" />
         <Compile Include="Patches\Sources\ClassCacheThunk.cs" />
@@ -404,8 +402,14 @@
         <Content Include="LangMod\CN\cwl_sources.xlsx">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+        <Content Include="LangMod\CN\Text\Help\help.txt">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
         <Content Include="LangMod\EN\cwl_sources.xlsx">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="LangMod\EN\Text\Help\help.txt">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
     <ItemGroup>

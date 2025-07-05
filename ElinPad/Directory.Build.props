@@ -1,0 +1,7 @@
+<Project>
+    <PropertyGroup>
+        <PolySharpExcludeGeneratedTypes>
+            System.Runtime.CompilerServices.OverloadResolutionPriorityAttribute
+        </PolySharpExcludeGeneratedTypes>
+    </PropertyGroup>
+</Project>

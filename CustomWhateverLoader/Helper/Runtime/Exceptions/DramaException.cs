@@ -28,16 +28,15 @@ public class DramaParseLineException(DramaExpansion.ActionCookie cookie, Excepti
         var dm = cookie.Dm;
 
         var cacheEntry = DramaManager.dictCache
-            .LastOrDefault(kv => kv.Key.EndsWith($"{dm.setup.book}.xlsx", StringComparison.Ordinal));
-        var bookPath = cacheEntry.Value.path.ShortPath();
+            .LastOrDefault(kv => kv.Key.EndsWith($"{dm.setup.book}.xlsx", StringComparison.Ordinal)).Value;
+        var bookPath = cacheEntry.path.ShortPath();
         var setup = dm.setup;
 
         return new StringBuilder()
             .AppendLine(inner.Message)
             .AppendLine()
             .AppendLine($"{setup.person.Name} / {setup.person.chara.id}")
-            .Append(bookPath)
-            .AppendLine(_line.TryGetValue("cwl_row_num", out var line) ? $"#{line}" : "")
+            .AppendLine($"{bookPath}#{dm.countLine + cacheEntry.startIndex}")
             .AppendLine($"{Index("step")} {Index("jump")} {Index("if")} {Index("actor")} {Index("id")}")
             .AppendLine($"{Index("action")} {Index("param")}")
             .ToString();

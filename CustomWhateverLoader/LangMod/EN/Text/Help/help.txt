@@ -1,0 +1,270 @@
+{image,CWL_banner_en}
+
+
+
+
+
+
+{image,CWL_real}
+
+
+
+
+
+
+
+
+
+
+
+{topic|1.20.38}
+Added verbose exception handler for drama sheet parsing
+Fixed wrong line number was ordered first in the build list
+
+{topic|1.20.37}
+Added OptParam.AsT cast, to simplify previous Get.AsT value parsing
+Fixed a problem where BGM added were not shown in correct name but type name
+
+{topic|1.20.36}
+ElementContainer.ValueBonus fix is now only enabled for game versions prior than 0.23.154, since Elin has integrated the fix afterwards
+Optimized unique dialog inject logic in drama sheets
+Added extra check in InvalidateAbilityPatch but dunno what mod is causing it
+
+{topic|1.20.35}
+Added a fix for ElementContainer.ValueBonus where game hasn't been created yet
+
+{topic|1.20.34}
+Added a fix for mod elements that have changed IDs (it's bad, don't do it)
+Fixed a bug where DNA reversal weren't taken into consideration when purging
+
+{topic|1.20.33}
+Fixed vacate_beggar command for removal of chicken
+Fixed the issue where custom playlist failed to deduplicate from gramophone insertion
+Added better localization support for drama sheet, you can now use text_XX to localize in the same sheet where XX is the lang code, such as text_ZHTW
+Optimized custom sound loading logic
+
+{topic|1.20.31}
+Applied minor changes in stable 152
+Optimized exception profile parsing for generic methods
+Added support for <sound=soundId,chance> tag in CharaText entries for audible barks
+Changed tape to drop a random entry from current playlist instead of first one
+Added a context menu entry for adding current playlist into known BGM list
+Adjusted context menu entries
+
+{topic|1.20.30}
+Applied new playlist naming
+Added support for more zone playlist overrides
+Changed the Let's Talk in nightly 149 to be always available for modded characters with unique texts
+Added support for caching GetDialog/HasTopic talk textx, optional
+
+{topic|1.20.28}
+Added support for forcing tag noCopy on Thing, requires element purity/40
+Added cwl.spawn command for tagged character creation
+
+{topic|1.20.27}
+Drama Expansion:
++ Added equip_item(id, material, lv)
+Added support for restoring modded character data, optional
+Applied new changes in nightly 149 from beggar to chicken
+Applied nwe changes in nightly 149 Let's Talk condition
+
+{topic|1.20.26}
+Fixed a duplicate Let's Talk option introduced in nightly 148
+Improved SourceParseException details
+
+{topic|1.20.25}
+Drama Expansion:
++ Fixed compound statements
++ Improved mod_flag logic and sound effects
+Exception Profile:
++ Improved the UI hints text
++ Added color to mod assembly patch info
+
+{topic|1.20.24}
+Fixed a bug where optional parameter might not be accounted for in drama expansion
+Added Caching.Types config value for ClassCache.CreateThunk patch
+
+{topic|1.20.23}
+Drama Expansion:
++ Added if_currency(currency, valueExpression)
++ Added if_fame(valueExpression)
++ Added mod_currency(currency, valueExpression)
++ Added mod_fame(valueExpression)
++ Changed portrait_set(partial portraitId) now it supports partial portrait ID matching
+Fixed a bug where SourceStat and SourceElement data might lose their qualified types from de-duplication
+Added a toggle config value for RepositionTcPatch
+Added support for multiline-wrap in dialog choice buttons
+Added extensive drama actor support for other Chara
+
+{topic|1.20.19}
+Drama Expansion:
++ Renamed add_element to mod_element.
++ Added mod_element_exp(elementAlias, valueExpression).
++ Added show_book(bookId, categoryId).
+Fixed a potential bug with Zone_id importing where characters might get duplicated on certain zones.
+Fixed a bug where bio override wasn't enabled (whoops).
+Added a scaled TcPos adjustment to custom skin renderers to fix vanilla bug where bubble and icons would display way above.
+
+{topic|1.20.17}
+Drama Expansion:
++ Added add_element(elementAlias, optional power).
++ Added mod_keyitem(keyItemId, optional valueExpression).
++ Added if_keyitem(keyItemId, optional valueExpression).
++ Added move_next_to(charaId).
++ Added pop_text(text).
+
+{topic|1.20.16}
+Fixed a bug where custom skin renderer would get position re-adjusted.
+
+{topic|1.20.15}
+Fixed a vanilla bug where characters with @chara tiles will have the bark bubble shown way above their heads. 
+Fixed a vanilla bug where characters with @chara tiles will have the emoticons shown way above their heads. 
+
+{topic|1.20.14}
+Drama Expansion:
++ Added if_element(elementAlias, valueExpression).
++ Renamed if_location to if_zone.
+EffectSetting.guns:
++ Added CaneColor, CaneColorBlend to the data spec.
++ Renamed SpriteId to IdSprite. This change is backwards compatible.
+
+{topic|1.20.12}
+Added if_faith(religionId, optional giftRank) drama expansion method.
+Added support for auto syncing texts between text, text_JP, and text_EN.
+
+{topic|1.20.11}
+Fixed a bug when exiting to main menu that might cause BGM refresh to throw.
+Added support for Zone alias usage in addZone_ tags, also with /n to designate levels.
+Added more drama expansion methods and safety patch.
+
+{topic|1.20.8}
+Added support for god_talks.xlsx merging with overwrites.
+Added support for dialog.xlsx merging with overwrites.
+Fixed a bug if sprite file path is null when using SpriteCreator.
+Fixed(?) a CustomConverter bug that products don't convert.
+Fixed a source parsing bug if Chara sheet contains empty trait and empty defaults.
+Fixed a material/obj mapping bug if -1 default index is used by game.
+Fixed DebugSampler using constrained calls with pos 0 insertion.
+Cleaned up some codes.
+Fixed a material bug that happens with dark matter.
+
+{topic|1.20}
+Added detailed tooltip for feats from custom religions.
+Added reflection attribute [CwlContextMenu] for automatic registration of system menu entries.
+{link|Elin Modding Wiki Link|https://elin-modding-resources.github.io/Elin.Docs/articles/100_Mod%20Documentation/Custom%20Whatever%20Loader/EN/API/unity#cwlcontextmenu}.
+Added runtime API MethodStubHelper, MethodStub to assist in generating runtime stubs.
+{link|Elin Modding Wiki Link|https://elin-modding-resources.github.io/Elin.Docs/articles/100_Mod%20Documentation/Custom%20Whatever%20Loader/EN/API/runtime#methodstubhelper}.
+Added runtime API DebugSampler and console commands for performance analysis of runtime methods.
+・cwl.stub.attach typeName methodName [nested:true/false]
+・cwl.stub.detach
+・cwl.stub.clear
+・cwl.stub.dump
+Reworked CustomConverter API, added CWL event _OnProduce, allowing the use of custom traits.
+Added "close and do not show" button for the exception analyzer.
+Optimized the caching code for element fuzzy lookup.
+Added support for the custom character flag "StayHomeZone" to keep custom characters in the home zone. 
+The flag value can be modified in the drama sheet.
+Fixed a bug that causes product duplication from CustomConverter API.
+Added localization text for CustomConverter API context menu entry.
+
+{topic|1.19}
+BGM update! Now you can freely add new BGMs into the game, and define your zone specific playlist.
+Some fixes.
+Fixed a bug after game update in quest board display.
+Added seamless streaming for current playing BGM if it's also in the new playlist when switching. Configurable.
+Added a popup display after CWL handles exceptions. 
+Fixed a bug lot specific playlist didn't reset after leaving lot room.
+Fixed a bug where unique chat option was inserted for NPCs that don't have unique dialogs.
+Disabled playlist streaming when new playlist is blank (game intends to stop BGM).
+Fixed a bug where playlists of the same zone may end up using same ambiguous cache key. 
+If mod author used invalid zone types, CWL will prompt on creation and use random zone instead.
+Stream load the BGM clips to reduce load time.
+Fixed a bug where lot specific playlist didn't use unique cache key.
+Added a new tag "forceRarity" for Thing rows that uses a category with "fixedRarity" which defaults the rarity to normal.
+Changed the restock event to pre-post patch from transpiler because some mods may intentionally skip the original method (BAD!) and cause CWL stocks to not get executed.
+Added two new tags "fixedElement" and "randomElement" to override the element source value for Thing generation.
+Added exception analyzer.
+Added support for faction elements / god artifacts of custom religions.
+Added error ignore for certain mods that were compiled with invalid dependencies. Such as, Adventure Creator which has UnityEditor dependency.
+Reworked CustomMerchant API, added supoort for "Identified" field in stock file.
+Added support for custom converter to allow modders turn containers into custom converter akin to brewery barrel/drying rack.
+Added a new custom chara portrait repositioner for Home Boards.
+Fixed a bug where conversion products didn't stack correctly.
+Fixed a bug where custom merchant stocks didn't fit the container size automatically.
+Added new CustomChara API helper & fixed a bug where gun as equip entry didn't get added correctly. 
+Added row deduplication patch, configurable.
+Added new modded Material reverse indexer patch.
+Fixed a bug where item creation didn't adhere to the Rarity setting.
+
+{topic|1.18}
+Add support for spawning character in multiple zones.
+Drama action expansion! Modders can now invoke external methods within the drama sheet.
+Add Mod Help integration.
+For now, CWL does not use noa's new toy RegisterSerializeFallback, because it doesn't achieve what CWL's type resolver can do.
+Add modded material row indexing workaround because of noa's code.
+Add progress info during background loading of sound data.
+Add new drama action: change portrait for dialog actors.
+Add new CWL attributes for reflection API.
+<b>Fixed a bug where noa does not reset Thing data after importing ThingV which makes Thing data dirty.</b>
+Fixed the sourcesheet import order of new 23.78 Nightly.
+Fixed a dialog soft lock issue after updating.
+Fixed a possible exception when querying external mod events.
+
+{topic|1.17}
+Added custom Zone type safe load & post cleanups.
+Normalize sound id path.
+Remove ldind.ref from ref vars.
+Add god ability trigger for custom religions.
+Fix material color parsing with RGBA bits.
+Prevent duplicate injection on Dialog.InternalSoundStopper.
+Regular cleanups.
+Zone safeload.
+
+{topic|1.16}
+Added dialog sound qol patch & custom drama tagging.
+Add Card.HashKey to prevent dictionary collision.
+Allow custom bio parents with alias.
+Fix custom bio syncing issue.
+Fix custom religion chunks out of sync bug.
+Raise GameLoad event when starting new game.
+Add custom bio tag for Chara.
+Disable Zone_Dungeon as home zone option.
+Add method dispatchers.
+Resizer for feat icon (32x32).
+Caching of various internal operations.
+Set custom Eq/Thing to identified.
+Change sprite creator cache target to texture based.
+Add drama tagging & support for multiple sound formats.
+
+{topic|1.15}
+Added support for custom merchant stock.
+{topic|1.14}
+Added pattern matching for sprite replacers & Allow manual purging of faulty elements.
+{topic|1.13}
+Added support for custom material, lots of safe loading optimizations.
+{topic|1.12}
+Added support for custom abilities and spells.
+{topic|1.11}
+Fixed a cryptic bug where CWL attempts to do its funny things for other mods.
+{topic|1.10}
+Added support for custom religion imports and custom religion/domain/faction portraits.
+{topic|1.9}
+Added auto detection for incompatible source sheets and sheet header realignment. Configurable.
+{topic|1.8}
+Added custom adventurer tagging for equipment/things.
+{topic|1.7}
+Set EN as 1st fallback language.
+{topic|1.6}
+Added support for custom adventurer related imports and dialog.xlsx merging.
+{topic|1.5}
+API refactor.
+{topic|1.4}
+Added source sheet imports with localization support.
+{topic|1.3}
+Fixed BGMData.Part duplicating first entry.
+{topic|1.2}
+Added support for custom sounds.
+{topic|1.1}
+Added support for book texts.
+{topic|1.0}
+Added support for dialogs/drama sheets.
