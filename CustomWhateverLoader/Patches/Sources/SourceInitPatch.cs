@@ -37,8 +37,7 @@ internal class SourceInitPatch
 
         SafeToCreate = true;
         try {
-            var imports = PackageIterator.GetLangModFilesFromPackage()
-                .SelectMany(d => d.GetFiles(Pattern, SearchOption.TopDirectoryOnly))
+            var imports = PackageIterator.GetSourcesFromPackage()
                 .Where(f => !f.Name.StartsWith("cwl_") && !f.Name.Contains("~$"));
             HashSet<SourceData> dirty = [EMono.sources.elements, EMono.sources.materials];
 

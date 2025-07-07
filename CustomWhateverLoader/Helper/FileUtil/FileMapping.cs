@@ -8,6 +8,7 @@ public class FileMapping
 {
     private static readonly List<FallbackRule> _fallbacks = [
         new("ZHTW", "CN"),
+        new("CN", "ZHTW"),
         new("*", "EN"),
     ];
 
@@ -17,12 +18,17 @@ public class FileMapping
     public FileMapping(ModPackage owner, string langCode = "EN")
     {
         Owner = owner;
+        Sources = [];
         RebuildLangModMapping(langCode);
     }
 
     public bool Mounted => Primary?.Exists ?? false;
     public ModPackage Owner { get; init; }
+
     public DirectoryInfo? Primary { get; private set; }
+
+    // primary dir with source sheets
+    public IEnumerable<FileInfo> Sources { get; private set; }
 
     public DirectoryInfo ModBaseDir => Owner.dirInfo;
 
@@ -52,6 +58,20 @@ public class FileMapping
         _indexed.AddRange(indexed);
         if (_indexed.Count > 0) {
             Primary = new(_indexed[0]);
+        }
+
+        if (!Mounted) {
+            return;
+        }
+
+        foreach (var index in _indexed) {
+            var sources = Directory.GetFiles(index, "*.xlsx", SearchOption.TopDirectoryOnly);
+            if (sources.Length == 0) {
+                continue;
+            }
+
+            Sources = sources.Select(f => new FileInfo(f));
+            break;
         }
     }
 

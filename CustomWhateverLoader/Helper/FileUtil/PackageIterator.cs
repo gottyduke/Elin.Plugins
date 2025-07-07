@@ -32,6 +32,12 @@ public class PackageIterator
             .OfType<DirectoryInfo>();
     }
 
+    public static IEnumerable<FileInfo> GetSourcesFromPackage(string? modGuid = null)
+    {
+        return GetLoadedPackagesAsMapping(modGuid)
+            .SelectMany(m => m.Sources);
+    }
+
     public static IEnumerable<DirectoryInfo> GetSoundFilesFromPackage(string? modGuid = null)
     {
         return GetLoadedPackages(modGuid)
