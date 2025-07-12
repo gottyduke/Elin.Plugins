@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Meta>
+  <title>Mod Viewer Plus</title>
+  <id>dk.elinplugins.modviewerminus</id>
+  <author>DK</author>
+  <builtin>false</builtin>
+  <loadPriority>69</loadPriority>
+  <version>1.14.514</version>
+  <tags>QoL,UI</tags>
+  <description />
+</Meta>
