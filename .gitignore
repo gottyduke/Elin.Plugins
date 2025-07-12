@@ -345,5 +345,9 @@ healthchecksdb
 /AutoDumpIndicator
 /ElinMuseDash
 /ModConfigurationMenu
-/ModGlance
 /MultiElin
+
+# .vitepress
+.vitepress/dist
+.vitepress/cache
+/CwlExamples/TinyMita/Sound

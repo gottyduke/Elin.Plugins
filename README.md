@@ -6,10 +6,9 @@ Elin plugins for funzie
 - [Elin Rich Presence](./ElinRichPresence/)
 - [Compare Equipment](./EquipmentComparison/)
 - [Variable Sprite Support](./VariableSpriteSupport/)
-- [Custom Dialog Loader](./CustomDialogLoader/)
-
-## In Progress
-- Elin Stranding?!
+- [Custom Whatever Loader](./CustomWhateverLoader/)
+- [Animated Custom Sprites](./AnimatedCustomSprites/)
+- [Mod Viewer Plus](./ModViewerPlus/)
 
 ---
 <p align="center">MIT License, 2024-present DK</p>

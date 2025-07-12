@@ -11,7 +11,7 @@
         <AssemblyName>PluginTemplate</AssemblyName>
         <ReferencePath>$(ElinGamePath)/Elin_Data/Managed</ReferencePath>
         <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-        <LangVersion>12.0</LangVersion>
+        <LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -35,41 +35,41 @@
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="0Harmony">
-            <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Elin\BepInEx\core\0Harmony.dll</HintPath>
+            <HintPath>$(ElinGamePath)\BepInEx\core\0Harmony.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="BepInEx.Core">
-            <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Elin\BepInEx\core\BepInEx.Core.dll</HintPath>
+            <HintPath>$(ElinGamePath)\BepInEx\core\BepInEx.Core.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="BepInEx.Unity">
-            <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Elin\BepInEx\core\BepInEx.Unity.dll</HintPath>
+            <HintPath>$(ElinGamePath)\BepInEx\core\BepInEx.Unity.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Elin">
-            <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Elin\Elin_Data\Managed\Elin.dll</HintPath>
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Elin.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="mscorlib">
-            <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Elin\Elin_Data\Managed\mscorlib.dll</HintPath>
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\mscorlib.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="netstandard">
-            <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Elin\Elin_Data\Managed\netstandard.dll</HintPath>
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\netstandard.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Plugins.BaseCore">
-            <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Elin\Elin_Data\Managed\Plugins.BaseCore.dll</HintPath>
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.BaseCore.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="System"/>
         <Reference Include="System.Core"/>
         <Reference Include="UnityEngine">
-            <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Elin\Elin_Data\Managed\UnityEngine.dll</HintPath>
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.CoreModule">
-            <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Elin\Elin_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
             <Private>False</Private>
         </Reference>
     </ItemGroup>
