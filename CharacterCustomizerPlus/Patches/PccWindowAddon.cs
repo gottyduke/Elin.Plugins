@@ -31,12 +31,12 @@ internal class PccWindowAddon
 
             var rotateLeft = content.GetFirstChildWithName("UIButton left");
             if (rotateLeft != null) {
-                rotateLeft.Rect().sizeDelta = rotateLeft.Rect().sizeDelta * 2f;
+                rotateLeft.Rect().sizeDelta *= 2f;
             }
 
             var rotateRight = content.GetFirstChildWithName("UIButton right");
             if (rotateRight != null) {
-                rotateRight.Rect().sizeDelta = rotateRight.Rect().sizeDelta * 2f;
+                rotateRight.Rect().sizeDelta *= 2f;
             }
         } catch (Exception ex) {
             CmmMod.Log($"failed to patch edit pcc layer {ex}");

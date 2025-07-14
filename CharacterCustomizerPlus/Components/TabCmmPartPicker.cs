@@ -43,6 +43,7 @@ internal class TabCmmPartPicker : YKLayout<LayerCreationData>
         }
 
         _grid = Grid().WithCellSize(CellWidth, CellHeight);
+
         var data = Layer.Data;
         if (data.IdPartsSet != "body") {
             AddCell(null, data.IdPartsSet);
@@ -62,7 +63,12 @@ internal class TabCmmPartPicker : YKLayout<LayerCreationData>
         });
 
         foreach (var part in parts) {
-            AddCell(part, data.IdPartsSet);
+            try {
+                AddCell(part, data.IdPartsSet);
+            } catch (Exception ex) {
+                CmmMod.Log($"failed to add cell for {part.id} / {data.IdPartsSet}\n{ex}");
+                // noexcept
+            }
         }
     }
 
