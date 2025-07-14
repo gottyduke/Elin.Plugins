@@ -9,6 +9,7 @@ Elin plugins for funzie
 - [Custom Whatever Loader](./CustomWhateverLoader/)
 - [Animated Custom Sprites](./AnimatedCustomSprites/)
 - [Mod Viewer Plus](./ModViewerPlus/)
+- [Visual PCC Picker](./CharacterCustomizerPlus/)
 
 ---
 <p align="center">MIT License, 2024-present DK</p>

@@ -1,0 +1,30 @@
+{image,cmm_banner}
+
+
+
+
+
+
+
+
+
+
+
+{image,CWL_real}
+
+
+
+
+
+
+
+
+
+
+
+
+{topic|1.0.0}
+Fighting the sliders? Spamming the little arrows so much that you get tenosynovitis? Look familiar? Scenes like these are happening all over the North Tyris, right now!
+Added big square buttons in a list for you to pick from.
+Enlarged rotate buttons by 2x.
+Added image hints to the two god knows what sliders.
