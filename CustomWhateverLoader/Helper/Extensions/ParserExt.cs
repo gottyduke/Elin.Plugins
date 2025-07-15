@@ -31,7 +31,7 @@ public static class ParserExt
 
     public static bool AsBool(this string unparsed, bool fallback)
     {
-        unparsed = unparsed.ToLower().Trim();
+        unparsed = unparsed.ToLowerInvariant().Trim();
         return unparsed switch {
             "true" or "1" or "on" or "yes" => true,
             "false" or "0" or "off" or "no" => false,

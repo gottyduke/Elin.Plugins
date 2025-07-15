@@ -30,7 +30,7 @@ internal class LoadSpritePatch
     [HarmonyPatch(typeof(Domain), nameof(Domain.GetSprite))]
     internal static bool OnGetDomainSprite(Domain __instance, ref Sprite? __result)
     {
-        var id = __instance.source.alias[3..].ToLower();
+        var id = __instance.source.alias[3..].ToLowerInvariant();
         if (SpriteReplacer.dictModItems.TryGetValue(id, out var file)) {
             __result = $"{file}.png".LoadSprite();
         }

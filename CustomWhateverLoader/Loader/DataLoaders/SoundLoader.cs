@@ -166,7 +166,7 @@ internal partial class DataLoader
 
     private static AudioType GetAudioType(string extension)
     {
-        return extension.ToLower().Trim() switch {
+        return extension.ToLowerInvariant().Trim() switch {
             ".acc" => AudioType.ACC,
             ".mp3" => AudioType.MPEG, // possible codec error
             ".ogg" => AudioType.OGGVORBIS,
