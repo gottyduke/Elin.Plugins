@@ -13,7 +13,6 @@ namespace CustomizerMinus.Patches;
 [HarmonyPatch]
 internal class PartBarAddon
 {
-    internal static float scaler = ELayer.ui.canvasScaler.scaleFactor;
     private static ButtonGeneral? _sharedBtn;
 
     [HarmonyPostfix]
@@ -34,15 +33,16 @@ internal class PartBarAddon
                 TabCmmPartPicker.InitPrefabCell(_sharedBtn);
             }
 
+            var scaler = ELayer.ui.canvasScaler.scaleFactor;
             var rect = uiText.rectTransform;
             rect.sizeDelta = rect.sizeDelta with { y = _sharedBtn.Rect().sizeDelta.y };
-            rect.localPosition = rect.localPosition with { x = rect.localPosition.x + 3f * scaler };
+            rect.localPosition = rect.localPosition with { x = rect.localPosition.x + scaler * 3f };
             uiText.alignment = TextAnchor.MiddleRight;
 
             var newText = Util.Instantiate(uiText, uiText).transform;
             newText.position = uiText.transform.position;
             newText.localScale = uiText.transform.localScale;
-            newText.localPosition = new(-12f * scaler, 0f, 0f);
+            newText.localPosition = new(scaler * -12f, 0f, 0f);
 
             var newBar = uiText.gameObject;
             Object.DestroyImmediate(uiText);
@@ -58,7 +58,7 @@ internal class PartBarAddon
                 enable = true,
                 lang = $"id: {idPartsSet}",
                 id = $"cmm_tooltip_{idPartsSet}",
-                offset = new(-20f * scaler, -10f),
+                offset = new(scaler * -20f, -10f),
             };
             newBtn.SetOnClick(() =>
                 YK.CreateLayer<LayerCmmPartPicker, LayerCreationData>(new(idPartsSet, __instance)));

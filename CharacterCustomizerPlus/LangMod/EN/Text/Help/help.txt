@@ -22,9 +22,12 @@
 
 
 
+{topic|1.2.0}
+Made the PCC part picker window larger to display more parts.
+Added part provider mod hints.
+
 {topic|1.1.0}
 Fixed localizations.
-
 
 {topic|1.0.0}
 Fighting the sliders? Spamming the little arrows so much that you get tenosynovitis? Look familiar? Scenes like these are happening all over the North Tyris, right now!

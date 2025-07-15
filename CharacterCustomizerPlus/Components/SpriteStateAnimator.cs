@@ -6,7 +6,7 @@ namespace CustomizerMinus.Components;
 internal class SpriteStateAnimator : EMono
 {
     private readonly Sprite[] _sprites = new Sprite[16];
-    internal Image? _image;
+    private Image? _image;
     private bool _init;
 
     internal void SetSprite(int dir, int frame)
@@ -34,6 +34,7 @@ internal class SpriteStateAnimator : EMono
             }
         }
 
-        _init = true;
+        _image = GetComponent<Image>();
+        _init = _image != null;
     }
 }

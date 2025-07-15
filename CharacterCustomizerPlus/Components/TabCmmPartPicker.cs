@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CustomizerMinus.API;
-using CustomizerMinus.Patches;
+using CustomizerMinus.Helper;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
@@ -42,7 +42,9 @@ internal class TabCmmPartPicker : YKLayout<LayerCreationData>
             return;
         }
 
-        _grid = Grid().WithCellSize(CellWidth, CellHeight);
+        _grid = Grid()
+            .WithCellSize(CellWidth, CellHeight)
+            .WithConstraintCount(5);
 
         var data = Layer.Data;
         if (data.IdPartsSet != "body") {
@@ -69,44 +71,6 @@ internal class TabCmmPartPicker : YKLayout<LayerCreationData>
                 CmmMod.Log($"failed to add cell for {part.id} / {data.IdPartsSet}\n{ex}");
                 // noexcept
             }
-        }
-    }
-
-    internal static void InitPrefabCell(ButtonGeneral shared)
-    {
-        try {
-            _prefabCell = Instantiate(shared.gameObject);
-            _prefabCell.name = "cmm_cell";
-
-            var image = _prefabCell.GetComponent<Image>();
-            image.sprite = shared.GetComponent<Image>().sprite;
-
-            var btn = _prefabCell.GetComponent<ButtonGeneral>();
-            btn.icon.rectTransform.sizeDelta = new(CellWidth * 0.8f, CellHeight * 0.8f);
-            btn.icon.sprite = null;
-
-            btn.soundClick = SoundManager.current.GetData("click_tab");
-            btn.transition = Selectable.Transition.SpriteSwap;
-            btn.spriteState = shared.spriteState;
-
-            btn.onClick = new();
-            btn.tooltip = new() {
-                enable = false,
-                offset = new(0f, -70f * PartBarAddon.scaler),
-                id = "cmm_tooltip_cell",
-                text = "",
-            };
-
-            var outline = _prefabCell.AddComponent<Outline>();
-            outline.effectDistance = new(2f, 2f);
-            outline.effectColor = Color.cyan;
-            outline.enabled = false;
-
-            _prefabCell.SetActive(false);
-        } catch (Exception ex) {
-            CmmMod.Log($"failed to init prefab cell\n{ex}");
-            _prefabCell = null;
-            // noexcept
         }
     }
 
@@ -139,26 +103,26 @@ internal class TabCmmPartPicker : YKLayout<LayerCreationData>
                 return;
             }
 
-            var animator = btn.gameObject.AddComponent<SpriteStateAnimator>();
-            var color = uiPcc.pcc.data.GetColor(idPartsSet).ToHsv();
-            color.v = 1f;
-            color.a = 1f;
-            btn.icon.color = color.ToRGB();
-
-            animator._image = btn.icon;
-            // use CWL LoadSprite to cache the sprite,
-            // so that it won't get garbage collected
-            animator.SliceSheet(texItem.fileInfo.FullName.LoadSprite()!.texture);
-
-            _animators.Add(animator);
-
             btn.name += $"_{part.id}";
-            btn.SetTooltipLang($"{part.id}\n{part.dir.ShortPath()}");
+            btn.SetTooltipLang($"{part.id}     " +
+                               $"<i>{part.GetPartProvider().TagColor(0x4ffff9)}</i>\n" +
+                               $"{part.dir.ShortPath()}");
             btn.SetOnClick(() => {
                 uiPcc.pcc.data.SetPart(part);
                 uiPcc.actor.Reset();
                 SetOutline(outline);
             });
+
+            var color = uiPcc.pcc.data.GetColor(idPartsSet).ToHsv();
+            color.v = 1f;
+            color.a = 1f;
+            btn.icon.color = color.ToRGB();
+
+            var animator = btn.icon.gameObject.AddComponent<SpriteStateAnimator>();
+            // use CWL LoadSprite to cache the sprite,
+            // so that it won't get garbage collected
+            animator.SliceSheet(texItem.fileInfo.FullName.LoadSprite()!.texture);
+            _animators.Add(animator);
         }
 
         if (uiPcc.pcc.data.GetPart(idPartsSet) == part) {
@@ -176,5 +140,44 @@ internal class TabCmmPartPicker : YKLayout<LayerCreationData>
         }
 
         outline.enabled = true;
+    }
+
+    internal static void InitPrefabCell(ButtonGeneral shared)
+    {
+        try {
+            _prefabCell = Instantiate(shared.gameObject);
+            _prefabCell.name = "cmm_cell";
+
+            var image = _prefabCell.GetComponent<Image>();
+            image.sprite = shared.GetComponent<Image>().sprite;
+
+            var btn = _prefabCell.GetComponent<ButtonGeneral>();
+            btn.icon.rectTransform.sizeDelta = new(CellWidth * 0.8f, CellHeight * 0.8f);
+            btn.icon.sprite = null;
+
+            btn.soundClick = SoundManager.current.GetData("click_tab");
+            btn.transition = Selectable.Transition.SpriteSwap;
+            btn.spriteState = shared.spriteState;
+
+            var scaler = ELayer.ui.canvasScaler.scaleFactor;
+            btn.onClick = new();
+            btn.tooltip = new() {
+                enable = false,
+                offset = new(0f, scaler * -70f),
+                id = "cmm_tooltip_cell",
+                text = "",
+            };
+
+            var outline = _prefabCell.AddComponent<Outline>();
+            outline.effectDistance = new(2f, 2f);
+            outline.effectColor = Color.cyan;
+            outline.enabled = false;
+
+            _prefabCell.SetActive(false);
+        } catch (Exception ex) {
+            CmmMod.Log($"failed to init prefab cell\n{ex}");
+            _prefabCell = null;
+            // noexcept
+        }
     }
 }

@@ -111,6 +111,7 @@
         <Compile Include="Components\LayerCmmPartPicker.cs"/>
         <Compile Include="Components\SpriteStateAnimator.cs"/>
         <Compile Include="Components\TabCmmPartPicker.cs"/>
+        <Compile Include="Helper\PartExt.cs"/>
         <Compile Include="Patches\PartBarAddon.cs"/>
         <Compile Include="Patches\PccWindowAddon.cs"/>
     </ItemGroup>
