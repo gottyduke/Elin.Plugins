@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using CustomizerMinus.API;
 using CustomizerMinus.Helper;
-using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using Empyrean.Utils;
@@ -14,9 +13,6 @@ namespace CustomizerMinus.Components;
 
 internal class TabCmmPartPicker : YKLayout<LayerCreationData>
 {
-    private const int CellWidth = 128;
-    private const int CellHeight = 196;
-
     private static GameObject? _prefabCell;
     internal static readonly Dictionary<string, Vector2> BrowsedPositions = [];
 
@@ -43,8 +39,8 @@ internal class TabCmmPartPicker : YKLayout<LayerCreationData>
         }
 
         _grid = Grid()
-            .WithCellSize(CellWidth, CellHeight)
-            .WithConstraintCount(5);
+            .WithCellSize(CmmConfig.PartCellWidth.Value, CmmConfig.PartCellHeight.Value)
+            .WithConstraintCount(CmmConfig.MaxPartsPerRow.Value);
 
         var data = Layer.Data;
         if (data.IdPartsSet != "body") {
@@ -52,17 +48,7 @@ internal class TabCmmPartPicker : YKLayout<LayerCreationData>
         }
 
         var parts = PCC.GetAvailableParts(data.UiPcc.pcc.GetBodySet(), data.IdPartsSet);
-        parts.Sort((lhs, rhs) => {
-            if (!int.TryParse(lhs.id, out var lhsId)) {
-                lhsId = int.MaxValue;
-            }
-
-            if (!int.TryParse(rhs.id, out var rhsId)) {
-                rhsId = int.MaxValue;
-            }
-
-            return lhsId - rhsId;
-        });
+        parts.Sort(PartExt.PartSorter);
 
         foreach (var part in parts) {
             try {
@@ -104,9 +90,7 @@ internal class TabCmmPartPicker : YKLayout<LayerCreationData>
             }
 
             btn.name += $"_{part.id}";
-            btn.SetTooltipLang($"{part.id}     " +
-                               $"<i>{part.GetPartProvider().TagColor(0x4ffff9)}</i>\n" +
-                               $"{part.dir.ShortPath()}");
+            btn.SetTooltipLang(part.GetPartProviderString());
             btn.SetOnClick(() => {
                 uiPcc.pcc.data.SetPart(part);
                 uiPcc.actor.Reset();
@@ -152,7 +136,9 @@ internal class TabCmmPartPicker : YKLayout<LayerCreationData>
             image.sprite = shared.GetComponent<Image>().sprite;
 
             var btn = _prefabCell.GetComponent<ButtonGeneral>();
-            btn.icon.rectTransform.sizeDelta = new(CellWidth * 0.8f, CellHeight * 0.8f);
+            btn.icon.rectTransform.sizeDelta = new(
+                CmmConfig.PartCellWidth.Value * 0.8f,
+                CmmConfig.PartCellHeight.Value * 0.8f);
             btn.icon.sprite = null;
 
             btn.soundClick = SoundManager.current.GetData("click_tab");

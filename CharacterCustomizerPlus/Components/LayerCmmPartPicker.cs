@@ -9,7 +9,7 @@ namespace CustomizerMinus.Components;
 internal class LayerCmmPartPicker : YKLayer<LayerCreationData>
 {
     public override string Title => $"pcc_{Data.IdPartsSet}".Loc();
-    public override Rect Bound => new(Vector2.zero, new(716f, 540f));
+    public override Rect Bound => FitWindow();
 
     public override void OnLayout()
     {
@@ -35,5 +35,12 @@ internal class LayerCmmPartPicker : YKLayer<LayerCreationData>
         var window = layer.windows[0].RectTransform;
         var sizeDelta = (windows[0].RectTransform.sizeDelta - window.sizeDelta) / 2f;
         transform.localPosition = window.localPosition with { x = window.localPosition.x - sizeDelta.x };
+    }
+
+    private static Rect FitWindow()
+    {
+        Vector2 baseSize = new(76f, 540f);
+        var cellsWidth = CmmConfig.MaxPartsPerRow.Value * CmmConfig.PartCellWidth.Value;
+        return new(Vector2.zero, baseSize with { x = baseSize.x + cellsWidth });
     }
 }
