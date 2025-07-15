@@ -22,6 +22,10 @@
 
 
 
+{topic|1.3.0}
+Added optional configuration: Number of parts in the same line, default 4
+Added optional configuration: Part cell size, default 128 x 196
+
 {topic|1.2.0}
 Made the PCC part picker window larger to display more parts.
 Added part provider mod hints.

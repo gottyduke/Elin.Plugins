@@ -107,6 +107,7 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="API\LayerCreationData.cs"/>
+        <Compile Include="CmmConfig.cs"/>
         <Compile Include="CmmMod.cs"/>
         <Compile Include="Components\LayerCmmPartPicker.cs"/>
         <Compile Include="Components\SpriteStateAnimator.cs"/>
