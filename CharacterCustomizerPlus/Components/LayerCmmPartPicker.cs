@@ -33,8 +33,9 @@ internal class LayerCmmPartPicker : YKLayer<LayerCreationData>
         }
 
         var window = layer.windows[0].RectTransform;
+        var pos = window.localPosition;
         var sizeDelta = (windows[0].RectTransform.sizeDelta - window.sizeDelta) / 2f;
-        transform.localPosition = window.localPosition with { x = window.localPosition.x - sizeDelta.x };
+        transform.localPosition = pos with { x = pos.x - sizeDelta.x };
     }
 
     private static Rect FitWindow()

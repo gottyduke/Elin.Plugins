@@ -8,7 +8,7 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.charamakerminus";
     internal const string Name = "Visual PCC Picker";
-    internal const string Version = "1.3.0";
+    internal const string Version = "1.3.1";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]

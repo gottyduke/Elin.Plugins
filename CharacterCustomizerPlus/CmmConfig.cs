@@ -24,15 +24,15 @@ internal class CmmConfig
             new ConfigDescription(
                 "Width of the part cell in the parts picker window\n" +
                 "部件按钮的宽度",
-                new AcceptableValueRange<int>(64, 256)));
+                new AcceptableValueRange<int>(64, 128)));
 
         PartCellHeight = config.Bind(
             ModInfo.Name,
             "PartCellHeight",
-            196,
+            192,
             new ConfigDescription(
                 "Height of the part cell in the parts picker window\n" +
                 "部件按钮的长度",
-                new AcceptableValueRange<int>(96, 392)));
+                new AcceptableValueRange<int>(96, 192)));
     }
 }
