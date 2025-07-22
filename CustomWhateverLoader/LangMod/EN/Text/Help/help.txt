@@ -17,6 +17,10 @@
 
 
 
+
+{topic|1.20.39}
+Dungeon_Boss the Boss playlist that people were asking for
+
 {topic|1.20.38}
 Added verbose exception handler for drama sheet parsing
 Fixed wrong line number was ordered first in the build list
