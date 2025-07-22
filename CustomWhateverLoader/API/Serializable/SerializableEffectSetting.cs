@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using Cwl.Helper.Unity;
-using Newtonsoft.Json;
 using UnityEngine;
 
 namespace Cwl.API;
@@ -14,9 +12,9 @@ public sealed record SerializableEffectData : SerializazbleEffectDataV2;
 
 public record SerializazbleEffectDataV2 : SerializableEffectDataV1
 {
-    public string idSprite = "ranged_gun";
     public string caneColor = "";
     public bool caneColorBlend = false;
+    public string idSprite = "ranged_gun";
 }
 
 // use lowercase naming for introspect copy

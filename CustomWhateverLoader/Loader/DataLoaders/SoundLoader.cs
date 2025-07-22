@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Cwl.API;
+using Cwl.API.Attributes;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
@@ -26,6 +27,7 @@ internal partial class DataLoader
 
     [Time]
     [ConsoleCommand("load_sound")]
+    [CwlContextMenu("CWL/cwl_ui_sound_reload")]
     internal static void LoadAllSounds()
     {
         if (LastBgmIndex == 0) {

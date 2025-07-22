@@ -30,11 +30,15 @@ public static class DeferredCoroutine
 
     private static IEnumerator DeferredFrames(Action action, int frames = 1)
     {
-        for (var i = 0; i < frames; ++i) {
-            yield return null;
-        }
+        if (frames == 1) {
+            Core.Instance.actionsNextFrame.Add(action);
+        } else {
+            for (var i = 0; i < frames; ++i) {
+                yield return null;
+            }
 
-        action();
+            action();
+        }
     }
 
     private static IEnumerator DeferredSeconds(Action action, float seconds)

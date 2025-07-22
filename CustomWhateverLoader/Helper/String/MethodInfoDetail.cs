@@ -24,6 +24,19 @@ public static class MethodInfoDetail
         return $"{decl.Assembly.GetName().Name.TagColor(0x7676a7)}::{methodInfo.GetDetail(full)}";
     }
 
+    public static string GetAssemblyDetailParams(this MethodInfo methodInfo, bool full = true)
+    {
+        var decl = methodInfo.DeclaringType!;
+        return $"{decl.Assembly.GetName().Name}::{methodInfo.GetDetail(full)} ({methodInfo.GetParameters().Join()})";
+    }
+
+    public static string GetAssemblyDetailParamsColor(this MethodInfo methodInfo, bool full = true)
+    {
+        var decl = methodInfo.DeclaringType!;
+        return
+            $"{decl.Assembly.GetName().Name.TagColor(0x7676a7)}::{methodInfo.GetDetail(full)} ({methodInfo.GetParameters().Join()})";
+    }
+
     public static void AppendPatchInfo(this StringBuilder sb, PatchInfo patchInfo)
     {
         foreach (var patch in patchInfo.prefixes) {

@@ -12,26 +12,10 @@ using MethodTimer;
 
 namespace Cwl.Patches.Elements;
 
-[HarmonyPatch]
 public class ActPerformEvent
 {
+    private static bool _patched;
     private static event Action<Act> OnActPerformEvent = delegate { };
-
-    public static void Add(Action<Act> process)
-    {
-        OnActPerformEvent += Process;
-        return;
-
-        void Process(Act act)
-        {
-            try {
-                process(act);
-            } catch (Exception ex) {
-                CwlMod.Warn<ActPerformEvent>("cwl_warn_processor".Loc("act_perform", act.GetType().Name, ex));
-                // noexcept
-            }
-        }
-    }
 
     internal static IEnumerable<MethodBase> TargetMethods()
     {
@@ -51,5 +35,26 @@ public class ActPerformEvent
         Add(act => method.FastInvokeStatic(act));
 
         CwlMod.Log<GameIOProcessor.GameIOProcess>("cwl_log_processor_add".Loc("act", "perform", method.GetAssemblyDetail(false)));
+    }
+
+    private static void Add(Action<Act> process)
+    {
+        if (!_patched) {
+            Harmony.CreateAndPatchAll(typeof(ActPerformEvent), ModInfo.Guid);
+            _patched = true;
+        }
+
+        OnActPerformEvent += Process;
+        return;
+
+        void Process(Act act)
+        {
+            try {
+                process(act);
+            } catch (Exception ex) {
+                CwlMod.Warn<ActPerformEvent>("cwl_warn_processor".Loc("act_perform", act.GetType().Name, ex));
+                // noexcept
+            }
+        }
     }
 }

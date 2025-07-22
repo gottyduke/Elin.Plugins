@@ -46,13 +46,13 @@ public static class StringHelper
     {
         var color = (uint)hex;
         var hexString = color <= 0xFFFFFF
-            ? color.ToString("x6") 
+            ? color.ToString("x6")
             : color.ToString("x8");
         return $"<color=#{hexString}>{input}</color>";
     }
 
-    public static string TagColorEx(this object input, Func<bool> onSwitch, 
-        int good = 0x2cff14, 
+    public static string TagColorEx(this object input, Func<bool> onSwitch,
+        int good = 0x2cff14,
         int bad = 0x000000)
     {
         return input.TagColor(onSwitch() ? good : bad);

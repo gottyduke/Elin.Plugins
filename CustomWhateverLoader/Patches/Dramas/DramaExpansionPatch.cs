@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Reflection.Emit;
 using Cwl.API.Drama;
 using Cwl.Helper.Exceptions;
@@ -10,17 +9,12 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Dramas;
 
-[HarmonyPatch]
+[HarmonyPatch(typeof(DramaManager), nameof(DramaManager.ParseLine))]
 internal class DramaExpansionPatch
 {
     internal static bool Prepare()
     {
         return CwlConfig.ExpandedActions;
-    }
-
-    internal static MethodBase TargetMethod()
-    {
-        return AccessTools.Method(typeof(DramaManager), nameof(DramaManager.ParseLine));
     }
 
     [HarmonyTranspiler]

@@ -76,7 +76,7 @@ public partial class DramaExpansion
         sb.AppendLine("dumping action list");
 
         foreach (var (action, provider) in Actions) {
-            sb.AppendLine($"{action,-30}{provider.GetAssemblyDetail(false)}");
+            sb.AppendLine($"{action,-30}{provider.GetAssemblyDetailParams(false)}");
         }
 
         var log = sb.ToString();

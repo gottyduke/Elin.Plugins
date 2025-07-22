@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Cwl.Helper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -28,6 +27,8 @@ public enum StockItemType
 
 public record SerializableStockItemV3 : SerializableStockItemV2
 {
+    public bool Identified = true;
+
     public Thing Create(int lv = -1)
     {
         CardBlueprint bp = CardBlueprint.current ?? CardBlueprint._Default;
@@ -44,8 +45,6 @@ public record SerializableStockItemV3 : SerializableStockItemV2
 
         return thing;
     }
-
-    public bool Identified = true;
 }
 
 public record SerializableStockItemV2 : SerializableStockItemV1
