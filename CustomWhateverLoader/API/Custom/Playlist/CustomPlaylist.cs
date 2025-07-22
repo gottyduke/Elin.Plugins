@@ -47,14 +47,14 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
             var zoneTypeName = zone.GetType().Name;
             var basePlaylistName = GetBasePlaylistName(mold.name);
 
-            var plName = "CWL_Merged_Global_";
+            var plName = "CWL_Merged|Global|";
             if (basePlaylistName != "") {
-                plName += $"{basePlaylistName}_";
+                plName += $"{basePlaylistName}|";
             }
 
             plName += $"Zone_{zone.id}@{zone.lv}";
 
-            var cacheName = $"{plName}_{mold.UniqueString()}";
+            var cacheName = $"{plName}|{mold.UniqueString()}";
             if (_merged.TryGetValue(cacheName, out var playlist)) {
                 return playlist;
             }
@@ -63,7 +63,8 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
             playlist = mold.Instantiate();
             playlist.list.Clear();
 
-            string[] orders = [
+            // ascending
+            List<string> orders = [
                 "Global",
                 basePlaylistName,
                 zoneTypeName,
@@ -96,11 +97,15 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
         return mold ?? EClass.Sound.plBlank;
     }
 
-    public static bool MergeOverridesInOrder(List<int> list, string[] orders, string zoneTypeName)
+    public static bool MergeOverridesInOrder(List<int> list, IEnumerable<string> orders, string zoneTypeName)
     {
         var shuffle = false;
         foreach (var order in orders) {
-            var lists = MergeOverridesSingular(Lut[order], zoneTypeName);
+            if (order.IsEmpty()) {
+                continue;
+            }
+
+            var lists = MergeOverrideSingular(Lut[order], zoneTypeName);
 
             list.RemoveAll(lists.ListRemove.Contains);
             list.AddRange(lists.ListMerge);
@@ -111,7 +116,7 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
         return shuffle;
     }
 
-    public static CustomPlaylist MergeOverridesSingular(IEnumerable<CustomPlaylist> overrides, string zoneName)
+    public static CustomPlaylist MergeOverrideSingular(IEnumerable<CustomPlaylist> overrides, string zoneName)
     {
         var lists = overrides.ToArray();
         var names = lists
@@ -119,7 +124,7 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
             .AddItem(zoneName)
             .ToArray();
 
-        var cacheName = $"{string.Join("_", names)}/{lists.Length}";
+        var cacheName = $"{string.Join("|", names)}/{lists.Length}";
         if (_cached.TryGetValue(cacheName, out var playlist)) {
             return playlist;
         }
@@ -140,18 +145,13 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
         merges.RemoveWhere(id => !dict.ContainsKey(id));
         remove.RemoveWhere(id => !dict.ContainsKey(id));
 
-        playlist = new(string.Join("_", names.Distinct()), merges.ToArray(), remove.ToArray(), shuffle);
+        playlist = new(string.Join("|", names.Distinct()), merges.ToArray(), remove.ToArray(), shuffle);
         return _cached[cacheName] = playlist;
-    }
-
-    private static bool ShouldPersistBossBgm()
-    {
-        return false;
     }
 
     private static string GetBasePlaylistName(string fullName)
     {
-        var match = Regex.Match(fullName, "Playlist_(.*?)_");
+        var match = Regex.Match(fullName, @"Playlist_(.*?)\|");
         return match.Success ? match.Groups[1].Value : "";
     }
 

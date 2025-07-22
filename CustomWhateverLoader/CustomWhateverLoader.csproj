@@ -46,166 +46,133 @@
             <Private>False</Private>
         </Reference>
         <Reference Include="ClassLibrary2">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\ClassLibrary2.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="DOTween">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\DOTween.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Elin">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Elin.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="LZ4">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\LZ4.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Mono.Cecil">
-          <HintPath>$(ElinGamePath)\BepInEx\core\Mono.Cecil.dll</HintPath>
+            <HintPath>$(ElinGamePath)\BepInEx\core\Mono.Cecil.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Mono.Cecil.Mdb">
-          <HintPath>$(ElinGamePath)\BepInEx\core\Mono.Cecil.Mdb.dll</HintPath>
+            <HintPath>$(ElinGamePath)\BepInEx\core\Mono.Cecil.Mdb.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Mono.Cecil.Pdb">
-          <HintPath>$(ElinGamePath)\BepInEx\core\Mono.Cecil.Pdb.dll</HintPath>
+            <HintPath>$(ElinGamePath)\BepInEx\core\Mono.Cecil.Pdb.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Mono.Cecil.Rocks">
-          <HintPath>$(ElinGamePath)\BepInEx\core\Mono.Cecil.Rocks.dll</HintPath>
+            <HintPath>$(ElinGamePath)\BepInEx\core\Mono.Cecil.Rocks.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="MonoMod.RuntimeDetour">
-          <HintPath>$(ElinGamePath)\BepInEx\core\MonoMod.RuntimeDetour.dll</HintPath>
+            <HintPath>$(ElinGamePath)\BepInEx\core\MonoMod.RuntimeDetour.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="MonoMod.Utils">
-          <HintPath>$(ElinGamePath)\BepInEx\core\MonoMod.Utils.dll</HintPath>
+            <HintPath>$(ElinGamePath)\BepInEx\core\MonoMod.Utils.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="mscorlib">
-          <HintPath>$(ElinGamePath)\Elin_Data\Managed\mscorlib.dll</HintPath>
         </Reference>
         <Reference Include="netstandard">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\netstandard.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Newtonsoft.Json">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Newtonsoft.Json.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="NPOI">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\NPOI.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="NPOI.OOXML">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\NPOI.OOXML.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="NPOI.OpenXml4Net">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\NPOI.OpenXml4Net.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="NPOI.OpenXmlFormats">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\NPOI.OpenXmlFormats.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Plugins.ActorSystem">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.ActorSystem.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Plugins.BaseCore">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.BaseCore.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Plugins.Calc">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.Calc.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Plugins.Sound">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.Sound.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Plugins.Tween">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.Tween.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Plugins.UI">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.UI.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="Reflex">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Reflex.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="System"/>
         <Reference Include="System.Core"/>
         <Reference Include="UniTask">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UniTask.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="UniTask.Linq">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UniTask.Linq.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.AssetBundleModule">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.AudioModule">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.CoreModule">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.InputLegacyModule">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.TextRenderingModule">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.UI">
-            <HintPath>$(ElinGamePath)\Elin\Elin_Data\Managed\UnityEngine.UI.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.UIModule">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UIModule.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.UnityWebRequestAudioModule">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.UnityWebRequestModule">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.UnityWebRequestTextureModule">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
             <Private>False</Private>
         </Reference>
         <Reference Include="UnityEngine.UnityWebRequestWWWModule">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
             <Private>False</Private>
         </Reference>
     </ItemGroup>
     <ItemGroup>
         <Compile Include="API\Attributes\CwlActPerformEvent.cs"/>
-        <Compile Include="API\Attributes\CwlOnCreateEvent.cs" />
+        <Compile Include="API\Attributes\CwlOnCreateEvent.cs"/>
         <Compile Include="API\Attributes\CwlContextMenu.cs"/>
         <Compile Include="API\Attributes\CwlDramaExpansion.cs"/>
         <Compile Include="API\Attributes\CwlEvent.cs"/>
@@ -218,198 +185,196 @@
         <Compile Include="API\Custom\CustomConverter.cs"/>
         <Compile Include="API\Custom\CustomCondition.cs"/>
         <Compile Include="API\Custom\CustomMerchant.cs"/>
-        <Compile Include="API\Custom\CustomQuest.cs" />
+        <Compile Include="API\Custom\CustomQuest.cs"/>
         <Compile Include="API\Custom\CustomReligion.cs"/>
         <Compile Include="API\Custom\CustomZone.cs"/>
-        <Compile Include="API\Custom\Elements\CustomElement.cs" />
-        <Compile Include="API\Custom\Elements\CustomFeat.cs" />
-        <Compile Include="API\Custom\Playlist\CustomPlaylist.cs" />
-        <Compile Include="API\Custom\Playlist\PlaylistBuilder.cs" />
-        <Compile Include="API\Custom\Playlist\PlaylistView.cs" />
-        <Compile Include="API\Drama\ActionBuilder.cs" />
-        <Compile Include="API\Drama\ActionCookie.cs" />
-        <Compile Include="API\Drama\ActionParameter.cs" />
-        <Compile Include="API\Drama\ActionHelper.cs" />
-        <Compile Include="API\Drama\DramaExpansion.cs" />
-        <Compile Include="API\Drama\Expansions\Action.cs" />
-        <Compile Include="API\Drama\Expansions\Condition.cs" />
-        <Compile Include="API\Drama\Expansions\Misc.cs" />
-        <Compile Include="API\Drama\Expansions\Quest.cs" />
-        <Compile Include="API\Drama\Expansions\Scene.cs" />
-        <Compile Include="API\Drama\ValueStack.cs" />
-        <Compile Include="API\Migration\MigrateDetail.cs" />
-        <Compile Include="API\Processors\GameIOProcessor.cs" />
-        <Compile Include="API\Processors\SheetProcessor.cs" />
-        <Compile Include="API\Processors\TraitTransformer.cs" />
-        <Compile Include="API\Processors\TypeResolver.cs" />
-        <Compile Include="API\Processors\WorkbookProcessor.cs" />
-        <Compile Include="API\Serializable\IChunkable.cs" />
-        <Compile Include="API\Serializable\SerializableBioData.cs" />
-        <Compile Include="API\Serializable\SerializableConverterData.cs" />
-        <Compile Include="API\Serializable\SerializableEffectSetting.cs" />
-        <Compile Include="API\Serializable\SerializableModPackage.cs" />
-        <Compile Include="API\Serializable\SerializablePlaylist.cs" />
-        <Compile Include="API\Serializable\SerializableReligionElement.cs" />
-        <Compile Include="API\Serializable\SerializableSoundData.cs" />
-        <Compile Include="API\Serializable\SerializableStockData.cs" />
-        <Compile Include="API\WorkbookImporter.cs" />
-        <Compile Include="Helper\Extensions\CardExt.cs" />
-        <Compile Include="Helper\Extensions\CharaExt.cs" />
-        <Compile Include="Helper\Extensions\CodeMatchExt.cs" />
-        <Compile Include="Helper\Extensions\DictExt.cs" />
-        <Compile Include="Helper\Extensions\GameDateExt.cs" />
-        <Compile Include="Helper\Extensions\LinqExt.cs" />
-        <Compile Include="Helper\Extensions\ParserExt.cs" />
-        <Compile Include="Helper\Extensions\PointExt.cs" />
-        <Compile Include="Helper\Extensions\ZoneExt.cs" />
-        <Compile Include="Helper\FileUtil\ConfigCereal.cs" />
-        <Compile Include="Helper\FileUtil\FileMapping.cs" />
-        <Compile Include="Helper\FileUtil\PackageIterator.cs" />
-        <Compile Include="Helper\Runtime\DebugSampler.cs" />
-        <Compile Include="Helper\Runtime\Exceptions\DramaException.cs" />
-        <Compile Include="Helper\Runtime\Exceptions\ExceptionProfile.cs" />
-        <Compile Include="Helper\Runtime\Exceptions\SourceParseException.cs" />
-        <Compile Include="Helper\Runtime\Exceptions\MonoFrame.cs" />
-        <Compile Include="Helper\Runtime\IntrospectCopy.cs" />
-        <Compile Include="Helper\Runtime\Stubs\MethodStub.cs" />
-        <Compile Include="Helper\Runtime\Stubs\MethodStubHelper.cs" />
-        <Compile Include="Helper\SourceRowComparer.cs" />
-        <Compile Include="Helper\SpriteReplacerHelper.cs" />
-        <Compile Include="Helper\ReverseId.cs" />
-        <Compile Include="Helper\Runtime\AttributeQuery.cs" />
-        <Compile Include="Helper\Runtime\CachedMethods.cs" />
-        <Compile Include="Helper\Runtime\MethodDispatcher.cs" />
-        <Compile Include="Helper\Runtime\OverrideMethodComparer.cs" />
-        <Compile Include="Helper\Runtime\TypeQualifier.cs" />
-        <Compile Include="Helper\ScopeExit.cs" />
-        <Compile Include="Helper\String\CalcHelper.cs" />
-        <Compile Include="Helper\String\StringHelper.cs" />
-        <Compile Include="Helper\String\FastStringWatch.cs" />
-        <Compile Include="Helper\String\GameVersion.cs" />
-        <Compile Include="Helper\String\Hashing.cs" />
-        <Compile Include="Helper\String\MethodInfoDetail.cs" />
-        <Compile Include="Helper\String\ParamParser.cs" />
-        <Compile Include="Helper\String\PathNormalizer.cs" />
-        <Compile Include="Helper\String\PathTruncation.cs" />
-        <Compile Include="Helper\Unity\AudioClipStream.cs" />
-        <Compile Include="Helper\Unity\ChildrenIterator.cs" />
-        <Compile Include="Helper\Unity\ContextMenuHelper.cs" />
-        <Compile Include="Helper\Unity\CoroutineHelper.cs" />
-        <Compile Include="Helper\Unity\DeferredCoroutine.cs" />
-        <Compile Include="Helper\Unity\ELayerCleanup.cs" />
-        <Compile Include="Helper\Unity\PixelRaycast.cs" />
-        <Compile Include="Helper\Unity\ProgressIndicator.cs" />
-        <Compile Include="Helper\Unity\SpriteCreator.cs" />
-        <Compile Include="Helper\Unity\TextureResizer.cs" />
-        <Compile Include="LangMod\LocFormatter.cs" />
-        <Compile Include="Loader\CustomWhateverLoader.cs" />
-        <Compile Include="Loader\CwlAsmInfo.cs" />
-        <Compile Include="Loader\CwlConfig.cs" />
-        <Compile Include="Loader\CwlConsole.cs" />
-        <Compile Include="Loader\CwlException.cs" />
-        <Compile Include="Loader\CwlLogger.cs" />
-        <Compile Include="Loader\CwlStartTask.cs" />
-        <Compile Include="Loader\CwlDebug.cs" />
-        <Compile Include="Loader\DataLoaders\CharaTalkLoader.cs" />
-        <Compile Include="Loader\DataLoaders\DataLoader.cs" />
-        <Compile Include="Loader\DataLoaders\DialogPreloader.cs" />
-        <Compile Include="Loader\DataLoaders\EffectLoader.cs" />
-        <Compile Include="Loader\DataLoaders\EffectSettingLoader.cs" />
-        <Compile Include="Loader\DataLoaders\ReligionLoader.cs" />
-        <Compile Include="Loader\DataLoaders\SoundLoader.cs" />
-        <Compile Include="Loader\DataLoaders\TransformLoader.cs" />
-        <Compile Include="Loader\ExecutionAnalysis.cs" />
-        <Compile Include="Loader\ModIntegrity.cs" />
-        <Compile Include="Patches\Charas\BioOverridePatch.cs" />
-        <Compile Include="Patches\Charas\MultipleBossPatch.cs" />
-        <Compile Include="Patches\Charas\NerdAdvPatch.cs" />
-        <Compile Include="Patches\Charas\RepositionTcPatch.cs" />
-        <Compile Include="Patches\Charas\RepositionPortraitPatch.cs" />
-        <Compile Include="Patches\Charas\RestoreCharaData.cs" />
-        <Compile Include="Patches\Charas\SetCharaRowPatch.cs" />
-        <Compile Include="Patches\Conditions\SafeCreateConditionPatch.cs" />
-        <Compile Include="Patches\Conditions\SetConditionRowPatch.cs" />
-        <Compile Include="Patches\Dialogs\AllowUniqueTalkPatch.cs" />
-        <Compile Include="Patches\Dialogs\LoadDialogPatch.cs" />
-        <Compile Include="Patches\Dialogs\SafePopTalkPatch.cs" />
-        <Compile Include="Patches\Dialogs\VariableQuotePatch.cs" />
-        <Compile Include="Patches\Dramas\DramaExpansionPatch.cs" />
-        <Compile Include="Patches\Dramas\DramaPortraitOverride.cs" />
-        <Compile Include="Patches\Dramas\GetOrAddPersonPatch.cs" />
-        <Compile Include="Patches\Dramas\LoadDramaPatch.cs" />
-        <Compile Include="Patches\Dramas\OverlapSoundPatch.cs" />
-        <Compile Include="Patches\Dramas\RerouteDramaPatch.cs" />
-        <Compile Include="Patches\Dramas\SafePlayDramaPatch.cs" />
-        <Compile Include="Patches\Effects\CaneTintPatch.cs" />
-        <Compile Include="Patches\Elements\ActPerformEvent.cs" />
-        <Compile Include="Patches\Elements\FeatApplyEvent.cs" />
-        <Compile Include="Patches\Elements\FixedSourceValuePatch.cs" />
-        <Compile Include="Patches\Elements\FuzzyLookupPatch.cs" />
-        <Compile Include="Patches\Elements\InvalidateAbilityPatch.cs" />
-        <Compile Include="Patches\Elements\MergeAttackElementPatch.cs" />
-        <Compile Include="Patches\Elements\SafeCreateElementPatch.cs" />
-        <Compile Include="Patches\Elements\SetElementRowPatch.cs" />
-        <Compile Include="Patches\Elements\SafeValueBonusPatch.cs" />
-        <Compile Include="Patches\GameSaveLoad\GameLoadEvent.cs" />
-        <Compile Include="Patches\GameSaveLoad\GameSaveEvent.cs" />
-        <Compile Include="Patches\GameSaveLoad\SafeResolveTypePatch.cs" />
-        <Compile Include="Patches\LoadSpritePatch.cs" />
-        <Compile Include="Patches\Materials\ReverseIdMapper.cs" />
-        <Compile Include="Patches\Materials\SafeCreateMaterialPatch.cs" />
-        <Compile Include="Patches\Materials\SetMaterialRowPatch.cs" />
-        <Compile Include="Patches\Objs\ReverseIdMapper.cs" />
-        <Compile Include="Patches\Quests\InvalidateDeliverPatch.cs" />
-        <Compile Include="Patches\Quests\SafeCreateQuestPatch.cs" />
-        <Compile Include="Patches\Quests\SetQuestRowPatch.cs" />
-        <Compile Include="Patches\Recipes\ForcePurityPatch.cs" />
-        <Compile Include="Patches\Recipes\ForceRarityPatch.cs" />
-        <Compile Include="Patches\Recipes\SetRecipeRowPatch.cs" />
-        <Compile Include="Patches\Religions\FactionElementPatch.cs" />
-        <Compile Include="Patches\Religions\ReligionArtifactPatch.cs" />
-        <Compile Include="Patches\Religions\SetReligionOwnerPatch.cs" />
-        <Compile Include="Patches\Religions\SetReligionPortraitPatch.cs" />
-        <Compile Include="Patches\Religions\SetReligionRowPatch.cs" />
-        <Compile Include="Patches\ReloadLangPatch.cs" />
-        <Compile Include="Patches\Relocation\LoadBookPatch.cs" />
-        <Compile Include="Patches\Relocation\LoadResourcesPatch.cs" />
-        <Compile Include="Patches\SafeSceneInitPatch.cs" />
-        <Compile Include="Patches\Sounds\AudibleTopicTextPatch.cs" />
-        <Compile Include="Patches\Sounds\BossBgmEvent.cs" />
-        <Compile Include="Patches\Sounds\ExpandedTapePatch.cs" />
-        <Compile Include="Patches\Sounds\SetBGMOverridePatch.cs" />
-        <Compile Include="Patches\Sounds\MergePlaylistPatch.cs" />
-        <Compile Include="Patches\Sounds\MoldNamedPlaylistPatch.cs" />
-        <Compile Include="Patches\Sources\CellPostProcessPatch.cs" />
-        <Compile Include="Patches\Sources\CardOnCreateEvent.cs" />
-        <Compile Include="Patches\Sources\ClassCacheThunk.cs" />
-        <Compile Include="Patches\Sources\NamedImportPatch.cs" />
-        <Compile Include="Patches\Sources\RethrowParsePatch.cs" />
-        <Compile Include="Patches\Sources\RowOverridePatch.cs" />
-        <Compile Include="Patches\Sources\SafeCreateCardPatch.cs" />
-        <Compile Include="Patches\Sources\SourceInitPatch.cs" />
-        <Compile Include="Patches\Traits\ConverterEvent.cs" />
-        <Compile Include="Patches\Traits\OnBarterEvent.cs" />
-        <Compile Include="Patches\Traits\SafeCreateTraitPatch.cs" />
-        <Compile Include="Patches\UIs\ContextSystemEvent.cs" />
-        <Compile Include="Patches\UIs\DirectPopperPatch.cs" />
-        <Compile Include="Patches\UIs\SkipProgressTweenPatch.cs" />
-        <Compile Include="Patches\Zones\SafeCreateZonePatch.cs" />
-        <Compile Include="Patches\Zones\SetZoneRowPatch.cs" />
-        <Compile Include="ThirdParty\Glance.cs" />
+        <Compile Include="API\Custom\Elements\CustomElement.cs"/>
+        <Compile Include="API\Custom\Elements\CustomFeat.cs"/>
+        <Compile Include="API\Custom\Playlist\CustomPlaylist.cs"/>
+        <Compile Include="API\Custom\Playlist\PlaylistBuilder.cs"/>
+        <Compile Include="API\Custom\Playlist\PlaylistView.cs"/>
+        <Compile Include="API\Drama\ActionBuilder.cs"/>
+        <Compile Include="API\Drama\ActionCookie.cs"/>
+        <Compile Include="API\Drama\ActionParameter.cs"/>
+        <Compile Include="API\Drama\ActionHelper.cs"/>
+        <Compile Include="API\Drama\DramaExpansion.cs"/>
+        <Compile Include="API\Drama\Expansions\Action.cs"/>
+        <Compile Include="API\Drama\Expansions\Condition.cs"/>
+        <Compile Include="API\Drama\Expansions\Misc.cs"/>
+        <Compile Include="API\Drama\Expansions\Quest.cs"/>
+        <Compile Include="API\Drama\Expansions\Scene.cs"/>
+        <Compile Include="API\Drama\ValueStack.cs"/>
+        <Compile Include="API\Migration\MigrateDetail.cs"/>
+        <Compile Include="API\Processors\GameIOProcessor.cs"/>
+        <Compile Include="API\Processors\SheetProcessor.cs"/>
+        <Compile Include="API\Processors\TraitTransformer.cs"/>
+        <Compile Include="API\Processors\TypeResolver.cs"/>
+        <Compile Include="API\Processors\WorkbookProcessor.cs"/>
+        <Compile Include="API\Serializable\IChunkable.cs"/>
+        <Compile Include="API\Serializable\SerializableBioData.cs"/>
+        <Compile Include="API\Serializable\SerializableConverterData.cs"/>
+        <Compile Include="API\Serializable\SerializableEffectSetting.cs"/>
+        <Compile Include="API\Serializable\SerializableModPackage.cs"/>
+        <Compile Include="API\Serializable\SerializablePlaylist.cs"/>
+        <Compile Include="API\Serializable\SerializableReligionElement.cs"/>
+        <Compile Include="API\Serializable\SerializableSoundData.cs"/>
+        <Compile Include="API\Serializable\SerializableStockData.cs"/>
+        <Compile Include="API\WorkbookImporter.cs"/>
+        <Compile Include="Helper\Extensions\CardExt.cs"/>
+        <Compile Include="Helper\Extensions\CharaExt.cs"/>
+        <Compile Include="Helper\Extensions\CodeMatchExt.cs"/>
+        <Compile Include="Helper\Extensions\DictExt.cs"/>
+        <Compile Include="Helper\Extensions\GameDateExt.cs"/>
+        <Compile Include="Helper\Extensions\LinqExt.cs"/>
+        <Compile Include="Helper\Extensions\ParserExt.cs"/>
+        <Compile Include="Helper\Extensions\PointExt.cs"/>
+        <Compile Include="Helper\Extensions\ZoneExt.cs"/>
+        <Compile Include="Helper\FileUtil\ConfigCereal.cs"/>
+        <Compile Include="Helper\FileUtil\FileMapping.cs"/>
+        <Compile Include="Helper\FileUtil\PackageIterator.cs"/>
+        <Compile Include="Helper\Runtime\DebugSampler.cs"/>
+        <Compile Include="Helper\Runtime\Exceptions\DramaException.cs"/>
+        <Compile Include="Helper\Runtime\Exceptions\ExceptionProfile.cs"/>
+        <Compile Include="Helper\Runtime\Exceptions\SourceParseException.cs"/>
+        <Compile Include="Helper\Runtime\Exceptions\MonoFrame.cs"/>
+        <Compile Include="Helper\Runtime\IntrospectCopy.cs"/>
+        <Compile Include="Helper\Runtime\Stubs\MethodStub.cs"/>
+        <Compile Include="Helper\Runtime\Stubs\MethodStubHelper.cs"/>
+        <Compile Include="Helper\SourceRowComparer.cs"/>
+        <Compile Include="Helper\SpriteReplacerHelper.cs"/>
+        <Compile Include="Helper\ReverseId.cs"/>
+        <Compile Include="Helper\Runtime\AttributeQuery.cs"/>
+        <Compile Include="Helper\Runtime\CachedMethods.cs"/>
+        <Compile Include="Helper\Runtime\MethodDispatcher.cs"/>
+        <Compile Include="Helper\Runtime\OverrideMethodComparer.cs"/>
+        <Compile Include="Helper\Runtime\TypeQualifier.cs"/>
+        <Compile Include="Helper\ScopeExit.cs"/>
+        <Compile Include="Helper\String\CalcHelper.cs"/>
+        <Compile Include="Helper\String\StringHelper.cs"/>
+        <Compile Include="Helper\String\FastStringWatch.cs"/>
+        <Compile Include="Helper\String\GameVersion.cs"/>
+        <Compile Include="Helper\String\Hashing.cs"/>
+        <Compile Include="Helper\String\MethodInfoDetail.cs"/>
+        <Compile Include="Helper\String\ParamParser.cs"/>
+        <Compile Include="Helper\String\PathNormalizer.cs"/>
+        <Compile Include="Helper\String\PathTruncation.cs"/>
+        <Compile Include="Helper\Unity\AudioClipStream.cs"/>
+        <Compile Include="Helper\Unity\ChildrenIterator.cs"/>
+        <Compile Include="Helper\Unity\ContextMenuHelper.cs"/>
+        <Compile Include="Helper\Unity\CoroutineHelper.cs"/>
+        <Compile Include="Helper\Unity\DeferredCoroutine.cs"/>
+        <Compile Include="Helper\Unity\ELayerCleanup.cs"/>
+        <Compile Include="Helper\Unity\PixelRaycast.cs"/>
+        <Compile Include="Helper\Unity\ProgressIndicator.cs"/>
+        <Compile Include="Helper\Unity\SpriteCreator.cs"/>
+        <Compile Include="Helper\Unity\TextureResizer.cs"/>
+        <Compile Include="LangMod\LocFormatter.cs"/>
+        <Compile Include="Loader\CustomWhateverLoader.cs"/>
+        <Compile Include="Loader\CwlAsmInfo.cs"/>
+        <Compile Include="Loader\CwlConfig.cs"/>
+        <Compile Include="Loader\CwlConsole.cs"/>
+        <Compile Include="Loader\CwlException.cs"/>
+        <Compile Include="Loader\CwlLogger.cs"/>
+        <Compile Include="Loader\CwlStartTask.cs"/>
+        <Compile Include="Loader\CwlDebug.cs"/>
+        <Compile Include="Loader\DataLoaders\CharaTalkLoader.cs"/>
+        <Compile Include="Loader\DataLoaders\DataLoader.cs"/>
+        <Compile Include="Loader\DataLoaders\DialogPreloader.cs"/>
+        <Compile Include="Loader\DataLoaders\EffectLoader.cs"/>
+        <Compile Include="Loader\DataLoaders\EffectSettingLoader.cs"/>
+        <Compile Include="Loader\DataLoaders\ReligionLoader.cs"/>
+        <Compile Include="Loader\DataLoaders\SoundLoader.cs"/>
+        <Compile Include="Loader\DataLoaders\TransformLoader.cs"/>
+        <Compile Include="Loader\ExecutionAnalysis.cs"/>
+        <Compile Include="Loader\ModIntegrity.cs"/>
+        <Compile Include="Patches\Charas\BioOverridePatch.cs"/>
+        <Compile Include="Patches\Charas\NerdAdvPatch.cs"/>
+        <Compile Include="Patches\Charas\RepositionTcPatch.cs"/>
+        <Compile Include="Patches\Charas\RepositionPortraitPatch.cs"/>
+        <Compile Include="Patches\Charas\RestoreCharaData.cs"/>
+        <Compile Include="Patches\Charas\SetCharaRowPatch.cs"/>
+        <Compile Include="Patches\Conditions\SafeCreateConditionPatch.cs"/>
+        <Compile Include="Patches\Conditions\SetConditionRowPatch.cs"/>
+        <Compile Include="Patches\Dialogs\AllowUniqueTalkPatch.cs"/>
+        <Compile Include="Patches\Dialogs\LoadDialogPatch.cs"/>
+        <Compile Include="Patches\Dialogs\SafePopTalkPatch.cs"/>
+        <Compile Include="Patches\Dialogs\VariableQuotePatch.cs"/>
+        <Compile Include="Patches\Dramas\DramaExpansionPatch.cs"/>
+        <Compile Include="Patches\Dramas\DramaPortraitOverride.cs"/>
+        <Compile Include="Patches\Dramas\GetOrAddPersonPatch.cs"/>
+        <Compile Include="Patches\Dramas\LoadDramaPatch.cs"/>
+        <Compile Include="Patches\Dramas\OverlapSoundPatch.cs"/>
+        <Compile Include="Patches\Dramas\RerouteDramaPatch.cs"/>
+        <Compile Include="Patches\Dramas\SafePlayDramaPatch.cs"/>
+        <Compile Include="Patches\Effects\CaneTintPatch.cs"/>
+        <Compile Include="Patches\Elements\ActPerformEvent.cs"/>
+        <Compile Include="Patches\Elements\FeatApplyEvent.cs"/>
+        <Compile Include="Patches\Elements\FixedSourceValuePatch.cs"/>
+        <Compile Include="Patches\Elements\FuzzyLookupPatch.cs"/>
+        <Compile Include="Patches\Elements\InvalidateAbilityPatch.cs"/>
+        <Compile Include="Patches\Elements\MergeAttackElementPatch.cs"/>
+        <Compile Include="Patches\Elements\SafeCreateElementPatch.cs"/>
+        <Compile Include="Patches\Elements\SetElementRowPatch.cs"/>
+        <Compile Include="Patches\Elements\SafeValueBonusPatch.cs"/>
+        <Compile Include="Patches\GameSaveLoad\GameLoadEvent.cs"/>
+        <Compile Include="Patches\GameSaveLoad\GameSaveEvent.cs"/>
+        <Compile Include="Patches\GameSaveLoad\SafeResolveTypePatch.cs"/>
+        <Compile Include="Patches\LoadSpritePatch.cs"/>
+        <Compile Include="Patches\Materials\ReverseIdMapper.cs"/>
+        <Compile Include="Patches\Materials\SafeCreateMaterialPatch.cs"/>
+        <Compile Include="Patches\Materials\SetMaterialRowPatch.cs"/>
+        <Compile Include="Patches\Objs\ReverseIdMapper.cs"/>
+        <Compile Include="Patches\Quests\InvalidateDeliverPatch.cs"/>
+        <Compile Include="Patches\Quests\SafeCreateQuestPatch.cs"/>
+        <Compile Include="Patches\Quests\SetQuestRowPatch.cs"/>
+        <Compile Include="Patches\Recipes\ForcePurityPatch.cs"/>
+        <Compile Include="Patches\Recipes\ForceRarityPatch.cs"/>
+        <Compile Include="Patches\Recipes\SetRecipeRowPatch.cs"/>
+        <Compile Include="Patches\Religions\FactionElementPatch.cs"/>
+        <Compile Include="Patches\Religions\ReligionArtifactPatch.cs"/>
+        <Compile Include="Patches\Religions\SetReligionOwnerPatch.cs"/>
+        <Compile Include="Patches\Religions\SetReligionPortraitPatch.cs"/>
+        <Compile Include="Patches\Religions\SetReligionRowPatch.cs"/>
+        <Compile Include="Patches\ReloadLangPatch.cs"/>
+        <Compile Include="Patches\Relocation\LoadBookPatch.cs"/>
+        <Compile Include="Patches\Relocation\LoadResourcesPatch.cs"/>
+        <Compile Include="Patches\SafeSceneInitPatch.cs"/>
+        <Compile Include="Patches\Sounds\AudibleTopicTextPatch.cs"/>
+        <Compile Include="Patches\Sounds\ExpandedTapePatch.cs"/>
+        <Compile Include="Patches\Sounds\SetBGMOverridePatch.cs"/>
+        <Compile Include="Patches\Sounds\MergePlaylistPatch.cs"/>
+        <Compile Include="Patches\Sounds\MoldNamedPlaylistPatch.cs"/>
+        <Compile Include="Patches\Sources\CellPostProcessPatch.cs"/>
+        <Compile Include="Patches\Sources\CardOnCreateEvent.cs"/>
+        <Compile Include="Patches\Sources\ClassCacheThunk.cs"/>
+        <Compile Include="Patches\Sources\NamedImportPatch.cs"/>
+        <Compile Include="Patches\Sources\RethrowParsePatch.cs"/>
+        <Compile Include="Patches\Sources\RowOverridePatch.cs"/>
+        <Compile Include="Patches\Sources\SafeCreateCardPatch.cs"/>
+        <Compile Include="Patches\Sources\SourceInitPatch.cs"/>
+        <Compile Include="Patches\Traits\ConverterEvent.cs"/>
+        <Compile Include="Patches\Traits\OnBarterEvent.cs"/>
+        <Compile Include="Patches\Traits\SafeCreateTraitPatch.cs"/>
+        <Compile Include="Patches\UIs\ContextSystemEvent.cs"/>
+        <Compile Include="Patches\UIs\DirectPopperPatch.cs"/>
+        <Compile Include="Patches\UIs\SkipProgressTweenPatch.cs"/>
+        <Compile Include="Patches\Zones\SafeCreateZonePatch.cs"/>
+        <Compile Include="Patches\Zones\SetZoneRowPatch.cs"/>
+        <Compile Include="ThirdParty\Glance.cs"/>
     </ItemGroup>
     <ItemGroup>
-        <Content Include="FodyWeavers.xml" />
+        <Content Include="FodyWeavers.xml"/>
         <Content Include="LangMod\CN\cwl_sources.xlsx">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
         <Content Include="LangMod\CN\Text\Help\help.txt">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
         <Content Include="LangMod\EN\cwl_sources.xlsx">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
         <Content Include="LangMod\EN\Text\Help\help.txt">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
     <ItemGroup>
