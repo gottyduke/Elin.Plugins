@@ -9,7 +9,7 @@ internal class InvalidateAbilityPatch
 {
     internal static void InvalidateElements(Chara chara)
     {
-        var elements = EClass.sources.elements;
+        var elements = EMono.sources.elements;
         var doReplace = false;
         List<string> safeActs = [];
 

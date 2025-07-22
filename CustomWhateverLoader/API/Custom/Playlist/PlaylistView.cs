@@ -54,7 +54,7 @@ public partial class CustomPlaylist
     [CwlContextMenu("BGM/Next", "cwl_ui_bgm_next")]
     public static string NextBGM()
     {
-        var pl = EClass.Sound.currentPlaylist;
+        var pl = SoundManager.current.currentPlaylist;
         pl.Play();
         return pl.currentItem.data._name;
     }
@@ -63,7 +63,7 @@ public partial class CustomPlaylist
     [CwlContextMenu("BGM/Last", "cwl_ui_bgm_last")]
     public static string LastBGM()
     {
-        var pl = EClass.Sound.currentPlaylist;
+        var pl = SoundManager.current.currentPlaylist;
         pl.nextIndex = (pl.nextIndex - 2 + pl.list.Count) % pl.list.Count;
         pl.Play();
         return pl.currentItem.data._name;
@@ -73,7 +73,7 @@ public partial class CustomPlaylist
     [CwlContextMenu("BGM/Shuffle", "cwl_ui_bgm_shuffle")]
     public static string ShuffleBGM()
     {
-        var pl = EClass.Sound.currentPlaylist;
+        var pl = SoundManager.current.currentPlaylist;
         pl.nextIndex = EClass.rnd(pl.list.Count);
         pl.Shuffle();
         pl.Play();
@@ -84,7 +84,7 @@ public partial class CustomPlaylist
     [CwlContextMenu("BGM/AddKnown", "cwl_ui_bgm_add_known")]
     public static string AddPlaylistToKnown()
     {
-        var pl = EClass.Sound.currentPlaylist;
+        var pl = SoundManager.current.currentPlaylist;
         var prev = EClass.player.knownBGMs.Count;
         EClass.player.knownBGMs.UnionWith(pl.ToInts());
         return $"added {EClass.player.knownBGMs.Count - prev} new BGM(s) to known list";
@@ -129,7 +129,7 @@ public partial class CustomPlaylist
             return "disabled";
         }
 
-        var pl = EClass.Sound.currentPlaylist;
+        var pl = SoundManager.current.currentPlaylist;
         if (pl?.currentItem == null) {
             return "disabled";
         }
@@ -144,7 +144,7 @@ public partial class CustomPlaylist
 
     private static string WatchPlaylistString()
     {
-        var pl = EClass.Sound.currentPlaylist;
+        var pl = SoundManager.current.currentPlaylist;
         if (pl?.currentItem == null) {
             return "disabled";
         }
@@ -155,7 +155,7 @@ public partial class CustomPlaylist
 
     private static string BuildPlaylistString()
     {
-        var newPl = EClass.Sound.currentPlaylist;
+        var newPl = SoundManager.current.currentPlaylist;
         var sb = new StringBuilder()
             .AppendLine(newPl.name)
             .AppendLine()

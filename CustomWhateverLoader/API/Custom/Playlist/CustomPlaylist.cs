@@ -94,7 +94,7 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
             // noexcept
         }
 
-        return mold ?? EClass.Sound.plBlank;
+        return mold ?? SoundManager.current.plBlank;
     }
 
     public static bool MergeOverridesInOrder(List<int> list, IEnumerable<string> orders, string zoneTypeName)
