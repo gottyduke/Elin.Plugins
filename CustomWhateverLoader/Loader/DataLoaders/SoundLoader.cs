@@ -132,7 +132,7 @@ internal partial class DataLoader
         if (ConfigCereal.ReadConfig<SerializableSoundData>(metafile, out var meta) && meta is not null) {
             if (meta.type == SoundData.Type.BGM) {
                 var bgm = ScriptableObject.CreateInstance<BGMData>();
-                bgm._name = name.Capitalize().ToString();
+                bgm._name = name.Capitalize();
                 bgm.song = new();
 
                 meta.bgmDataOptional.IntrospectCopyTo(bgm);

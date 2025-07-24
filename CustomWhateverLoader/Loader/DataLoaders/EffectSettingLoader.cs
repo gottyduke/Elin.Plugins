@@ -56,7 +56,8 @@ internal partial class DataLoader
                     CwlMod.CurrentLoading = "cwl_log_effect_loaded".Loc(nameof(guns), id, path.ShortPath());
                     sb.AppendLine(CwlMod.CurrentLoading);
                     CwlMod.Log<DataLoader>(CwlMod.CurrentLoading);
-                } catch {
+                } catch (Exception ex) {
+                    CwlMod.Error<DataLoader>("cwl_error_failure".Loc(ex.Message, ex));
                     // noexcept
                 }
             }

@@ -88,6 +88,7 @@ internal sealed partial class CwlMod
         progress.Get<ProgressIndicator>().AppendHoverText(() => log.ToTruncateString(450).TruncateAllLines(150));
     }
 
+    [SwallowExceptions]
     private static void LogInternal(object log)
     {
         UnityEngine.Debug.Log(log.RemoveTagColor());

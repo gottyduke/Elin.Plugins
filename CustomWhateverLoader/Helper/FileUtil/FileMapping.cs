@@ -39,7 +39,8 @@ public class FileMapping
         Primary = null;
         _indexed.Clear();
 
-        var langMod = Path.Combine(Owner.dirInfo.FullName, "LangMod");
+        var baseDir = Owner.dirInfo.FullName;
+        var langMod = Path.Combine(baseDir, "LangMod");
         if (!Directory.Exists(langMod)) {
             return;
         }
@@ -53,6 +54,9 @@ public class FileMapping
         HashSet<string> indexed = [
             ..ordering.Select(order => Path.Combine(langMod, order)).Where(resources.Contains),
             ..resources,
+            // fallback mappings
+            langMod,
+            baseDir,
         ];
 
         _indexed.AddRange(indexed);

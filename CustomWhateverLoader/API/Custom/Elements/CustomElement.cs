@@ -52,7 +52,8 @@ public class CustomElement : Element
         }
 
         foreach (var element in All) {
-            if (!element.tag.Contains("addEleOnLoad") || player?.chara?.HasElement(element.id) is not false) {
+            if (!element.tag.Contains("addEleOnLoad") ||
+                player?.chara?.HasElement(element.id) is not false) {
                 continue;
             }
 
