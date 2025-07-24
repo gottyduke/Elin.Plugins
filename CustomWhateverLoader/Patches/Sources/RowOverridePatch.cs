@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Cwl.Helper;
-using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
 
@@ -52,11 +51,11 @@ internal class RowOverridePatch
             if (seen.Add(row)) {
                 uniqueRows.Add(row);
             } else {
-                CwlMod.Debug("cwl_log_deduplicate".Loc(row.GetFieldValue("id")));
+                CwlMod.Debug($"de-duplicate row: {row.GetFieldValue("id")}");
             }
         }
 
-        CwlMod.Debug("cwl_log_unique_count".Loc(__instance.GetType().Name, rows.Count, uniqueRows.Count));
+        CwlMod.Debug($"{__instance.GetType().Name} row count {rows.Count} | unique count {uniqueRows.Count}");
 
         rows.Clear();
         for (var i = uniqueRows.Count - 1; i >= 0; --i) {

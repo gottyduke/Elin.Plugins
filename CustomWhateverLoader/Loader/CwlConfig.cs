@@ -15,10 +15,8 @@ public class CwlConfig
     [ConsoleCommand] public static bool CacheTalks => Caching.Talks?.Value is true;
     [ConsoleCommand] public static bool CacheTypes => Caching.Types?.Value is true;
     [ConsoleCommand] public static bool CachePaths => Caching.Paths?.Value is true;
-    [ConsoleCommand] public static bool CacheSheets => Caching.Sheets?.Value is true;
     [ConsoleCommand] public static bool CacheSprites => Caching.Sprites?.Value is true;
 
-    [ConsoleCommand] public static bool DynamicCheckIf => Dialog.DynamicCheckIf?.Value is true && false;
     [ConsoleCommand] public static bool ExpandedActions => Dialog.ExpandedActions?.Value is true;
     [ConsoleCommand] public static bool ExpandedActionsExternal => Dialog.ExpandedActionsAllowExternal?.Value is true;
     [ConsoleCommand] public static bool NoOverlappingSounds => Dialog.NoOverlappingSounds?.Value is true;
@@ -33,6 +31,7 @@ public class CwlConfig
     [ConsoleCommand] public static bool SafeCreateClass => Patches.SafeCreateClass?.Value is true;
 
     [ConsoleCommand] public static bool AllowProcessors => Source.AllowProcessors?.Value is true;
+    [ConsoleCommand] public static int MaxPrefetchLoads => Source.MaxPrefetchLoads?.Value ?? -1;
     [ConsoleCommand] public static bool NamedImport => Source.NamedImport?.Value is true;
     [ConsoleCommand] public static bool OverrideSameId => Source.OverrideSameId?.Value is true;
     [ConsoleCommand] public static bool RethrowException => Source.RethrowException?.Value is true;
@@ -107,13 +106,6 @@ public class CwlConfig
             true,
             "Cache paths relocated by CWL instead of iterating new paths\n" +
             "缓存CWL重定向的路径而不是每次重新搜索");
-
-        Caching.Sheets = config.Bind(
-            ModInfo.Name,
-            "Caching.Sheets",
-            true,
-            "Cache source sheets loaded by CWL which will load much faster when it's unchanged after caching\n" +
-            "缓存CWL加载的源表，缓存后的源表如果没有修改则能够以极高的速度加载");
 
         Caching.Sprites = config.Bind(
             ModInfo.Name,
@@ -195,6 +187,13 @@ public class CwlConfig
             "Allow CWL to run pre/post processors for workbook, sheet, and cells\n" +
             "允许CWL为工作簿、工作表、单元格执行预/后处理");
 
+        Source.MaxPrefetchLoads = config.Bind(
+            ModInfo.Name,
+            "Source.MaxPrefetchLoads",
+            64,
+            "Allow CWL to prefetch sheets for way faster loading, use -1 to disable\n" +
+            "允许CWL预加载部分源表以极大减少加载时间，设为 -1 禁用");
+
         Source.NamedImport = config.Bind(
             ModInfo.Name,
             "Source.NamedImport",
@@ -254,7 +253,6 @@ public class CwlConfig
         internal static ConfigEntry<bool>? Talks { get; set; }
         internal static ConfigEntry<bool>? Types { get; set; }
         internal static ConfigEntry<bool>? Paths { get; set; }
-        internal static ConfigEntry<bool>? Sheets { get; set; }
         internal static ConfigEntry<bool>? Sprites { get; set; }
     }
 
@@ -270,7 +268,6 @@ public class CwlConfig
     internal class Exceptions
     {
         internal static ConfigEntry<bool>? Analyze { get; set; }
-        internal static ConfigEntry<bool>? AutoFix { get; set; }
         internal static ConfigEntry<bool>? Popup { get; set; }
     }
 
@@ -285,6 +282,7 @@ public class CwlConfig
     internal class Source
     {
         internal static ConfigEntry<bool>? AllowProcessors { get; set; }
+        internal static ConfigEntry<int>? MaxPrefetchLoads { get; set; }
         internal static ConfigEntry<bool>? NamedImport { get; set; }
         internal static ConfigEntry<bool>? OverrideSameId { get; set; }
         internal static ConfigEntry<bool>? RethrowException { get; set; }

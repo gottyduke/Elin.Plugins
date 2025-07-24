@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Cwl.API.Processors;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using NPOI.SS.UserModel;
@@ -33,6 +34,7 @@ public sealed class MigrateDetail
     ];
 
     private static readonly Dictionary<IWorkbook, MigrateDetail> _cached = [];
+    private static readonly Stopwatch _sw = new();
 
     internal static MigrateDetail? CurrentDetail { get; private set; }
 
@@ -44,12 +46,6 @@ public sealed class MigrateDetail
     internal static ILookup<BaseModPackage?, MigrateDetail> Details => _cached
         .OrderByDescending(kv => kv.Value.LoadingTime)
         .ToLookup(kv => kv.Value.Mod, kv => kv.Value);
-
-    public static MigrateDetail GetOrAdd(IWorkbook book)
-    {
-        _cached.TryAdd(book, new());
-        return CurrentDetail = _cached[book];
-    }
 
     public MigrateDetail StartNewSheet(ISheet sheet, List<HeaderCell> expected)
     {
@@ -89,12 +85,6 @@ public sealed class MigrateDetail
     {
         Mod = mod;
         return this;
-    }
-
-    public static void Clear()
-    {
-        _cached.Clear();
-        CurrentDetail = null;
     }
 
     public void FinalizeMigration()
@@ -219,10 +209,36 @@ public sealed class MigrateDetail
         }
     }
 
-    [Conditional("DEBUG")]
+    public static MigrateDetail GetOrAdd(IWorkbook book)
+    {
+        _cached.TryAdd(book, new());
+        return CurrentDetail = _cached[book];
+    }
+
+    public static void Clear()
+    {
+        _cached.Clear();
+        CurrentDetail = null;
+    }
+
+    public static void SetupProcessor()
+    {
+        SheetProcessor.Add(_ =>
+                _sw.Restart(),
+            false);
+        SheetProcessor.Add(s =>
+                GetOrAdd(s.Workbook).LoadingTime += _sw.ElapsedTicks,
+            true);
+
+        WorkbookProcessor.Add(b =>
+                ExecutionAnalysis.MethodTimeLogger.Log(WorkbookImporter.Importer, new(GetOrAdd(b).LoadingTime), ""),
+            true);
+    }
+
+    //[Conditional("DEBUG")]
     public static void DumpTiming()
     {
-        var elapsed = 0L;
+        var elapsed = TimeSpan.Zero;
         var total = 0;
         var sb = new StringBuilder(2048);
         sb.AppendLine();
@@ -232,16 +248,16 @@ public sealed class MigrateDetail
                 continue;
             }
 
-            var time = mod.Sum(d => d.LoadingTime);
-            elapsed += time;
+            var ticks = new TimeSpan(mod.Sum(d => d.LoadingTime));
+            elapsed += ticks;
 
             var count = mod.Count();
             total += count;
 
-            sb.AppendLine($"{time,5}ms[{count,3}] {mod.Key.title}/{mod.Key.id}");
+            sb.AppendLine($"{ticks.Milliseconds,5}ms[{count,3}] {mod.Key.title}/{mod.Key.id}");
         }
 
-        sb.AppendLine($"{elapsed,5}ms[{total,3}] total elapsed");
+        sb.AppendLine($"{elapsed.Milliseconds,5}ms[{total,3}] total elapsed");
         CwlMod.Log<MigrateDetail>(sb);
     }
 

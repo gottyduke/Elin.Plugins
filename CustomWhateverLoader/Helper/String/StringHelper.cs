@@ -8,18 +8,11 @@ namespace Cwl.Helper.String;
 
 public static class StringHelper
 {
-    public static ReadOnlySpan<char> Capitalize(this ReadOnlySpan<char> input)
-    {
-        Span<char> buf = input.ToArray();
-        buf[0] = char.ToUpperInvariant(buf[0]);
-        return buf;
-    }
-
-    public static ReadOnlySpan<char> Capitalize(this string input)
+    public static string Capitalize(this string input)
     {
         Span<char> buf = input.ToCharArray();
         buf[0] = char.ToUpperInvariant(buf[0]);
-        return buf;
+        return buf.ToString();
     }
 
     public static string Truncate(this string input, int length)
@@ -85,5 +78,27 @@ public static class StringHelper
     public static string RemoveTagColor(this object input)
     {
         return Regex.Replace(input.ToString(), "<color(=[^>]*)?>|</color>", "");
+    }
+
+    public static string ToAllocateString(this long bytes)
+    {
+        string[] suffixes = ["B", "KB", "MB", "GB"];
+        var suffix = 0;
+        var readable = bytes;
+
+        while (readable >= 1L << 10 && suffix < suffixes.Length - 1) {
+            readable >>= 10;
+            suffix++;
+        }
+
+        double fmt;
+        if (suffix == 0) {
+            fmt = bytes;
+        } else {
+            var divisor = 1L << (suffix * 10);
+            fmt = (double)bytes / divisor;
+        }
+
+        return $"{fmt:0.##} {suffixes[suffix]}";
     }
 }

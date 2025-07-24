@@ -3,6 +3,7 @@ using System.Collections;
 using Cwl.API.Attributes;
 using Cwl.API.Custom;
 using Cwl.API.Drama;
+using Cwl.API.Migration;
 using Cwl.API.Processors;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
@@ -150,5 +151,7 @@ internal sealed partial class CwlMod
         TypeResolver.Add(SafeCreateConditionPatch.ResolveCondition);
         TypeResolver.Add(SafeCreateQuestPatch.ResolveQuest);
         TypeResolver.Add(SafeCreateZonePatch.ResolveZone);
+
+        MigrateDetail.SetupProcessor();
     }
 }
