@@ -51,13 +51,13 @@ public class CustomElement : Element
             return;
         }
 
-        foreach (var element in All) {
-            if (!element.tag.Contains("addEleOnLoad") ||
-                player?.chara?.HasElement(element.id) is not false) {
+        foreach (var (id, row) in sources.elements.map) {
+            if (!row.tag.Contains("addEleOnLoad") ||
+                player?.chara?.HasElement(id) is not false) {
                 continue;
             }
 
-            player.chara.AddElement(element.alias);
+            player.chara.AddElement(row);
         }
     }
 

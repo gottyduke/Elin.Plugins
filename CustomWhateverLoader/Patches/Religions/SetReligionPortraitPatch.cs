@@ -29,7 +29,7 @@ internal class SetReligionPortraitPatch
         }
 
         var portrait = LayerDrama.Instance.drama.dialog.portrait.portrait;
-        var sprite = $"{file}.png".LoadSprite();
+        var sprite = file.LoadSprite();
         sprite ??= portrait.sprite;
 
         portrait.sprite = sprite;

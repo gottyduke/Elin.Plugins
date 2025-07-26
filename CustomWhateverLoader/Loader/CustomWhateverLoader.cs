@@ -9,7 +9,7 @@ public static class ModInfo
     // for legacy reason
     public const string Guid = "dk.elinplugins.customdialogloader";
     public const string Name = "Custom Whatever Loader";
-    public const string Version = "1.20.39";
+    public const string Version = "1.20.40";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]

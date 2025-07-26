@@ -9,8 +9,8 @@ namespace Cwl.Helper;
 
 public static class CachedMethods
 {
-    private static readonly Dictionary<TypeInfo, MethodInfo[]> _cached = [];
-    private static readonly Dictionary<TypeInfo, FieldInfo?> _cachedFields = [];
+    private static readonly Dictionary<TypeInfo, MethodInfo[]> _cachedMethods = [];
+    private static readonly Dictionary<TypeInfo, FieldInfo[]> _cachedFields = [];
     private static readonly Dictionary<MethodInfo, FastInvokeHandler> _cachedInvokers = [];
 
     public static MethodInfo[] GetCachedMethods(this Type type)
@@ -20,11 +20,11 @@ public static class CachedMethods
 
     public static MethodInfo[] GetCachedMethods(this TypeInfo type)
     {
-        if (_cached.TryGetValue(type, out var methods)) {
+        if (_cachedMethods.TryGetValue(type, out var methods)) {
             return methods;
         }
 
-        return _cached[type] = AccessTools.GetDeclaredMethods(type).ToArray();
+        return _cachedMethods[type] = AccessTools.GetDeclaredMethods(type).ToArray();
     }
 
     public static MethodInfo? GetCachedMethod(string typeName, string methodName, Type[] parameters)
@@ -44,6 +44,19 @@ public static class CachedMethods
         }
     }
 
+    public static FieldInfo[] GetCachedFields(this Type type)
+    {
+        return GetCachedFields(type.GetTypeInfo());
+    }
+
+    public static FieldInfo[] GetCachedFields(this TypeInfo type)
+    {
+        if (_cachedFields.TryGetValue(type, out var fields)) {
+            return fields;
+        }
+
+        return _cachedFields[type] = type.GetFields(AccessTools.all & ~BindingFlags.Static);
+    }
     public static FieldInfo? GetCachedField(this Type type, string fieldName)
     {
         return GetCachedField(type.GetTypeInfo(), fieldName);
@@ -51,11 +64,7 @@ public static class CachedMethods
 
     public static FieldInfo? GetCachedField(this TypeInfo type, string fieldName)
     {
-        if (_cachedFields.TryGetValue(type, out var field)) {
-            return field;
-        }
-
-        return _cachedFields[type] = AccessTools.Field(type, fieldName);
+        return GetCachedFields(type).FirstOrDefault(f => f.Name == fieldName);
     }
 
     public static object? GetFieldValue(this object instance, string fieldName)

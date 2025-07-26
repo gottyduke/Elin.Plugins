@@ -19,7 +19,7 @@ internal class LoadSpritePatch
         }
 
         if (SpriteReplacer.dictModItems.TryGetValue(custom.id, out var file)) {
-            __result = $"{file}.png".LoadSprite();
+            __result = file.LoadSprite();
         }
 
         return __result == null;
@@ -32,7 +32,7 @@ internal class LoadSpritePatch
     {
         var id = __instance.source.alias[3..].ToLowerInvariant();
         if (SpriteReplacer.dictModItems.TryGetValue(id, out var file)) {
-            __result = $"{file}.png".LoadSprite();
+            __result = file.LoadSprite();
         }
 
         return __result == null;
@@ -45,7 +45,7 @@ internal class LoadSpritePatch
     {
         var id = __instance.source.id;
         if (SpriteReplacer.dictModItems.TryGetValue(id, out var file)) {
-            __result = $"{file}.png".LoadSprite();
+            __result = file.LoadSprite();
         }
 
         return __result == null;

@@ -8,23 +8,13 @@ namespace Cwl.Helper;
 
 public static class IntrospectCopy
 {
-    private static readonly Dictionary<Type, FieldInfo[]> _cached = [];
-
-    public static void IntrospectCopyTo<T, TU>(this T source, TU target, BindingFlags? flags = null)
+    public static void IntrospectCopyTo<T, TU>(this T source, TU target)
     {
-        var access = flags ?? AccessTools.all & ~BindingFlags.Static;
-
         var srcType = source!.GetType();
-        if (!_cached.TryGetValue(srcType, out var srcFields)) {
-            _cached[srcType] = srcFields = srcType.GetFields(access);
-        }
-
+        var srcFields = srcType.GetCachedFields();
         var dstType = target!.GetType();
-        if (!_cached.TryGetValue(dstType, out var dstFields)) {
-            _cached[dstType] = dstFields = dstType.GetFields(access);
-        }
 
-        foreach (var dest in dstFields) {
+        foreach (var dest in dstType.GetCachedFields()) {
             var field = srcFields.FirstOrDefault(f => f.Name == dest.Name &&
                                                       f.FieldType == dest.FieldType);
             if (field is null) {

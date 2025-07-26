@@ -35,7 +35,7 @@ internal partial class DataLoader
 
                     if (sprite == null) {
                         if (!SpriteReplacer.dictModItems.TryGetValue(read.spriteId, out var modded) ||
-                            (sprite = $"{modded}.png".LoadSprite(name: read.spriteId)) == null) {
+                            (sprite = modded.LoadSprite(name: read.spriteId)) == null) {
                             if ((sprite = Resources.Load<Sprite>(read.spriteId)) == null) {
                                 sprite = defaultSprite;
                             }
