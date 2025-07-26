@@ -6,6 +6,7 @@ namespace Cwl.Patches.Dramas;
 [HarmonyPatch]
 internal class GetOrAddPersonPatch
 {
+    [SwallowExceptions]
     [HarmonyPostfix]
     [HarmonyPatch(typeof(DramaSequence), nameof(DramaSequence.GetActor))]
     internal static void OnGetOrAddActor(DramaSequence __instance, ref DramaActor __result, string id)
