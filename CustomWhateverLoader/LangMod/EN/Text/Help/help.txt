@@ -18,8 +18,15 @@
 
 
 
+{topic|1.20.40}
+<b>*Optimized the sheet loader speed*</b>. The prefetch chunk can be configured, it will increase memory usage during initial load - but not after.
+Added tag addDice to load the Calc row with same alias as Element
+Added support of laser effects to guns that are ToolRangedGunEnergy or with tag addLaser
+Added a suppression to a reported error during drama play - unconfirmed
+
 {topic|1.20.39}
 Dungeon_Boss the Boss playlist that people were asking for
+Enabled internal command <i>Reload Sounds</i>
 
 {topic|1.20.38}
 Added verbose exception handler for drama sheet parsing
