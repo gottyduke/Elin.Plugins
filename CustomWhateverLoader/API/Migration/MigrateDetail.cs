@@ -254,10 +254,10 @@ public sealed class MigrateDetail
             var count = mod.Count();
             total += count;
 
-            sb.AppendLine($"{ticks.Milliseconds,5}ms[{count,3}] {mod.Key.title}/{mod.Key.id}");
+            sb.AppendLine($"{(int)ticks.TotalMilliseconds,5}ms[{count,3}] {mod.Key.title}/{mod.Key.id}");
         }
 
-        sb.AppendLine($"{elapsed.Milliseconds,5}ms[{total,3}] total elapsed");
+        sb.AppendLine($"{(int)elapsed.TotalMilliseconds,5}ms[{total,3}] total elapsed");
         CwlMod.Log<MigrateDetail>(sb);
     }
 

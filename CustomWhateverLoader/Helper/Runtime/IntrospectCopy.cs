@@ -8,7 +8,7 @@ namespace Cwl.Helper;
 
 public static class IntrospectCopy
 {
-    public static void IntrospectCopyTo<T, TU>(this T source, TU target)
+    public static void IntrospectCopyTo<T, TU>(this T source, TU target, BindingFlags? flags = null)
     {
         var srcType = source!.GetType();
         var srcFields = srcType.GetCachedFields();
