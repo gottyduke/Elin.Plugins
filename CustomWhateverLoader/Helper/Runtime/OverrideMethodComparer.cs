@@ -26,7 +26,8 @@ public struct OverrideMethodComparer : IEqualityComparer<MethodBase>
             .Concat(TypeQualifier.Declared)
             .OfDerived(type)
             .Select(t => t.GetRuntimeMethod(methodName, parameterTypes))
-            .Where(AccessTools.IsDeclaredMember);
+            .Where(mi => !mi.ContainsGenericParameters && mi.IsDeclaredMember())
+            .Distinct(Default);
     }
 
     public static IEnumerable<MethodBase> FindAllOverridesGetter(Type type, string propertyName)
@@ -40,6 +41,6 @@ public struct OverrideMethodComparer : IEqualityComparer<MethodBase>
             .Concat(TypeQualifier.Declared)
             .OfDerived(type)
             .SelectMany(t => AccessTools.GetDeclaredConstructors(t))
-            .Where(AccessTools.IsDeclaredMember);
+            .Distinct(Default);
     }
 }

@@ -89,16 +89,16 @@ public class WorkbookImporter
 
     public static void LoadAllFiles(IEnumerable<FileInfo> imports, string prefetch = nameof(Element))
     {
-#if DEBUG
-        var alloc = GC.GetTotalMemory(true);
-#endif
-
+        var alloc = GC.GetTotalMemory(false);
+        
         var usePrefetch = true;
         var chunkSize = CwlConfig.MaxPrefetchLoads;
         if (chunkSize == -1) {
             usePrefetch = false;
             chunkSize = int.MaxValue;
         }
+        
+        CwlMod.Debug<WorkbookImporter>($"prefetch enabled: {usePrefetch}");
 
         List<IWorkbook> books = [];
         List<(ISheet, string)> fetches = [];
@@ -164,11 +164,9 @@ public class WorkbookImporter
             HotInit(dirty);
         }
 
-#if DEBUG
-        var allocNew = GC.GetTotalMemory(true);
+        var allocNew = GC.GetTotalMemory(false);
         var allocDiff = allocNew - alloc;
         CwlMod.Debug<WorkbookImporter>($"prefetch chunk size: {chunkSize} | mem alloc: {allocDiff.ToAllocateString()}");
-#endif
 
         MigrateDetail.DumpTiming();
         MigrateDetail.Clear();

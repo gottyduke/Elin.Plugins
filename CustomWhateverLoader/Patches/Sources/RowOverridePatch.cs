@@ -18,7 +18,12 @@ internal class RowOverridePatch
 
     internal static IEnumerable<MethodBase> TargetMethods()
     {
-        return OverrideMethodComparer.FindAllOverrides(typeof(SourceData), nameof(SourceData.Init));
+        var type = typeof(SourceData);
+        return type.Assembly.GetTypes()
+            .Concat(TypeQualifier.Declared)
+            .OfDerived(type)
+            .Select(t => t.GetRuntimeMethod(nameof(SourceData.Init), []))
+            .Distinct(OverrideMethodComparer.Default);
     }
 
     [SwallowExceptions]

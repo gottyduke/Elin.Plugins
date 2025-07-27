@@ -57,6 +57,7 @@ public static class CachedMethods
 
         return _cachedFields[type] = type.GetFields(AccessTools.all & ~BindingFlags.Static);
     }
+
     public static FieldInfo? GetCachedField(this Type type, string fieldName)
     {
         return GetCachedField(type.GetTypeInfo(), fieldName);

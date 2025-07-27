@@ -23,7 +23,7 @@
 Added tag addDice to load the Calc row with same alias as Element
 Added support of laser effects to guns that are ToolRangedGunEnergy or with tag addLaser
 Added a suppression to a reported error during drama play - unconfirmed
-Fixed a bug introduced in breaking changes from 21.173 Stable - all we know that stable patch is for the most aggressive changes while nightly is just for balancing
+Fixed a bug introduced in breaking changes from 23.173 Stable - all we know that stable patch is for the most aggressive changes while nightly is just for balancing
 
 {topic|1.20.39}
 Dungeon_Boss the Boss playlist that people were asking for
