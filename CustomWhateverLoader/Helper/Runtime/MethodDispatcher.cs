@@ -68,6 +68,7 @@ public static class MethodDispatcher
         return true;
     }
 
+    [SwallowExceptions]
     internal static void BuildDispatchList<T>(string methodName)
     {
         foreach (var type in TypeQualifier.Declared.OfDerived(typeof(T))) {

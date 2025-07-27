@@ -29,7 +29,7 @@ internal class NamedImportPatch
         return WorkbookImporter.Sources
             .Select(MethodInfo? (sf) => sf.FieldType.GetRuntimeMethod("CreateRow", []))
             .OfType<MethodInfo>()
-            .Distinct(OverrideMethodComparer.Default);
+            .Where(AccessTools.IsDeclaredMember);
     }
 
     [HarmonyTranspiler]

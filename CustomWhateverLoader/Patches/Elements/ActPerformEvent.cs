@@ -23,14 +23,13 @@ public class ActPerformEvent
             .Where(mi => mi.DeclaringType != typeof(DynamicAct) && mi.DeclaringType != typeof(DynamicAIAct));
     }
 
-    [HarmonyPostfix]
     internal static void OnPerform(Act __instance)
     {
         OnActPerformEvent(__instance);
     }
 
     [Time]
-    internal static void RegisterEvents(MethodInfo method, CwlActPerformEvent perform)
+    internal static void RegisterEvents(MethodInfo method, CwlActPerformEvent attr)
     {
         Add(act => method.FastInvokeStatic(act));
 
@@ -40,8 +39,7 @@ public class ActPerformEvent
     private static void Add(Action<Act> process)
     {
         if (!_patched) {
-            Harmony.CreateAndPatchAll(typeof(ActPerformEvent), ModInfo.Guid);
-            _patched = true;
+            TryPatch();
         }
 
         OnActPerformEvent += Process;
@@ -53,6 +51,24 @@ public class ActPerformEvent
                 process(act);
             } catch (Exception ex) {
                 CwlMod.Warn<ActPerformEvent>("cwl_warn_processor".Loc("act_perform", act.GetType().Name, ex));
+                // noexcept
+            }
+        }
+    }
+
+    [SwallowExceptions]
+    private static void TryPatch()
+    {
+        _patched = true;
+
+        var harmony = new Harmony(ModInfo.Guid);
+        var postfix = new HarmonyMethod(typeof(ActPerformEvent), nameof(OnPerform));
+        foreach (var perform in TargetMethods()) {
+            try {
+                harmony.Patch(perform, postfix: postfix);
+            } catch {
+                CwlMod.Warn<ActPerformEvent>("cwl_warn_processor".Loc("act_perform",
+                    (perform as MethodInfo)?.GetAssemblyDetail(false), null));
                 // noexcept
             }
         }

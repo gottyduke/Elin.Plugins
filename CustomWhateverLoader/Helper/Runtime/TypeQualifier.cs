@@ -217,6 +217,7 @@ public class TypeQualifier
         return segments;
     }
 
+    [SwallowExceptions]
     internal static void SafeQueryTypesOfAll()
     {
         Plugins ??= Resources.FindObjectsOfTypeAll<BaseUnityPlugin>().ToList();

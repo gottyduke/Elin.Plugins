@@ -221,6 +221,7 @@ public sealed class MigrateDetail
         CurrentDetail = null;
     }
 
+    [SwallowExceptions]
     public static void SetupProcessor()
     {
         SheetProcessor.Add(_ =>

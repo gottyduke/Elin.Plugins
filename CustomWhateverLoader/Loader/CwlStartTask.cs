@@ -128,19 +128,24 @@ internal sealed partial class CwlMod
     {
         foreach (var (method, attrs) in AttributeQuery.MethodsWith<CwlEvent>()) {
             foreach (var attr in attrs) {
-                switch (attr) {
-                    case CwlGameIOEvent ioAttr:
-                        GameIOProcessor.RegisterEvents(method, ioAttr);
-                        break;
-                    case CwlActPerformEvent actAttr:
-                        ActPerformEvent.RegisterEvents(method, actAttr);
-                        break;
-                    case CwlContextMenu ctxAttr:
-                        ContextMenuHelper.RegisterEvents(method, ctxAttr);
-                        break;
-                    case CwlOnCreateEvent charaAttr:
-                        CardOnCreateEvent.RegisterEvents(method, charaAttr);
-                        break;
+                try {
+                    switch (attr) {
+                        case CwlGameIOEvent ioAttr:
+                            GameIOProcessor.RegisterEvents(method, ioAttr);
+                            break;
+                        case CwlActPerformEvent actAttr:
+                            ActPerformEvent.RegisterEvents(method, actAttr);
+                            break;
+                        case CwlContextMenu ctxAttr:
+                            ContextMenuHelper.RegisterEvents(method, ctxAttr);
+                            break;
+                        case CwlOnCreateEvent charaAttr:
+                            CardOnCreateEvent.RegisterEvents(method, charaAttr);
+                            break;
+                    }
+                } catch (Exception ex) {
+                    Warn<CwlMod>("cwl_error_failure".Loc(ex.Message));
+                    // noexcept
                 }
             }
         }
