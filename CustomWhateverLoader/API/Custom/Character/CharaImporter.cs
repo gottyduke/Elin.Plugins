@@ -33,16 +33,12 @@ public partial class CustomChara
     internal static void AddDelayedChara()
     {
         var listAdv = game.cards.listAdv;
-        var charas = game.cards.globalCharas.Values
-            .GroupBy(c => c.id)
-            .ToDictionary(cg => cg.Key, cg => new HashSet<Zone>(cg.Select(c => c.homeZone ?? c.currentZone)));
+        var charas = game.cards.globalCharas.Values.ToLookup(c => c.id);
 
         foreach (var (id, import) in _delayedCharaImport) {
             if (!SafeSceneInitPatch.SafeToCreate) {
                 return;
             }
-
-            charas.TryAdd(id, []);
 
             try {
                 var isAdv = import.Type is ImportType.Adventurer;
@@ -51,44 +47,52 @@ public partial class CustomChara
                 var addLoc = isAdv ? "cwl_log_added_adv" : "cwl_log_added_cm";
 
                 List<Zone> toAddZones = [];
-                var present = 0;
                 foreach (var toImport in import.Zones) {
-                    if (!toImport.ValidateZone(out var zone, true) || zone is null) {
-                        CwlMod.WarnWithPopup<CustomChara>("cwl_error_zone_invalid".Loc(id, toImport));
-                        continue;
-                    }
-
-                    if (!charas[id].Contains(zone)) {
+                    if (toImport.ValidateZone(out var zone, true) && zone is not null) {
                         toAddZones.Add(zone);
                     } else {
-                        present++;
-                        CwlMod.Log<CustomChara>(skipLoc.Loc(id));
+                        CwlMod.WarnWithPopup<CustomChara>("cwl_error_zone_invalid".Loc(id, toImport));
                     }
                 }
 
-                for (var i = 0; i < import.Zones.Length - present; ++i) {
-                    var toAddZone = toAddZones[i];
+                var presentCharas = charas[id].ToList();
+                var presentCount = presentCharas.Count;
 
-                    if (isAdv) {
-                        if (game.cards.globalCharas.Find(id) is not null) {
-                            CwlMod.Log<CustomChara>(skipLoc.Loc(id));
-                            break;
-                        }
+                // adventurer is uno solo unique
+                var targetCount = isAdv ? 1 : toAddZones.Count;
+                var neededToSpawn = Math.Max(0, targetCount - presentCount);
+                // no more
+                if (neededToSpawn == 0 && presentCount > 0) {
+                    CwlMod.Log<CustomChara>(skipLoc.Loc(id));
+                    continue;
+                }
 
-                        toAddZone = toAddZones[0];
-                    }
+                // adventurer already on ranking, skip
+                if (isAdv && presentCount > 0) {
+                    CwlMod.Log<CustomChara>(skipLoc.Loc(id));
+                    continue;
+                }
 
-                    if (!CreateTaggedChara(id, out var chara, import) || chara is null) {
+                for (var i = 0; i < neededToSpawn; ++i) {
+                    // adventurer   -> first zone
+                    // unique chara -> each zone needs an instance
+                    var toAddZone = isAdv ? toAddZones.FirstOrDefault() : toAddZones.TryGet(i, true);
+                    if (toAddZone is null) {
+                        // no tag or invalid tag
                         break;
                     }
 
-                    SpawnAtZone(chara, toAddZone);
+                    if (CreateTaggedChara(id, out var chara, import) && chara is not null) {
+                        SpawnAtZone(chara, toAddZone);
 
-                    if (isAdv) {
-                        listAdv.Add(chara);
+                        if (isAdv) {
+                            listAdv.Add(chara);
+                        }
+
+                        CwlMod.Log<CustomChara>(addLoc.Loc(id, chara.homeZone.Name));
+                    } else {
+                        break;
                     }
-
-                    CwlMod.Log<CustomChara>(addLoc.Loc(id, chara.homeZone.Name));
                 }
             } catch (Exception ex) {
                 CwlMod.WarnWithPopup<CustomChara>("cwl_error_failure".Loc(ex.Message), ex);
