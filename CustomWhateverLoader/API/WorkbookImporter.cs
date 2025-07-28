@@ -90,14 +90,14 @@ public class WorkbookImporter
     public static void LoadAllFiles(IEnumerable<FileInfo> imports, string prefetch = nameof(Element))
     {
         var alloc = GC.GetTotalMemory(false);
-        
+
         var usePrefetch = true;
         var chunkSize = CwlConfig.MaxPrefetchLoads;
         if (chunkSize == -1) {
             usePrefetch = false;
             chunkSize = int.MaxValue;
         }
-        
+
         CwlMod.Debug<WorkbookImporter>($"prefetch enabled: {usePrefetch}");
 
         List<IWorkbook> books = [];
