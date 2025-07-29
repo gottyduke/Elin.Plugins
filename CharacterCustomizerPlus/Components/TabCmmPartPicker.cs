@@ -23,9 +23,9 @@ internal class TabCmmPartPicker : YKLayout<LayerCreationData>
     private void Update()
     {
         var provider = Layer.Data.UiPcc.actor.provider;
+        // ?! why is there offset 2
+        var frame = (provider.currentFrame + 2) % 4;
         foreach (var animator in _animators) {
-            // ?! why is there offset 2
-            var frame = (provider.currentFrame + 2) % 4;
             animator.SetSprite(provider.currentDir, frame);
         }
 
@@ -146,10 +146,11 @@ internal class TabCmmPartPicker : YKLayout<LayerCreationData>
             btn.spriteState = shared.spriteState;
 
             var scaler = ELayer.ui.canvasScaler.scaleFactor;
+            var yOffset = CmmConfig.PartCellHeight.Value * -70f / 192f;
             btn.onClick = new();
             btn.tooltip = new() {
                 enable = false,
-                offset = new(0f, scaler * -70f),
+                offset = new(0f, scaler * yOffset),
                 id = "cmm_tooltip_cell",
                 text = "",
             };
