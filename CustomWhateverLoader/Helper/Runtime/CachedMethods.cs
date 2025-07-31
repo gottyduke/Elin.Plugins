@@ -11,7 +11,7 @@ public static class CachedMethods
 {
     private static readonly Dictionary<TypeInfo, MethodInfo[]> _cachedMethods = [];
     private static readonly Dictionary<TypeInfo, FieldInfo[]> _cachedFields = [];
-    private static readonly Dictionary<MethodInfo, FastInvokeHandler> _cachedInvokers = [];
+    private static readonly Dictionary<int, FastInvokeHandler> _cachedInvokers = [];
 
     public static MethodInfo[] GetCachedMethods(this Type type)
     {
@@ -81,8 +81,8 @@ public static class CachedMethods
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static object? FastInvoke(this MethodInfo method, object? instance, params object[] args)
     {
-        if (!_cachedInvokers.TryGetValue(method, out var invoker)) {
-            invoker = _cachedInvokers[method] = MethodInvoker.GetHandler(method, true);
+        if (!_cachedInvokers.TryGetValue(method.MetadataToken, out var invoker)) {
+            invoker = _cachedInvokers[method.MetadataToken] = MethodInvoker.GetHandler(method, true);
         }
 
         return invoker.Invoke(instance, args);

@@ -68,7 +68,7 @@ public class FileMapping
             return;
         }
 
-        foreach (var index in _indexed) {
+        foreach (var index in _indexed.ToArray()[..^1]) {
             var sources = Directory.GetFiles(index, "*.xlsx", SearchOption.TopDirectoryOnly);
             if (sources.Length == 0) {
                 continue;

@@ -6,6 +6,7 @@ using Cwl.API.Attributes;
 using Cwl.API.Processors;
 using Cwl.Helper;
 using Cwl.Helper.String;
+using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
@@ -39,7 +40,8 @@ public class ActPerformEvent
     private static void Add(Action<Act> process)
     {
         if (!_patched) {
-            TryPatch();
+            CoroutineHelper.Deferred(TryPatch);
+            _patched = true;
         }
 
         OnActPerformEvent += Process;
@@ -59,8 +61,6 @@ public class ActPerformEvent
     [SwallowExceptions]
     private static void TryPatch()
     {
-        _patched = true;
-
         var harmony = new Harmony(ModInfo.Guid);
         var postfix = new HarmonyMethod(typeof(ActPerformEvent), nameof(OnPerform));
         foreach (var perform in TargetMethods()) {
