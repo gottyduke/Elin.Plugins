@@ -19,14 +19,12 @@ internal class CardOnCreateEvent
 
     public static void Add(Action<Chara> process)
     {
-        OnCharaCreateEvent += SafeInvoke(process, (chara, ex) =>
-            "cwl_warn_processor".Loc("chara_on_create", chara.id, ex));
+        OnCharaCreateEvent += SafeInvoke(process, (chara, ex) => "cwl_warn_processor".Loc("chara_on_create", chara.id, ex));
     }
 
     public static void Add(Action<Thing> process)
     {
-        OnThingCreateEvent += SafeInvoke(process, (thing, ex) =>
-            "cwl_warn_processor".Loc("thing_on_create", thing.id, ex));
+        OnThingCreateEvent += SafeInvoke(process, (thing, ex) => "cwl_warn_processor".Loc("thing_on_create", thing.id, ex));
     }
 
     private static Action<T> SafeInvoke<T>(Action<T> process, Func<T, Exception, string> exceptionLogger)

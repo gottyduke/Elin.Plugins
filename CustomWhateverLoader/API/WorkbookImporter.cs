@@ -22,10 +22,11 @@ public class WorkbookImporter
 
     private static FieldInfo[]? _sources;
 
-    internal static FieldInfo[] Sources => _sources ??= typeof(SourceManager)
-        .GetFields(AccessTools.all)
-        .Where(f => typeof(SourceData).IsAssignableFrom(f.FieldType))
-        .ToArray();
+    internal static FieldInfo[] Sources =>
+        _sources ??= typeof(SourceManager)
+            .GetFields(AccessTools.all)
+            .Where(f => typeof(SourceData).IsAssignableFrom(f.FieldType))
+            .ToArray();
 
     // all sheets from workbook
     public static IEnumerable<SourceData?> BySheetName(IWorkbook book, string bookName, string[]? fetched = null)

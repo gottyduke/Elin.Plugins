@@ -47,7 +47,8 @@ internal class LoadDramaPatch
     }
 
     [Time]
-    private static List<Dictionary<string, string>> BuildRelocatedList(ExcelData data, string oldPath,
+    private static List<Dictionary<string, string>> BuildRelocatedList(ExcelData data,
+        string oldPath,
         DramaManager dm)
     {
         var book = dm.setup.book;

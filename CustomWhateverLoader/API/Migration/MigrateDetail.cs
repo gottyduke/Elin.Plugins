@@ -43,9 +43,10 @@ public sealed class MigrateDetail
     public string SheetFile { get; private set; } = "";
     public long LoadingTime { get; internal set; }
 
-    internal static ILookup<BaseModPackage?, MigrateDetail> Details => _cached
-        .OrderByDescending(kv => kv.Value.LoadingTime)
-        .ToLookup(kv => kv.Value.Mod, kv => kv.Value);
+    internal static ILookup<BaseModPackage?, MigrateDetail> Details =>
+        _cached
+            .OrderByDescending(kv => kv.Value.LoadingTime)
+            .ToLookup(kv => kv.Value.Mod, kv => kv.Value);
 
     public MigrateDetail StartNewSheet(ISheet sheet, List<HeaderCell> expected)
     {
@@ -224,15 +225,12 @@ public sealed class MigrateDetail
     [SwallowExceptions]
     public static void SetupProcessor()
     {
-        SheetProcessor.Add(_ =>
-                _sw.Restart(),
+        SheetProcessor.Add(_ => _sw.Restart(),
             false);
-        SheetProcessor.Add(s =>
-                GetOrAdd(s.Workbook).LoadingTime += _sw.ElapsedTicks,
+        SheetProcessor.Add(s => GetOrAdd(s.Workbook).LoadingTime += _sw.ElapsedTicks,
             true);
 
-        WorkbookProcessor.Add(b =>
-                ExecutionAnalysis.MethodTimeLogger.Log(WorkbookImporter.Importer, new(GetOrAdd(b).LoadingTime), ""),
+        WorkbookProcessor.Add(b => ExecutionAnalysis.MethodTimeLogger.Log(WorkbookImporter.Importer, new(GetOrAdd(b).LoadingTime), ""),
             true);
     }
 

@@ -49,7 +49,10 @@ internal class ConverterEvent
         }
 
         [HarmonyPrefix]
-        internal static bool OnConversion(TraitBrewery __instance, ref bool __result, MethodInfo __originalMethod, Card c,
+        internal static bool OnConversion(TraitBrewery __instance,
+            ref bool __result,
+            MethodInfo __originalMethod,
+            Card c,
             bool firstDecay)
         {
             if (CustomConverter.GetConverter(__instance.owner) is not { } converter) {

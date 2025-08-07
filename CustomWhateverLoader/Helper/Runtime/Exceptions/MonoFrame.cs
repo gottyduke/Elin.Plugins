@@ -23,6 +23,7 @@ public class MonoFrame(string stackFrame)
         "Elin.",
         "UnityEngine.",
         "Plugins.",
+        "System.",
     ];
 
     private bool _parsed;

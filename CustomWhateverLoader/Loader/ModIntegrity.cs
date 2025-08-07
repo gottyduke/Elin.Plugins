@@ -11,13 +11,14 @@ namespace Cwl;
 
 internal class ModIntegrity
 {
-    private static SerializableModPackage[] CurrentActivated => BaseModManager.Instance.packages
-        .Where(p => p.activated && !p.builtin)
-        .Select(p => new SerializableModPackage {
-            ModName = p.title,
-            ModId = p.id,
-        })
-        .ToArray();
+    private static SerializableModPackage[] CurrentActivated =>
+        BaseModManager.Instance.packages
+            .Where(p => p.activated && !p.builtin)
+            .Select(p => new SerializableModPackage {
+                ModName = p.title,
+                ModId = p.id,
+            })
+            .ToArray();
 
     [CwlPostLoad]
     private static void CheckModList(GameIOProcessor.GameIOContext context)

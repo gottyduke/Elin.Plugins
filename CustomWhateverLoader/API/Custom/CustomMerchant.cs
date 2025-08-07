@@ -15,9 +15,10 @@ public class CustomMerchant : TraitMerchant
 
     private static ILookup<string, SerializableStockItem>? _lookup;
 
-    public static ILookup<string, SerializableStockItem> All => _lookup ??= Managed
-        .SelectMany(s => s.Items, (s, i) => new { s.Owner, Item = i })
-        .ToLookup(s => s.Owner, s => s.Item);
+    public static ILookup<string, SerializableStockItem> All =>
+        _lookup ??= Managed
+            .SelectMany(s => s.Items, (s, i) => new { s.Owner, Item = i })
+            .ToLookup(s => s.Owner, s => s.Item);
 
     public override ShopType ShopType => ShopType.Specific;
 

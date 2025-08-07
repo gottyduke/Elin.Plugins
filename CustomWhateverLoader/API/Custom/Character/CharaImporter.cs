@@ -31,7 +31,7 @@ public partial class CustomChara
     }
 
     [Time]
-    [CwlSceneInitEvent(Scene.Mode.StartGame, defer: true)]
+    [CwlSceneInitEvent(Scene.Mode.StartGame, true)]
     internal static void AddDelayedChara()
     {
         var listAdv = game.cards.listAdv;

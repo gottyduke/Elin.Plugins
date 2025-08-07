@@ -85,7 +85,11 @@ internal class NamedImportPatch
     }
 
     [Time]
-    private static void RelaxedImport(object row, int id, FieldInfo field, MethodInfo parser, Type rowCreator,
+    private static void RelaxedImport(object row,
+        int id,
+        FieldInfo field,
+        MethodInfo parser,
+        Type rowCreator,
         MethodInfo? extraParser)
     {
         if (!SourceInitPatch.SafeToCreate) {

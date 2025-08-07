@@ -44,8 +44,7 @@ public class CwlForwardPatch : HarmonyPatch
     }
 
     // forward
-    public CwlForwardPatch(
-        Type declaringType,
+    public CwlForwardPatch(Type declaringType,
         string methodName,
         Type[] argumentTypes,
         ArgumentType[] argumentVariations)
