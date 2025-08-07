@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using Cwl.API;
 using Cwl.API.Attributes;
 using Cwl.API.Custom;
 using Cwl.API.Drama;
@@ -55,7 +56,7 @@ internal sealed partial class CwlMod
     private static void LoadLoc()
     {
         // load CWL own localization first
-        var loc = PackageIterator.GetRelocatedFileFromPackage("cwl_sources.xlsx", ModInfo.Guid);
+        var loc = PackageIterator.GetRelocatedFileFromPackage("cwl_sources.xlsx", ModInfo.InternalGuid);
         if (loc is not null) {
             ModUtil.ImportExcel(loc.FullName, "General", EMono.sources.langGeneral);
         }
@@ -91,7 +92,7 @@ internal sealed partial class CwlMod
 
         CanContinue = "";
 
-        CurrentLoading = "cwl_log_finished_loading".Loc();
+        CurrentLoading = $"cwl_log_finished_loading_{ModInfo.TargetVersion}".Loc();
 
         OnDisable();
         SetupExceptionHook();
