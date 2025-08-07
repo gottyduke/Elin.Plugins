@@ -8,7 +8,6 @@
         <OutputType>Library</OutputType>
         <RootNamespace>Cwl</RootNamespace>
         <AssemblyName>CustomWhateverLoader</AssemblyName>
-        <ReferencePath>$(ElinGamePath)/Elin_Data/Managed</ReferencePath>
         <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
         <LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>
@@ -33,144 +32,6 @@
         <WarningLevel>4</WarningLevel>
         </PropertyGroup>
     <ItemGroup>
-        <Reference Include="0Harmony">
-            <HintPath>$(ElinGamePath)\BepInEx\core\0Harmony.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="BepInEx.Core">
-            <HintPath>$(ElinGamePath)\BepInEx\core\BepInEx.Core.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="BepInEx.Unity">
-            <HintPath>$(ElinGamePath)\BepInEx\core\BepInEx.Unity.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="ClassLibrary2">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="DOTween">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Elin">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="LZ4">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Mono.Cecil">
-            <HintPath>$(ElinGamePath)\BepInEx\core\Mono.Cecil.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Mono.Cecil.Mdb">
-            <HintPath>$(ElinGamePath)\BepInEx\core\Mono.Cecil.Mdb.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Mono.Cecil.Pdb">
-            <HintPath>$(ElinGamePath)\BepInEx\core\Mono.Cecil.Pdb.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Mono.Cecil.Rocks">
-            <HintPath>$(ElinGamePath)\BepInEx\core\Mono.Cecil.Rocks.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="MonoMod.RuntimeDetour">
-            <HintPath>$(ElinGamePath)\BepInEx\core\MonoMod.RuntimeDetour.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="MonoMod.Utils">
-            <HintPath>$(ElinGamePath)\BepInEx\core\MonoMod.Utils.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="mscorlib">
-        </Reference>
-        <Reference Include="netstandard">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Newtonsoft.Json">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="NPOI">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="NPOI.OOXML">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="NPOI.OpenXml4Net">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="NPOI.OpenXmlFormats">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Plugins.ActorSystem">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Plugins.BaseCore">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Plugins.Calc">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Plugins.Sound">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Plugins.Tween">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Plugins.UI">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Reflex">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="System"/>
-        <Reference Include="System.Core"/>
-        <Reference Include="UniTask">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UniTask.Linq">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.AssetBundleModule">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.AudioModule">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.CoreModule">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.InputLegacyModule">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.TextRenderingModule">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.UI">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.UIModule">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.UnityWebRequestAudioModule">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.UnityWebRequestModule">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.UnityWebRequestTextureModule">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.UnityWebRequestWWWModule">
-            <Private>False</Private>
-        </Reference>
-    </ItemGroup>
-    <ItemGroup>
         <Compile Include="API\Attributes\CwlActPerformEvent.cs"/>
         <Compile Include="API\Attributes\CwlOnCreateEvent.cs"/>
         <Compile Include="API\Attributes\CwlContextMenu.cs"/>
@@ -179,6 +40,7 @@
         <Compile Include="API\Attributes\CwlForwardPatch.cs"/>
         <Compile Include="API\Attributes\CwlGameIOEvent.cs"/>
         <Compile Include="API\Attributes\CwlLangEvent.cs"/>
+        <Compile Include="API\Attributes\CwlSceneInitEvent.cs" />
         <Compile Include="API\Custom\Character\CharaImporter.cs"/>
         <Compile Include="API\Custom\Character\AddEqOrThing.cs"/>
         <Compile Include="API\Custom\Character\CustomChara.cs"/>
