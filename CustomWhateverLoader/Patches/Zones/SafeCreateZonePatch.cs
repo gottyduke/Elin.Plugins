@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Cwl.API.Attributes;
 using Cwl.LangMod;
 using HarmonyLib;
 
@@ -8,8 +9,6 @@ namespace Cwl.Patches.Zones;
 [HarmonyPatch]
 internal class SafeCreateZonePatch
 {
-    private static bool _cleanup;
-
     internal static bool Prepare()
     {
         return CwlConfig.SafeCreateClass;
@@ -29,12 +28,6 @@ internal class SafeCreateZonePatch
         resolved = true;
         CwlMod.WarnWithPopup<Zone>("cwl_warn_deserialize".Loc(nameof(Zone), qualified, readType.MetadataToken,
             CwlConfig.Patches.SafeCreateClass!.Definition.Key));
-
-        if (!_cleanup) {
-            SafeSceneInitPatch.Cleanups.Enqueue(PostCleanup);
-        }
-
-        _cleanup = true;
     }
 
     [SwallowExceptions]
@@ -42,10 +35,6 @@ internal class SafeCreateZonePatch
     [HarmonyPatch(typeof(EloMap), nameof(EloMap.Init))]
     internal static void OnInitMap(EloMap __instance)
     {
-        if (!_cleanup) {
-            return;
-        }
-
         var list = __instance.region.children;
         list.ForeachReverse(z => {
             if (EMono.sources.zones.map.ContainsKey(z.id)) {
@@ -58,12 +47,9 @@ internal class SafeCreateZonePatch
     }
 
     [SwallowExceptions]
+    [CwlSceneInitEvent(Scene.Mode.StartGame, preInit: true)]
     private static void PostCleanup()
     {
-        if (!_cleanup) {
-            return;
-        }
-
         var map = EClass.game.spatials.map;
         foreach (var (id, zone) in map.ToArray()) {
             if (EMono.sources.zones.map.ContainsKey(zone.id)) {

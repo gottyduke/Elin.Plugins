@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cwl.API.Attributes;
 using Cwl.Helper.Extensions;
 using Cwl.LangMod;
 using Cwl.Patches;
@@ -30,6 +31,7 @@ public partial class CustomChara
     }
 
     [Time]
+    [CwlSceneInitEvent(Scene.Mode.StartGame, defer: true)]
     internal static void AddDelayedChara()
     {
         var listAdv = game.cards.listAdv;

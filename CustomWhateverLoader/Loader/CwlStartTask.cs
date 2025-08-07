@@ -9,6 +9,7 @@ using Cwl.Helper;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
+using Cwl.Patches;
 using Cwl.Patches.Conditions;
 using Cwl.Patches.Elements;
 using Cwl.Patches.Quests;
@@ -141,6 +142,9 @@ internal sealed partial class CwlMod
                             break;
                         case CwlOnCreateEvent charaAttr:
                             CardOnCreateEvent.RegisterEvents(method, charaAttr);
+                            break;
+                        case CwlSceneInitEvent sceneInitAttr:
+                            SafeSceneInitPatch.RegisterEvents(method, sceneInitAttr);
                             break;
                     }
                 } catch (Exception ex) {

@@ -45,6 +45,7 @@ public class CustomElement : Element
 
     // credits to 105gun
     [Time]
+    [CwlSceneInitEvent(Scene.Mode.StartGame, defer: true)]
     internal static void GainAbilityOnLoad()
     {
         if (!SafeSceneInitPatch.SafeToCreate) {
