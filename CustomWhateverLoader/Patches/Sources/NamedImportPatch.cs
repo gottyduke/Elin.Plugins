@@ -8,6 +8,7 @@ using Cwl.API.Migration;
 using Cwl.Helper;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.Extensions;
+using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
 using NPOI.SS.UserModel;
@@ -16,8 +17,8 @@ namespace Cwl.Patches.Sources;
 
 internal class NamedImportPatch
 {
-    private static readonly Dictionary<Type, List<MigrateDetail.HeaderCell>> _expected = [];
-    private static readonly Dictionary<ISheet, List<MigrateDetail.HeaderCell>> _cached = [];
+    private static readonly Dictionary<Type, Dictionary<string, int>> _expected = [];
+    private static readonly Dictionary<ISheet, Dictionary<string, int>> _cached = [];
 
     internal static bool Prepare()
     {
@@ -34,7 +35,7 @@ internal class NamedImportPatch
 
     [HarmonyTranspiler]
     internal static IEnumerable<CodeInstruction> OnCreateSourceRowIl(IEnumerable<CodeInstruction> instructions,
-        MethodBase rowCreator)
+                                                                     MethodBase rowCreator)
     {
         var miGetStr = AccessTools.Method(typeof(SourceData), nameof(SourceData.GetStr));
         return new CodeMatcher(instructions)
@@ -77,20 +78,18 @@ internal class NamedImportPatch
                     RelaxedImport(row, id, field!, parser!, rowType, extraParser)));
 
                 _expected.TryAdd(rowType, []);
-                if (_expected[rowType].All(c => c.Index != id)) {
-                    _expected[rowType].Add(new(id, field!.Name));
-                }
+                _expected[rowType].TryAdd(field!.Name, id);
             })
             .InstructionEnumeration();
     }
 
     [Time]
     private static void RelaxedImport(object row,
-        int id,
-        FieldInfo field,
-        MethodInfo parser,
-        Type rowCreator,
-        MethodInfo? extraParser)
+                                      int id,
+                                      FieldInfo field,
+                                      MethodInfo parser,
+                                      Type rowCreator,
+                                      MethodInfo? extraParser)
     {
         if (!SourceInitPatch.SafeToCreate) {
             var parsed = extraParser is not null
@@ -106,45 +105,41 @@ internal class NamedImportPatch
 
         try {
             if (!_cached.TryGetValue(sheet, out var header)) {
-                header = sheet.GetRow(sheet.FirstRowNum).Cells
-                    .Where(c => !c.StringCellValue.IsEmpty())
-                    .Select(c => new MigrateDetail.HeaderCell(c.ColumnIndex, c.StringCellValue.Trim()))
-                    .ToList();
+                var headerColumns = sheet.GetRow(sheet.FirstRowNum).Cells
+                    .Where(c => !c.StringCellValue.IsEmpty());
+
+                header = new();
+                foreach (var cell in headerColumns) {
+                    // to mimic the sort & components override behaviour(bug) in Elin code
+                    header[cell.StringCellValue.Trim()] = cell.ColumnIndex;
+                }
 
                 _cached[sheet] = header;
                 migrate.StartNewSheet(sheet, expected);
             }
 
-            var headerSet = new HashSet<MigrateDetail.HeaderCell>(header);
-            var strategy = expected.All(headerSet.Contains)
-                ? MigrateDetail.Strategy.Correct
-                : MigrateDetail.Strategy.Missing;
-
-            var readPos = id;
-            if (strategy == MigrateDetail.Strategy.Missing) {
-                var expectedFlat = expected.GroupBy(c => c.Name).ToDictionary(c => c.Key, c => c.Count());
-                var headerFlat = header.GroupBy(c => c.Name).ToDictionary(c => c.Key, c => c.Count());
-
-                if (header.Count == expected.Count &&
-                    expectedFlat.All(c => headerFlat.TryGetValue(c.Key, out var count) && count == c.Value)) {
-                    strategy = MigrateDetail.Strategy.Reorder;
-
-                    var matched = header.FindAll(c => c.Name == field.Name);
-                    if (matched.Count != 0 && matched.All(c => c.Index != id)) {
-                        readPos = matched[0].Index;
-                    }
-                }
-
-                migrate.SetStrategy(strategy).SetGiven(header);
+            var strategy = migrate.CurrentSheet?.MigrateStrategy ?? MigrateDetail.Strategy.Unknown;
+            if (strategy == MigrateDetail.Strategy.Unknown) {
+                strategy = expected.All(header.Contains) &&
+                           expected.Count <= header.Count
+                    ? MigrateDetail.Strategy.Correct
+                    : MigrateDetail.Strategy.Missing;
             }
 
+            migrate.SetStrategy(strategy).SetGiven(header);
+
+            var readPos = header.GetValueOrDefault(field.Name, id);
             var parsed = extraParser is not null
                 ? extraParser.FastInvokeStatic(parser.FastInvokeStatic(readPos, false)!)
                 : parser.FastInvokeStatic(readPos);
             field.SetValue(row, parsed);
 
-            //var parseDetail = readPos == id ? "cwl_import_parse" : "cwl_import_reloc";
-            //CwlMod.Debug($"{parseDetail.Loc(id, readPos)}:{field.Name}:{parser.Name}");
+            /*
+            if (strategy == MigrateDetail.Strategy.Missing) {
+                var parseDetail = readPos == id ? "cwl_import_parse" : "cwl_import_reloc";
+                CwlMod.Debug($"{parseDetail.Loc(id, readPos)}:{field.Name}:{parser.Name}");
+            }
+            /**/
         } finally {
             if (id == expected.Count - 1) {
                 migrate.FinalizeMigration();

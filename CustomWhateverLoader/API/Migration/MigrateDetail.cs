@@ -16,6 +16,7 @@ public sealed class MigrateDetail
 {
     public enum Strategy
     {
+        Unknown,
         Correct,
         Reorder,
         Missing,
@@ -48,11 +49,11 @@ public sealed class MigrateDetail
             .OrderByDescending(kv => kv.Value.LoadingTime)
             .ToLookup(kv => kv.Value.Mod, kv => kv.Value);
 
-    public MigrateDetail StartNewSheet(ISheet sheet, List<HeaderCell> expected)
+    public MigrateDetail StartNewSheet(ISheet sheet, Dictionary<string, int> expected)
     {
         CurrentSheet = new() {
             Sheet = sheet,
-            Expected = expected,
+            Expected = new(expected),
         };
         return this;
     }
@@ -66,13 +67,13 @@ public sealed class MigrateDetail
         return this;
     }
 
-    public MigrateDetail SetGiven(List<HeaderCell> given)
+    public MigrateDetail SetGiven(Dictionary<string, int> given)
     {
         if (CurrentSheet is null) {
             return this;
         }
 
-        CurrentSheet.Given = given;
+        CurrentSheet.Given = new(given);
         return this;
     }
 
@@ -130,9 +131,9 @@ public sealed class MigrateDetail
 
         try {
             var header = migrated.CreateRow(0);
-            foreach (var cell in CurrentSheet.Expected) {
-                var newCell = header.CreateCell(cell.Index, CellType.String);
-                newCell.SetCellValue(cell.Name);
+            foreach (var (name, index) in CurrentSheet.Expected) {
+                var newCell = header.CreateCell(index, CellType.String);
+                newCell.SetCellValue(name);
             }
 
             for (var i = 1; i <= sheet.LastRowNum; ++i) {
@@ -142,9 +143,9 @@ public sealed class MigrateDetail
                     continue;
                 }
 
-                foreach (var (index, columnName) in CurrentSheet.Expected) {
+                foreach (var (name, index) in CurrentSheet.Expected) {
                     var newCell = newRow.CreateCell(index, CellType.String);
-                    var oldPos = CurrentSheet.Given.FindIndex(c => c.Name == columnName);
+                    var oldPos = CurrentSheet.Given.GetValueOrDefault(name, -1);
                     newCell.SetCellValue(row.Cells.ElementAtOrDefault(oldPos)?.StringCellValue ?? "");
                 }
             }
@@ -190,23 +191,26 @@ public sealed class MigrateDetail
         var file = new FileInfo(SheetFile);
         CwlMod.Log<MigrateDetail>(file.ShortPath());
 
-        var expected = CurrentSheet.Expected.OrderBy(c => c.Index).ToList();
-        var given = CurrentSheet.Given.OrderBy(c => c.Index).ToList();
-        var maxNameWidth = expected.Max(c => c.Name.Length);
+        var expected = CurrentSheet.Expected
+            .OrderBy(c => c.Value)
+            .ToList();
+        var maxNameWidth = expected.Max(c => c.Key.Length);
 
-        foreach (var header in expected) {
-            var expectedName = header.Name.PadRight(maxNameWidth);
-
-            var guessCell = given.FirstOrDefault(c => c.Name == header.Name);
-            var guessName = guessCell is not null && guessCell.Index != header.Index
-                ? "cwl_cell_guess".Loc(guessCell.Index, guessCell.Name)
+        foreach (var (name, index) in expected) {
+            var present = CurrentSheet.Given.TryGetValue(name, out var guessCell);
+            var guessName = present && guessCell != index
+                ? "cwl_cell_guess".Loc(guessCell, name)
                 : "";
+            if (!present) {
+                guessName = "cwl_cell_missing".Loc();
+            }
 
-            var givenCell = given.FirstOrDefault(c => c.Index == header.Index);
-            var givenName = givenCell is not null ? givenCell.Name : "cwl_cell_missing".Loc();
+            var givenCell = CurrentSheet.Given.FirstOrDefault(c => c.Value == index);
+            var givenName = givenCell.Key ?? "cwl_cell_missing".Loc();
             givenName = givenName.PadRight(maxNameWidth + 3);
+            var expectedName = name.PadRight(maxNameWidth);
 
-            CwlMod.Debug($"{header.Index,2}: {expectedName} -> {givenName} {guessName}");
+            CwlMod.Debug($"{index,2}: {expectedName} -> {givenName} {guessName}");
         }
     }
 
@@ -262,11 +266,9 @@ public sealed class MigrateDetail
 
     public sealed class MigrateSheet
     {
-        public List<HeaderCell> Expected = [];
-        public List<HeaderCell> Given = [];
-        public Strategy MigrateStrategy = Strategy.Correct;
+        public Dictionary<string, int> Expected = [];
+        public Dictionary<string, int> Given = [];
+        public Strategy MigrateStrategy = Strategy.Unknown;
         public ISheet? Sheet;
     }
-
-    public sealed record HeaderCell(int Index, string Name);
 }
