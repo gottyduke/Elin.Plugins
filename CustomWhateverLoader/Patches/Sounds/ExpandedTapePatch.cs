@@ -10,7 +10,7 @@ internal class ExpandedTapePatch
     internal static bool OnSetRefVal(TraitTape __instance)
     {
         var pl = EMono.Sound.currentPlaylist;
-        if (pl.list.Count == 0) {
+        if (pl?.list?.Count is not > 0) {
             return true;
         }
 
