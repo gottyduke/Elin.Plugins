@@ -18,6 +18,11 @@
 
 
 
+{topic|1.20.43}
+Fixed new SourceFood row header changes from 23.178 Nightly
+This is backwards compatible with existing mods, but it's advised to adhere to new format from now on
+Fixed a potential bug in Cave start scene
+
 {topic|1.20.42}
 Fixed wombo combo nightly update incompatibilities
 
