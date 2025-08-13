@@ -45,9 +45,9 @@ public class CwlForwardPatch : HarmonyPatch
 
     // forward
     public CwlForwardPatch(Type declaringType,
-        string methodName,
-        Type[] argumentTypes,
-        ArgumentType[] argumentVariations)
+                           string methodName,
+                           Type[] argumentTypes,
+                           ArgumentType[] argumentVariations)
         : base(declaringType, methodName, argumentTypes, argumentVariations)
     {
         EnableIfCompatible();

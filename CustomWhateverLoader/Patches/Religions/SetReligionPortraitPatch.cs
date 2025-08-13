@@ -12,6 +12,7 @@ internal class SetReligionPortraitPatch
     private static readonly int _mainTex = Shader.PropertyToID("_MainTex");
 
     [Time]
+    [SwallowExceptions]
     [HarmonyPostfix]
     [HarmonyPatch(typeof(LayerDrama), nameof(LayerDrama.Activate))]
     internal static void OnSetupWorshipAct()

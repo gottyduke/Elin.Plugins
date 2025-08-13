@@ -44,9 +44,10 @@ public static class StringHelper
         return $"<color=#{hexString}>{input}</color>";
     }
 
-    public static string TagColorEx(this object input, Func<bool> onSwitch,
-        int good = 0x2cff14,
-        int bad = 0x000000)
+    public static string TagColorEx(this object input,
+                                    Func<bool> onSwitch,
+                                    int good = 0x2cff14,
+                                    int bad = 0x000000)
     {
         return input.TagColor(onSwitch() ? good : bad);
     }
@@ -61,16 +62,20 @@ public static class StringHelper
         return sb.AppendLine(input.TagColor(hex));
     }
 
-    public static StringBuilder AppendColorEx(this StringBuilder sb, string input, Func<bool> onSwitch,
-        int good = 0x2cff14,
-        int bad = 0x000000)
+    public static StringBuilder AppendColorEx(this StringBuilder sb,
+                                              string input,
+                                              Func<bool> onSwitch,
+                                              int good = 0x2cff14,
+                                              int bad = 0x000000)
     {
         return sb.Append(input.TagColorEx(onSwitch, good, bad));
     }
 
-    public static StringBuilder AppendLineColorEx(this StringBuilder sb, string input, Func<bool> onSwitch,
-        int good = 0x2cff14,
-        int bad = 0x000000)
+    public static StringBuilder AppendLineColorEx(this StringBuilder sb,
+                                                  string input,
+                                                  Func<bool> onSwitch,
+                                                  int good = 0x2cff14,
+                                                  int bad = 0x000000)
     {
         return sb.AppendLine(input.TagColorEx(onSwitch, good, bad));
     }

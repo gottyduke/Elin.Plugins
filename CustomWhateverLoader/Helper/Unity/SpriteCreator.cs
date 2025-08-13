@@ -11,8 +11,11 @@ public static class SpriteCreator
 {
     private static readonly Dictionary<string, Texture2D> _cached = [];
 
-    public static Sprite? LoadSprite(this string path, Vector2? pivot = null, string? name = null, int resizeWidth = 0,
-        int resizeHeight = 0)
+    public static Sprite? LoadSprite(this string path,
+                                     Vector2? pivot = null,
+                                     string? name = null,
+                                     int resizeWidth = 0,
+                                     int resizeHeight = 0)
     {
         if (path.IsEmpty()) {
             return null;

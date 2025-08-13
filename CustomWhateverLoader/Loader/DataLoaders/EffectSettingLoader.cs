@@ -18,10 +18,17 @@ internal partial class DataLoader
     internal static readonly Dictionary<string, SerializableEffectData> CachedEffectData = [];
 
     [Time]
+    [SwallowExceptions]
     [ConsoleCommand("load_effect_setting")]
     internal static string MergeEffectSetting()
     {
-        var sprites = Resources.FindObjectsOfTypeAll<Sprite>();
+        Sprite[] sprites;
+        try {
+            sprites = Resources.FindObjectsOfTypeAll<Sprite>();
+        } catch {
+            sprites = [];
+        }
+
         var defaultSprite = Array.Find(sprites, s => s.name == "ranged_gun");
         var guns = Core.Instance.gameSetting.effect.guns;
         var sb = new StringBuilder();

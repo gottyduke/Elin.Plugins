@@ -5,8 +5,9 @@ namespace Cwl.Helper.Extensions;
 
 public static class LinqExt
 {
-    public static IEnumerable<TSource> MissingFrom<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second,
-        Action<TSource>? onPresent = null)
+    public static IEnumerable<TSource> MissingFrom<TSource>(this IEnumerable<TSource> first,
+                                                            IEnumerable<TSource> second,
+                                                            Action<TSource>? onPresent = null)
     {
         Dictionary<TSource, int> occurred = [];
         var nullCount = 0;

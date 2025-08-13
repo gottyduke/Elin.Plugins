@@ -104,7 +104,7 @@ public class MethodStubHelper(MethodInfo targetMethod)
     }
 
     private static IEnumerable<CodeInstruction> OnNestedStubIl(IEnumerable<CodeInstruction> instructions,
-        MethodBase methodBase)
+                                                               MethodBase methodBase)
     {
         if (_cachedVirtual.TryGetValue(methodBase, out var invalidated)) {
             foreach (var old in invalidated.Values) {

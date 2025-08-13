@@ -10,16 +10,24 @@ public static class PixelRaycast
 {
     private static readonly Dictionary<string, int> _cached = [];
 
-    public static int NearestPerceivable(this Sprite sprite, int fromX = 0, int fromY = 0,
-        int directionX = 0, int directionY = 0)
+    public static int NearestPerceivable(this Sprite sprite,
+                                         int fromX = 0,
+                                         int fromY = 0,
+                                         int directionX = 0,
+                                         int directionY = 0)
     {
         var rect = sprite.rect;
         return sprite.texture.NearestPerceivable(fromX + (int)rect.xMin, fromY + (int)rect.yMin,
             directionX, directionY, (int)(rect.xMin + rect.width), (int)(rect.yMin + rect.height));
     }
 
-    public static int NearestPerceivable(this Texture2D texture, int fromX = 0, int fromY = 0,
-        int directionX = 0, int directionY = 0, int endX = 0, int endY = 0)
+    public static int NearestPerceivable(this Texture2D texture,
+                                         int fromX = 0,
+                                         int fromY = 0,
+                                         int directionX = 0,
+                                         int directionY = 0,
+                                         int endX = 0,
+                                         int endY = 0)
     {
         if (directionX == 0 && directionY == 0) {
             return -1;
@@ -68,8 +76,13 @@ public static class PixelRaycast
         return dist;
     }
 
-    public static float NearestPerceivableMulticast(this Sprite sprite, int gap, int casts = 3,
-        int fromX = 0, int fromY = 0, int directionX = 0, int directionY = 0)
+    public static float NearestPerceivableMulticast(this Sprite sprite,
+                                                    int gap,
+                                                    int casts = 3,
+                                                    int fromX = 0,
+                                                    int fromY = 0,
+                                                    int directionX = 0,
+                                                    int directionY = 0)
     {
         try {
             if (casts <= 0 || (directionX == 0 && directionY == 0)) {

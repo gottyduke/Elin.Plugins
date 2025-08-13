@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Cwl.API.Drama;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
@@ -32,6 +33,7 @@ internal class SafePlayDramaPatch
         var exp = ExceptionProfile.GetFromStackTrace(__exception);
         exp.StartAnalyzing();
         exp.CreateAndPop("cwl_warn_drama_play_ex".Loc($"{__exception.GetType().Name}: {__exception.Message}"));
+        CwlMod.Log(__exception);
 
         // noexcept
         return null;
