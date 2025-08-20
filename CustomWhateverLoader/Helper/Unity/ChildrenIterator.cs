@@ -6,37 +6,40 @@ namespace Cwl.Helper.Unity;
 
 public static class ChildrenIterator
 {
-    public static IEnumerable<Transform> GetAllChildren(this Transform parent, bool active = false)
+    extension(Transform parent)
     {
-        for (var i = 0; i < parent.childCount; ++i) {
-            var child = parent.GetChild(i);
-            if (active && !child.gameObject.activeInHierarchy) {
-                continue;
-            }
+        public IEnumerable<Transform> GetAllChildren(bool active = false)
+        {
+            for (var i = 0; i < parent.childCount; ++i) {
+                var child = parent.GetChild(i);
+                if (active && !child.gameObject.activeInHierarchy) {
+                    continue;
+                }
 
-            yield return child;
-        }
-    }
-
-    public static Transform? GetFirstChildWithName(this Transform parent, string name)
-    {
-        var children = parent
-            .GetAllChildren()
-            .Where(t => t.name == name);
-        var transforms = children.ToArray();
-        return transforms.Any() ? transforms.First() : null;
-    }
-
-    public static Transform? GetFirstNestedChildWithName(this Transform parent, string name)
-    {
-        var child = parent;
-        foreach (var hierarchy in name.Split('/')) {
-            child = child.GetFirstChildWithName(hierarchy);
-            if (child is null) {
-                break;
+                yield return child;
             }
         }
 
-        return child;
+        public Transform? GetFirstChildWithName(string name)
+        {
+            var children = parent
+                .GetAllChildren()
+                .Where(t => t.name == name);
+            var transforms = children.ToArray();
+            return transforms.TryGet(0, true);
+        }
+
+        public Transform? GetFirstNestedChildWithName(string name)
+        {
+            var child = parent;
+            foreach (var hierarchy in name.Split('/')) {
+                child = child.GetFirstChildWithName(hierarchy);
+                if (child is null) {
+                    break;
+                }
+            }
+
+            return child;
+        }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Cwl.Helper.Extensions;
 using HarmonyLib;
 
 namespace Cwl.Helper;

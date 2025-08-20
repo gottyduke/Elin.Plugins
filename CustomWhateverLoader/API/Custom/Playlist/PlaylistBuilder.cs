@@ -126,7 +126,7 @@ public partial class CustomPlaylist
         _loaded.Clear();
         _cached.Clear();
         _merged.Clear();
-        _lut = null;
+        _dirty = true;
     }
 
     private static int[] MapToId(IEnumerable<string> names)

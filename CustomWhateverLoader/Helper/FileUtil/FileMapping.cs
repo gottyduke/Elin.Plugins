@@ -12,7 +12,6 @@ public class FileMapping
         new("*", "EN"),
     ];
 
-    private static ILookup<string, string>? _fallbackLut;
     private readonly List<string> _indexed = [];
 
     public FileMapping(ModPackage owner, string langCode = "EN")
@@ -32,7 +31,7 @@ public class FileMapping
 
     public DirectoryInfo ModBaseDir => Owner.dirInfo;
 
-    public static ILookup<string, string> FallbackLut => _fallbackLut ??= _fallbacks.ToLookup(r => r.LangCode, r => r.Fallback);
+    public static ILookup<string, string>? FallbackLut => field ??= _fallbacks.ToLookup(r => r.LangCode, r => r.Fallback);
 
     public void RebuildLangModMapping(string langCode = "EN")
     {
@@ -50,7 +49,7 @@ public class FileMapping
             return;
         }
 
-        HashSet<string> ordering = [langCode, ..FallbackLut[langCode], ..FallbackLut["*"]];
+        HashSet<string> ordering = [langCode, ..FallbackLut![langCode], ..FallbackLut["*"]];
         HashSet<string> indexed = [
             ..ordering.Select(order => Path.Combine(langMod, order)).Where(resources.Contains),
             ..resources,

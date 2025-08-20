@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using BepInEx;
+using Cwl.Helper.Extensions;
 using Cwl.LangMod;
 using HarmonyLib;
 using UnityEngine;

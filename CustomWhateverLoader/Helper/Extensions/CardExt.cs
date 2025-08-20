@@ -4,15 +4,18 @@ namespace Cwl.Helper.Extensions;
 
 public static class CardExt
 {
-    public static int GetFlagValue(this Card owner, string flag)
+    extension(Card owner)
     {
-        var key = flag.GetHashCode();
-        return owner.mapInt.GetValueOrDefault(key, 0);
-    }
+        public int GetFlagValue(string flag)
+        {
+            var key = flag.GetHashCode();
+            return owner.mapInt.GetValueOrDefault(key, 0);
+        }
 
-    public static void SetFlagValue(this Card owner, string flag, int value = 1)
-    {
-        var key = flag.GetHashCode();
-        owner.mapInt[key] = value;
+        public void SetFlagValue(string flag, int value = 1)
+        {
+            var key = flag.GetHashCode();
+            owner.mapInt[key] = value;
+        }
     }
 }

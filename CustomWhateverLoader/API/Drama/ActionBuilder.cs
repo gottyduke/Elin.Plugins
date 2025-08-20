@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Cwl.API.Attributes;
 using Cwl.Helper;
+using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;

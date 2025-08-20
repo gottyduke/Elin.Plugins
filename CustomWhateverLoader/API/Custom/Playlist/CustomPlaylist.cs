@@ -16,18 +16,17 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
     private static readonly List<CustomPlaylist> _loaded = [];
     private static readonly Dictionary<string, CustomPlaylist> _cached = [];
     private static readonly Dictionary<string, Playlist> _merged = [];
-    private static ILookup<string, CustomPlaylist>? _lut;
     private static bool _dirty;
 
-    public static ILookup<string, CustomPlaylist> Lut
+    public static ILookup<string, CustomPlaylist>? Lut
     {
         get
         {
-            if (_lut is null || _dirty) {
-                _lut = _loaded.ToLookup(p => p.Name, p => p);
+            if (field is null || _dirty) {
+                field = _loaded.ToLookup(p => p.Name, p => p);
             }
 
-            return _lut;
+            return field;
         }
     }
 
@@ -105,7 +104,7 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
                 continue;
             }
 
-            var lists = MergeOverrideSingular(Lut[order], zoneTypeName);
+            var lists = MergeOverrideSingular(Lut![order], zoneTypeName);
 
             list.RemoveAll(lists.ListRemove.Contains);
             list.AddRange(lists.ListMerge);

@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using UnityEngine;
@@ -11,57 +14,101 @@ public static class SpriteCreator
 {
     private static readonly Dictionary<string, Texture2D> _cached = [];
 
-    public static Sprite? LoadSprite(this string path,
-                                     Vector2? pivot = null,
-                                     string? name = null,
-                                     int resizeWidth = 0,
-                                     int resizeHeight = 0)
+    extension(string spritePath)
     {
-        if (path.IsEmpty()) {
-            return null;
-        }
-
-        if (!path.EndsWith(".png")) {
-            if (SpriteReplacer.dictModItems.TryGetValue(path, out var fileById)) {
-                path = fileById;
+        public Sprite? LoadSprite(Vector2? pivot = null,
+                                  string? name = null,
+                                  int resizeWidth = 0,
+                                  int resizeHeight = 0)
+        {
+            if (spritePath.IsEmpty()) {
+                return null;
             }
 
-            path += ".png";
-        }
+            string path = new(spritePath);
+            if (!path.EndsWith(".png")) {
+                if (SpriteReplacer.dictModItems.TryGetValue(path, out var fileById)) {
+                    path = fileById;
+                }
 
-        pivot ??= new(0.5f, 0.5f);
+                path += ".png";
+            }
 
-        var cache = $"{path}/{pivot}/{resizeWidth}/{resizeHeight}";
-        name ??= cache;
-
-        try {
-            if (!_cached.TryGetValue(cache, out var tex) ||
-                !CwlConfig.CacheSprites) {
-                tex = IO.LoadPNG(path);
-                if (tex == null) {
+            if (!File.Exists(path)) {
+                var candidates = PackageIterator.GetRelocatedFilesFromPackage(Path.Combine("Texture", path))
+                    .ToArray();
+                if (candidates.Length == 0) {
                     return null;
                 }
 
-                if (resizeWidth != 0 && resizeHeight != 0 &&
-                    tex.width != resizeWidth && tex.height != resizeHeight) {
-                    var downscaled = tex.Downscale(resizeWidth, resizeHeight);
-                    Object.Destroy(tex);
-                    tex = downscaled;
-                    tex.name = cache;
-                }
+                path = candidates[^1].FullName;
             }
 
-            _cached[cache] = tex;
-        } catch (Exception ex) {
-            CwlMod.WarnWithPopup<Sprite>("cwl_warn_sprite_creator".Loc(path.ShortPath(), ex.Message), ex);
-            return null;
-            // noexcept
+            pivot ??= new(0.5f, 0.5f);
+
+            var cache = $"{path}/{pivot}/{resizeWidth}/{resizeHeight}";
+            name ??= cache;
+
+            try {
+                if (!_cached.TryGetValue(cache, out var tex) ||
+                    !CwlConfig.CacheSprites) {
+                    tex = IO.LoadPNG(path);
+                    if (tex == null) {
+                        return null;
+                    }
+
+                    if (resizeWidth != 0 && resizeHeight != 0 &&
+                        tex.width != resizeWidth && tex.height != resizeHeight) {
+                        var downscaled = tex.Downscale(resizeWidth, resizeHeight);
+                        Object.Destroy(tex);
+                        tex = downscaled;
+                        tex.name = cache;
+                    }
+                }
+
+                _cached[cache] = tex;
+            } catch (Exception ex) {
+                CwlMod.WarnWithPopup<Sprite>("cwl_warn_sprite_creator".Loc(path.ShortPath(), ex.Message), ex);
+                return null;
+                // noexcept
+            }
+
+            var sprite = Sprite.Create(_cached[cache], new(0, 0, _cached[cache].width, _cached[cache].height),
+                pivot.Value, 100f, 0u, SpriteMeshType.FullRect);
+
+            sprite.name = name;
+            return sprite;
         }
+    }
 
-        var sprite = Sprite.Create(_cached[cache], new(0, 0, _cached[cache].width, _cached[cache].height),
-            pivot.Value, 100f, 0u, SpriteMeshType.FullRect);
+    extension(Sprite sprite)
+    {
+        // copied from ACS
+        public IEnumerable<Sprite> SliceSprite(string baseName, int width = -1, int height = -1)
+        {
+            if (height == -1) {
+                height = (int)sprite.rect.height;
+            }
 
-        sprite.name = name;
-        return sprite;
+            if (width == -1) {
+                width = height;
+            }
+
+            if (width == 0 || height == 0) {
+                yield break;
+            }
+
+            var frames = sprite.rect.width / width;
+            if (frames == 0) {
+                yield break;
+            }
+
+            for (var i = 0; i < frames; ++i) {
+                var rect = new Rect(i * width, 0f, width, height);
+                var tile = Sprite.Create(sprite.texture, rect, new(0.5f, 0.5f * (128f / height)), 100f, 0u, SpriteMeshType.FullRect);
+                tile.name = $"{baseName}{i:D4}";
+                yield return tile;
+            }
+        }
     }
 }

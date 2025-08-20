@@ -13,20 +13,6 @@ public static class CachedMethods
     private static readonly Dictionary<TypeInfo, FieldInfo[]> _cachedFields = [];
     private static readonly Dictionary<int, FastInvokeHandler> _cachedInvokers = [];
 
-    public static MethodInfo[] GetCachedMethods(this Type type)
-    {
-        return GetCachedMethods(type.GetTypeInfo());
-    }
-
-    public static MethodInfo[] GetCachedMethods(this TypeInfo type)
-    {
-        if (_cachedMethods.TryGetValue(type, out var methods)) {
-            return methods;
-        }
-
-        return _cachedMethods[type] = AccessTools.GetDeclaredMethods(type).ToArray();
-    }
-
     public static MethodInfo? GetCachedMethod(string typeName, string methodName, Type[] parameters)
     {
         try {
@@ -44,53 +30,71 @@ public static class CachedMethods
         }
     }
 
-    public static FieldInfo[] GetCachedFields(this Type type)
-    {
-        return GetCachedFields(type.GetTypeInfo());
-    }
-
-    public static FieldInfo[] GetCachedFields(this TypeInfo type)
-    {
-        if (_cachedFields.TryGetValue(type, out var fields)) {
-            return fields;
-        }
-
-        return _cachedFields[type] = type.GetFields(AccessTools.all & ~BindingFlags.Static);
-    }
-
-    public static FieldInfo? GetCachedField(this Type type, string fieldName)
-    {
-        return GetCachedField(type.GetTypeInfo(), fieldName);
-    }
-
-    public static FieldInfo? GetCachedField(this TypeInfo type, string fieldName)
-    {
-        return GetCachedFields(type).FirstOrDefault(f => f.Name == fieldName);
-    }
-
     public static object? GetFieldValue(this object instance, string fieldName)
     {
         return instance.GetType().GetCachedField(fieldName)?.GetValue(instance);
     }
 
-    public static IEnumerable<T> OfDerived<T>(this IEnumerable<T> source, Type baseType) where T : Type
+    extension(Type type)
     {
-        return source.Where(baseType.IsAssignableFrom);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static object? FastInvoke(this MethodInfo method, object? instance, params object[] args)
-    {
-        if (!_cachedInvokers.TryGetValue(method.MetadataToken, out var invoker)) {
-            invoker = _cachedInvokers[method.MetadataToken] = MethodInvoker.GetHandler(method, true);
+        public MethodInfo[] GetCachedMethods()
+        {
+            return GetCachedMethods(type.GetTypeInfo());
         }
 
-        return invoker.Invoke(instance, args);
+        public FieldInfo[] GetCachedFields()
+        {
+            return GetCachedFields(type.GetTypeInfo());
+        }
+
+        public FieldInfo? GetCachedField(string fieldName)
+        {
+            return GetCachedField(type.GetTypeInfo(), fieldName);
+        }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static object? FastInvokeStatic(this MethodInfo method, params object[] args)
+    extension(TypeInfo typeInfo)
     {
-        return method.FastInvoke(null, args);
+        public MethodInfo[] GetCachedMethods()
+        {
+            if (_cachedMethods.TryGetValue(typeInfo, out var methods)) {
+                return methods;
+            }
+
+            return _cachedMethods[typeInfo] = AccessTools.GetDeclaredMethods(typeInfo).ToArray();
+        }
+
+        public FieldInfo[] GetCachedFields()
+        {
+            if (_cachedFields.TryGetValue(typeInfo, out var fields)) {
+                return fields;
+            }
+
+            return _cachedFields[typeInfo] = typeInfo.GetFields(AccessTools.all & ~BindingFlags.Static);
+        }
+
+        public FieldInfo? GetCachedField(string fieldName)
+        {
+            return GetCachedFields(typeInfo).FirstOrDefault(f => f.Name == fieldName);
+        }
+    }
+
+    extension(MethodInfo method)
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public object? FastInvoke(object? instance, params object[] args)
+        {
+            if (!_cachedInvokers.TryGetValue(method.MetadataToken, out var invoker)) {
+                invoker = _cachedInvokers[method.MetadataToken] = MethodInvoker.GetHandler(method, true);
+            }
+
+            return invoker.Invoke(instance, args);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public object? FastInvokeStatic(params object[] args)
+        {
+            return method.FastInvoke(null, args);
+        }
     }
 }

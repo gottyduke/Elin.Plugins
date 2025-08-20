@@ -2,40 +2,43 @@
 
 public static class ParserExt
 {
-    public static float AsFloat(this string unparsed, float fallback)
+    extension(string unparsed)
     {
-        if (!float.TryParse(unparsed, out var result)) {
-            result = fallback;
+        public float AsFloat(float fallback)
+        {
+            if (!float.TryParse(unparsed, out var result)) {
+                result = fallback;
+            }
+
+            return result;
         }
 
-        return result;
-    }
+        public double AsDouble(double fallback)
+        {
+            if (!double.TryParse(unparsed, out var result)) {
+                result = fallback;
+            }
 
-    public static double AsDouble(this string unparsed, double fallback)
-    {
-        if (!double.TryParse(unparsed, out var result)) {
-            result = fallback;
+            return result;
         }
 
-        return result;
-    }
+        public int AsInt(int fallback)
+        {
+            if (!int.TryParse(unparsed, out var result)) {
+                result = fallback;
+            }
 
-    public static int AsInt(this string unparsed, int fallback)
-    {
-        if (!int.TryParse(unparsed, out var result)) {
-            result = fallback;
+            return result;
         }
 
-        return result;
-    }
-
-    public static bool AsBool(this string unparsed, bool fallback)
-    {
-        unparsed = unparsed.ToLowerInvariant().Trim();
-        return unparsed switch {
-            "true" or "1" or "on" or "yes" => true,
-            "false" or "0" or "off" or "no" => false,
-            _ => fallback,
-        };
+        public bool AsBool(bool fallback)
+        {
+            unparsed = unparsed.ToLowerInvariant().Trim();
+            return unparsed switch {
+                "true" or "1" or "on" or "yes" => true,
+                "false" or "0" or "off" or "no" => false,
+                _ => fallback,
+            };
+        }
     }
 }

@@ -2,8 +2,11 @@
 
 public static class PointExt
 {
-    public static Point Add(this Point lhs, Point rhs)
+    extension(Point point)
     {
-        return new(lhs.x + rhs.x, lhs.z + rhs.z);
+        public Point Add(Point rhs)
+        {
+            return new(point.x + rhs.x, point.z + rhs.z);
+        }
     }
 }

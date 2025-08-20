@@ -108,9 +108,6 @@ public sealed class MigrateDetail
                 break;
             }
         }
-
-        CurrentSheet = null;
-        CurrentDetail = null;
     }
 
     public void ReorderSheet()
