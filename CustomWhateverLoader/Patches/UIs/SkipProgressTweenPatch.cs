@@ -28,7 +28,7 @@ internal class SkipProgressTweenPatch
                 new(OpCodes.Ldc_I4_1),
                 new(OpCodes.Add),
                 new OpCodeContains(nameof(OpCodes.Stloc)))
-            .ThrowIfInvalid("failed to match OnPopTweenIl11")
+            .EnsureValid("load tweener")
             .CreateLabel(out var @continue)
             .MatchEndBackwards(
                 new(OpCodes.Ldarg_0),
@@ -36,7 +36,7 @@ internal class SkipProgressTweenPatch
                 new OpCodeContains(nameof(OpCodes.Ldloc)),
                 new OperandContains(OpCodes.Callvirt, "Item"),
                 new OperandContains(OpCodes.Call, nameof(ClassExtension.Rect)))
-            .ThrowIfInvalid("failed to match OnPopTweenIl12")
+            .EnsureValid("get rect")
             .CreateLabel(out var proceed)
             .InsertAndAdvance(
                 new(OpCodes.Dup),

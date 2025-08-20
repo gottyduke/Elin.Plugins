@@ -22,6 +22,7 @@ internal class VariableQuotePatch
         return new CodeMatcher(instructions)
             .MatchEndForward(
                 new OperandContains(OpCodes.Callvirt, nameof(string.StartsWith)))
+            .EnsureValid("startswith quotes")
             .SetInstruction(
                 Transpilers.EmitDelegate(VariantStartsWith))
             .InstructionEnumeration();

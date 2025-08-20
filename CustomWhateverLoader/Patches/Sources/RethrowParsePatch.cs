@@ -52,7 +52,7 @@ internal class RethrowParsePatch
 
         if (SourceInitPatch.SafeToCreate && MigrateDetail.CurrentDetail is { } detail) {
             sb.Append($"{detail.Mod!.id.TagColor(0x2f2d2d)} // ");
-            sb.AppendLine(detail.CurrentSheet!.Sheet!.SheetName.TagColor(0x7676a7));
+            sb.AppendLine(detail.CurrentSheet?.Sheet?.SheetName?.TagColor(0x7676a7));
         }
 
         var expectedType = __originalMethod.ReturnType.Name;

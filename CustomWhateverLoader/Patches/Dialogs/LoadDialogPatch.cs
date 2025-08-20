@@ -27,6 +27,7 @@ internal class LoadDialogPatch
         return new CodeMatcher(instructions)
             .MatchEndForward(
                 new OperandContains(OpCodes.Callvirt, nameof(ExcelData.BuildMap)))
+            .EnsureValid("build map")
             .SetInstructionAndAdvance(
                 Transpilers.EmitDelegate(BuildRelocatedMap))
             .InstructionEnumeration();

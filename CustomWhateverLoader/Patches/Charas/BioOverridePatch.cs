@@ -26,10 +26,8 @@ internal class BioOverridePatch
         return new CodeMatcher(instructions)
             .MatchEndForward(
                 new(OpCodes.Ldstr, "???"),
-                new(OpCodes.Callvirt, AccessTools.Method(
-                    typeof(UIText),
-                    nameof(UIText.SetText),
-                    [typeof(string)])))
+                new OperandContains(OpCodes.Callvirt, nameof(UIText.SetText)))
+            .EnsureValid("set ??? background")
             .InsertAndAdvance(
                 new(OpCodes.Ldarg_0),
                 Transpilers.EmitDelegate(GetNpcBackground))

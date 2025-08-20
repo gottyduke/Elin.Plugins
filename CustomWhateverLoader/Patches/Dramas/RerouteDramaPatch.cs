@@ -2,6 +2,7 @@
 using System.Reflection.Emit;
 using Cwl.API.Custom;
 using Cwl.API.Drama;
+using Cwl.Helper.Extensions;
 using HarmonyLib;
 
 namespace Cwl.Patches.Dramas;
@@ -16,11 +17,10 @@ internal class RerouteDramaPatch
         return new CodeMatcher(instructions, generator)
             .MatchEndForward(
                 new(OpCodes.Ldarg_0),
-                new(OpCodes.Ldfld, AccessTools.Field(
-                    typeof(Card),
-                    nameof(Card.id))),
+                new OperandContains(OpCodes.Ldfld, nameof(Card.id)),
                 new(OpCodes.Stloc_S),
                 new(OpCodes.Ldloc_S))
+            .EnsureValid("load card id")
             .CreateLabel(out var label)
             .InsertAndAdvance(
                 new(OpCodes.Ldarg_0),

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
+using Cwl.Helper.Extensions;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
@@ -60,6 +61,7 @@ internal class LoadBookPatch
             .MatchEndForward(
                 new CodeMatch(OpCodes.Newobj, AccessTools.Constructor(
                     typeof(UIBook.Page))))
+            .EnsureValid("page .ctor")
             .InsertAndAdvance(
                 new(OpCodes.Ldloc_0),
                 new(OpCodes.Ldarg_0),

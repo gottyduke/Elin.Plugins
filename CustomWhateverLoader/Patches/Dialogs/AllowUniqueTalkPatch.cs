@@ -18,7 +18,7 @@ internal class AllowUniqueTalkPatch
                 new OpCodeContains(nameof(OpCodes.Ldloc)),
                 new(OpCodes.Brfalse),
                 new(OpCodes.Newobj))
-            .ThrowIfInvalid("failed to match hasTopic & humanSpeak")
+            .EnsureValid("hasTopic & humanSpeak")
             .Advance(-1)
             .SetOpcodeAndAdvance(OpCodes.Pop)
             .InstructionEnumeration();

@@ -30,6 +30,7 @@ internal class SafeCreateElementPatch
                 new(OpCodes.Call),
                 new(OpCodes.Ldstr, "Elin"),
                 new OperandContains(OpCodes.Call, nameof(ClassCache.Create)))
+            .EnsureValid("create element")
             .InsertAndAdvance(
                 new(OpCodes.Ldarg_0),
                 Transpilers.EmitDelegate(SafeCreateInvoke))

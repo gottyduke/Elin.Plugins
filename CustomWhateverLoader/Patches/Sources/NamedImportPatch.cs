@@ -8,7 +8,6 @@ using Cwl.API.Migration;
 using Cwl.Helper;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.Extensions;
-using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
 using NPOI.SS.UserModel;
@@ -40,9 +39,10 @@ internal class NamedImportPatch
         var miGetStr = AccessTools.Method(typeof(SourceData), nameof(SourceData.GetStr));
         return new CodeMatcher(instructions)
             .MatchStartForward(
-                new(o => o.opcode.ToString().Contains("ldc")),
+                new OpCodeContains("ldc"),
                 new OperandMatch(OpCodes.Call, o => o.operand is MethodInfo mi &&
                                                     mi.DeclaringType == typeof(SourceData)))
+            .EnsureValid("ldc source data")
             .Repeat(cm => {
                 var extraParse = false;
                 // Core.ParseElements
@@ -65,11 +65,12 @@ internal class NamedImportPatch
                 }
 
                 var field = cm.Instruction.operand as FieldInfo;
+                var columnName = field!.Name;
 
                 var id = ldc.opcode.Value switch {
                     >= 0x16 and <= 0x1E => ldc.opcode.Value - 0x16,
                     0x1F => (sbyte)ldc.operand,
-                    _ => throw new SourceParseException($"invalid ID for {parser!.Name}:{field!.Name}"),
+                    _ => throw new SourceParseException($"invalid ID for {parser!.Name}:{columnName}"),
                 };
 
                 var rowType = rowCreator.DeclaringType!;
@@ -78,7 +79,7 @@ internal class NamedImportPatch
                     RelaxedImport(row, id, field!, parser!, rowType, extraParser)));
 
                 _expected.TryAdd(rowType, []);
-                _expected[rowType].TryAdd(field!.Name, id);
+                _expected[rowType][columnName] = id;
             })
             .InstructionEnumeration();
     }

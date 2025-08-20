@@ -17,6 +17,7 @@ internal class DirectPopperPatch
             .MatchStartForward(
                 new OperandContains(OpCodes.Ldsfld, nameof(UIContextMenu.Current)),
                 new OperandContains(OpCodes.Callvirt, nameof(Component.GetComponentsInChildren)))
+            .EnsureValid("components iter")
             .RemoveInstruction()
             .InsertAndAdvance(
                 new(OpCodes.Ldarg_0),

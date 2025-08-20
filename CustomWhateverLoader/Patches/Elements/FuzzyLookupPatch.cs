@@ -21,6 +21,7 @@ internal class FuzzyLookup
             .MatchEndForward(
                 new(OpCodes.Ldloca_S),
                 new OperandContains(OpCodes.Callvirt, nameof(EMono.sources.elements.alias.TryGetValue)))
+            .EnsureValid("get element alias")
             .SetInstruction(
                 Transpilers.EmitDelegate(TryFuzzyGetValue))
             .InstructionEnumeration();

@@ -28,6 +28,7 @@ internal class SafeCreateConditionPatch
                 new(OpCodes.Call),
                 new(OpCodes.Ldstr, "Elin"),
                 new OperandContains(OpCodes.Call, nameof(ClassCache.Create)))
+            .EnsureValid("create condition")
             .InsertAndAdvance(
                 new(OpCodes.Ldarg_0),
                 Transpilers.EmitDelegate(SafeCreateInvoke))

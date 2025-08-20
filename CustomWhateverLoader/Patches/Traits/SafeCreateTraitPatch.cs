@@ -30,6 +30,7 @@ internal class SafeCreateTraitPatch
                 new OperandContains(OpCodes.Call, nameof(string.Concat)),
                 new(OpCodes.Ldstr, "Elin"),
                 new OperandContains(OpCodes.Call, nameof(ClassCache.Create)))
+            .EnsureValid("create trait")
             .InsertAndAdvance(
                 new(OpCodes.Ldarg_0),
                 new(OpCodes.Ldc_I4_0),

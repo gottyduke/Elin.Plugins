@@ -25,7 +25,7 @@ internal class MergePlaylistPatch
                 new(OpCodes.Ldc_I4_0),
                 new(OpCodes.Ceq),
                 new OperandContains(OpCodes.Callvirt, nameof(SoundManager.SwitchPlaylist)))
-            .ThrowIfInvalid("failed to match")
+            .EnsureValid("switch playlist")
             .InsertAndAdvance(
                 new CodeInstruction(OpCodes.Ldarg_0))
             .SetInstruction(

@@ -26,10 +26,11 @@ public class SafeSceneInitPatch
         _preLut ??= _preCallbacks.ToLookup(x => x.Item1, x => x.Item2);
         foreach (var (callback, defer) in _preLut[newMode])
             try {
-                if (defer)
+                if (defer) {
                     CoroutineHelper.Deferred(() => callback.Invoke(null));
-                else
+                } else {
                     callback.Invoke(null);
+                }
             } catch (Exception ex) {
                 CwlMod.Warn<SafeSceneInitPatch>("cwl_warn_processor".Loc("pre_scene_init", newMode, ex));
                 // noexcept
@@ -48,10 +49,11 @@ public class SafeSceneInitPatch
         _postLut ??= _postCallbacks.ToLookup(x => x.Item1, x => x.Item2);
         foreach (var (callback, defer) in _postLut[newMode])
             try {
-                if (defer)
+                if (defer) {
                     CoroutineHelper.Deferred(() => callback.Invoke(null));
-                else
+                } else {
                     callback.Invoke(null);
+                }
             } catch (Exception ex) {
                 CwlMod.Warn<SafeSceneInitPatch>("cwl_warn_processor".Loc("post_scene_init", newMode, ex));
                 // noexcept
@@ -65,10 +67,11 @@ public class SafeSceneInitPatch
             MethodInvoker.GetHandler(method, true),
             onSceneInit.Defer));
 
-        if (onSceneInit.PreInit)
+        if (onSceneInit.PreInit) {
             _preCallbacks.Add(callback);
-        else
+        } else {
             _postCallbacks.Add(callback);
+        }
 
         var log = onSceneInit.PreInit ? "pre" : "post";
         CwlMod.Log<SafeSceneInitPatch>("cwl_log_processor_add".Loc($"{log}_scene_init",

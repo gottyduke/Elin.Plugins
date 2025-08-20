@@ -18,7 +18,7 @@ internal class CaneTintPatch
                 new OperandContains(OpCodes.Ldfld, nameof(SourceElement.Row.alias)),
                 new OperandContains(OpCodes.Callvirt, nameof(Color)),
                 new OperandContains(OpCodes.Stfld, "effColor"))
-            .ThrowIfInvalid("failed to match effColor indexer")
+            .EnsureValid("effColor indexer")
             .Advance(-1)
             .RemoveInstruction()
             .InsertAndAdvance(

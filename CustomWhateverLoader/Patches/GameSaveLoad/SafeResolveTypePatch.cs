@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using Cwl.API.Processors;
+using Cwl.Helper.Extensions;
 using HarmonyLib;
 using MethodTimer;
 
@@ -21,10 +22,9 @@ internal class SafeResolveTypePatch
     {
         return new CodeMatcher(instructions)
             .MatchEndForward(
-                new(OpCodes.Callvirt, AccessTools.Method(
-                    typeof(Type),
-                    nameof(Type.IsAssignableFrom))),
+                new OperandContains(OpCodes.Callvirt, nameof(Type.IsAssignableFrom)),
                 new(OpCodes.Brtrue))
+            .EnsureValid("check type instance")
             .InsertAndAdvance(
                 new(OpCodes.Ldarg_2),
                 new(OpCodes.Ldind_Ref),

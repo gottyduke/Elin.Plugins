@@ -23,6 +23,7 @@ internal class SafeCreateCardPatch
         return new CodeMatcher(instructions)
             .MatchEndForward(
                 new OperandContains(OpCodes.Call, nameof(SourceCard.AddRow)))
+            .EnsureValid("add card row")
             .Repeat(cm => cm
                 .SetInstruction(Transpilers.EmitDelegate(RethrowCreateInvoke)))
             .InstructionEnumeration();

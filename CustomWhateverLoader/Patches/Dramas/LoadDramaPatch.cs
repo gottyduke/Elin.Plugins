@@ -26,7 +26,7 @@ internal class LoadDramaPatch
         return cm
             .MatchEndForward(
                 new OperandContains(OpCodes.Callvirt, nameof(ExcelData.BuildList)))
-            .ThrowIfInvalid("failed to match drama build list")
+            .EnsureValid("drama build list")
             .Repeat(match => match
                 .InsertAndAdvance(
                     new(OpCodes.Pop),

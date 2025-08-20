@@ -18,6 +18,7 @@ internal class AudibleTopicTextPatch
             .MatchEndBackwards(
                 new OperandContains(OpCodes.Call, nameof(ClassExtension.RandomItem)),
                 new(OpCodes.Ret))
+            .EnsureValid("random topic text")
             .InsertAndAdvance(
                 new(OpCodes.Ldarg_0),
                 Transpilers.EmitDelegate(TryPlaySoundText))

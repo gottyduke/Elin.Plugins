@@ -21,13 +21,14 @@ internal class FeatApplyEvent
                 new(OpCodes.Ldarg_0),
                 new(OpCodes.Ldloca_S),
                 new OperandContains(OpCodes.Call, "GodHint"))
+            .EnsureValid("load GodHint")
             .CreateLabel(out var label)
             .Start()
             .MatchEndForward(
                 new(OpCodes.Ldarg_0),
                 new OperandContains(OpCodes.Ldfld, nameof(Element.id)),
                 new OpCodeContains(nameof(OpCodes.Stloc)))
-            .ThrowIfInvalid("failed to match switch table")
+            .EnsureValid("switch table")
             .Advance(1)
             .InsertAndAdvance(
                 new(OpCodes.Ldarg_0),

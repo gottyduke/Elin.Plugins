@@ -24,6 +24,7 @@ internal class DramaExpansionPatch
             .MatchEndForward(
                 new OperandContains(OpCodes.Ldfld, "action"),
                 new(OpCodes.Stloc_S))
+            .EnsureValid("load action")
             .CreateLabel(out var label)
             .InsertAndAdvance(
                 new(OpCodes.Ldarg_0),
