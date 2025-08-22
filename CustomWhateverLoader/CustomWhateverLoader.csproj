@@ -1,19 +1,17 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"/>
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <ProjectGuid>{A504BEE4-AD1F-4657-81FA-BBDDBBDDAABB}</ProjectGuid>
-        <OutputType>Library</OutputType>
-        <RootNamespace>Cwl</RootNamespace>
-        <AssemblyName>CustomWhateverLoader</AssemblyName>
-        <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+        <TargetFramework>net472</TargetFramework>
+        <Platforms>AnyCPU</Platforms>
         <LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>
+        <RootNamespace>Cwl</RootNamespace>
+        <Configurations>Debug;Release;DebugNightly;ReleaseNightly</Configurations>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
         <Optimize>false</Optimize>
@@ -21,18 +19,18 @@
         <DefineConstants>DEBUG;TRACE</DefineConstants>
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
+        <NoWarn>1701;1702;8620</NoWarn>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
         <DebugType>none</DebugType>
         <Optimize>true</Optimize>
         <OutputPath>$(ElinGamePath)\Package\Mod_$(AssemblyName)_Stable\</OutputPath>
         <DefineConstants>TRACE</DefineConstants>
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
-        </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugNightly|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
+        <NoWarn>1701;1702;8620</NoWarn>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'DebugNightly' ">
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>
         <Optimize>false</Optimize>
@@ -41,9 +39,9 @@
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
         <DefineConstants>$(DefineConstants);NIGHTLY</DefineConstants>
+        <NoWarn>1701;1702;8620</NoWarn>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseNightly|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
+    <PropertyGroup Condition=" '$(Configuration)' == 'ReleaseNightly' ">
         <DebugType>none</DebugType>
         <Optimize>true</Optimize>
         <OutputPath>$(ElinGamePath)\Package\Mod_$(AssemblyName)\</OutputPath>
@@ -51,239 +49,42 @@
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
         <DefineConstants>$(DefineConstants);NIGHTLY</DefineConstants>
+        <NoWarn>1701;1702;8620</NoWarn>
     </PropertyGroup>
     <ItemGroup>
-        <Compile Include="API\Attributes\CwlActPerformEvent.cs"/>
-        <Compile Include="API\Attributes\CwlOnCreateEvent.cs"/>
-        <Compile Include="API\Attributes\CwlContextMenu.cs"/>
-        <Compile Include="API\Attributes\CwlDramaExpansion.cs"/>
-        <Compile Include="API\Attributes\CwlEvent.cs"/>
-        <Compile Include="API\Attributes\CwlForwardPatch.cs"/>
-        <Compile Include="API\Attributes\CwlGameIOEvent.cs"/>
-        <Compile Include="API\Attributes\CwlLangEvent.cs"/>
-        <Compile Include="API\Attributes\CwlSceneInitEvent.cs" />
-        <Compile Include="API\Custom\Character\CharaImporter.cs"/>
-        <Compile Include="API\Custom\Character\AddEqOrThing.cs"/>
-        <Compile Include="API\Custom\Character\CustomChara.cs"/>
-        <Compile Include="API\Custom\CustomConverter.cs"/>
-        <Compile Include="API\Custom\CustomCondition.cs"/>
-        <Compile Include="API\Custom\CustomMerchant.cs"/>
-        <Compile Include="API\Custom\CustomQuest.cs"/>
-        <Compile Include="API\Custom\CustomReligion.cs"/>
-        <Compile Include="API\Custom\CustomZone.cs"/>
-        <Compile Include="API\Custom\Elements\CustomElement.cs"/>
-        <Compile Include="API\Custom\Elements\CustomFeat.cs"/>
-        <Compile Include="API\Custom\Playlist\CustomPlaylist.cs"/>
-        <Compile Include="API\Custom\Playlist\PlaylistBuilder.cs"/>
-        <Compile Include="API\Custom\Playlist\PlaylistView.cs"/>
-        <Compile Include="API\Drama\ActionBuilder.cs"/>
-        <Compile Include="API\Drama\ActionCookie.cs"/>
-        <Compile Include="API\Drama\ActionParameter.cs"/>
-        <Compile Include="API\Drama\ActionHelper.cs"/>
-        <Compile Include="API\Drama\DramaExpansion.cs"/>
-        <Compile Include="API\Drama\Expansions\Action.cs"/>
-        <Compile Include="API\Drama\Expansions\Condition.cs"/>
-        <Compile Include="API\Drama\Expansions\Misc.cs"/>
-        <Compile Include="API\Drama\Expansions\Quest.cs"/>
-        <Compile Include="API\Drama\Expansions\Scene.cs"/>
-        <Compile Include="API\Drama\ValueStack.cs"/>
-        <Compile Include="API\Migration\MigrateDetail.cs"/>
-        <Compile Include="API\Processors\GameIOProcessor.cs"/>
-        <Compile Include="API\Processors\SheetProcessor.cs"/>
-        <Compile Include="API\Processors\TraitTransformer.cs"/>
-        <Compile Include="API\Processors\TypeResolver.cs"/>
-        <Compile Include="API\Processors\WorkbookProcessor.cs"/>
-        <Compile Include="API\Serializable\IChunkable.cs"/>
-        <Compile Include="API\Serializable\SerializableBioData.cs"/>
-        <Compile Include="API\Serializable\SerializableConverterData.cs"/>
-        <Compile Include="API\Serializable\SerializableEffectSetting.cs"/>
-        <Compile Include="API\Serializable\SerializableModPackage.cs"/>
-        <Compile Include="API\Serializable\SerializablePlaylist.cs"/>
-        <Compile Include="API\Serializable\SerializableReligionElement.cs"/>
-        <Compile Include="API\Serializable\SerializableSoundData.cs"/>
-        <Compile Include="API\Serializable\SerializableStockData.cs"/>
-        <Compile Include="API\Serializable\SerializableZoneData.cs" />
-        <Compile Include="API\WorkbookImporter.cs"/>
-        <Compile Include="Helper\Extensions\CardExt.cs"/>
-        <Compile Include="Helper\Extensions\CharaExt.cs"/>
-        <Compile Include="Helper\Extensions\CodeMatchExt.cs"/>
-        <Compile Include="Helper\Extensions\DictExt.cs"/>
-        <Compile Include="Helper\Extensions\GameDateExt.cs"/>
-        <Compile Include="Helper\Extensions\LinqExt.cs"/>
-        <Compile Include="Helper\Extensions\ParserExt.cs"/>
-        <Compile Include="Helper\Extensions\PointExt.cs"/>
-        <Compile Include="Helper\Extensions\ZoneExt.cs"/>
-        <Compile Include="Helper\FileUtil\ConfigCereal.cs"/>
-        <Compile Include="Helper\FileUtil\FileMapping.cs"/>
-        <Compile Include="Helper\FileUtil\PackageIterator.cs"/>
-        <Compile Include="Helper\Runtime\DebugSampler.cs"/>
-        <Compile Include="Helper\Runtime\Exceptions\DramaException.cs"/>
-        <Compile Include="Helper\Runtime\Exceptions\ExceptionProfile.cs"/>
-        <Compile Include="Helper\Runtime\Exceptions\SourceParseException.cs"/>
-        <Compile Include="Helper\Runtime\Exceptions\MonoFrame.cs"/>
-        <Compile Include="Helper\Runtime\IntrospectCopy.cs"/>
-        <Compile Include="Helper\Runtime\Stubs\MethodStub.cs"/>
-        <Compile Include="Helper\Runtime\Stubs\MethodStubHelper.cs"/>
-        <Compile Include="Helper\SourceRowComparer.cs"/>
-        <Compile Include="Helper\SpriteReplacerHelper.cs"/>
-        <Compile Include="Helper\ReverseId.cs"/>
-        <Compile Include="Helper\Runtime\AttributeQuery.cs"/>
-        <Compile Include="Helper\Runtime\CachedMethods.cs"/>
-        <Compile Include="Helper\Runtime\MethodDispatcher.cs"/>
-        <Compile Include="Helper\Runtime\OverrideMethodComparer.cs"/>
-        <Compile Include="Helper\Runtime\TypeQualifier.cs"/>
-        <Compile Include="Helper\ScopeExit.cs"/>
-        <Compile Include="Helper\String\CalcHelper.cs"/>
-        <Compile Include="Helper\String\StringHelper.cs"/>
-        <Compile Include="Helper\String\FastStringWatch.cs"/>
-        <Compile Include="Helper\String\GameVersion.cs"/>
-        <Compile Include="Helper\String\Hashing.cs"/>
-        <Compile Include="Helper\String\MethodInfoDetail.cs"/>
-        <Compile Include="Helper\String\ParamParser.cs"/>
-        <Compile Include="Helper\String\PathNormalizer.cs"/>
-        <Compile Include="Helper\String\PathTruncation.cs"/>
-        <Compile Include="Helper\Unity\AudioClipStream.cs"/>
-        <Compile Include="Helper\Unity\ChildrenIterator.cs"/>
-        <Compile Include="Helper\Unity\ContextMenuHelper.cs"/>
-        <Compile Include="Helper\Unity\CoroutineHelper.cs"/>
-        <Compile Include="Helper\Unity\DeferredCoroutine.cs"/>
-        <Compile Include="Helper\Unity\ELayerCleanup.cs"/>
-        <Compile Include="Helper\Unity\PixelRaycast.cs"/>
-        <Compile Include="Helper\Unity\ProgressIndicator.cs"/>
-        <Compile Include="Helper\Unity\SpriteCreator.cs"/>
-        <Compile Include="Helper\Unity\TextureResizer.cs"/>
-        <Compile Include="LangMod\LocFormatter.cs"/>
-        <Compile Include="Loader\CustomWhateverLoader.cs"/>
-        <Compile Include="Loader\CwlAsmInfo.cs"/>
-        <Compile Include="Loader\CwlConfig.cs"/>
-        <Compile Include="Loader\CwlConsole.cs"/>
-        <Compile Include="Loader\CwlException.cs"/>
-        <Compile Include="Loader\CwlLogger.cs"/>
-        <Compile Include="Loader\CwlStartTask.cs"/>
-        <Compile Include="Loader\CwlDebug.cs"/>
-        <Compile Include="Loader\DataLoaders\CharaTalkLoader.cs"/>
-        <Compile Include="Loader\DataLoaders\DataLoader.cs"/>
-        <Compile Include="Loader\DataLoaders\DialogPreloader.cs"/>
-        <Compile Include="Loader\DataLoaders\EffectLoader.cs"/>
-        <Compile Include="Loader\DataLoaders\EffectSettingLoader.cs"/>
-        <Compile Include="Loader\DataLoaders\ReligionLoader.cs"/>
-        <Compile Include="Loader\DataLoaders\SoundLoader.cs"/>
-        <Compile Include="Loader\DataLoaders\TransformLoader.cs"/>
-        <Compile Include="Loader\ExecutionAnalysis.cs"/>
-        <Compile Include="Loader\ModIntegrity.cs"/>
-        <Compile Include="Patches\Calcs\LoadRefDicePatch.cs" />
-        <Compile Include="Patches\Charas\BioOverridePatch.cs" />
-        <Compile Include="Patches\Charas\NerdAdvPatch.cs" />
-        <Compile Include="Patches\Charas\RepositionTcPatch.cs" />
-        <Compile Include="Patches\Charas\RepositionPortraitPatch.cs" />
-        <Compile Include="Patches\Charas\RestoreCharaData.cs" />
-        <Compile Include="Patches\Charas\SetCharaRowPatch.cs" />
-        <Compile Include="Patches\Conditions\SafeCreateConditionPatch.cs" />
-        <Compile Include="Patches\Conditions\SetConditionRowPatch.cs" />
-        <Compile Include="Patches\Dialogs\AllowUniqueTalkPatch.cs" />
-        <Compile Include="Patches\Dialogs\LoadDialogPatch.cs" />
-        <Compile Include="Patches\Dialogs\SafePopTalkPatch.cs" />
-        <Compile Include="Patches\Dialogs\VariableQuotePatch.cs" />
-        <Compile Include="Patches\Dramas\DramaExpansionPatch.cs" />
-        <Compile Include="Patches\Dramas\DramaPortraitOverride.cs" />
-        <Compile Include="Patches\Dramas\GetOrAddPersonPatch.cs" />
-        <Compile Include="Patches\Dramas\LoadDramaPatch.cs" />
-        <Compile Include="Patches\Dramas\OverlapSoundPatch.cs" />
-        <Compile Include="Patches\Dramas\RerouteDramaPatch.cs" />
-        <Compile Include="Patches\Dramas\SafePlayDramaPatch.cs" />
-        <Compile Include="Patches\Effects\CaneTintPatch.cs" />
-        <Compile Include="Patches\Effects\LaserByTraitPatch.cs" />
-        <Compile Include="Patches\Elements\ActPerformEvent.cs" />
-        <Compile Include="Patches\Elements\FeatApplyEvent.cs" />
-        <Compile Include="Patches\Elements\FixedSourceValuePatch.cs" />
-        <Compile Include="Patches\Elements\FuzzyLookupPatch.cs" />
-        <Compile Include="Patches\Elements\InvalidateAbilityPatch.cs" />
-        <Compile Include="Patches\Elements\MergeAttackElementPatch.cs" />
-        <Compile Include="Patches\Elements\SafeCreateElementPatch.cs" />
-        <Compile Include="Patches\Elements\SetElementRowPatch.cs" />
-        <Compile Include="Patches\GameSaveLoad\GameLoadEvent.cs" />
-        <Compile Include="Patches\GameSaveLoad\GameSaveEvent.cs" />
-        <Compile Include="Patches\GameSaveLoad\SafeResolveTypePatch.cs" />
-        <Compile Include="Patches\LoadSpritePatch.cs" />
-        <Compile Include="Patches\Materials\ReverseIdMapper.cs" />
-        <Compile Include="Patches\Materials\SafeCreateMaterialPatch.cs" />
-        <Compile Include="Patches\Materials\SetMaterialRowPatch.cs" />
-        <Compile Include="Patches\Objs\ReverseIdMapper.cs" />
-        <Compile Include="Patches\Quests\InvalidateDeliverPatch.cs" />
-        <Compile Include="Patches\Quests\SafeCreateQuestPatch.cs" />
-        <Compile Include="Patches\Quests\SetQuestRowPatch.cs" />
-        <Compile Include="Patches\Recipes\ForcePurityPatch.cs" />
-        <Compile Include="Patches\Recipes\ForceRarityPatch.cs" />
-        <Compile Include="Patches\Recipes\SetRecipeRowPatch.cs" />
-        <Compile Include="Patches\Religions\FactionElementPatch.cs" />
-        <Compile Include="Patches\Religions\ReligionArtifactPatch.cs" />
-        <Compile Include="Patches\Religions\SetReligionOwnerPatch.cs" />
-        <Compile Include="Patches\Religions\SetReligionPortraitPatch.cs" />
-        <Compile Include="Patches\Religions\SetReligionRowPatch.cs" />
-        <Compile Include="Patches\ReloadLangPatch.cs" />
-        <Compile Include="Patches\Relocation\LoadBookPatch.cs" />
-        <Compile Include="Patches\Relocation\LoadResourcesPatch.cs" />
-        <Compile Include="Patches\SafeSceneInitPatch.cs" />
-        <Compile Include="Patches\Sounds\AudibleTopicTextPatch.cs" />
-        <Compile Include="Patches\Sounds\ExpandedTapePatch.cs" />
-        <Compile Include="Patches\Sounds\SetBGMOverridePatch.cs" />
-        <Compile Include="Patches\Sounds\MergePlaylistPatch.cs" />
-        <Compile Include="Patches\Sounds\MoldNamedPlaylistPatch.cs" />
-        <Compile Include="Patches\Sources\CellPostProcessPatch.cs" />
-        <Compile Include="Patches\Sources\CardOnCreateEvent.cs" />
-        <Compile Include="Patches\Sources\ClassCacheThunk.cs" />
-        <Compile Include="Patches\Sources\NamedImportPatch.cs" />
-        <Compile Include="Patches\Sources\RethrowParsePatch.cs" />
-        <Compile Include="Patches\Sources\RowOverridePatch.cs" />
-        <Compile Include="Patches\Sources\SafeCreateCardPatch.cs" />
-        <Compile Include="Patches\Sources\SourceInitPatch.cs" />
-        <Compile Include="Patches\Traits\ConverterEvent.cs" />
-        <Compile Include="Patches\Traits\OnBarterEvent.cs" />
-        <Compile Include="Patches\Traits\SafeCreateTraitPatch.cs" />
-        <Compile Include="Patches\UIs\ContextSystemEvent.cs" />
-        <Compile Include="Patches\UIs\DirectPopperPatch.cs" />
-        <Compile Include="Patches\UIs\SkipProgressTweenPatch.cs" />
-        <Compile Include="Patches\Zones\SafeCreateZonePatch.cs" />
-        <Compile Include="Patches\Zones\SetZoneRowPatch.cs" />
-        <Compile Include="ThirdParty\Glance.cs" />
+      <PackageReference Include="Fody" Version="6.9.3">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="MethodTimer.Fody" Version="3.2.3">
+        <PrivateAssets>all</PrivateAssets>
+        <ExcludeAssets>runtime</ExcludeAssets>
+      </PackageReference>
+      <PackageReference Include="PolySharp" Version="1.15.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="SwallowExceptions.Fody" Version="1.0.1">
+        <PrivateAssets>all</PrivateAssets>
+        <ExcludeAssets>runtime</ExcludeAssets>
+      </PackageReference>
     </ItemGroup>
     <ItemGroup>
-        <Content Include="FodyWeavers.xml" />
-        <Content Include="LangMod\CN\cwl_sources.xlsx">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-        <Content Include="LangMod\CN\Text\Help\help.txt">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-        <Content Include="LangMod\EN\cwl_sources.xlsx">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-        <Content Include="LangMod\EN\Text\Help\help.txt">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
+      <ReferencePathWithRefAssemblies Update="$(ElinGamePath)\Elin_Data\Managed\mscorlib.dll" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Fody" Version="6.9.1">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="MethodTimer.Fody" Version="3.2.2">
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
-        <PackageReference Include="PolySharp" Version="1.15.0">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="SwallowExceptions.Fody" Version="1.0.1">
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
+      <Compile Remove="assets\**" />
     </ItemGroup>
-    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
-    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-           Other similar extension points exist, see Microsoft.Common.targets.
-      <Target Name="BeforeBuild">
-      </Target>
-      <Target Name="AfterBuild">
-      </Target>
-      -->
+    <ItemGroup>
+      <EmbeddedResource Remove="assets\**" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Remove="assets\**" />
+      <None Remove="CustomWhateverLoader.csproj.DotSettings" />
+      <None Remove="README.md" />
+      <None Remove="README.CN.md" />
+      <None Remove="README.JP.md" />
+      <None Remove="apicompat.suppressions.xml" />
+      <None Remove="Check-ApiCompat.ps1" />
+    </ItemGroup>
 </Project>

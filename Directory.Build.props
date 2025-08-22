@@ -1,7 +1,4 @@
 <Project>
-    <PropertyGroup>
-        <OutputPath>$(ElinGamePath)\Package\Mod_$(AssemblyName)\</OutputPath>
-    </PropertyGroup>
     <ItemGroup>
         <Reference Include="$(ElinGamePath)\BepInEx\core\0Harmony.dll">
             <Private>False</Private>
@@ -10,6 +7,9 @@
             <Private>False</Private>
         </Reference>
         <Reference Include="$(ElinGamePath)\BepInEx\core\BepInEx.Unity.dll">
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="$(ElinGamePath)\BepInEx\core\Mono*.dll">
             <Private>False</Private>
         </Reference>
         <Reference Include="$(ElinGamePath)\Elin_Data\Managed\ClassLibrary2.dll">
@@ -22,9 +22,6 @@
             <Private>False</Private>
         </Reference>
         <Reference Include="$(ElinGamePath)\Elin_Data\Managed\LZ4.dll">
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="$(ElinGamePath)\BepInEx\core\Mono*.dll">
             <Private>False</Private>
         </Reference>
         <Reference Include="$(ElinGamePath)\Elin_Data\Managed\Newtonsoft.Json.dll">

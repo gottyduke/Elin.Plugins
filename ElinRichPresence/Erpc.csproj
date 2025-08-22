@@ -11,7 +11,7 @@
         <AssemblyName>ElinRichPresence</AssemblyName>
         <ReferencePath>$(ElinGamePath)/Elin_Data/Managed</ReferencePath>
         <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-        <LangVersion>12.0</LangVersion>
+        <LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -33,57 +33,6 @@
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
-    <PropertyGroup>
-        <PostBuildEvent>DEL /F /Q $(OutDir)NewtonSoft.Json.dll</PostBuildEvent>
-    </PropertyGroup>
-    <ItemGroup>
-        <Reference Include="0Harmony">
-            <HintPath>$(ElinGamePath)\BepInEx\core\0Harmony.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="BepInEx.Core">
-            <HintPath>$(ElinGamePath)\BepInEx\core\BepInEx.Core.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="BepInEx.Unity">
-            <HintPath>$(ElinGamePath)\BepInEx\core\BepInEx.Unity.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Elin">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Elin.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="mscorlib">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\mscorlib.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="netstandard">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\netstandard.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Newtonsoft.Json">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Newtonsoft.Json.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Plugins.BaseCore">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.BaseCore.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Plugins.UI">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.UI.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="System"/>
-        <Reference Include="System.Core"/>
-        <Reference Include="UnityEngine">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.CoreModule">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-    </ItemGroup>
     <ItemGroup>
         <Compile Include="Source\ErpcConfig.cs"/>
         <Compile Include="Source\ErpcMod.cs"/>
@@ -110,9 +59,6 @@
         <Content Include="README.md"/>
         <Content Include="README_CN.md" />
         <Content Include="README_JP.md" />
-    </ItemGroup>
-    <ItemGroup>
-        <Folder Include="Source\Helper\"/>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

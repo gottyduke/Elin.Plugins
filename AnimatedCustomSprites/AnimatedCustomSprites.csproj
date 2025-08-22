@@ -34,62 +34,6 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
-        <Reference Include="0Harmony">
-            <HintPath>$(ElinGamePath)\BepInEx\core\0Harmony.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="BepInEx.Core">
-            <HintPath>$(ElinGamePath)\BepInEx\core\BepInEx.Core.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="BepInEx.Unity">
-            <HintPath>$(ElinGamePath)\BepInEx\core\BepInEx.Unity.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Elin">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Elin.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="mscorlib">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\mscorlib.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="netstandard">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\netstandard.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Newtonsoft.Json">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Newtonsoft.Json.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Plugins.BaseCore">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.BaseCore.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Reflex">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Reflex.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="System"/>
-        <Reference Include="System.Core"/>
-        <Reference Include="UnityEngine">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.CoreModule">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.InputLegacyModule">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.InputModule">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.InputModule.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-    </ItemGroup>
-    <ItemGroup>
         <Compile Include="AcsMod.cs"/>
         <Compile Include="API\AcsAnimator.cs"/>
         <Compile Include="API\AcsClip.cs"/>

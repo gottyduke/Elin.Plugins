@@ -34,46 +34,6 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
-        <Reference Include="0Harmony">
-            <HintPath>$(ElinGamePath)\BepInEx\core\0Harmony.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="BepInEx.Core">
-            <HintPath>$(ElinGamePath)\BepInEx\core\BepInEx.Core.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="BepInEx.Unity">
-            <HintPath>$(ElinGamePath)\BepInEx\core\BepInEx.Unity.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Elin">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Elin.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="mscorlib">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\mscorlib.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="netstandard">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\netstandard.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Plugins.BaseCore">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.BaseCore.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="System"/>
-        <Reference Include="System.Core"/>
-        <Reference Include="UnityEngine">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.CoreModule">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-    </ItemGroup>
-    <ItemGroup>
         <Compile Include="SparklyWaterMod.cs"/>
         <Compile Include="Stats\ConCarbonated.cs"/>
         <Compile Include="Traits\TraitSparklyWater.cs"/>
@@ -90,6 +50,17 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="LangMod\CN\Sparkly.xlsx">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="LangMod\EN\Sparkly.xlsx">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="LangMod\ZHTW\Sparkly.xlsx">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

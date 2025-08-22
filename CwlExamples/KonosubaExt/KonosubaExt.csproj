@@ -34,54 +34,6 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
-        <Reference Include="0Harmony">
-            <HintPath>$(ElinGamePath)\BepInEx\core\0Harmony.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="BepInEx.Core">
-            <HintPath>$(ElinGamePath)\BepInEx\core\BepInEx.Core.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="BepInEx.Unity">
-            <HintPath>$(ElinGamePath)\BepInEx\core\BepInEx.Unity.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Elin">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Elin.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="mscorlib">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\mscorlib.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="netstandard">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\netstandard.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Plugins.BaseCore">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.BaseCore.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Plugins.Sound">
-          <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.Sound.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="Plugins.UI">
-          <HintPath>$(ElinGamePath)\Elin_Data\Managed\Plugins.UI.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="System"/>
-        <Reference Include="System.Core"/>
-        <Reference Include="UnityEngine">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-        <Reference Include="UnityEngine.CoreModule">
-            <HintPath>$(ElinGamePath)\Elin_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
-            <Private>False</Private>
-        </Reference>
-    </ItemGroup>
-    <ItemGroup>
         <Compile Include="Common\Constants.cs" />
         <Compile Include="Elements\SpKonoExplosion.cs" />
         <Compile Include="KonosubaExt.cs"/>
@@ -90,17 +42,17 @@
         <Compile Include="Traits\TraitKonoMegumin.cs" />
     </ItemGroup>
     <ItemGroup>
-      <PackageReference Include="PolySharp" Version="1.15.0">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
+        <PackageReference Include="PolySharp" Version="1.15.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\..\CustomWhateverLoader\CustomWhateverLoader.csproj">
-        <Project>{a504bee4-ad1f-4657-81fa-bbddbbddaabb}</Project>
-        <Name>CustomWhateverLoader</Name>
-          <Private>False</Private>
-      </ProjectReference>
+        <ProjectReference Include="..\..\CustomWhateverLoader\CustomWhateverLoader.csproj">
+            <Project>{a504bee4-ad1f-4657-81fa-bbddbbddaabb}</Project>
+            <Name>CustomWhateverLoader</Name>
+            <Private>False</Private>
+        </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
