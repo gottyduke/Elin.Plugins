@@ -75,9 +75,11 @@
     </ItemGroup>
     <ItemGroup>
       <Compile Remove="assets\**" />
+      <Compile Remove="scripts\**" />
     </ItemGroup>
     <ItemGroup>
       <EmbeddedResource Remove="assets\**" />
+      <EmbeddedResource Remove="scripts\**" />
     </ItemGroup>
     <ItemGroup>
       <None Remove="assets\**" />
@@ -87,5 +89,7 @@
       <None Remove="README.JP.md" />
       <None Remove="apicompat.suppressions.xml" />
       <None Remove="Check-ApiCompat.ps1" />
+      <None Remove="scripts\**" />
+      <None Remove="packages.lock.json" />
     </ItemGroup>
 </Project>

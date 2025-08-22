@@ -8,11 +8,10 @@ on:
 
 permissions:
   contents: read
-  pages: write
   id-token: write
 
 jobs:
-  build:
+  build-and-upload:
     name: Build
     runs-on: windows-2025
 
@@ -24,6 +23,7 @@ jobs:
             CustomWhateverLoader/
             Directory.Build.props
           sparse-checkout-cone-mode: false
+
       - name: Checkout Deps Stable
         uses: actions/checkout@v5
         with:
@@ -31,6 +31,7 @@ jobs:
           ref: stable
           repository: gottyduke/Elin.Plugins.BuildDeps
           ssh-key: ${{ secrets.DEPS_DEPLOY_KEY }}
+
       - name: Checkout Deps Nightly
         uses: actions/checkout@v5
         with:
@@ -38,29 +39,41 @@ jobs:
           ref: nightly
           repository: gottyduke/Elin.Plugins.BuildDeps
           ssh-key: ${{ secrets.DEPS_DEPLOY_KEY }}
+
       - name: Check files
         run: |
           echo $(ls)
+
       - name: Setup DotNet
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10
           cache: true
           cache-dependency-path: ${{ github.workspace }}\CustomWhateverLoader\packages.lock.json
+
       - name: Setup Packages
         run: dotnet restore ${{ github.workspace }}\CustomWhateverLoader\ --locked-mode
+
       - name: Build Stable
         env:
           ElinGamePath: ${{ github.workspace }}\stable
         run: |
           dotnet build ${{ github.workspace }}\CustomWhateverLoader\CustomWhateverLoader.csproj -o ${{ github.workspace }}\out\stable -c Debug --no-restore
+
+      - name: Upload Artifact Stable
+        uses: actions/upload-artifact@v4
+        with:
+          name: cwl-ci-builds-stable
+          path: ${{ github.workspace }}\out\stable
+
       - name: Build Nightly
         env:
           ElinGamePath: ${{ github.workspace }}\nightly
         run: |
           dotnet build ${{ github.workspace }}\CustomWhateverLoader\CustomWhateverLoader.csproj -o ${{ github.workspace }}\out\nightly -c DebugNightly --no-restore
-      - name: Upload Artifacts
+
+      - name: Upload Artifact Nightly
         uses: actions/upload-artifact@v4
         with:
-          name: cwl-ci-builds-${{ github.sha }}
-          path: ${{ github.workspace }}\out\
+          name: cwl-ci-builds-nightly
+          path: ${{ github.workspace }}\out\nightly
