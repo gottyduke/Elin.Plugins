@@ -14,7 +14,7 @@ internal partial class DataLoader
             return false;
         }
 
-        var texId = path.Split('/').LastItem();
+        var texId = path.Split('/')[^1];
         var sprite = texId.LoadSprite();
         if (sprite == null) {
             return false;

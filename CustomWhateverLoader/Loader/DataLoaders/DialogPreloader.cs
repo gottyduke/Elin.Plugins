@@ -18,10 +18,11 @@ internal partial class DataLoader
         var dialogs = PackageIterator.GetRelocatedFilesFromPackage("Dialog/dialog.xlsx");
 
         foreach (var book in dialogs) {
-            CwlMod.CurrentLoading = $"[CWL] Dialog/{book.ShortPath()}";
+            var path = book.ShortPath();
+            CwlMod.CurrentLoading = $"[CWL] Dialog/{path}";
 
             LoadDialogPatch.Cached.Add(new(book.FullName));
-            CwlMod.Log<DataLoader>("cwl_preload_dialog".Loc(book.ShortPath()));
+            CwlMod.Log<DataLoader>("cwl_preload_dialog".Loc(path));
         }
     }
 }

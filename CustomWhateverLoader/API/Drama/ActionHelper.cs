@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cwl.Helper;
 using Cwl.Helper.Extensions;
-using UnityEngine;
+using Cwl.Helper.String;
 
 namespace Cwl.API.Drama;
 
@@ -27,51 +27,6 @@ public partial class DramaExpansion
         dm.lastTalk = talkEvent;
         dm.AddEvent(talkEvent);
         dm.sequence.tempEvents.Add(dm.lastTalk);
-    }
-
-    public static float ArithmeticModOrSet(float lhs, string expr)
-    {
-        return expr.Trim() switch {
-            ['+', .. { } raw] when float.TryParse(raw, out var rhs) => lhs + rhs,
-            ['+', '+'] => lhs + 1,
-            ['-', .. { } raw] when float.TryParse(raw, out var rhs) => lhs - rhs,
-            ['-', '-'] => lhs - 1,
-            ['*', .. { } raw] when float.TryParse(raw, out var rhs) => lhs * rhs,
-            ['x', .. { } raw] when float.TryParse(raw, out var rhs) => lhs * rhs,
-            ['/', .. { } raw] when float.TryParse(raw, out var rhs) => lhs / rhs,
-            ['=', .. { } raw] when float.TryParse(raw, out var rhs) => rhs,
-            { } raw when float.TryParse(raw, out var rhs) => rhs,
-            _ => lhs,
-        };
-    }
-
-    public static int ArithmeticModOrSet(int lhs, string expr)
-    {
-        return (int)ArithmeticModOrSet((float)lhs, expr);
-    }
-
-    public static float ArithmeticDiff(float lhs, string expr)
-    {
-        return ArithmeticModOrSet(lhs, expr) - lhs;
-    }
-
-    public static int ArithmeticDiff(int lhs, string expr)
-    {
-        return ArithmeticModOrSet(lhs, expr) - lhs;
-    }
-
-    public static bool Compare(float lhs, string expr)
-    {
-        return expr.Trim() switch {
-            ['>', .. { } raw] when float.TryParse(raw, out var rhs) => lhs > rhs,
-            ['>', '=', .. { } raw] when float.TryParse(raw, out var rhs) => lhs >= rhs,
-            ['=', .. { } raw] when float.TryParse(raw, out var rhs) => Mathf.Approximately(lhs, rhs),
-            ['=', '=', .. { } raw] when float.TryParse(raw, out var rhs) => Mathf.Approximately(lhs, rhs),
-            ['!', '=', .. { } raw] when float.TryParse(raw, out var rhs) => !Mathf.Approximately(lhs, rhs),
-            ['<', '=', .. { } raw] when float.TryParse(raw, out var rhs) => lhs <= rhs,
-            ['<', .. { } raw] when float.TryParse(raw, out var rhs) => lhs < rhs,
-            _ => false,
-        };
     }
 
     public static void Goto(string step)
@@ -127,5 +82,35 @@ public partial class DramaExpansion
         }
 
         return false;
+    }
+
+    public static float ArithmeticModOrSet(float lhs, string expr)
+    {
+        return expr.ArithmeticModOrSet(lhs);
+    }
+
+    public static int ArithmeticModOrSet(int lhs, string expr)
+    {
+        return expr.ArithmeticModOrSet(lhs);
+    }
+
+    public static float ArithmeticDiff(float lhs, string expr)
+    {
+        return expr.ArithmeticDiff(lhs);
+    }
+
+    public static int ArithmeticDiff(int lhs, string expr)
+    {
+        return expr.ArithmeticDiff(lhs);
+    }
+
+    public static bool Compare(float lhs, string expr)
+    {
+        return expr.Compare(lhs);
+    }
+
+    public static bool Compare(int lhs, string expr)
+    {
+        return expr.Compare(lhs);
     }
 }

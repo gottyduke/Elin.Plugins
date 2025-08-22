@@ -1,5 +1,5 @@
-$target = "$($env:ElinGamePath)\Package\Mod_CustomWhateverLoader\CustomWhateverLoader.dll"
-$source = "$($env:SteamContentPath)\2135150\3370512305\CustomWhateverLoader.dll"
+$target = "$($env:SteamContentPath)\2135150\3370512305\CustomWhateverLoader.dll"
+$source = "$($env:ElinGamePath)\Package\Mod_CustomWhateverLoader\CustomWhateverLoader.dll"
 $suppressionFile = [xml](Get-Content -Path "$($PSScriptRoot)\apicompat.suppressions.xml")
 $tempFile = "$($PSScriptRoot)\temp.suppressions.xml"
 

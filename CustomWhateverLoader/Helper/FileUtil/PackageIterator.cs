@@ -103,10 +103,11 @@ public class PackageIterator
         return excel is null ? null : new(excel.FullName, startIndex);
     }
 
-    public static (FileInfo, T)? GetJsonFromPackage<T>(string relativePath, string modGuid) where T : new()
+    public static (FileInfo?, T?) GetJsonFromPackage<T>(string relativePath, string modGuid) where T : new()
     {
         var json = GetRelocatedFileFromPackage(relativePath, modGuid);
-        return json is null || !ConfigCereal.ReadConfig<T>(json.FullName, out var data) || data is null ? null : (json, data);
+        ConfigCereal.ReadConfig<T>(json?.FullName, out var data);
+        return (json, data);
     }
 
     public static FileInfo? GetRelocatedFileFromPackage(string relativePath, string modGuid)
