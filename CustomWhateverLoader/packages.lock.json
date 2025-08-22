@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "dependencies": {
+    ".NETFramework,Version=v4.7.2": {
+      "Fody": {
+        "type": "Direct",
+        "requested": "[6.9.3, )",
+        "resolved": "6.9.3",
+        "contentHash": "1CUGgFdyECDKgi5HaUBhdv6k+VG9Iy4OCforGfHyar3xQXAJypZkzymgKtWj/4SPd6nSG0Qi7NH71qHrDSZLaA=="
+      },
+      "MethodTimer.Fody": {
+        "type": "Direct",
+        "requested": "[3.2.3, )",
+        "resolved": "3.2.3",
+        "contentHash": "1aa3NjixEUmsmdGzcCtcjSS83nDng79aSTwNe8PSWCkvuLRcEEEn2GvdJmM5ViIp8iIngFHjshM3EyzhaaOw0g==",
+        "dependencies": {
+          "Fody": "6.9.1"
+        }
+      },
+      "PolySharp": {
+        "type": "Direct",
+        "requested": "[1.15.0, )",
+        "resolved": "1.15.0",
+        "contentHash": "FbU0El+EEjdpuIX4iDbeS7ki1uzpJPx8vbqOzEtqnl1GZeAGJfq+jCbxeJL2y0EPnUNk8dRnnqR2xnYXg9Tf+g=="
+      },
+      "SwallowExceptions.Fody": {
+        "type": "Direct",
+        "requested": "[1.0.1, )",
+        "resolved": "1.0.1",
+        "contentHash": "NgEybeVriyHighEXa3EqDg4wFWIvKsNQXEL2PHsxYX2pQFfjH13a8NOeZTtLXZO00O0OQ1uXAzfSh37AL+pbsw==",
+        "dependencies": {
+          "Fody": "6.1.0"
+        }
+      }
+    }
+  }
+}

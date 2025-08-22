@@ -2,7 +2,6 @@ name: Custom Whatever Loader CI Deploy
 
 on:
   push:
-    branches: "master"
     paths:
       - "CustomWhateverLoader/**"
   workflow_dispatch:
@@ -15,10 +14,7 @@ permissions:
 jobs:
   build:
     name: Build
-    runs-on: windows-latest
-
-    env:
-      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+    runs-on: windows-2025
 
     steps:
       - name: Checkout Code
@@ -42,25 +38,29 @@ jobs:
           ref: nightly
           repository: gottyduke/Elin.Plugins.BuildDeps
           ssh-key: ${{ secrets.DEPS_DEPLOY_KEY }}
+      - name: Check files
+        run: |
+          echo $(ls)
       - name: Setup DotNet
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10
           cache: true
+          cache-dependency-path: ${{ github.workspace }}\CustomWhateverLoader\packages.lock.json
       - name: Setup Packages
-        run: dotnet restore --locked-mode
+        run: dotnet restore ${{ github.workspace }}\CustomWhateverLoader\ --locked-mode
       - name: Build Stable
         env:
-          ElinGamePath: ${{ github.workspace }}/stable
+          ElinGamePath: ${{ github.workspace }}\stable
         run: |
-          dotnet build ${{ github.workspace }}/CustomWhateverLoader/CustomWhateverLoader.csproj -o ${{ github.workspace }}/out/stable -c Debug --no-restore
+          dotnet build ${{ github.workspace }}\CustomWhateverLoader\CustomWhateverLoader.csproj -o ${{ github.workspace }}\out\stable -c Debug --no-restore
       - name: Build Nightly
         env:
-          ElinGamePath: ${{ github.workspace }}/nightly
+          ElinGamePath: ${{ github.workspace }}\nightly
         run: |
-          dotnet build ${{ github.workspace }}/CustomWhateverLoader/CustomWhateverLoader.csproj -o ${{ github.workspace }}/out/nightly -c DebugNightly --no-restore
+          dotnet build ${{ github.workspace }}\CustomWhateverLoader\CustomWhateverLoader.csproj -o ${{ github.workspace }}\out\nightly -c DebugNightly --no-restore
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: cwl-ci-builds-${{ github.sha }}
-          path: ${{ github.workspace }}/out/
+          path: ${{ github.workspace }}\out\
