@@ -71,7 +71,9 @@ internal sealed partial class CwlMod
 
         LoadResourcesPatch.AddHandler<SoundData>(DataLoader.RelocateSound);
         LoadResourcesPatch.AddHandler<Sprite>(DataLoader.RelocateSprite);
-        //LoadResourcesPatch.AddHandler<Effect>(DataLoader.RelocateEffect);
+
+        DataLoader.SetupEffectTemplate();
+        LoadResourcesPatch.AddHandler<Effect>(DataLoader.RelocateEffect);
 
         DataLoader.MergeCharaTalk();
         DataLoader.MergeCharaTone();
