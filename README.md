@@ -12,7 +12,7 @@ Elin plugins for funzie
 - [Visual PCC Picker](./CharacterCustomizerPlus/)
 
 ## Build
-The projects requires environment variable `ElinGamePath` set to the root folder of the Elin game installation.
+The projects require environment variable `ElinGamePath` set to the root folder of the Elin game installation.
 ```
 ElinGamePath/
 ├─ BepInEx/
