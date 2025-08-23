@@ -1,6 +1,4 @@
-﻿//#define ENABLE_QUEST
-#if ENABLE_QUEST
-using Cwl.API.Custom;
+﻿using Cwl.API.Custom;
 using Cwl.Helper;
 using Cwl.Patches.Sources;
 using HarmonyLib;
@@ -19,17 +17,12 @@ internal class SetQuestRowPatch
         }
 
         var qualified = TypeQualifier.TryQualify<Quest>(r.type);
-        if (qualified?.FullName is not null) {
-            r.type = qualified.FullName;
+        if (qualified?.FullName is { } fullName) {
+            r.type = fullName;
         }
 
-        if (r.drama.Length == 0) {
-            return;
-        }
-
-        if (r.tags.Contains("autoStart")) {
+        if (qualified == typeof(CustomQuest)) {
             CustomQuest.Managed[r.id] = r;
         }
     }
 }
-#endif
