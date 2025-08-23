@@ -23,7 +23,7 @@ public static class CachedMethods
 
             return Array.Find(type.GetCachedMethods(),
                 mi => mi.Name == methodName &&
-                      mi.GetParameters().Types().SequenceEqual(parameters));
+                      mi.ValidateParameterTypes(parameters));
         } catch {
             return null;
             // noexcept
@@ -95,6 +95,44 @@ public static class CachedMethods
         public object? FastInvokeStatic(params object[] args)
         {
             return method.FastInvoke(null, args);
+        }
+
+        public bool ValidateParameters(params object?[] args)
+        {
+            return method.ValidateParameterTypes(args.Select(o => o?.GetType()).ToArray());
+        }
+
+        public bool ValidateParameterTypes(params Type?[] types)
+        {
+            var parameters = method.GetParameters();
+
+            if (parameters.Length != types.Length) {
+                CwlMod.Warn($"parameter count mismatch for {method.Name}: expected {parameters.Length}, got {types.Length}");
+                return false;
+            }
+
+            for (var i = 0; i < parameters.Length; ++i) {
+                var paramType = parameters[i].ParameterType;
+                var type = types[i];
+
+                if (type == null) {
+                    if (!paramType.IsValueType || Nullable.GetUnderlyingType(paramType) != null) {
+                        continue;
+                    }
+
+                    CwlMod.Warn($"parameter {i} type mismatch: expected {paramType.Name}, got null (non-nullable value type)");
+                    return false;
+                }
+
+                if (paramType.IsAssignableFrom(type)) {
+                    continue;
+                }
+
+                CwlMod.Warn($"parameter {i} type mismatch: expected {paramType.Name}, got {type.Name}");
+                return false;
+            }
+
+            return true;
         }
     }
 }

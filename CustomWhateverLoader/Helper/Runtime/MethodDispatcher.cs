@@ -14,7 +14,7 @@ public static class MethodDispatcher
     {
         if (instance is null ||
             !TryGetMethod(instance, methodName, out var method) ||
-            !ValidateParameters(method, args)) {
+            !method.ValidateParameters(args)) {
             return new(false);
         }
 
@@ -44,29 +44,6 @@ public static class MethodDispatcher
         _queried.Add(cacheKey);
 
         return _cached.TryGetValue(cacheKey, out method);
-    }
-
-    private static bool ValidateParameters(MethodInfo method, object[] args)
-    {
-        var parameters = method.GetParameters();
-        if (parameters.Length != args.Length) {
-            CwlMod.Warn($"parameter count mismatch for {method.Name}: expected {parameters.Length}, got {args.Length}");
-            return false;
-        }
-
-        for (var i = 0; i < parameters.Length; ++i) {
-            var paramType = parameters[i].ParameterType;
-            var arg = args[i];
-
-            if (paramType.IsInstanceOfType(arg)) {
-                continue;
-            }
-
-            CwlMod.Warn($"parameter {i} type mismatch: expected {paramType.Name}, got {arg.GetType().Name}");
-            return false;
-        }
-
-        return true;
     }
 
     [SwallowExceptions]

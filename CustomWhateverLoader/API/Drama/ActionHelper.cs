@@ -74,7 +74,7 @@ public partial class DramaExpansion
         try {
             Cookie = new(dm, item);
             var result = action.Method.FastInvokeStatic(dm, item, pack);
-            return result is not null && (bool)result;
+            return result is true;
         } catch (Exception ex) {
             var methodGroup = $"[{action.Method.Name}]({string.Join(",", pack)})";
             CwlMod.WarnWithPopup<DramaExpansion>($"call failure: {methodGroup}\n{ex.Message}", ex);

@@ -57,7 +57,7 @@ public partial class DramaExpansion : DramaOutcome
             result = action.Method.FastInvokeStatic(packs);
         }
 
-        return result is not null && (bool)result;
+        return result is true;
     }
 
     [CwlNodiscard]

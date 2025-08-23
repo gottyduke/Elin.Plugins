@@ -9,7 +9,6 @@ using Cwl.Helper;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.Extensions;
 using HarmonyLib;
-using MethodTimer;
 using NPOI.SS.UserModel;
 
 namespace Cwl.Patches.Sources;
@@ -84,7 +83,6 @@ internal class NamedImportPatch
             .InstructionEnumeration();
     }
 
-    [Time]
     private static void RelaxedImport(object row,
                                       int id,
                                       FieldInfo field,
@@ -117,17 +115,17 @@ internal class NamedImportPatch
 
                 _cached[sheet] = header;
                 migrate.StartNewSheet(sheet, expected);
-            }
 
-            var strategy = migrate.CurrentSheet?.MigrateStrategy ?? MigrateDetail.Strategy.Unknown;
-            if (strategy == MigrateDetail.Strategy.Unknown) {
-                strategy = expected.All(header.Contains) &&
-                           expected.Count <= header.Count
-                    ? MigrateDetail.Strategy.Correct
-                    : MigrateDetail.Strategy.Missing;
-            }
+                var strategy = migrate.CurrentSheet?.MigrateStrategy ?? MigrateDetail.Strategy.Unknown;
+                if (strategy == MigrateDetail.Strategy.Unknown) {
+                    strategy = expected.All(header.Contains) &&
+                               expected.Count <= header.Count
+                        ? MigrateDetail.Strategy.Correct
+                        : MigrateDetail.Strategy.Missing;
+                }
 
-            migrate.SetStrategy(strategy).SetGiven(header);
+                migrate.SetStrategy(strategy).SetGiven(header);
+            }
 
             var readPos = header.GetValueOrDefault(field.Name, id);
             var parsed = extraParser is not null
