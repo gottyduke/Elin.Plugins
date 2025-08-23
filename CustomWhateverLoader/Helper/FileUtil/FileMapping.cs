@@ -6,7 +6,7 @@ namespace Cwl.Helper.FileUtil;
 
 public class FileMapping
 {
-    private static readonly List<FallbackRule> _fallbacks = [
+    private static readonly List<(string, string)> _fallbacks = [
         new("ZHTW", "CN"),
         new("CN", "ZHTW"),
         new("*", "EN"),
@@ -31,7 +31,7 @@ public class FileMapping
 
     public DirectoryInfo ModBaseDir => Owner.dirInfo;
 
-    public static ILookup<string, string>? FallbackLut => field ??= _fallbacks.ToLookup(r => r.LangCode, r => r.Fallback);
+    public static ILookup<string, string>? FallbackLut => field ??= _fallbacks.ToLookup(r => r.Item1, r => r.Item2);
 
     public void RebuildLangModMapping(string langCode = "EN")
     {
@@ -51,7 +51,9 @@ public class FileMapping
 
         HashSet<string> ordering = [langCode, ..FallbackLut![langCode], ..FallbackLut["*"]];
         HashSet<string> indexed = [
-            ..ordering.Select(order => Path.Combine(langMod, order)).Where(resources.Contains),
+            ..ordering
+                .Select(order => Path.Combine(langMod, order))
+                .Where(resources.Contains),
             ..resources,
             // fallback mappings
             langMod,
@@ -67,6 +69,7 @@ public class FileMapping
             return;
         }
 
+        // do not include baseDir in source mappings
         foreach (var index in _indexed.ToArray()[..^1]) {
             var sources = Directory.GetFiles(index, "*.xlsx", SearchOption.TopDirectoryOnly);
             if (sources.Length == 0) {
@@ -82,6 +85,4 @@ public class FileMapping
     {
         return _indexed.Select(mapping => new FileInfo(Path.Combine(mapping, relativePath))).FirstOrDefault(file => file.Exists);
     }
-
-    private record FallbackRule(string LangCode, string Fallback);
 }

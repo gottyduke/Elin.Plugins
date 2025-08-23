@@ -95,6 +95,15 @@ public partial class DramaExpansion
     }
 
     [CwlNodiscard]
+    public static bool if_lv(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.Requires(out var expr);
+        dm.RequiresActor(out var actor);
+
+        return Compare(actor.LV, expr);
+    }
+
+    [CwlNodiscard]
     public static bool if_race(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.Requires(out var race);

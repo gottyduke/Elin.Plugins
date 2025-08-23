@@ -86,6 +86,7 @@ public class PackageIterator
         return BaseModManager.Instance.packages
             .Where(p => p.activated && !p.builtin)
             .Select(p => GetJsonFromPackage<T>(relativePath, p.id))
+            .Where(jd => jd.Item1 is not null && jd.Item2 is not null)
             .OfType<(FileInfo, T)>();
     }
 

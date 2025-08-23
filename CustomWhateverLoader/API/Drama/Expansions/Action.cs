@@ -14,14 +14,8 @@ public partial class DramaExpansion
         parameters.RequiresOpt(out var id, out var material, out var lv, out var num);
         dm.RequiresActor(out var actor);
 
-        if (!int.TryParse(lv.Get("-1"), out var itemLv)) {
-            itemLv = -1;
-        }
-
-        if (!int.TryParse(num.Get("1"), out var itemNum)) {
-            itemNum = 1;
-        }
-
+        var itemLv = lv.AsInt(-1);
+        var itemNum = num.AsInt(1);
         var item = ThingGen.Create(id.Get("ash3"), ReverseId.Material(material.Get("wood")), itemLv).SetNum(itemNum);
         actor.Pick(item);
 
