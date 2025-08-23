@@ -1,9 +1,24 @@
-﻿namespace Cwl.Helper.String;
+﻿using System;
+using System.IO;
+using System.Linq;
+
+namespace Cwl.Helper.String;
 
 public static class PathNormalizer
 {
-    public static string NormalizePath(this string path)
+    private static readonly char[] _invalidPathChars = Path.GetInvalidPathChars().Union(Path.GetInvalidFileNameChars()).ToArray();
+    public static ReadOnlySpan<char> InvalidPathChars => _invalidPathChars;
+
+    extension(string path)
     {
-        return path.Replace('\\', '/');
+        public string NormalizePath()
+        {
+            return path.Replace('\\', '/');
+        }
+
+        public bool IsInvalidPath()
+        {
+            return path.IndexOfAny(InvalidPathChars) != -1;
+        }
     }
 }

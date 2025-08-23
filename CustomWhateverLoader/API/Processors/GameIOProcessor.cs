@@ -7,6 +7,7 @@ using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using MethodTimer;
+using UnityEngine;
 
 namespace Cwl.API.Processors;
 
@@ -18,6 +19,7 @@ public class GameIOProcessor
     public delegate void GameIOProcess(GameIOContext context);
 
     public static GameIOContext? LastUsedContext { get; private set; }
+    public static GameIOContext? PersistentContext => field ??= new(Application.persistentDataPath);
 
     private static event GameIOProcess OnGamePreSaveProcess = delegate { };
     private static event GameIOProcess OnGamePostSaveProcess = delegate { };
@@ -32,6 +34,15 @@ public class GameIOProcessor
     public static void AddLoad(GameIOProcess loadProcess, bool post)
     {
         Add(loadProcess, false, post);
+    }
+
+    public static GameIOContext? GetPersistentModContext(string modId)
+    {
+        if (modId.IsInvalidPath()) {
+            return null;
+        }
+
+        return new(Path.Combine(Application.persistentDataPath, modId));
     }
 
     private static void Add(GameIOProcess ioProcess, bool save, bool post)
@@ -129,6 +140,11 @@ public class GameIOProcessor
 
             chunkName ??= $"{type.Assembly.GetName().Name}.{type.FullName ?? type.Name}";
 
+            if (chunkName.IsInvalidPath()) {
+                CwlMod.Warn<GameIOContext>($"invalid chunk {chunkName}");
+                return;
+            }
+
             var file = Path.Combine(path, Storage, $"{chunkName}.{CompressedChunkExt}");
             ConfigCereal.WriteDataCompressed(data, file);
 
@@ -153,6 +169,11 @@ public class GameIOProcessor
 
             chunkName ??= $"{type.Assembly.GetName().Name}.{type.FullName ?? type.Name}";
 
+            if (chunkName.IsInvalidPath()) {
+                CwlMod.Warn<GameIOContext>($"invalid chunk {chunkName}");
+                return;
+            }
+
             var file = Path.Combine(path, Storage, $"{chunkName}.{ChunkExt}");
             ConfigCereal.WriteData(data, file);
 
@@ -167,8 +188,15 @@ public class GameIOProcessor
         /// <returns>bool indicating success</returns>
         public bool Load<T>(out T? inferred, string? chunkName = null)
         {
+            inferred = default;
+
             var type = typeof(T);
             chunkName ??= $"{type.Assembly.GetName().Name}.{type.FullName ?? type.Name}";
+
+            if (chunkName.IsInvalidPath()) {
+                CwlMod.Warn<GameIOContext>($"invalid chunk {chunkName}");
+                return false;
+            }
 
             var baseFile = Path.Combine(path, Storage, $"{chunkName}");
             var chunkc = new FileInfo($"{baseFile}.{CompressedChunkExt}");

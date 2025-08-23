@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Cwl.Helper.String;
 
 namespace Cwl.Helper.FileUtil;
 
@@ -83,6 +84,12 @@ public class FileMapping
 
     public FileInfo? RelocateFile(string relativePath)
     {
-        return _indexed.Select(mapping => new FileInfo(Path.Combine(mapping, relativePath))).FirstOrDefault(file => file.Exists);
+        if (relativePath.IsInvalidPath()) {
+            return null;
+        }
+
+        return _indexed
+            .Select(mapping => new FileInfo(Path.Combine(mapping, relativePath)))
+            .FirstOrDefault(file => file.Exists);
     }
 }
