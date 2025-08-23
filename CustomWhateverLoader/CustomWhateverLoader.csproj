@@ -57,6 +57,10 @@
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
+      <PackageReference Include="GitVersion.MsBuild" Version="6.4.0">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
       <PackageReference Include="MethodTimer.Fody" Version="3.2.3">
         <PrivateAssets>all</PrivateAssets>
         <ExcludeAssets>runtime</ExcludeAssets>
@@ -91,5 +95,17 @@
       <None Remove="Check-ApiCompat.ps1" />
       <None Remove="scripts\**" />
       <None Remove="packages.lock.json" />
+      <None Update="LangMod\CN\Text\Help\help.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="LangMod\CN\cwl_sources.xlsx">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="LangMod\EN\Text\Help\help.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="LangMod\EN\cwl_sources.xlsx">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 </Project>
