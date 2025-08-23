@@ -15,34 +15,27 @@ jobs:
     name: Build
     runs-on: windows-2025
 
+    strategy:
+      matrix:
+        version: [stable, nightly]
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v5
         with:
+          fetch-depth: 0
           sparse-checkout: |
             CustomWhateverLoader/
             Directory.Build.props
           sparse-checkout-cone-mode: false
 
-      - name: Checkout Deps Stable
+      - name: Checkout Deps
         uses: actions/checkout@v5
         with:
-          path: stable
-          ref: stable
+          path: ${{ matrix.version }}
+          ref: ${{ matrix.version }}
           repository: gottyduke/Elin.Plugins.BuildDeps
           ssh-key: ${{ secrets.DEPS_DEPLOY_KEY }}
-
-      - name: Checkout Deps Nightly
-        uses: actions/checkout@v5
-        with:
-          path: nightly
-          ref: nightly
-          repository: gottyduke/Elin.Plugins.BuildDeps
-          ssh-key: ${{ secrets.DEPS_DEPLOY_KEY }}
-
-      - name: Check files
-        run: |
-          echo $(ls)
 
       - name: Setup DotNet
         uses: actions/setup-dotnet@v4
@@ -54,26 +47,16 @@ jobs:
       - name: Setup Packages
         run: dotnet restore ${{ github.workspace }}\CustomWhateverLoader\ --locked-mode
 
-      - name: Build Stable
+      - name: Build
         env:
-          ElinGamePath: ${{ github.workspace }}\stable
+          ElinGamePath: ${{ github.workspace }}\${{ matrix.version }}
+        shell: pwsh
         run: |
-          dotnet build ${{ github.workspace }}\CustomWhateverLoader\CustomWhateverLoader.csproj -o ${{ github.workspace }}\out\stable -c Debug --no-restore
+          $config = '${{ matrix.version }}' -eq 'stable' ? 'Debug' : 'DebugNightly'
+          dotnet build ${{ github.workspace }}\CustomWhateverLoader\CustomWhateverLoader.csproj -o ${{ github.workspace }}\out\${{ matrix.version }} -c $config --no-restore
 
-      - name: Upload Artifact Stable
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: cwl-ci-builds-stable
-          path: ${{ github.workspace }}\out\stable
-
-      - name: Build Nightly
-        env:
-          ElinGamePath: ${{ github.workspace }}\nightly
-        run: |
-          dotnet build ${{ github.workspace }}\CustomWhateverLoader\CustomWhateverLoader.csproj -o ${{ github.workspace }}\out\nightly -c DebugNightly --no-restore
-
-      - name: Upload Artifact Nightly
-        uses: actions/upload-artifact@v4
-        with:
-          name: cwl-ci-builds-nightly
-          path: ${{ github.workspace }}\out\nightly
+          name: cwl-ci-builds-${{ matrix.version }}
+          path: ${{ github.workspace }}\out\${{ matrix.version }}
