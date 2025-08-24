@@ -13,7 +13,7 @@ public static class CardExt
                 return value;
             }
 
-            if (owner.IsPC) {
+            if (EClass.core?.game?.player?.chara == owner) {
                 value = EClass.player.dialogFlags.GetValueOrDefault(flag, 0);
             }
 
@@ -25,7 +25,7 @@ public static class CardExt
             var key = flag.GetHashCode();
             owner.mapInt[key] = value;
 
-            if (owner.IsPC) {
+            if (EClass.core?.game?.player?.chara == owner) {
                 EClass.player.dialogFlags[flag] = value;
             }
         }
