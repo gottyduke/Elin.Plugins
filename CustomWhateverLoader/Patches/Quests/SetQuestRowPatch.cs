@@ -1,4 +1,5 @@
-﻿using Cwl.API.Custom;
+﻿#if DEBUG
+using Cwl.API.Custom;
 using Cwl.Helper;
 using Cwl.Patches.Sources;
 using HarmonyLib;
@@ -26,3 +27,4 @@ internal class SetQuestRowPatch
         }
     }
 }
+#endif

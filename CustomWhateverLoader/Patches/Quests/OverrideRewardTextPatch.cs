@@ -1,3 +1,4 @@
+#if DEBUG
 using Cwl.API.Custom;
 using HarmonyLib;
 
@@ -18,3 +19,4 @@ internal class OverrideRewardTextPatch
         return false;
     }
 }
+#endif

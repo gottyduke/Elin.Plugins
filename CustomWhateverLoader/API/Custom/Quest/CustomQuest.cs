@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if DEBUG
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -93,7 +94,7 @@ public class CustomQuest : CustomQuestStorageV1
     }
 
     [OnDeserialized]
-    protected virtual void OnDeserialized(StreamingContext context)
+    protected void OnDeserialized(StreamingContext context)
     {
     }
 
@@ -223,3 +224,4 @@ public class CustomQuest : CustomQuestStorageV1
         }
     }
 }
+#endif
