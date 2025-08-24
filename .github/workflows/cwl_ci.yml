@@ -3,7 +3,7 @@ name: Custom Whatever Loader CI Deploy
 on:
   push:
     paths:
-      - "CustomWhateverLoader/**"
+      - CustomWhateverLoader/**
   workflow_dispatch:
 
 permissions:

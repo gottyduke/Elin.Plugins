@@ -12,7 +12,6 @@
         <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
         <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <DebugSymbols>true</DebugSymbols>
@@ -30,6 +29,7 @@
         <ErrorReport>prompt</ErrorReport>
         <WarningLevel>4</WarningLevel>
         <NoWarn>1701;1702;8620</NoWarn>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'DebugNightly' ">
         <DebugSymbols>true</DebugSymbols>
@@ -49,6 +49,7 @@
         <WarningLevel>4</WarningLevel>
         <DefineConstants>$(DefineConstants);NIGHTLY</DefineConstants>
         <NoWarn>1701;1702;8620</NoWarn>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
     <ItemGroup>
       <PackageReference Include="Fody" Version="6.9.3">
