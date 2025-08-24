@@ -23,7 +23,7 @@ ElinGamePath/
 │  │  ├─ *.dll
 ```
 
-To build Custom Whatever Loader, you need to install [.NET SDK 10.0.x.](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
+To build Custom Whatever Loader, you need to install [.NET SDK 10.0.x](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
 
 The regular bugfixes and updates before tagged release can also be downloaded from [action artifacts](https://github.com/gottyduke/Elin.Plugins/actions).
 
