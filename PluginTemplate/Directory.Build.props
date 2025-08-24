@@ -1,0 +1,58 @@
+<Project>
+    <ItemGroup>
+        <Reference Include="$(ElinGamePath)\BepInEx\core\0Harmony.dll">
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="$(ElinGamePath)\BepInEx\core\BepInEx.Core.dll">
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="$(ElinGamePath)\BepInEx\core\BepInEx.Unity.dll">
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="$(ElinGamePath)\BepInEx\core\Mono*.dll">
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="$(ElinGamePath)\Elin_Data\Managed\ClassLibrary2.dll">
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="$(ElinGamePath)\Elin_Data\Managed\DOTween.dll">
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="$(ElinGamePath)\Elin_Data\Managed\Elin.dll">
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="$(ElinGamePath)\Elin_Data\Managed\LZ4.dll">
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="$(ElinGamePath)\Elin_Data\Managed\Newtonsoft.Json.dll">
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="$(ElinGamePath)\Elin_Data\Managed\NPOI*.dll">
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="$(ElinGamePath)\Elin_Data\Managed\Plugins*.dll">
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="$(ElinGamePath)\Elin_Data\Managed\Reflex.dll">
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="$(ElinGamePath)\Elin_Data\Managed\UniTask*.dll">
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="$(ElinGamePath)\Elin_Data\Managed\UnityEngine*.dll">
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="$(ElinGamePath)\Elin_Data\Managed\mscorlib.dll">
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="$(ElinGamePath)\Elin_Data\Managed\netstandard.dll">
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="$(ElinGamePath)\Elin_Data\Managed\System.dll">
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="$(ElinGamePath)\Elin_Data\Managed\System.Core.dll">
+            <Private>False</Private>
+        </Reference>
+    </ItemGroup>
+</Project>
