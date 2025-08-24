@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Meta>
+  <title>(Stable) Custom Whatever Loader</title>
+  <id>dk.elinplugins.customdialogloader.stable</id>
+  <author>DK</author>
+  <builtin>false</builtin>
+  <loadPriority>10</loadPriority>
+  <version>0.23.40</version>
+  <tag>Library,NPC,Source,Sound,BGM,Quest</tag>
+  <description />
+</Meta>
