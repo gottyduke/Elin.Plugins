@@ -2,8 +2,9 @@ name: Custom Whatever Loader CI Deploy
 
 on:
   push:
-    paths:
-      - CustomWhateverLoader/**
+    branches: ["*"]
+    paths: ["CustomWhateverLoader/**"]
+  pull_request:
   workflow_dispatch:
 
 permissions:

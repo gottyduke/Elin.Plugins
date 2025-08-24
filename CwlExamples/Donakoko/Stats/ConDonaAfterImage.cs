@@ -52,9 +52,10 @@ internal class ConDonaAfterImage : BaseBuff
     {
         // randomize start delay, so that multiple images don't synchronize in effects
         yield return new WaitForSeconds(rndf(Constants.EffectFrameSkip * 2));
+        var waiter = new WaitForSeconds(Constants.EffectFrameSkip);
 
         // if image is alive and on the same map with pc
-        while (owner is { isDestroyed: false, ExistsOnMap: true }) {
+        while (core.IsGameStarted && owner is { isDestroyed: false, ExistsOnMap: true }) {
             // only render the effect if pc can see the image
             if (pc.CanSee(owner)) {
                 try {
@@ -71,11 +72,11 @@ internal class ConDonaAfterImage : BaseBuff
                 }
             }
 
-            yield return new WaitForSeconds(Constants.EffectFrameSkip);
+            yield return waiter;
         }
 
         // if owner is alive and no longer on the same map with pc
-        if (owner is { isDestroyed: false, ExistsOnMap: false }) {
+        if (core.IsGameStarted && owner is { isDestroyed: false, ExistsOnMap: false }) {
             // destroy the image
             owner.RemoveCondition<ConDonaAfterImage>();
         }

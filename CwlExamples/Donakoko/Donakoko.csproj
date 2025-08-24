@@ -5,7 +5,7 @@
         <Platforms>AnyCPU</Platforms>
         <LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>
-        <RootNamespace>Acs</RootNamespace>
+        <RootNamespace>Dona</RootNamespace>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <OutputPath>$(ElinGamePath)\Package\Mod_$(AssemblyName)\</OutputPath>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
@@ -15,10 +15,12 @@
 
     <ItemGroup>
       <Compile Remove="package\**" />
+      <Compile Remove="assets\**" />
     </ItemGroup>
 
     <ItemGroup>
       <EmbeddedResource Remove="package\**" />
+      <EmbeddedResource Remove="assets\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -26,6 +28,7 @@
       <None Remove="Directory.Build.props" />
       <None Remove="LICENSE" />
       <None Remove="README.md" />
+      <None Remove="assets\**" />
     </ItemGroup>
 
     <ItemGroup>

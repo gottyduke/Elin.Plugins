@@ -7,7 +7,7 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.donakoko";
     internal const string Name = "Donakoko Great Adventure";
-    internal const string Version = "1.1.0";
+    internal const string Version = "1.2.0";
 }
 
 // https://wikiwiki.jp/elonamobile/システム/仲間/仲間の評価/撮り魔『ドナココ』
