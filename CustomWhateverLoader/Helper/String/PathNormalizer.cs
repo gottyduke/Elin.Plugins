@@ -6,7 +6,7 @@ namespace Cwl.Helper.String;
 
 public static class PathNormalizer
 {
-    private static readonly char[] _invalidPathChars = Path.GetInvalidPathChars().Union(Path.GetInvalidFileNameChars()).ToArray();
+    private static readonly char[] _invalidPathChars = Path.GetInvalidPathChars();
     public static ReadOnlySpan<char> InvalidPathChars => _invalidPathChars;
 
     extension(string path)
