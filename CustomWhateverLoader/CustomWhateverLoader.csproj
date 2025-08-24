@@ -127,7 +127,7 @@
 
         <Copy
                 SourceFiles="$(SourcePreviewImage)"
-                DestinationFiles="$(TargetDir)preview.png"
+                DestinationFiles="$(TargetDir)preview.jpg"
                 SkipUnchangedFiles="true"
                 OverwriteReadOnlyFiles="true"
                 Condition="'$(SourcePreviewImage)' != ''"
