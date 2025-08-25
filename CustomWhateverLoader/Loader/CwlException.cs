@@ -1,5 +1,7 @@
-﻿using Cwl.Helper.Exceptions;
+﻿using System;
+using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
+using Cwl.LangMod;
 using Cwl.ThirdParty;
 using UnityEngine;
 
@@ -30,6 +32,11 @@ internal partial class CwlMod
 
         if (!CwlConfig.ExceptionPopup) {
             return;
+        }
+
+        // missing method exception
+        if (message.StartsWith(nameof(MissingMethodException))) {
+            message = "cwl_warn_missing_method".Loc(message);
         }
 
         profile.CreateAndPop(message.TruncateAllLines(125));
