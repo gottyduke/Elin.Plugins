@@ -2,7 +2,7 @@
 
 namespace Cwl.Helper.Unity;
 
-public class ELayerCleanup
+public static class ELayerCleanup
 {
     public static void Cleanup<T>(bool includeInactive = false) where T : ELayer
     {

@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace Cwl.Helper.Unity;
 
-public class EffectHelper
+public static class EffectHelper
 {
-    public Effect? GetEffectTemplate(string id)
+    public static Effect? GetEffectTemplate(string id)
     {
         var manager = Effect.manager;
         if (manager.effects.map is null) {

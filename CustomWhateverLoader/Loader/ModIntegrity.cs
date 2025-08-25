@@ -9,9 +9,9 @@ using Cwl.LangMod;
 
 namespace Cwl;
 
-internal class ModIntegrity
+public class ModIntegrity
 {
-    private static SerializableModPackage[] CurrentActivated =>
+    public static SerializableModPackage[] CurrentActivated =>
         BaseModManager.Instance.packages
             .Where(p => p.activated && !p.builtin)
             .Select(p => new SerializableModPackage {

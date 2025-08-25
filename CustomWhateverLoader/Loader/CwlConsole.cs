@@ -9,13 +9,18 @@ namespace Cwl;
 [ConsoleCommandClassCustomizer("cwl")]
 internal class CwlConsole
 {
-    [ConsoleCommand("vacate_beggar")]
     [CwlContextMenu("CWL/BeggarBegone", "cwl_ui_vacate_beggar")]
-    internal static string BegoneOfYouBeggars()
+    internal static string BegoneOfYouChicken()
     {
         // 23.149 changed beggar to chicken, what noa
+        return BegoneOfYouInsertNameHere("chicken");
+    }
+
+    [ConsoleCommand("vacate_every")]
+    internal static string BegoneOfYouInsertNameHere(string id)
+    {
         var beggars = EClass.game.cards.globalCharas.Values
-            .Where(chara => chara.id == "chicken")
+            .Where(chara => chara.id == id)
             .ToArray();
 
         foreach (var chara in beggars) {
