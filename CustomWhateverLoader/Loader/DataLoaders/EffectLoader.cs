@@ -2,6 +2,7 @@
 using System.Linq;
 using Cwl.Helper.Unity;
 using MethodTimer;
+using ReflexCLI.Attributes;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -55,5 +56,18 @@ internal partial class DataLoader
         }
 
         EffectTemplate.name = "cwl_template_effect";
+    }
+
+    [ConsoleCommand("clear_effect_cache")]
+    private static void ClearLoadedEffects()
+    {
+        var manager = Effect.manager;
+        if (manager == null) {
+            return;
+        }
+
+        manager.list.Clear();
+        manager.effects.list.Clear();
+        manager.effects.map.Clear();
     }
 }
