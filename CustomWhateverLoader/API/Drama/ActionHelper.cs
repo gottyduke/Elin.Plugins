@@ -48,8 +48,9 @@ public partial class DramaExpansion
         var chara = dm.tg.chara;
         var rumors = Lang.GetDialog("unique", chara.id);
         var hasTopic = rumors.Length > 1 || rumors.TryGet(0, true) != chara.id;
+        var animalTalk = chara.IsHumanSpeak || pc.HasElement(FEAT.featAnimalLover);
 
-        if (!hasTopic || !dm.customEventsAdded) {
+        if (!hasTopic || !animalTalk || !dm.customEventsAdded) {
             return;
         }
 
