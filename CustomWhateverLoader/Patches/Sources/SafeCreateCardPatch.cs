@@ -16,27 +16,18 @@ internal class SafeCreateCardPatch
         return CwlConfig.SafeCreateClass;
     }
 
-    [HarmonyTranspiler]
-    [HarmonyPatch(typeof(SourceCard), nameof(SourceCard.Init))]
-    internal static IEnumerable<CodeInstruction> OnAddRowIl(IEnumerable<CodeInstruction> instructions)
-    {
-        return new CodeMatcher(instructions)
-            .MatchEndForward(
-                new OperandContains(OpCodes.Call, nameof(SourceCard.AddRow)))
-            .EnsureValid("add card row")
-            .Repeat(cm => cm
-                .SetInstruction(Transpilers.EmitDelegate(RethrowCreateInvoke)))
-            .InstructionEnumeration();
-    }
-
     [Time]
-    private static void RethrowCreateInvoke(SourceCard card, CardRow row, bool isChara)
+    [HarmonyFinalizer]
+    [HarmonyPatch(typeof(SourceCard), nameof(SourceCard.AddRow))]
+    internal static Exception? RethrowCreateInvoke(Exception? __exception, SourceCard __instance, CardRow row, bool isChara)
     {
-        try {
-            card.AddRow(row, isChara);
-        } catch (Exception ex) {
-            CwlMod.WarnWithPopup<SourceCard>("cwl_warn_card_create".Loc(row.GetType().Name, row.id, row.name, ex.Message), ex);
-            // noexcept
+        if (__exception is null) {
+            return null;
         }
+
+        CwlMod.WarnWithPopup<SourceCard>("cwl_warn_card_create".Loc(row.GetType().FullName, row.id, row.name, __exception.Message), __exception);
+
+        // noexcept
+        return null;
     }
 }
