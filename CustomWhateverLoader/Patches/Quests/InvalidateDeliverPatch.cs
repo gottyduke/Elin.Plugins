@@ -26,7 +26,7 @@ internal class InvalidateItemPatch
             return false;
         }
 
-        CwlMod.WarnWithPopup<QuestDeliver>("cwl_warn_quest_id_thing".Loc(__instance.GetType().Name, __instance.idThing,
+        CwlMod.Warn<QuestDeliver>("cwl_warn_quest_id_thing".Loc(__instance.GetType().Name, __instance.idThing,
             FallbackItem));
         __instance.idThing = FallbackItem;
 
@@ -60,7 +60,7 @@ internal static class InvalidateDestThingPatch
                     _queued = true;
                 }
 
-                CwlMod.WarnWithPopup<QuestDeliver>("cwl_warn_quest_id_thing2".Loc(ex.Message), ex);
+                CwlMod.Warn<QuestDeliver>("cwl_warn_quest_id_thing2".Loc(t.id, ex.Message));
             }
 
             __result = false;
