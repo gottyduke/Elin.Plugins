@@ -41,7 +41,7 @@ internal class RethrowParsePatch
 
     [Time]
     [HarmonyFinalizer]
-    internal static Exception? RethrowParseInvoke(Exception? __exception, int id, MethodInfo __originalMethod)
+    internal static Exception? RethrowParseInvoke(Exception? __exception, MethodInfo __originalMethod, int id)
     {
         if (__exception is null) {
             return null;

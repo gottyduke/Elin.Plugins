@@ -23,6 +23,7 @@ Added EffectLoader
 Added SafeGetHobby for mods that are uninstalled mid-save
 Added more helpers to API
 Updated for 23.187 Stable
+Fixed a possible formatting issue during exception suppression
 
 {topic|1.20.43}
 Fixed new SourceFood row header changes from 23.178 Nightly

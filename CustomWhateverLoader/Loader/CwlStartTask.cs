@@ -64,7 +64,7 @@ internal sealed partial class CwlMod
     private IEnumerator LoadTask()
     {
         using var progress = ProgressIndicator.CreateProgressScoped(() =>
-            new("cwl_log_loading".Loc(ModInfo.Version, CurrentLoading, CanContinue.Loc())));
+            new("cwl_log_loading".Loc(ModInfo.Version, CurrentLoading, CanContinue.Loc())), 5f);
 
         PrebuildDispatchers();
         DramaExpansion.BuildActionList();
