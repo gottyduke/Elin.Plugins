@@ -15,7 +15,7 @@ internal class GetOrAddPersonPatch
             return;
         }
 
-        if (__result.id == "tg" && DramaManager.TG?.id == id) {
+        if (__result.id == "tg" || DramaManager.TG?.id == id) {
             __instance.actors[id] = __result;
             return;
         }
@@ -24,6 +24,7 @@ internal class GetOrAddPersonPatch
             return;
         }
 
+        id = row.id;
         var person = new Person(id);
 
         if (EClass.game.cards.globalCharas.Values.LastOrDefault(gc => gc.id == id) is { } chara) {
