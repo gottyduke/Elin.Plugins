@@ -25,6 +25,7 @@ Fixed a bug where log formatter could encounter invalid format string
 Added a patch to temporarily address IDCurrency locale dependent ToLower bug
 Added a slightly better log entry to the MissingMethodException popup
 Added Effect hot reloading command cwl.data.clear_effect_cache
+Changed fallback value for incompatible sheet from inplace id to empty default
 
 {topic|1.20.44}
 Updated for 23.187 Stable

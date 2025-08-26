@@ -127,10 +127,23 @@ internal class NamedImportPatch
                 migrate.SetStrategy(strategy).SetGiven(header);
             }
 
-            var readPos = header.GetValueOrDefault(field.Name, id);
-            var parsed = extraParser is not null
-                ? extraParser.FastInvokeStatic(parser.FastInvokeStatic(readPos, false)!)
-                : parser.FastInvokeStatic(readPos);
+            object? parsed = null;
+            var useFallback = false;
+            if (!header.TryGetValue(field.Name, out var existId)) {
+                useFallback = FallbackDetail.Fallbacks.TryGetValue(field.FieldType, out var fallback);
+                if (useFallback) {
+                    parsed = fallback;
+                } else {
+                    existId = id;
+                }
+            }
+
+            if (!useFallback) {
+                parsed = extraParser is not null
+                    ? extraParser.FastInvokeStatic(parser.FastInvokeStatic(existId, false)!)
+                    : parser.FastInvokeStatic(existId);
+            }
+
             field.SetValue(row, parsed);
 
             /*
