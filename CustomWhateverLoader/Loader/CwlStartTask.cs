@@ -7,6 +7,7 @@ using Cwl.API.Migration;
 using Cwl.API.Processors;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
+using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using Cwl.Patches;
@@ -33,6 +34,7 @@ internal sealed partial class CwlMod
     {
         _duplicate = Harmony.HasAnyPatches(ModInfo.Guid);
         if (_duplicate) {
+            WarnWithPopup<CwlMod>("cwl_warn_duplicate_cwl".Loc().TagColor(Color.red));
             return;
         }
 
