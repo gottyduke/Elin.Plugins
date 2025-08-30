@@ -15,6 +15,9 @@ internal class ReverseIdMapper
     internal static void OnGetIdMat(Card __instance, ref int __result)
     {
         ReverseIdMap(ref __result);
+        if (__result == -1) {
+            __result = __instance.c_dyeMat = EClass.rnd(EMono.sources.materials.rows.Count);
+        }
     }
 
     [HarmonyPrefix]
@@ -22,6 +25,9 @@ internal class ReverseIdMapper
     internal static void OnSetIdMat(ref int _idMat)
     {
         ReverseIdMap(ref _idMat);
+        if (_idMat == -1) {
+            _idMat = EClass.rnd(EMono.sources.materials.rows.Count);
+        }
     }
 
     [SwallowExceptions]
@@ -64,10 +70,10 @@ internal class ReverseIdMapper
             return new CodeMatcher(instructions)
                 .MatchEndForward(
                     new OperandMatch(OpCodes.Callvirt, o => o.ToString().Contains("List<SourceMaterial+Row>::get_Item")))
-                .Repeat(cm => {
+                .Repeat(cm =>
                     cm.SetInstructionAndAdvance(
-                        Transpilers.EmitDelegate(ReverseIndexer));
-                })
+                        Transpilers.EmitDelegate(ReverseIndexer))
+                )
                 .InstructionEnumeration();
         }
     }
