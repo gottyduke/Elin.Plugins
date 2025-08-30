@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cwl.Helper;
+using Cwl.Helper.Exceptions;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
 
@@ -76,6 +77,9 @@ public partial class DramaExpansion
             Cookie = new(dm, item);
             var result = action.Method.FastInvokeStatic(dm, item, pack);
             return result is true;
+        } catch (DramaActorMissingException) {
+            return false;
+            // noexcept
         } catch (Exception ex) {
             var methodGroup = $"[{action.Method.Name}]({string.Join(",", pack)})";
             CwlMod.WarnWithPopup<DramaExpansion>($"call failure: {methodGroup}\n{ex.Message}", ex);

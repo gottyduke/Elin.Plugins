@@ -70,8 +70,8 @@ public class MonoFrame(string stackFrame)
 
         DetailedMethodCall = frameType switch {
             StackFrameType.Method or StackFrameType.DynamicMethod
-                when Method is { DeclaringType: not null } mi
-                => _vendorExclusion.Any(mi.DeclaringType.Assembly.ManifestModule.Name.StartsWith)
+                when Method is { DeclaringType.Assembly.ManifestModule.ScopeName: { } name } mi
+                => _vendorExclusion.Any(name.StartsWith)
                     ? mi.GetDetail(false)
                     : mi.GetAssemblyDetailColor(false),
             _ => SanitizedMethodCall,

@@ -27,8 +27,8 @@ internal class LoadDramaPatch
             .MatchEndForward(
                 new OperandContains(OpCodes.Callvirt, nameof(ExcelData.BuildList)))
             .EnsureValid("drama build list")
-            .Repeat(match => match
-                .InsertAndAdvance(
+            .Repeat(match =>
+                match.InsertAndAdvance(
                     new(OpCodes.Pop),
                     new(OpCodes.Ldloc_0),
                     new(OpCodes.Ldarg_0),
@@ -39,7 +39,7 @@ internal class LoadDramaPatch
                 new OpCodeContains(nameof(OpCodes.Ldloc)),
                 new OperandContains(OpCodes.Ldstr, "id"),
                 new OperandContains(OpCodes.Callvirt, "Item"))
-            .ThrowIfInvalid("failed to match id insert")
+            .EnsureValid("id insert")
             .InsertAndAdvance(
                 cm.Instruction,
                 Transpilers.EmitDelegate(SyncTexts))

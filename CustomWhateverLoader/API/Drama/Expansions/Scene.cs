@@ -118,6 +118,10 @@ public partial class DramaExpansion
         parameters.RequiresOpt(out var portraitId);
         dm.RequiresPerson(out var owner);
 
+        if (owner is null) {
+            return false;
+        }
+
         var id = portraitId.Get("cwl_not_provided");
         if (!portraitId.Provided) {
             id = owner.chara.GetIdPortrait();

@@ -14,12 +14,20 @@ namespace Cwl.Helper.Exceptions;
 
 public class ExceptionProfile(string stackTrace)
 {
+    public enum AnalysisState
+    {
+        NotStarted,
+        InProgress,
+        Completed,
+    }
+
     private static readonly Dictionary<int, ExceptionProfile> _cached = [];
     private static readonly Dictionary<int, ProgressIndicator> _activeExceptions = [];
 
     public List<MonoFrame> Frames { get; } = [];
-    public bool Analyzing { get; private set; }
-    public bool Analyzed { get; private set; }
+
+    public AnalysisState State { get; private set; } = AnalysisState.NotStarted;
+
     public int Occurrences { get; private set; } = 1;
     public string Result { get; private set; } = "cwl_ui_exception_analyzing".Loc();
     public int Key { get; private set; }
@@ -66,7 +74,7 @@ public class ExceptionProfile(string stackTrace)
         progress
             .AppendHoverText(() => {
                 StartAnalyzing();
-                return Result;
+                return Result.Truncate(2048);
             })
             .SetHoverPrompt("cwl_ui_exception_analyzing".Loc(), "cwl_ui_exception_analyze".Loc())
             .SetClickHandler(ClickHandler);
@@ -79,16 +87,16 @@ public class ExceptionProfile(string stackTrace)
 
                 progress.SetHoverPrompt();
             },
-            () => progress == null || Analyzed);
+            () => progress == null || State == AnalysisState.Completed);
     }
 
     public void StartAnalyzing(bool deferred = true)
     {
-        if (Analyzing) {
+        if (State != AnalysisState.NotStarted) {
             return;
         }
 
-        Analyzing = true;
+        State = AnalysisState.InProgress;
 
         if (deferred) {
             CoroutineHelper.Immediate(DeferredAnalyzer());
@@ -112,13 +120,11 @@ public class ExceptionProfile(string stackTrace)
     private IEnumerator DeferredAnalyzer()
     {
         Frames.Clear();
-
         var sb = new StringBuilder(stackTrace.Length);
-        var lineCount = 0;
+        sb.AppendLine("cwl_ui_callstack".Loc());
 
         foreach (var frame in stackTrace.SplitLines()) {
             if (frame.IsEmpty()) {
-                // skip reverse patch stubs
                 continue;
             }
 
@@ -131,18 +137,11 @@ public class ExceptionProfile(string stackTrace)
                     break;
                 case MonoFrame.StackFrameType.Method or MonoFrame.StackFrameType.DynamicMethod:
                     try {
+                        sb.AppendLine(mono.DetailedMethodCall);
                         var info = mono.Method.GetPatchInfo();
-
-                        if (lineCount <= 15 || info is not null) {
-                            sb.AppendLine(mono.DetailedMethodCall);
-                            lineCount++;
+                        if (info is not null) {
+                            sb.AppendPatchInfo(info);
                         }
-
-                        if (info is null) {
-                            continue;
-                        }
-
-                        sb.AppendPatchInfo(info);
                     } catch {
                         // noexcept
                     }
@@ -155,13 +154,8 @@ public class ExceptionProfile(string stackTrace)
 
         Result = sb.ToString();
         CwlMod.Log<ExceptionProfile>(Result);
-
         Result = Result.TruncateAllLines(150);
-        Analyzed = true;
-    }
 
-    private static Exception? Ignore(Exception? __exception)
-    {
-        return null;
+        State = AnalysisState.Completed;
     }
 }

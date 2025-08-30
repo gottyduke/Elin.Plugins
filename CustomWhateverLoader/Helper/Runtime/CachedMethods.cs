@@ -23,7 +23,7 @@ public static class CachedMethods
 
             return Array.Find(type.GetCachedMethods(),
                 mi => mi.Name == methodName &&
-                      mi.ValidateParameterTypes(parameters));
+                      mi.ValidateParameterTypes(false, parameters));
         } catch {
             return null;
             // noexcept
@@ -99,15 +99,17 @@ public static class CachedMethods
 
         public bool ValidateParameters(params object?[] args)
         {
-            return method.ValidateParameterTypes(args.Select(o => o?.GetType()).ToArray());
+            return method.ValidateParameterTypes(false, args.Select(o => o?.GetType()).ToArray());
         }
 
-        public bool ValidateParameterTypes(params Type?[] types)
+        public bool ValidateParameterTypes(bool warn, params Type?[] types)
         {
             var parameters = method.GetParameters();
 
             if (parameters.Length != types.Length) {
-                CwlMod.Warn($"parameter count mismatch for {method.Name}: expected {parameters.Length}, got {types.Length}");
+                if (warn) {
+                    CwlMod.Warn($"parameter count mismatch for {method.Name}: expected {parameters.Length}, got {types.Length}");
+                }
                 return false;
             }
 

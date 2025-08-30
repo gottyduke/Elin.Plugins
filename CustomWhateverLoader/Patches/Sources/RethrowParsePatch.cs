@@ -36,7 +36,7 @@ internal class RethrowParsePatch
     {
         return typeof(SourceData).GetTypeInfo().GetCachedMethods()
             .Where(mi => mi.IsStatic && _methodNames.Contains(mi.Name))
-            .Where(mi => mi.ValidateParameterTypes(typeof(int)));
+            .Where(mi => mi.ValidateParameterTypes(false, typeof(int)));
     }
 
     [Time]

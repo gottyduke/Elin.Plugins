@@ -14,6 +14,9 @@ public class DramaActionArgumentException(int count, string[] parameters) :
 public class DramaActionInvokeException(string callName) :
     Exception(callName);
 
+public class DramaActorMissingException(string actorId) :
+    Exception($"couldn't find actor {actorId}");
+
 public class DramaRerouteException(Chara chara, Exception innerException) :
     Exception($"{chara.Name} / {chara.id}", innerException);
 

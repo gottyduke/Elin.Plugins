@@ -76,14 +76,14 @@ public static class ActionParameterHelper
     {
         RequiresPerson(dm, out var person);
 
-        actor = person.chara ?? throw new DramaActionInvokeException("actor.chara");
+        actor = person?.chara ?? throw new DramaActorMissingException("actor.chara");
     }
 
-    public static void RequiresPerson(this DramaManager dm, out Person person)
+    public static void RequiresPerson(this DramaManager dm, out Person? person)
     {
         var actorId = DramaExpansion.Cookie?.Line["actor"].Replace("?", "") ?? "tg";
         if (dm.sequence.GetActor(actorId) is not { owner: { } owner }) {
-            throw new DramaActionInvokeException("actor");
+            throw new DramaActorMissingException(actorId);
         }
 
         person = owner;
