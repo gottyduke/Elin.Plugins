@@ -6,12 +6,10 @@ namespace Cwl.API.Processors;
 
 public class SheetProcessor
 {
-    public delegate void SheetProcess(ISheet sheet);
+    private static event Action<ISheet>? OnSheetPostProcess;
+    private static event Action<ISheet>? OnSheetPreProcess;
 
-    private static event SheetProcess OnSheetPostProcess = delegate { };
-    private static event SheetProcess OnSheetPreProcess = delegate { };
-
-    public static void Add(SheetProcess sheetProcess, bool post)
+    public static void Add(Action<ISheet> sheetProcess, bool post)
     {
         if (post) {
             OnSheetPostProcess += Process;
@@ -36,14 +34,14 @@ public class SheetProcessor
     internal static void PreProcess(ISheet sheet)
     {
         if (CwlConfig.AllowProcessors) {
-            OnSheetPreProcess(sheet);
+            OnSheetPreProcess?.Invoke(sheet);
         }
     }
 
     internal static void PostProcess(ISheet sheet)
     {
         if (CwlConfig.AllowProcessors) {
-            OnSheetPostProcess(sheet);
+            OnSheetPostProcess?.Invoke(sheet);
         }
     }
 }

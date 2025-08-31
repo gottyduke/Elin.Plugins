@@ -16,22 +16,20 @@ namespace Cwl.API.Processors;
 /// </summary>
 public class GameIOProcessor
 {
-    public delegate void GameIOProcess(GameIOContext context);
-
     public static GameIOContext? LastUsedContext { get; private set; }
     public static GameIOContext? PersistentContext => field ??= new(Application.persistentDataPath);
 
-    private static event GameIOProcess OnGamePreSaveProcess = delegate { };
-    private static event GameIOProcess OnGamePostSaveProcess = delegate { };
-    private static event GameIOProcess OnGamePreLoadProcess = delegate { };
-    private static event GameIOProcess OnGamePostLoadProcess = delegate { };
+    private static event Action<GameIOContext>? OnGamePreSaveProcess;
+    private static event Action<GameIOContext>? OnGamePostSaveProcess;
+    private static event Action<GameIOContext>? OnGamePreLoadProcess;
+    private static event Action<GameIOContext>? OnGamePostLoadProcess;
 
-    public static void AddSave(GameIOProcess saveProcess, bool post)
+    public static void AddSave(Action<GameIOContext> saveProcess, bool post)
     {
         Add(saveProcess, true, post);
     }
 
-    public static void AddLoad(GameIOProcess loadProcess, bool post)
+    public static void AddLoad(Action<GameIOContext> loadProcess, bool post)
     {
         Add(loadProcess, false, post);
     }
@@ -45,7 +43,7 @@ public class GameIOProcessor
         return new(Path.Combine(Application.persistentDataPath, modId));
     }
 
-    private static void Add(GameIOProcess ioProcess, bool save, bool post)
+    private static void Add(Action<GameIOContext> ioProcess, bool save, bool post)
     {
         switch (save, post) {
             case (true, true):
@@ -79,9 +77,9 @@ public class GameIOProcessor
     {
         LastUsedContext = new(path);
         if (post) {
-            OnGamePostSaveProcess(LastUsedContext);
+            OnGamePostSaveProcess?.Invoke(LastUsedContext);
         } else {
-            OnGamePreSaveProcess(LastUsedContext);
+            OnGamePreSaveProcess?.Invoke(LastUsedContext);
         }
     }
 
@@ -89,9 +87,9 @@ public class GameIOProcessor
     {
         LastUsedContext = new(path);
         if (post) {
-            OnGamePostLoadProcess(LastUsedContext);
+            OnGamePostLoadProcess?.Invoke(LastUsedContext);
         } else {
-            OnGamePreLoadProcess(LastUsedContext);
+            OnGamePreLoadProcess?.Invoke(LastUsedContext);
         }
     }
 
@@ -110,7 +108,7 @@ public class GameIOProcessor
 
         var state = post ? "post" : "pre";
         var type = save ? "save" : "load";
-        CwlMod.Log<GameIOProcess>("cwl_log_processor_add".Loc(state, type, method.GetAssemblyDetail(false)));
+        CwlMod.Log<GameIOContext>("cwl_log_processor_add".Loc(state, type, method.GetAssemblyDetail(false)));
     }
 
     /// <summary>

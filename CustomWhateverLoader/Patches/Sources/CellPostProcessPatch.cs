@@ -7,7 +7,7 @@ namespace Cwl.Patches.Sources;
 [HarmonyPatch]
 internal class CellPostProcessPatch
 {
-    private static event CellProcess OnCellProcess = cell => cell;
+    internal static event CellProcess? OnCellProcess;
 
     internal static bool Prepare()
     {
@@ -16,9 +16,9 @@ internal class CellPostProcessPatch
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(ExcelParser), nameof(ExcelParser.GetStr))]
-    internal static void OnGetCell(ref string? __result)
+    internal static string? OnGetCell(string? __result)
     {
-        __result = OnCellProcess(__result);
+        return OnCellProcess?.Invoke(__result);
     }
 
     internal static void Add(CellProcess cellProcess)
@@ -27,11 +27,11 @@ internal class CellPostProcessPatch
             try {
                 return cellProcess(cell);
             } catch (Exception ex) {
-                CwlMod.Warn<CellProcess>("cwl_cell_post_process".Loc(ex));
+                CwlMod.Warn<CellProcess>("cwl_warn_processor".Loc("cell", "process", ex.Message));
                 // noexcept
             }
 
-            return cell;
+            return cell ?? "";
         };
     }
 

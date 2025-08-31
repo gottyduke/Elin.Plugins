@@ -13,9 +13,9 @@ namespace Cwl.Patches.Sources;
 [HarmonyPatch]
 internal class CardOnCreateEvent
 {
-    private static event Action<Chara> OnCharaCreateEvent = delegate { };
+    private static event Action<Chara>? OnCharaCreateEvent;
 
-    private static event Action<Thing> OnThingCreateEvent = delegate { };
+    private static event Action<Thing>? OnThingCreateEvent;
 
     public static void Add(Action<Chara> process)
     {
@@ -53,10 +53,10 @@ internal class CardOnCreateEvent
     {
         switch (__instance) {
             case Chara chara:
-                OnCharaCreateEvent(chara);
+                OnCharaCreateEvent?.Invoke(chara);
                 break;
             case Thing thing:
-                OnThingCreateEvent(thing);
+                OnThingCreateEvent?.Invoke(thing);
                 break;
         }
     }

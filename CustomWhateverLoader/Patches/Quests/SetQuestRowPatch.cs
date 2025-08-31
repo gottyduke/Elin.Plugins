@@ -1,4 +1,4 @@
-﻿#if DEBUG
+﻿#if DEBUG && ENABLE_QUEST
 using Cwl.API.Custom;
 using Cwl.Helper;
 using Cwl.Patches.Sources;
