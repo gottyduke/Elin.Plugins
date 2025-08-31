@@ -11,7 +11,7 @@ public class TraitTransformer
     // Trait should be immutable, only transform the trait name
     public delegate void TraitTransform(ref string traitName, Card traitOwner);
 
-    private static event TraitTransform OnTraitTransform = delegate { };
+    private static event TraitTransform? OnTraitTransform;
 
     public static void Add(TraitTransform transformer)
     {
@@ -32,7 +32,7 @@ public class TraitTransformer
     internal static void Transform(ref string traitName, Card traitOwner)
     {
         if (CwlConfig.AllowProcessors) {
-            OnTraitTransform(ref traitName, traitOwner);
+            OnTraitTransform?.Invoke(ref traitName, traitOwner);
         }
     }
 }

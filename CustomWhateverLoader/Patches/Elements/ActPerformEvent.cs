@@ -16,7 +16,7 @@ namespace Cwl.Patches.Elements;
 public class ActPerformEvent
 {
     private static bool _patched;
-    private static event Action<Act> OnActPerformEvent = delegate { };
+    private static event Action<Act>? OnActPerformEvent;
 
     internal static IEnumerable<MethodBase> TargetMethods()
     {
@@ -26,7 +26,7 @@ public class ActPerformEvent
 
     internal static void OnPerform(Act __instance)
     {
-        OnActPerformEvent(__instance);
+        OnActPerformEvent?.Invoke(__instance);
     }
 
     [Time]
@@ -34,7 +34,7 @@ public class ActPerformEvent
     {
         Add(act => method.FastInvokeStatic(act));
 
-        CwlMod.Log<GameIOProcessor.GameIOProcess>("cwl_log_processor_add".Loc("act", "perform", method.GetAssemblyDetail(false)));
+        CwlMod.Log<GameIOProcessor.GameIOContext>("cwl_log_processor_add".Loc("act", "perform", method.GetAssemblyDetail(false)));
     }
 
     private static void Add(Action<Act> process)

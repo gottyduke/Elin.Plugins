@@ -6,12 +6,10 @@ namespace Cwl.API.Processors;
 
 public class WorkbookProcessor
 {
-    public delegate void WorkbookProcess(IWorkbook workbook);
+    private static event Action<IWorkbook>? OnWorkbookPostProcess;
+    private static event Action<IWorkbook>? OnWorkbookPreProcess;
 
-    private static event WorkbookProcess OnWorkbookPostProcess = delegate { };
-    private static event WorkbookProcess OnWorkbookPreProcess = delegate { };
-
-    public static void Add(WorkbookProcess bookProcess, bool post)
+    public static void Add(Action<IWorkbook> bookProcess, bool post)
     {
         if (post) {
             OnWorkbookPostProcess += Process;
@@ -36,14 +34,14 @@ public class WorkbookProcessor
     internal static void PreProcess(IWorkbook workbook)
     {
         if (CwlConfig.AllowProcessors) {
-            OnWorkbookPreProcess(workbook);
+            OnWorkbookPreProcess?.Invoke(workbook);
         }
     }
 
     internal static void PostProcess(IWorkbook workbook)
     {
         if (CwlConfig.AllowProcessors) {
-            OnWorkbookPostProcess(workbook);
+            OnWorkbookPostProcess?.Invoke(workbook);
         }
     }
 }
