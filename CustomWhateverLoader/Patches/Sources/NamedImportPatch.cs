@@ -144,6 +144,12 @@ internal class NamedImportPatch
                     : parser.FastInvokeStatic(existId);
             }
 
+            if (parsed is IList<string> array) {
+                for (var i = 0; i < array.Count; ++i) {
+                    array[i] = CellPostProcessPatch.OnGetCell(array[i]) ?? array[i];
+                }
+            }
+
             field.SetValue(row, parsed);
 
             /*
