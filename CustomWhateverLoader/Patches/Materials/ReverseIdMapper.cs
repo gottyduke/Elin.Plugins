@@ -70,9 +70,8 @@ internal class ReverseIdMapper
             return new CodeMatcher(instructions)
                 .MatchEndForward(
                     new OperandMatch(OpCodes.Callvirt, o => o.ToString().Contains("List<SourceMaterial+Row>::get_Item")))
-                .Repeat(cm =>
-                    cm.SetInstructionAndAdvance(
-                        Transpilers.EmitDelegate(ReverseIndexer))
+                .Repeat(cm => cm.SetInstructionAndAdvance(
+                    Transpilers.EmitDelegate(ReverseIndexer))
                 )
                 .InstructionEnumeration();
         }

@@ -110,6 +110,7 @@ public static class CachedMethods
                 if (warn) {
                     CwlMod.Warn($"parameter count mismatch for {method.Name}: expected {parameters.Length}, got {types.Length}");
                 }
+
                 return false;
             }
 
