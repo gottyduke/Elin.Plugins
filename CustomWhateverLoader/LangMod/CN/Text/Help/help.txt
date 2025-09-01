@@ -18,6 +18,21 @@
 
 
 
+{topic|1.20.46}
+更新了 23.191 Nightly 添加的修改
+修复了 AddActor 补丁的部分逻辑
+添加了检查到另一版本的CWL时的警告信息
+修复了异常分析中部分程序集没有正确显示名称的问题
+添加了 c_dyeMat 的回滚值
+添加了字符串数组的逐元素单元格处理
+修改了 ModIntegrity 检查的信息格式
+剧情拓展:
+・添加了 if_hostility(hostilityExpression)
+・添加了 if_in_party()
+・添加了 move_to(x, y)
+・添加了 console_cmd(...)
+添加了自动激活作弊模式和 debug 模式控制台命令
+
 {topic|1.20.45}
 更新了 23.187 Stable 添加的修改
 为拥有独特对话的动物添加了正常的条件检查

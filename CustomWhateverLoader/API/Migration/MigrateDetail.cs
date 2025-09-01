@@ -60,9 +60,7 @@ public sealed class MigrateDetail
 
     public MigrateDetail SetStrategy(Strategy strategy)
     {
-        if (CurrentSheet is not null) {
-            CurrentSheet.MigrateStrategy = strategy;
-        }
+        CurrentSheet?.MigrateStrategy = strategy;
 
         return this;
     }
