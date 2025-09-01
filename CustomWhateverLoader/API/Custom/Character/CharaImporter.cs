@@ -23,7 +23,8 @@ public partial class CustomChara
     public static void SpawnAtZone(Chara chara, Zone zone)
     {
         // credits to 105gun
-        chara.SetHomeZone(zone);
+        chara.homeZone = zone;
+        chara.SetGlobal();
         chara.global.transition = new() {
             state = ZoneTransition.EnterState.RandomVisit,
         };
