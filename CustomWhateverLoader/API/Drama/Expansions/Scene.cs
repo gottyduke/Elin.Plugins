@@ -35,6 +35,17 @@ public partial class DramaExpansion
         return true;
     }
 
+    public static bool move_to(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.Requires(out var x, out var y);
+        dm.RequiresActor(out var actor);
+
+        var point = new Point(x.AsInt(actor.pos.x), y.AsInt(actor.pos.z));
+        actor.TryMove(point, false);
+
+        return true;
+    }
+
     [CwlNodiscard]
     public static bool move_zone(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {

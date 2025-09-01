@@ -1,11 +1,19 @@
 ﻿using System.Collections.Generic;
 using Cwl.API.Attributes;
 using Cwl.Helper.Extensions;
+using Cwl.Helper.String;
 
 namespace Cwl.API.Drama;
 
 public partial class DramaExpansion
 {
+    public static bool console_cmd(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        string.Join(" ", parameters).ExecuteAsCommand();
+
+        return true;
+    }
+
     public static bool mod_affinity(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.Requires(out var expr);
