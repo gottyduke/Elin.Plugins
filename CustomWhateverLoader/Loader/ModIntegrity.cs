@@ -53,7 +53,7 @@ public class ModIntegrity
         var sb = new StringBuilder();
 
         foreach (var mod in missing.Take(15)) {
-            sb.AppendLine($"{mod.ModName},  {mod.ModId}");
+            sb.AppendLine($"{mod.ModName}({mod.ModId})");
         }
 
         if (missing.Count > 15) {
