@@ -9,7 +9,7 @@ public static class ConsoleCommand
 {
     extension(string commandStr)
     {
-        public void ExecuteAsCommand()
+        public void ExecuteAsCommand(bool msg = false)
         {
             object? result;
             try {
@@ -26,7 +26,9 @@ public static class ConsoleCommand
                 return;
             }
 
-            using var progress = ProgressIndicator.CreateProgressScoped(() => new(result.ToString()), 3f);
+            if (msg) {
+                using var progress = ProgressIndicator.CreateProgressScoped(() => new(result.ToString()), 3f);
+            }
         }
     }
 }

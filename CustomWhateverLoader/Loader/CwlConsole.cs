@@ -29,4 +29,14 @@ internal class CwlConsole
 
         return "cwl_log_hobo_begone".Loc(beggars.Length);
     }
+
+    [ConsoleCommand("enable_debug")]
+    internal static string EnableDebug(bool enable = true)
+    {
+        var mode = enable ? ReleaseMode.Debug : ReleaseMode.Public;
+        EClass.core.SetReleaseMode(mode);
+        EClass.core.debug.enable = enable;
+
+        return $"debug : {enable}";
+    }
 }
