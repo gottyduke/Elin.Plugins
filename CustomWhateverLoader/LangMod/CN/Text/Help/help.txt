@@ -32,6 +32,7 @@
 ・添加了 move_to(x, y)
 ・添加了 console_cmd(...)
 添加了自动激活作弊模式和 debug 模式控制台命令
+更新了 23.192 Nightly 添加的修改
 
 {topic|1.20.45}
 更新了 23.187 Stable 添加的修改

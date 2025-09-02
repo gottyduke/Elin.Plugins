@@ -32,6 +32,7 @@ Drama Expansion:
 ・Added move_to(x, y)
 ・Added console_cmd(...)
 Added automatic activation of cheat mode and debug console commands
+Updated for 23.192 Nightly
 
 {topic|1.20.45}
 Updated for 23.188 Stable
