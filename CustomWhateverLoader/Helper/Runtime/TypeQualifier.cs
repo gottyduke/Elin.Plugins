@@ -15,7 +15,7 @@ namespace Cwl.Helper;
 
 public class TypeQualifier
 {
-    internal static List<BaseUnityPlugin>? Plugins;
+    internal static List<BaseUnityPlugin>? Plugins => field ??= ModManager.ListPluginObject.OfType<BaseUnityPlugin>().ToList();
     internal static readonly List<TypeInfo> Declared = [];
 
     private static readonly Dictionary<string, Type> _qualifiedResults = [];
@@ -222,10 +222,9 @@ public class TypeQualifier
     [SwallowExceptions]
     internal static void SafeQueryTypesOfAll()
     {
-        Plugins ??= Resources.FindObjectsOfTypeAll<BaseUnityPlugin>().ToList();
         Declared.Clear();
 
-        foreach (var plugin in Plugins.ToArray()) {
+        foreach (var plugin in Plugins!.ToArray()) {
             try {
                 var types = plugin.GetType().Assembly.DefinedTypes.ToArray();
                 // test cast for missing dependency
