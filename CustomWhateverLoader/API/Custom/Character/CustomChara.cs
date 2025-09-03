@@ -153,6 +153,7 @@ public partial class CustomChara : Chara
         }
 
         chara.SetFlagValue("cwl_tags_applied");
+        chara.mapStr.Set("cwl_source_chara_id", chara.id);
 
         foreach (var tag in chara.source.tag) {
             if (tag.StartsWith("addFlag_")) {
@@ -177,6 +178,14 @@ public partial class CustomChara : Chara
 
             AddEqOrThing(chara, @params[0]!, @params[1], doEquip);
         }
+    }
+
+    public static bool IsRecoverable(Chara chara, out string id)
+    {
+        id = chara.id;
+        return chara.id == "chicken" &&
+               chara.mapStr.TryGetValue("cwl_source_chara_id", out id) &&
+               EMono.sources.charas.map.ContainsKey(id);
     }
 
     [ConsoleCommand("spawn")]
