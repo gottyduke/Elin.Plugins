@@ -26,6 +26,7 @@ public partial class CustomChara : Chara
     private static readonly Dictionary<string, CharaImport> _delayedCharaImport = [];
     internal static readonly Dictionary<string, string> DramaRoutes = [];
     internal static readonly Dictionary<string, string> BioOverride = [];
+    internal static bool _deferredUntilRestoration;
 
     public static IReadOnlyCollection<string> All => _delayedCharaImport.Keys;
 
@@ -180,12 +181,12 @@ public partial class CustomChara : Chara
         }
     }
 
-    public static bool IsRecoverable(Chara chara, out string id)
+    public static bool IsRestorable(Chara chara, out SourceChara.Row row)
     {
-        id = chara.id;
+        row = chara.source;
         return chara.id == "chicken" &&
-               chara.mapStr.TryGetValue("cwl_source_chara_id", out id) &&
-               EMono.sources.charas.map.ContainsKey(id);
+               chara.mapStr.TryGetValue("cwl_source_chara_id", out var id) &&
+               EMono.sources.charas.map.TryGetValue(id, out row);
     }
 
     [ConsoleCommand("spawn")]

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Cwl.API.Attributes;
 using Cwl.Helper.Extensions;
+using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using Cwl.Patches;
+using Cwl.Patches.Charas;
 using MethodTimer;
 
 namespace Cwl.API.Custom;
@@ -35,6 +37,11 @@ public partial class CustomChara
     [CwlSceneInitEvent(Scene.Mode.StartGame, true)]
     internal static void AddDelayedChara()
     {
+        if (_deferredUntilRestoration && RestoreCharaData.Restorable.Count > 0) {
+            CoroutineHelper.Deferred(AddDelayedChara, () => !_deferredUntilRestoration);
+            return;
+        }
+
         var listAdv = game.cards.listAdv;
         var charas = game.cards.globalCharas.Values.ToLookup(c => c.id);
 
