@@ -34,6 +34,11 @@ public static class DictExt
             return dict.ContainsKey(key.GetHashCode());
         }
 
+        public void Remove(string key)
+        {
+            dict.Remove(key.GetHashCode());
+        }
+
         public bool TryGetValue(string key, out TValue value)
         {
             return dict.TryGetValue(key.GetHashCode(), out value);

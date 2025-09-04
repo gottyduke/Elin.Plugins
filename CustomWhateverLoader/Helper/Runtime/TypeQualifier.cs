@@ -8,14 +8,12 @@ using BepInEx;
 using Cwl.Helper.Extensions;
 using Cwl.LangMod;
 using HarmonyLib;
-using UnityEngine;
 using Logger = HarmonyLib.Tools.Logger;
 
 namespace Cwl.Helper;
 
 public class TypeQualifier
 {
-    internal static List<BaseUnityPlugin>? Plugins => field ??= ModManager.ListPluginObject.OfType<BaseUnityPlugin>().ToList();
     internal static readonly List<TypeInfo> Declared = [];
 
     private static readonly Dictionary<string, Type> _qualifiedResults = [];
@@ -40,6 +38,8 @@ public class TypeQualifier
         ["void"] = typeof(void),
         ["nuint"] = typeof(nuint),
     };
+
+    internal static List<BaseUnityPlugin>? Plugins => field ??= ModManager.ListPluginObject.OfType<BaseUnityPlugin>().ToList();
 
     public static Type? TryQualify<T>(params string[] unqualified) where T : EClass
     {

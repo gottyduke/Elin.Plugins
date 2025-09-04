@@ -73,10 +73,16 @@ public class SafeSceneInitPatch
             _postCallbacks.Add(callback);
         }
 
-        var log = onSceneInit.PreInit ? "pre" : "post";
-        CwlMod.Log<SafeSceneInitPatch>("cwl_log_processor_add".Loc($"{log}_scene_init",
+        var initType = onSceneInit.PreInit ? "pre" : "post";
+        CwlMod.Log<SafeSceneInitPatch>("cwl_log_processor_add".Loc($"{initType}_scene_init",
             onSceneInit.Mode,
             method.GetAssemblyDetail(false)));
+    }
+
+    internal static void RebuildLookupTables()
+    {
+        _preLut = null;
+        _postLut = null;
     }
 
     private record SceneCallback(FastInvokeHandler Callback, bool ShouldDefer);
