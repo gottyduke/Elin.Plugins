@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
+using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.ThirdParty;
@@ -51,14 +53,21 @@ internal sealed partial class CwlMod
     internal static void WarnWithPopup<T>(object payload, object? log = null)
     {
         Warn<T>(payload);
-        using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToTruncateString(150)));
 
-        if (log is null) {
-            return;
+        switch (log) {
+            case null:
+                return;
+            case Exception ex:
+                var exp = ExceptionProfile.GetFromStackTrace(ex);
+                exp.CreateAndPop(payload.ToString());
+                break;
+            default: {
+                LogInternal(log);
+                using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToTruncateString(150)));
+                progress.Get<ProgressIndicator>().AppendHoverText(() => log.ToTruncateString(450).TruncateAllLines(150));
+                break;
+            }
         }
-
-        LogInternal(log);
-        progress.Get<ProgressIndicator>().AppendHoverText(() => log.ToTruncateString(450).TruncateAllLines(150));
     }
 
     [SwallowExceptions]
@@ -77,14 +86,21 @@ internal sealed partial class CwlMod
     internal static void ErrorWithPopup<T>(object payload, object? log = null, [CallerMemberName] string caller = "")
     {
         Error<T>(payload, caller);
-        using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToTruncateString(150), Color: _warningColor));
 
-        if (log is null) {
-            return;
+        switch (log) {
+            case null:
+                return;
+            case Exception ex:
+                var exp = ExceptionProfile.GetFromStackTrace(ex);
+                exp.CreateAndPop(payload.ToString());
+                break;
+            default: {
+                LogInternal(log);
+                using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToTruncateString(150), Color: _warningColor));
+                progress.Get<ProgressIndicator>().AppendHoverText(() => log.ToTruncateString(450).TruncateAllLines(150));
+                break;
+            }
         }
-
-        LogInternal(log);
-        progress.Get<ProgressIndicator>().AppendHoverText(() => log.ToTruncateString(450).TruncateAllLines(150));
     }
 
     [SwallowExceptions]

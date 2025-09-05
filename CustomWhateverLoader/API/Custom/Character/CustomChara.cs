@@ -139,7 +139,7 @@ public partial class CustomChara : Chara
             chara?.Destroy();
             chara = null;
 
-            CwlMod.ErrorWithPopup<CustomChara>("cwl_error_chara_gen".Loc(id), ex);
+            CwlMod.ErrorWithPopup<CustomChara>("cwl_error_chara_gen".Loc(id, ex.Message), ex);
             return false;
             // noexcept
         }

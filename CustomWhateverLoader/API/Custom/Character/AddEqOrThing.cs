@@ -43,7 +43,7 @@ public partial class CustomChara
             CwlMod.Log<CustomChara>("cwl_log_added_thing".Loc(id, thing.Num, chara.id));
         } catch (Exception ex) {
             thing?.Destroy();
-            CwlMod.WarnWithPopup<CustomChara>("cwl_warn_thing_gen".Loc(id, chara.id), ex);
+            CwlMod.WarnWithPopup<CustomChara>("cwl_warn_thing_gen".Loc(id, chara.id, ex.Message), ex);
             // noexcept
         }
     }

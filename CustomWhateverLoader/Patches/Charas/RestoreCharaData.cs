@@ -35,7 +35,7 @@ internal static class RestoreCharaData
         Restorable.Clear();
     }
 
-    [CwlSceneInitEvent(Scene.Mode.StartGame, false)]
+    [CwlSceneInitEvent(Scene.Mode.StartGame)]
     internal static void PromptRestoration()
     {
         if (Restorable.Count == 0) {
