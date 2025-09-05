@@ -3,7 +3,7 @@ using System.Reflection.Emit;
 using Cwl.Helper.Extensions;
 using HarmonyLib;
 
-namespace Cwl.Patches.Dialogs;
+namespace Cwl.Patches.Dramas;
 
 [HarmonyPatch]
 internal class AllowUniqueTalkPatch
@@ -14,13 +14,15 @@ internal class AllowUniqueTalkPatch
     {
         return new CodeMatcher(instructions)
             .MatchEndForward(
-                new(OpCodes.Brfalse),
-                new OpCodeContains(nameof(OpCodes.Ldloc)),
-                new(OpCodes.Brfalse),
-                new(OpCodes.Newobj))
-            .EnsureValid("hasTopic & humanSpeak")
-            .Advance(-1)
-            .SetOpcodeAndAdvance(OpCodes.Pop)
+                new OperandContains(OpCodes.Callvirt, nameof(Chara.IsHumanSpeak)))
+            .EnsureValid("humanSpeak")
+            .SetInstructionAndAdvance(
+                Transpilers.EmitDelegate(HasUniqueTalk))
             .InstructionEnumeration();
+    }
+
+    private static bool HasUniqueTalk(Chara chara)
+    {
+        return chara.IsHumanSpeak || chara.HasUniqueRumor();
     }
 }

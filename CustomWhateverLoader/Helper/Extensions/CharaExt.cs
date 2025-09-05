@@ -15,6 +15,12 @@ public static class CharaExt
             return bossType && hostile;
         }
 
+        public bool HasUniqueRumor()
+        {
+            var rumors = Lang.GetDialog("unique", chara.id);
+            return rumors.Length > 1 || rumors.TryGet(0, true) != chara.id;
+        }
+
         public Element? AddElement(SourceElement.Row element, int power = 1)
         {
             switch (element.group) {
