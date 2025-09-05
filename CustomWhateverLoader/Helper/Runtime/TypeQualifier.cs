@@ -104,7 +104,7 @@ public class TypeQualifier
         }
 
         // DMD
-        var hasGeneric = Regex.Match(typeName, "<([^>]+)>");
+        var hasGeneric = Regex.Match(typeName, "^([^<]+)<([^>]+)>$");
         List<Type> generics = [];
         if (hasGeneric.Success) {
             foreach (var alias in hasGeneric.Groups[1].Value.Split(',')) {

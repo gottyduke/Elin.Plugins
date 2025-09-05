@@ -187,7 +187,7 @@ public class DebugSampler : MethodStub
             .AppendLine("cwl_ui_stub_info".Loc())
             .AppendLine("cwl_ui_stub_header".Loc())
             .AppendLine()
-            .AppendLine(_lastAttached!.GetAssemblyDetail(false));
+            .AppendLine(_lastAttached!.GetAssemblyDetailColor(false));
 
         var tally = (long)WatchSamplerInfo();
         if (tally == 0) {
