@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using System.Linq;
+using HarmonyLib;
 
 namespace Cwl.Patches.Hobbies;
 
@@ -21,5 +22,14 @@ internal class SafeGetHobbyPatch
 
         CwlMod.Warn<SourceHobby>($"failed to create hobby ID: {id}, replacing with Walking");
         return false;
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(Chara), nameof(Chara.RerollHobby))]
+    internal static void OnRerollInvalidHobby(Chara __instance)
+    {
+        __instance.source.hobbies = __instance.source.hobbies
+            .Where(EMono.sources.hobbies.alias.ContainsKey)
+            .ToArray();
     }
 }
