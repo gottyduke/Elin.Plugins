@@ -33,6 +33,10 @@ Drama Expansion:
 ・Added console_cmd(...)
 Added automatic activation of cheat mode and debug console commands
 Updated for 23.192 Nightly
+Added a prefilter for modded Hobby
+添加了新的 Hobby 回滚补丁
+Updated for 23.195 Nightly
+Removed Transaction.IDCurrency invariant string temp patch (Elin now has integrated it)
 
 {topic|1.20.45}
 Updated for 23.188 Stable
