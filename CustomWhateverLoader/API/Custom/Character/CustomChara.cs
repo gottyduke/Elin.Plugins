@@ -186,7 +186,8 @@ public partial class CustomChara : Chara
         row = chara.source;
         return chara.id == "chicken" &&
                chara.mapStr.TryGetValue("cwl_source_chara_id", out var id) &&
-               EMono.sources.charas.map.TryGetValue(id, out row);
+               EMono.sources.charas.map.TryGetValue(id, out row) &&
+               row.id != "chicken";
     }
 
     [ConsoleCommand("spawn")]

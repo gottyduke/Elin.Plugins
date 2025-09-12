@@ -1,7 +1,6 @@
 ﻿using Cwl.API.Custom;
 using Cwl.Helper.Unity;
 using HarmonyLib;
-using MethodTimer;
 using UnityEngine;
 
 namespace Cwl.Patches;
@@ -9,7 +8,6 @@ namespace Cwl.Patches;
 [HarmonyPatch]
 internal class LoadSpritePatch
 {
-    [Time]
     [HarmonyPrefix]
     [HarmonyPatch(typeof(Religion), nameof(Religion.GetSprite))]
     internal static bool OnGetReligionSprite(Religion __instance, ref Sprite? __result)
@@ -25,7 +23,6 @@ internal class LoadSpritePatch
         return __result == null;
     }
 
-    [Time]
     [HarmonyPrefix]
     [HarmonyPatch(typeof(Domain), nameof(Domain.GetSprite))]
     internal static bool OnGetDomainSprite(Domain __instance, ref Sprite? __result)
@@ -38,7 +35,6 @@ internal class LoadSpritePatch
         return __result == null;
     }
 
-    [Time]
     [HarmonyPrefix]
     [HarmonyPatch(typeof(Faction), nameof(Faction.GetSprite))]
     internal static bool OnGetFactionSprite(Faction __instance, ref Sprite? __result)

@@ -24,6 +24,7 @@ public class MonoFrame(string stackFrame)
         "UnityEngine.",
         "Plugins.",
         "System.",
+        "mscorlib",
     ];
 
     private bool _parsed;

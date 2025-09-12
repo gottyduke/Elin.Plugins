@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
+using Cwl.API.Drama;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
@@ -109,44 +110,51 @@ internal class LoadDramaPatch
         }
     }
 
+    // prevent duplicate loc id if drama writer is careless
     private static List<Dictionary<string, string>> SanitizeId(List<Dictionary<string, string>> lists)
     {
         if (lists.Count == 0) {
             return lists;
         }
 
-        HashSet<string> allIds = new([..lists.Select(kv => kv["id"])], StringComparer.Ordinal);
+        try {
+            HashSet<string> allIds = new(lists.Select(kv => kv["id"]), StringComparer.InvariantCultureIgnoreCase);
 
-        var nextId = allIds.Count;
-        for (var i = lists.Count - 1; i >= 0; --i) {
-            var dict = lists[i];
-            var id = dict["id"];
+            var nextId = allIds.Count;
+            for (var i = lists.Count - 1; i >= 0; --i) {
+                var dict = lists[i];
+                var id = dict["id"];
 
-            if (id.IsEmpty()) {
-                if (!dict["text"].IsEmpty()) {
-                    dict["id"] = GetNewId();
+                if (id.IsEmpty()) {
+                    if (!dict["text"].IsEmpty()) {
+                        dict["id"] = GetNewId();
+                    }
+
+                    continue;
                 }
 
-                continue;
+                if (allIds.Add(id)) {
+                    continue;
+                }
+
+                dict["id"] = GetNewId();
             }
 
-            if (allIds.Add(id)) {
-                continue;
+            return lists;
+
+            string GetNewId()
+            {
+                string newId;
+                do {
+                    newId = $"cwl_dm_id_{nextId++}";
+                } while (!allIds.Add(newId));
+
+                return newId;
             }
-
-            dict["id"] = GetNewId();
-        }
-
-        return lists;
-
-        string GetNewId()
-        {
-            string newId;
-            do {
-                newId = $"cwl_dm_id_{nextId++}";
-            } while (!allIds.Add(newId));
-
-            return newId;
+        } catch (Exception ex) {
+            CwlMod.Warn<DramaExpansion>("cwl_error_failure".Loc(ex.Message));
+            return lists;
+            // noexcept
         }
     }
 }
