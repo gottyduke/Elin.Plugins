@@ -42,8 +42,7 @@ internal class CardOnCreateEvent
     internal static IEnumerable<MethodBase> TargetMethods()
     {
         return [
-            AccessTools.Method(typeof(Card), "OnDeserialized"),
-            AccessTools.Method(typeof(Chara), "OnDeserialized"),
+            AccessTools.Method(typeof(Card), "_OnDeserialized"),
             AccessTools.Method(typeof(Card), nameof(Card.Create)),
         ];
     }

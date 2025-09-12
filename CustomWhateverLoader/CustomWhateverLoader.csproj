@@ -7,6 +7,7 @@
         <RootNamespace>Cwl</RootNamespace>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <OutputPath>$(ElinGamePath)\Package\Mod_$(AssemblyName)\</OutputPath>
+        <Deterministic>false</Deterministic>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
         <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
