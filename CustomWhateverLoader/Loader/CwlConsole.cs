@@ -39,4 +39,16 @@ internal class CwlConsole
 
         return $"debug : {enable}";
     }
+
+    [ConsoleCommand("add_figures")]
+    internal static void AddFigures(string refId)
+    {
+        var figure = ThingGen.Create("figure");
+        var card = ThingGen.Create("figure3");
+        figure.c_idRefCard = card.c_idRefCard = refId;
+
+        var pc = EClass.pc;
+        pc.DropThing(figure);
+        pc.DropThing(card);
+    }
 }
