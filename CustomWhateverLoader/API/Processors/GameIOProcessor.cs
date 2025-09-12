@@ -19,17 +19,17 @@ public class GameIOProcessor
     public static GameIOContext? LastUsedContext { get; private set; }
     public static GameIOContext? PersistentContext => field ??= new(Application.persistentDataPath);
 
-    private static event Action<GameIOContext>? OnGamePreSaveProcess;
-    private static event Action<GameIOContext>? OnGamePostSaveProcess;
-    private static event Action<GameIOContext>? OnGamePreLoadProcess;
-    private static event Action<GameIOContext>? OnGamePostLoadProcess;
+    private static event Action<GameIOContext?>? OnGamePreSaveProcess;
+    private static event Action<GameIOContext?>? OnGamePostSaveProcess;
+    private static event Action<GameIOContext?>? OnGamePreLoadProcess;
+    private static event Action<GameIOContext?>? OnGamePostLoadProcess;
 
-    public static void AddSave(Action<GameIOContext> saveProcess, bool post)
+    public static void AddSave(Action<GameIOContext?> saveProcess, bool post)
     {
         Add(saveProcess, true, post);
     }
 
-    public static void AddLoad(Action<GameIOContext> loadProcess, bool post)
+    public static void AddLoad(Action<GameIOContext?> loadProcess, bool post)
     {
         Add(loadProcess, false, post);
     }
@@ -43,7 +43,7 @@ public class GameIOProcessor
         return new(Path.Combine(Application.persistentDataPath, modId));
     }
 
-    private static void Add(Action<GameIOContext> ioProcess, bool save, bool post)
+    private static void Add(Action<GameIOContext?> ioProcess, bool save, bool post)
     {
         switch (save, post) {
             case (true, true):
@@ -60,7 +60,7 @@ public class GameIOProcessor
                 return;
         }
 
-        void Process(GameIOContext context)
+        void Process(GameIOContext? context)
         {
             try {
                 ioProcess(context);
@@ -104,7 +104,7 @@ public class GameIOProcessor
             _ => throw new NotImplementedException(io.GetType().Name),
         };
 
-        Add(ctx => method.FastInvokeStatic(ctx), save, post);
+        Add(ctx => method.FastInvokeStatic(ctx!), save, post);
 
         var state = post ? "post" : "pre";
         var type = save ? "save" : "load";
