@@ -29,7 +29,7 @@ internal static class RestoreCharaData
     }
 
     [CwlPreLoad]
-    internal static void ClearData(GameIOProcessor.GameIOContext context)
+    internal static void ClearData(GameIOProcessor.GameIOContext? context = null)
     {
         CustomChara._deferredUntilRestoration = false;
         Restorable.Clear();
@@ -58,7 +58,7 @@ internal static class RestoreCharaData
             CwlMod.Log<CustomChara>("cwl_log_chara_restore".Loc(row.id));
         }
 
-        ClearData(null!);
+        ClearData();
     }
 
     private static void ResetChara()
@@ -67,7 +67,7 @@ internal static class RestoreCharaData
             chara.mapStr.Remove("cwl_source_chara_id");
         }
 
-        ClearData(null!);
+        ClearData();
     }
 
     private static string BuildRestorationList()
@@ -75,7 +75,7 @@ internal static class RestoreCharaData
         var sb = new StringBuilder();
 
         foreach (var (chara, row) in Restorable.Take(15)) {
-            sb.AppendLine($"{row.GetText()} {row.GetText("aka")}, lv {chara.LV}");
+            sb.AppendLine($"{row.GetText()} {row.GetText("aka")}, lv {chara.LV}, {chara.currentZone.Name}");
         }
 
         if (Restorable.Count > 15) {
