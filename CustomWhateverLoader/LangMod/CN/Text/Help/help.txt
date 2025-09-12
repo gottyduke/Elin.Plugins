@@ -36,6 +36,7 @@
 添加了新的无效 Hobby 过滤补丁
 更新了 23.195 Nightly 添加的修改
 移除了临时的 Transaction.IDCurrency 字符串转化补丁(Elin已集成此修复)
+添加了角色当前区域名至角色数据恢复提示信息
 
 {topic|1.20.45}
 更新了 23.187 Stable 添加的修改
