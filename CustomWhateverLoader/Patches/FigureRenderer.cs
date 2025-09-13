@@ -45,9 +45,8 @@ internal class FigureRenderer : CardRenderer
             return false;
         }
 
-        // allow multiple figures from same id
+        // allow multiple figures with same ref id
         var key = $"{refId}_{owner.uid}";
-
         if (_cached.TryGetValue(key, out renderer)) {
             return renderer is not null;
         }

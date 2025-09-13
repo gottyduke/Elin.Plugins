@@ -4,7 +4,7 @@ using HarmonyLib;
 namespace Cwl.Patches;
 
 [HarmonyPatch]
-internal class ReloadLangPatch
+internal class ReloadLangEvent
 {
     [SwallowExceptions]
     [HarmonyPostfix]

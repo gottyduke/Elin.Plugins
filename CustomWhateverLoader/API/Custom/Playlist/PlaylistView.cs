@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -91,7 +90,6 @@ public partial class CustomPlaylist
     }
 
     [ConsoleCommand("dump")]
-    [SuppressMessage("ReSharper", "Unity.UnknownResource")]
     public static string DumpAllBGMData()
     {
         var sb = new StringBuilder(2048)

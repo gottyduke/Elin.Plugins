@@ -98,6 +98,11 @@ public class MonoFrame(string stackFrame)
         var parts = raw.Split('(', 2, StringSplitOptions.RemoveEmptyEntries);
 
         SanitizedMethodCall = parts[0].Trim();
+
+        if (parts.Length < 2) {
+            return parts;
+        }
+
         var seg = parts[1].LastIndexOf(')');
         if (seg != -1) {
             parts[1] = parts[1][..seg];

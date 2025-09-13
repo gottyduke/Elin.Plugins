@@ -12,7 +12,7 @@ using MethodTimer;
 namespace Cwl.Patches;
 
 [HarmonyPatch(typeof(Scene), nameof(Scene.Init))]
-public class SafeSceneInitPatch
+public class SafeSceneInitEvent
 {
     internal static bool SafeToCreate;
     private static ILookup<Scene.Mode, SceneCallback>? _preLut;
@@ -32,7 +32,7 @@ public class SafeSceneInitPatch
                     callback.Invoke(null);
                 }
             } catch (Exception ex) {
-                CwlMod.Warn<SafeSceneInitPatch>("cwl_warn_processor".Loc("pre_scene_init", newMode, ex));
+                CwlMod.Warn<SafeSceneInitEvent>("cwl_warn_processor".Loc("pre_scene_init", newMode, ex));
                 // noexcept
             }
     }
@@ -55,7 +55,7 @@ public class SafeSceneInitPatch
                     callback.Invoke(null);
                 }
             } catch (Exception ex) {
-                CwlMod.Warn<SafeSceneInitPatch>("cwl_warn_processor".Loc("post_scene_init", newMode, ex));
+                CwlMod.Warn<SafeSceneInitEvent>("cwl_warn_processor".Loc("post_scene_init", newMode, ex));
                 // noexcept
             }
     }
@@ -74,7 +74,7 @@ public class SafeSceneInitPatch
         }
 
         var initType = onSceneInit.PreInit ? "pre" : "post";
-        CwlMod.Log<SafeSceneInitPatch>("cwl_log_processor_add".Loc($"{initType}_scene_init",
+        CwlMod.Log<SafeSceneInitEvent>("cwl_log_processor_add".Loc($"{initType}_scene_init",
             onSceneInit.Mode,
             method.GetAssemblyDetail(false)));
     }

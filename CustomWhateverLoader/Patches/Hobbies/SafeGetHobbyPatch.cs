@@ -21,7 +21,7 @@ internal class SafeGetHobbyPatch
         __result = hobbies.alias["Walk"];
         __instance.id = __result.id;
 
-        CwlMod.Warn<SourceHobby>($"failed to create hobby ID: {id}, replacing with Walking");
+        CwlMod.Warn<SourceHobby>($"failed to create hobby ID: {id}, replaced with Walking");
         return false;
     }
 

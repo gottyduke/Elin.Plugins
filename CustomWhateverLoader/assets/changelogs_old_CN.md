@@ -1,0 +1,281 @@
+
+{topic|1.20.44}
+更新了 23.187 Stable 合并的修改
+添加了特效加载器
+为中途卸载的Mod添加了安全的 Hobby 值
+添加了更多的API方法
+修复了一个可能的格式问题
+
+{topic|1.20.43}
+修复了 23.178 Nightly 引入的 SourceFood 表头修改
+表头重排功能与现有模组兼容，但建议之后使用新格式
+修复了洞穴开局的报错
+
+{topic|1.20.42}
+修复了 23.176 Nightly 引入的错误
+
+{topic|1.20.41}
+优化了独特非冒险者生成逻辑
+优化了异常分析对于部分类型的处理
+优化了非 LangMod 目录的加载
+
+{topic|1.20.40}
+<b>*优化了源表加载器*</b>。预加载块数量可以自定义修改，游戏启动时会增加内存消耗，但加载后不会
+添加了标签 addDice 用于为元素加载同 alias 的 Calc 行
+添加了对 Trait 为 ToolRangedGunEnergy 或拥有标签 addLaser 的枪械的激光特效支持
+抑制了一处剧情演出时的角色名错误 - 未验证
+修复了 23.173 稳定版的激进改动引发的错误 - 众所周知，稳定版更新一般引入最激进的改动，而夜版更新只是修修平衡
+
+{topic|1.20.39}
+处理了一下 Dungeon_Boss 播放列表
+启用了<i>重载音频</i>按钮
+
+{topic|1.20.38}
+添加了详细的剧情表解析异常处理
+修复了对话列表文本的序号问题
+
+{topic|1.20.37}
+添加了 OptParam.AsT 转换，代替原本的 Get.AsT
+修复了播放列表乱码的问题
+
+{topic|1.20.36}
+ElementContainer.ValueBonus 修复现仅在 0.23.154 版本以下启用，Elin已在该版本集成修复
+优化了独特聊天的添加逻辑
+添加了额外的移除无效元素检定（但是不知道哪个mod在搞）
+
+{topic|1.20.35}
+修复了游戏调用 ElementContainer.ValueBonus 时游戏可能还未创建的错误
+
+{topic|1.20.34}
+添加了对于Mod更改元素ID的修复
+修复了DNA添加的反转元素ID消失的问题
+
+{topic|1.20.33}
+修复了 vacate_beggar 对应的移除小鸡功能
+修复了录音机插入自定义播放列表时未能去重的问题
+添加了更好的剧情表本地化支持, 现在可以在同一张表中提供 text_XX 列来进行本地化(XX对应语言代码, 如 text_CN)
+优化了音频加载逻辑
+
+{topic|1.20.31}
+应用了稳定版152的小更改  
+优化了异常分析对泛型的解析
+添加了在 CharaText 条目中使用 <sound=soundId,chance> 标签的支持  
+将磁带改为从当前播放列表中随机掉落一个曲目, 而不是第一个  
+在系统菜单条目中添加了将当前播放列表添加到已知BGM列表中的功能
+调整了系统菜单条目
+
+{topic|1.20.30}
+应用了新的播放列表命名规则
+添加了更多的区域播放列表覆盖规则
+更改了一处夜版149引入的逻辑: 当Mod角色拥有独特聊天文本时, 总是显示 来聊天吧 选项
+添加了可选的缓存GetDialog/HasTopic文本功能
+
+{topic|1.20.28}
+添加了对标签 noCopy 的强制应用, 需要同时添加元素 purity/40
+添加了 cwl.spawn 控制台命令用于测试生成带标签的角色
+
+{topic|1.20.27}
+剧情拓展:
++ 添加了 equip_item(id, material, lv)
+添加了可选的恢复Mod角色数据功能
+应用了夜版149引入的chicken默认ID
+应用了夜版149引入的新 来聊天吧 选项
+
+{topic|1.20.26}
+修复了夜版148引入的重复 来聊天吧 选项
+添加了 SourceParseException 的更多细节
+
+{topic|1.20.25}
+剧情拓展:
++ 修复了复合条件参数没有正确解析的问题
++ 优化了 mod_flag 的逻辑和音效
+异常分析:
++ 优化了提示文本
++ 添加了Mod补丁程序集的颜色指示
+
+{topic|1.20.24}
+修复了一处调用拓展方法时可选参数可能没被正确调整的问题
+添加了 ClassCache.CreateThunk 优化的可选配置值 Caching.Types
+
+{topic|1.20.23}
+剧情拓展:
++ 添加了 if_currency(currency, valueExpression)
++ 添加了 if_fame(valueExpression)
++ 添加了 mod_currency(currency, valueExpression)
++ 添加了 mod_fame(valueExpression)
++ 修改了 portrait_set(partial portraitId) 现在可以支持部分ID匹配
+修复了 Condition 和 Element 数据去重时可能会丢失限定类型的问题。
+添加了 Reposition TcPatch 的配置。
+添加了对原版对话按钮多行文本的支持。
+添加了对剧情表中不支持的 Person 作为讲述人的支持。
+
+{topic|1.20.19}
+剧情拓展:
++ 将 add_element 重命名为 mod_element。
++ 添加了 mod_element_exp(elementAlias, valueExpression)。
++ 添加了 show_book(bookId, categoryId)。
+修复了新 Zone_id 导入角色时可能出现复数角色的问题。
+修复了人物传记覆盖功能未启用的问题（忘了）。
+应用了CWL位置调整至自定义贴图的角色上, 以修复原版中气泡和图标显示浮空的问题。
+
+{topic|1.20.17}
+剧情扩展：  
++ 添加了 add_element(elementAlias, optional power)。
++ 添加了 mod_keyitem(keyItemId, optional valueExpression)。
++ 添加了 if_keyitem(keyItemId, optional valueExpression)。
++ 添加了 move_next_to(charaId)。
++ 添加了 pop_text(text)。
+
+{topic|1.20.16}
+修复了使用皮肤时错误调整 TCPos 的问题。
+
+{topic|1.20.15}
+修复了原版游戏中使用 @chara 纹理格式的角色喊叫时气泡框会显示得非常高的问题。
+修复了原版游戏中使用 @chara 纹理格式的角色心情图标会显示得非常高的问题。
+
+{topic|1.20.14}  
+剧情扩展：  
++ 添加了 if_element(elementAlias, valueExpression)。  
++ 将 if_location 重命名为 if_zone。  
+EffectSetting.guns：  
++ 在数据格式中添加了 CaneColor 和 CaneColorBlend。  
++ 将 SpriteId 重命名为 IdSprite。此更改向后兼容。  
+
+{topic|1.20.12}
+添加了剧情拓展方法if_faith。
+添加了剧情表加载时同步空文本功能（开发时便无需同时填入text, text_JP 和 text_EN三列）。
+
+{topic|1.20.11}
+修复了BGM刷新时退回主菜单可能引发的空引用。
+添加了更多剧情拓展方法和安全补丁。
+添加了对addZone标签的alias支持, 现在可以使用addZone_alias/n来指定n层。
+
+{topic|1.20.8}
+添加了对 god_talks.xlsx 文件的覆盖式合并支持
+添加了对 dialog.xlsx 文件的覆盖式合并支持。
+修复了使用 SpriteCreator 时文件路径为空导致的崩溃问题。
+修复了（疑似）CustomConverter 中产物无法转换的漏洞。
+修复了角色表包含空特质和空默认值时引发的解析错误。
+修复了 DebugSampler 在位置0插入约束性调用的问题。
+优化部分冗余代码逻辑。
+修复了一个材料的bug。
+
+{topic|1.20}
+添加了自定义信仰的专属特质的详细信息显示。
+添加了反射属性[CwlContextMenu]用于自动注册系统菜单条目。
+{link|Elin Modding Wiki 链接|https://elin-modding-resources.github.io/Elin.Docs/articles/100_Mod%20Documentation/Custom%20Whatever%20Loader/EN/API/unity#cwlcontextmenu}。
+添加了运行时方法接口MethodStubHelper, MethodStub用于辅助生成目标函数存根。
+{link|Elin Modding Wiki 链接|https://elin-modding-resources.github.io/Elin.Docs/articles/100_Mod%20Documentation/Custom%20Whatever%20Loader/EN/API/runtime#methodstubhelper}。
+添加了运行时方法调用耗时接口DebugSampler以及控制台命令用于生成任意方法的性能分析数据。
+・cwl.stub.attach 类名 方法名 [内部调用:true/false]
+・cwl.stub.detach
+・cwl.stub.clear
+・cwl.stub.dump
+重构了自定义转换器API, 添加了CWL事件_OnProduce, 允许使用自定义trait。
+添加了运行时异常分析器的"关闭并不再显示"按钮。
+优化了元素模糊查找的缓存机制。
+添加了对自定义角色的flag支持"StayHomeZone", 以将自定义角色固定在初始区域不再移动。
+可以在剧情表中修改flag值。
+修复了自定义转换器API检测事件时的复制bug。
+添加了自定义转换器API的菜单条目的本地化文本。
+
+{topic|1.19}
+添加了BGM支持！现在你可以自由组合/添加你喜爱的BGM到游戏中, 还支持区域专属播放列表。
+一些修复。
+修复了委托版因为游戏更新后导致的显示bug。
+添加了播放列表切换时无缝衔接当前曲目（如果新列表也包含此曲目）的功能。可开关。
+添加了CWL捕获异常时的显示条。
+修复了房间特定播放列表未能在离开房间后重置的bug。
+修复了在对话时为没有独特对话的NPC插入“来聊天吧”选项的bug。
+在游戏切换空白播放列表时（试图停止BGM）不使用CWL的衔接功能。
+修复了同一区域不同播放列表可能会错误使用同一缓存的列表的bug。
+如果mod作者提供了无效区域类型, CWL会提示错误并使用随机区域。
+流式导入BGM音频以减少加载时间。
+修复了房间特定播放列表未使用独特缓存键的bug。
+添加了新标签"forceRarity", 允许物品数据在使用带有标签"fixedRarity"的类别时强制使用其定义的稀有度。
+将CWL的自定义库存事件从transpiler改变为pre-post补丁, 因为有些mod可能会将整个OnBarter方法写在自己的Prefix里并跳过原函数（坏。很坏）。
+添加了新标签"fixedElement"和"randomElement", 允许物品数据在生成时覆盖游戏根据类型使用的Element赋值类型。
+添加了运行时异常分析器。
+添加了自定义信仰的神器和势力元素支持。
+添加了对部分特定mod编译时引入的无效外部依赖的忽略处理。比如, Adventure Creator引用了UnityEditor的程序集。
+重构了自定义库存API, 添加了新库存物品字段"Identified"。
+添加了自定义转换器, 允许作者为容器应用自定义转换规则。
+添加了新的自定义角色头像重定位补丁。
+修复了转换产品未能正确叠加的bug。
+修复了自定义库存大小未能自动适应的bug。
+添加了新的自定义角色API并修复了枪械类装备未能正确添加的bug。
+添加了重复ID行的自动替换功能。可开关。
+添加了新的mod材质反向查询补丁。
+修复了物品生成时的品质优先级。
+
+{topic|1.18}
+添加了在多个区域生成角色的支持。  
+剧情action扩展！模组制作者现在可以在剧情表中调用外部方法。
+添加了Mod Help支持。
+暂时不使用noa新添加的RegisterSerializeFallback, 因为它根本解决不了加载问题。
+添加了Mod材质索引的暂时修复, 因为noa的构思代码。
+添加了后台加载音频时的信息条。
+添加了可用的剧情action拓展：允许动态改变当前对话角色的头像。
+添加了可用API：注册CWL序列化事件的属性。
+<b>修复了ThingV表导入时会修改Thing表数据但是noa并没有给ThingV里加一个Thing的重置, 谢谢你。</b>
+修复了23.78夜间版的源表加载顺序。
+修复了对话软锁的bug。
+修复了一处查询mod事件时可能引发的加载外部依赖异常。
+
+{topic|1.17}  
+添加自定义区域类型的安全加载和后期清理。  
+标准化声音ID路径。  
+从引用变量中移除ldind.ref。  
+为自定义宗教添加神能力触发短语。  
+修复RGBA位的材料颜色解析。  
+防止在Dialog.InternalSoundStopper上重复注入。  
+Zone安全加载。
+
+{topic|1.16}  
+添加对话声音质量改善补丁和自定义戏剧标签。  
+添加Card.HashKey以防止字典冲突。  
+允许使用别名覆写自定义传记的父母条目。  
+修复自定义角色同步问题。  
+修复自定义宗教chunk不同步的错误。  
+在开始新游戏时调用GameLoad事件。  
+为Chara添加自定义生物标签。  
+禁用Zone_Dungeon作为起始区域选项。  
+添加方法调度器。  
+功能图标的调整器（32x32）。  
+缓存各种内部操作。  
+将自定义Eq/Thing设置为已识别。  
+将精灵创建器缓存目标更改为基于纹理的。  
+添加戏剧标签和对多种声音格式的支持。
+
+{topic|1.15}
+Added support for custom merchant stock.
+{topic|1.14}
+Added pattern matching for sprite replacers & Allow manual purging of faulty elements.
+{topic|1.13}
+Added support for custom material, lots of safe loading optimizations.
+{topic|1.12}
+Added support for custom abilities and spells.
+{topic|1.11}
+Fixed a cryptic bug where CWL attempts to do its funny things for other mods.
+{topic|1.10}
+Added support for custom religion imports and custom religion/domain/faction portraits.
+{topic|1.9}
+Added auto detection for incompatible source sheets and sheet header realignment. Configurable.
+{topic|1.8}
+Added custom adventurer tagging for equipment/things.
+{topic|1.7}
+Set EN as 1st fallback language.
+{topic|1.6}
+Added support for custom adventurer related imports and dialog.xlsx merging.
+{topic|1.5}
+API refactor.
+{topic|1.4}
+Added source sheet imports with localization support.
+{topic|1.3}
+Fixed BGMData.Part duplicating first entry.
+{topic|1.2}
+Added support for custom sounds.
+{topic|1.1}
+Added support for book texts.
+{topic|1.0}
+Added support for dialogs/drama sheets.

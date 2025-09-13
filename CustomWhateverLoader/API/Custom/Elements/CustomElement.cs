@@ -48,7 +48,7 @@ public class CustomElement : Element
     [CwlSceneInitEvent(Scene.Mode.StartGame, true)]
     internal static void GainAbilityOnLoad()
     {
-        if (!SafeSceneInitPatch.SafeToCreate) {
+        if (!SafeSceneInitEvent.SafeToCreate) {
             return;
         }
 

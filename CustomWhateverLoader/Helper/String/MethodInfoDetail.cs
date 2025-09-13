@@ -33,26 +33,26 @@ public static class MethodInfoDetail
         public string GetAssemblyDetail(bool full = true)
         {
             var decl = methodInfo.DeclaringType!;
-            return $"({decl.Assembly.GetName().Name}){methodInfo.GetDetail(full)}";
+            return $"{decl.Assembly.GetName().Name}::{methodInfo.GetDetail(full)}";
         }
 
         public string GetAssemblyDetailColor(bool full = true)
         {
             var decl = methodInfo.DeclaringType!;
-            return $"({decl.Assembly.GetName().Name.TagColor(0x7676a7)}){methodInfo.GetDetail(full)}";
+            return $"{decl.Assembly.GetName().Name.TagColor(0x7676a7)}::{methodInfo.GetDetail(full)}";
         }
 
         public string GetAssemblyDetailParams(bool full = true)
         {
             var decl = methodInfo.DeclaringType!;
-            return $"({decl.Assembly.GetName().Name}){methodInfo.GetDetail(full)} ({methodInfo.GetParameters().Join()})";
+            return $"{decl.Assembly.GetName().Name}::{methodInfo.GetDetail(full)} ({methodInfo.GetParameters().Join()})";
         }
 
         public string GetAssemblyDetailParamsColor(bool full = true)
         {
             var decl = methodInfo.DeclaringType!;
             return
-                $"({decl.Assembly.GetName().Name.TagColor(0x7676a7)}){methodInfo.GetDetail(full)} ({methodInfo.GetParameters().Join()})";
+                $"{decl.Assembly.GetName().Name.TagColor(0x7676a7)}::{methodInfo.GetDetail(full)} ({methodInfo.GetParameters().Join()})";
         }
     }
 }

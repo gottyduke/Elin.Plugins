@@ -123,7 +123,12 @@ public class ExceptionProfile(string stackTrace)
         var sb = new StringBuilder(stackTrace.Length);
         sb.AppendLine("cwl_ui_callstack".Loc());
 
+        var terminated = false;
         foreach (var frame in stackTrace.SplitLines()) {
+            if (terminated) {
+                break;
+            }
+
             if (frame.IsEmpty()) {
                 continue;
             }
@@ -132,7 +137,10 @@ public class ExceptionProfile(string stackTrace)
             Frames.Add(mono);
 
             switch (mono.frameType) {
-                case MonoFrame.StackFrameType.Unknown or MonoFrame.StackFrameType.Rethrow:
+                case MonoFrame.StackFrameType.Rethrow:
+                    terminated = true;
+                    break;
+                case MonoFrame.StackFrameType.Unknown:
                     sb.AppendLine(mono.SanitizedMethodCall.ToTruncateString(150));
                     break;
                 case MonoFrame.StackFrameType.Method or MonoFrame.StackFrameType.DynamicMethod:

@@ -37,8 +37,8 @@ public partial class CustomChara
     [CwlSceneInitEvent(Scene.Mode.StartGame, true)]
     internal static void AddDelayedChara()
     {
-        if (_deferredUntilRestoration && RestoreCharaData.Restorable.Count > 0) {
-            CoroutineHelper.Deferred(AddDelayedChara, () => !_deferredUntilRestoration);
+        if (DeferredUntilRestoration && RestoreCharaData.Restorable.Count > 0) {
+            CoroutineHelper.Deferred(AddDelayedChara, () => !DeferredUntilRestoration);
             return;
         }
 
@@ -46,7 +46,7 @@ public partial class CustomChara
         var charas = game.cards.globalCharas.Values.ToLookup(c => c.id);
 
         foreach (var (id, import) in _delayedCharaImport) {
-            if (!SafeSceneInitPatch.SafeToCreate) {
+            if (!SafeSceneInitEvent.SafeToCreate) {
                 return;
             }
 

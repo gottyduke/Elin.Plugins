@@ -147,7 +147,7 @@ internal sealed partial class CwlMod
                             CardOnCreateEvent.RegisterEvents(method, charaAttr);
                             break;
                         case CwlSceneInitEvent sceneInitAttr:
-                            SafeSceneInitPatch.RegisterEvents(method, sceneInitAttr);
+                            SafeSceneInitEvent.RegisterEvents(method, sceneInitAttr);
                             break;
                     }
                 } catch (Exception ex) {

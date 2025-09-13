@@ -25,43 +25,43 @@ public class PackageIterator
             .Select(PathNormalizer.NormalizePath);
     }
 
-    public static IEnumerable<DirectoryInfo> GetLangModFilesFromPackage(string? modGuid = null)
+    public static IEnumerable<DirectoryInfo> GetLangModFilesFromPackage(string? modId = null)
     {
-        return GetLoadedPackagesAsMapping(modGuid)
+        return GetLoadedPackagesAsMapping(modId)
             .Select(m => m.Primary)
             .OfType<DirectoryInfo>();
     }
 
-    public static IEnumerable<FileInfo> GetSourcesFromPackage(string? modGuid = null)
+    public static IEnumerable<FileInfo> GetSourcesFromPackage(string? modId = null)
     {
-        return GetLoadedPackagesAsMapping(modGuid)
+        return GetLoadedPackagesAsMapping(modId)
             .SelectMany(m => m.Sources);
     }
 
-    public static IEnumerable<DirectoryInfo> GetSoundFilesFromPackage(string? modGuid = null)
+    public static IEnumerable<DirectoryInfo> GetSoundFilesFromPackage(string? modId = null)
     {
-        return GetLoadedPackages(modGuid)
+        return GetLoadedPackages(modId)
             .SelectMany(d => d.GetDirectories("Sound"));
     }
 
-    public static IEnumerable<DirectoryInfo> GetLoadedPackages(string? modGuid = null)
+    public static IEnumerable<DirectoryInfo> GetLoadedPackages(string? modId = null)
     {
         return BaseModManager.Instance.packages
             .Where(p => p.activated && !p.builtin)
-            .Where(p => modGuid is null || p.id == modGuid)
+            .Where(p => modId is null || p.id == modId)
             .Select(p => p.dirInfo);
     }
 
-    public static IEnumerable<FileMapping> GetLoadedPackagesAsMapping(string? modGuid = null)
+    public static IEnumerable<FileMapping> GetLoadedPackagesAsMapping(string? modId = null)
     {
-        if (modGuid is not null && _mappings.TryGetValue(modGuid, out var mapping)) {
+        if (modId is not null && _mappings.TryGetValue(modId, out var mapping)) {
             return [mapping];
         }
 
         return BaseModManager.Instance.packages
             .OfType<ModPackage>()
             .Where(p => p.activated && !p.builtin)
-            .Where(p => modGuid is null || p.id == modGuid)
+            .Where(p => modId is null || p.id == modId)
             .Select(GetPackageMapping);
     }
 
@@ -98,22 +98,22 @@ public class PackageIterator
             .OfType<FileInfo>();
     }
 
-    public static ExcelData? GetExcelFromPackage(string relativePath, string modGuid, int startIndex = 5)
+    public static ExcelData? GetExcelFromPackage(string relativePath, string modId, int startIndex = 5)
     {
-        var excel = GetRelocatedFileFromPackage(relativePath, modGuid);
+        var excel = GetRelocatedFileFromPackage(relativePath, modId);
         return excel is null ? null : new(excel.FullName, startIndex);
     }
 
-    public static (FileInfo?, T?) GetJsonFromPackage<T>(string relativePath, string modGuid) where T : new()
+    public static (FileInfo?, T?) GetJsonFromPackage<T>(string relativePath, string modId) where T : new()
     {
-        var json = GetRelocatedFileFromPackage(relativePath, modGuid);
+        var json = GetRelocatedFileFromPackage(relativePath, modId);
         ConfigCereal.ReadConfig<T>(json?.FullName, out var data);
         return (json, data);
     }
 
-    public static FileInfo? GetRelocatedFileFromPackage(string relativePath, string modGuid)
+    public static FileInfo? GetRelocatedFileFromPackage(string relativePath, string modId)
     {
-        var resources = GetLoadedPackagesAsMapping(modGuid).LastOrDefault();
+        var resources = GetLoadedPackagesAsMapping(modId).LastOrDefault();
         return resources?.RelocateFile(relativePath);
     }
 

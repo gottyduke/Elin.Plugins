@@ -25,13 +25,13 @@ internal static class RestoreCharaData
         }
 
         Restorable[chara] = row;
-        CustomChara._deferredUntilRestoration = true;
+        CustomChara.DeferredUntilRestoration = true;
     }
 
     [CwlPreLoad]
     internal static void ClearData(GameIOProcessor.GameIOContext? context = null)
     {
-        CustomChara._deferredUntilRestoration = false;
+        CustomChara.DeferredUntilRestoration = false;
         Restorable.Clear();
     }
 

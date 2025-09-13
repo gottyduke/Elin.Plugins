@@ -16,7 +16,7 @@ internal class CwlConsole
         return BegoneOfYouInsertNameHere("chicken");
     }
 
-    [ConsoleCommand("vacate_every")]
+    [ConsoleCommand("remove_all")]
     internal static string BegoneOfYouInsertNameHere(string id)
     {
         var beggars = EClass.game.cards.globalCharas.Values

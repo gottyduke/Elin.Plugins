@@ -14,7 +14,7 @@ using ReflexCLI.Attributes;
 namespace Cwl.API.Custom;
 
 [ConsoleCommandClassCustomizer("cwl.quest")]
-public class CustomQuest : CustomQuestStorageV1
+public class CustomQuest : CustomQuestStorage
 {
     internal static readonly Dictionary<string, SourceQuest.Row> Managed = [];
 

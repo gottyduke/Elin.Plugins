@@ -103,7 +103,8 @@ public class WorkbookImporter
 
         List<IWorkbook> books = [];
         List<(ISheet, string)> fetches = [];
-        HashSet<SourceData> dirty = [EMono.sources.elements, EMono.sources.materials];
+        var sm = EMono.sources;
+        HashSet<SourceData> dirty = [sm.elements, sm.materials];
 
         // init elements and materials first so other sheets can parse it properly
         HotInit(dirty);
