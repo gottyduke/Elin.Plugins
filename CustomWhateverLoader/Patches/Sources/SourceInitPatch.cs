@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Cwl.API;
 using Cwl.Helper.FileUtil;
@@ -30,11 +32,17 @@ internal class SourceInitPatch
             _patched = true;
         }
 
+        var imports = PackageIterator.GetSourcesFromPackage()
+            .Where(f => !f.Name.StartsWith("cwl_") && !f.Name.StartsWith(".") && !f.Name.Contains("~"));
+
+        SafeCreateSources(imports);
+    }
+
+    internal static void SafeCreateSources(IEnumerable<FileInfo> imports)
+    {
         SafeToCreate = true;
 
         try {
-            var imports = PackageIterator.GetSourcesFromPackage()
-                .Where(f => !f.Name.StartsWith("cwl_") && !f.Name.StartsWith(".") && !f.Name.Contains("~"));
             WorkbookImporter.LoadAllFiles(imports);
         } finally {
             SafeToCreate = false;
