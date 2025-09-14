@@ -79,7 +79,7 @@ public partial class CustomPlaylist
         return pl.currentItem.data._name;
     }
 
-    [ConsoleCommand("addKnown")]
+    [ConsoleCommand("add_known")]
     [CwlContextMenu("BGM/AddKnown", "cwl_ui_bgm_add_known")]
     public static string AddPlaylistToKnown()
     {

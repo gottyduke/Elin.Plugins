@@ -3,7 +3,6 @@ using System.Runtime.CompilerServices;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
-using Cwl.ThirdParty;
 using UnityEngine;
 
 namespace Cwl;
@@ -42,7 +41,6 @@ internal sealed partial class CwlMod
     internal static void Warn(object payload)
     {
         LogInternal($"[CWL][WARN] {payload}");
-        Glance.Dispatch(payload);
     }
 
     internal static void Warn<T>(object payload)
@@ -75,7 +73,6 @@ internal sealed partial class CwlMod
     internal static void Error(object payload, [CallerMemberName] string caller = "")
     {
         LogInternal($"[CWL][ERROR] [{caller}] {payload}");
-        Glance.Dispatch(payload);
     }
 
     internal static void Error<T>(object payload, [CallerMemberName] string caller = "")

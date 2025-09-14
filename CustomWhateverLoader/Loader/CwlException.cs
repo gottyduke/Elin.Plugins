@@ -2,7 +2,6 @@
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
 using Cwl.LangMod;
-using Cwl.ThirdParty;
 using UnityEngine;
 
 namespace Cwl;
@@ -11,7 +10,6 @@ internal partial class CwlMod
 {
     private static void SetupExceptionHook()
     {
-        Glance.TryConnect();
         Application.logMessageReceived += ExceptionHandler;
     }
 
