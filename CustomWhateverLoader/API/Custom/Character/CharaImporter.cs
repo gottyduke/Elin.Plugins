@@ -46,7 +46,7 @@ public partial class CustomChara
         var charas = game.cards.globalCharas.Values.ToLookup(c => c.id);
 
         foreach (var (id, import) in _delayedCharaImport) {
-            if (!SafeSceneInitEvent.SafeToCreate) {
+            if (!SafeSceneInitEvent.SafeToCreate || !core.IsGameStarted) {
                 return;
             }
 

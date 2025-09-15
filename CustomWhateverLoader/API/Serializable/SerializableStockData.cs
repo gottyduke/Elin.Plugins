@@ -37,7 +37,11 @@ public record SerializableStockItemV3 : SerializableStockItemV2
         var thing = Type switch {
             StockItemType.Item => ThingGen.Create(Id, ReverseId.Material(Material), lv).SetNum(Num),
             StockItemType.Recipe => ThingGen.CreateRecipe(Id),
-            StockItemType.Spell => ThingGen.CreateSpellbook(Id, Num),
+            StockItemType.Spell => EMono.sources.elements.alias.TryGetValue(Id, out var row)
+                ? ThingGen.CreateSpellbook(row.id, 1, Num)
+                : int.TryParse(Id, out var ele)
+                    ? ThingGen.CreateSpellbook(ele, 1, Num)
+                    : ThingGen.Create(Id),
             _ => ThingGen.Create(Id),
         };
 
