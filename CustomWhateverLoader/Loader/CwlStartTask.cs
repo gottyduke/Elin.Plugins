@@ -18,6 +18,7 @@ using Cwl.Patches.Sources;
 using Cwl.Patches.Zones;
 using HarmonyLib;
 using MethodTimer;
+using ReflexCLI;
 using UnityEngine;
 
 namespace Cwl;
@@ -98,6 +99,9 @@ internal sealed partial class CwlMod
 
         OnDisable();
         SetupExceptionHook();
+
+        yield return null;
+        InitConsole();
     }
 
     private void OnStartCore()
@@ -165,5 +169,11 @@ internal sealed partial class CwlMod
         TypeResolver.Add(SafeCreateZonePatch.ResolveZone);
 
         MigrateDetail.SetupProcessor();
+    }
+
+    private static void InitConsole()
+    {
+        CommandRegistry.Rebuild();
+        ParameterProcessorRegistry.Init();
     }
 }
