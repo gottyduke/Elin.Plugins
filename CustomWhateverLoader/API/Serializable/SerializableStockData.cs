@@ -37,17 +37,28 @@ public record SerializableStockItemV3 : SerializableStockItemV2
         var thing = Type switch {
             StockItemType.Item => ThingGen.Create(Id, ReverseId.Material(Material), lv).SetNum(Num),
             StockItemType.Recipe => ThingGen.CreateRecipe(Id),
-            StockItemType.Spell => EMono.sources.elements.alias.TryGetValue(Id, out var row)
-                ? ThingGen.CreateSpellbook(row.id, 1, Num)
-                : int.TryParse(Id, out var ele)
-                    ? ThingGen.CreateSpellbook(ele, 1, Num)
-                    : ThingGen.Create(Id),
+            StockItemType.Spell => CreateSpellbook(),
             _ => ThingGen.Create(Id),
         };
 
         thing.c_IDTState = Identified ? 0 : 1;
 
         return thing;
+    }
+
+    private Thing CreateSpellbook()
+    {
+        var book = ThingGen.Create("spellbook").SetNum(Num);
+        var elements = EMono.sources.elements;
+
+        if (!elements.alias.TryGetValue(Id, out var row) &&
+            !int.TryParse(Id, out var id) &&
+            !elements.map.TryGetValue(id, out row)) {
+            return book;
+        }
+
+        TraitSpellbook.Create(book, row.id);
+        return book;
     }
 }
 
