@@ -39,6 +39,10 @@ Updated for 23.195 Nightly
 Removed Transaction.IDCurrency invariant string temp patch (Elin has integrated this fix)
 Added mod character data restoration feature
 Fixed a bug where mod character figures cannot be rendered (thanks, Custom Mob Figure)
+Added automatic initialization of console rebuild
+Added console command cwl.data.load_sources for source sheets reload
+Updated for 23.199 Nightly
+Fixed drama play error display to show inner exception instead to avoid confusion
 
 {topic|1.20.45}
 Updated for 23.188 Stable

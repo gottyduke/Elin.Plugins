@@ -39,6 +39,10 @@ $更新日志
 移除了临时的 Transaction.IDCurrency 字符串转化补丁(Elin已集成此修复)
 添加了Mod角色数据恢复功能
 修复了Mod角色的标本渲染问题(感谢Custom Mob Figure)
+添加了自动初始化控制台重建功能
+添加了控制台命令 cwl.data.load_sources 用于重新加载源表
+更新了 23.199 Nightly 添加的修改
+修改了剧情演出错误显示，现在显示内部异常，以避免混淆
 
 {topic|1.20.45}
 更新了 23.187 Stable 添加的修改
