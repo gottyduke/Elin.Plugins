@@ -5,10 +5,12 @@ namespace Cwl;
 internal partial class DataLoader
 {
     [ConsoleCommand("load_sources")]
-    internal static void ReloadSources()
+    internal static void ReloadSources(bool saveGame = false)
     {
         if (EClass.core.IsGameStarted) {
-            EClass.game.Save(silent: true);
+            if (saveGame) {
+                EClass.game.Save(silent: true);
+            }
             EMono.scene.Init(Scene.Mode.Title);
         }
 

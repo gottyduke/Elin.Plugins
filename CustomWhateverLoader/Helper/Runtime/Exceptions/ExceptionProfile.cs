@@ -64,6 +64,9 @@ public class ExceptionProfile(string stackTrace)
             }
         }
 
+        // missing method exception
+        message = message.Replace(nameof(MissingMethodException), "cwl_warn_missing_method".Loc(nameof(MissingMethodException)));
+
         using var scopeExit = ProgressIndicator.CreateProgressScoped(() => new(message, Color: Color.red));
         progress = _activeExceptions[Key] = scopeExit.Get<ProgressIndicator>();
 

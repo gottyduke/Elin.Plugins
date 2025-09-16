@@ -32,11 +32,6 @@ internal partial class CwlMod
             return;
         }
 
-        // missing method exception
-        if (message.StartsWith(nameof(MissingMethodException))) {
-            message = "cwl_warn_missing_method".Loc(message);
-        }
-
         profile.CreateAndPop(message.TruncateAllLines(125));
     }
 }
