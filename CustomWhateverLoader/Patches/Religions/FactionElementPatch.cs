@@ -1,4 +1,5 @@
-﻿using Cwl.API.Custom;
+﻿using System.Linq;
+using Cwl.API.Custom;
 using HarmonyLib;
 
 namespace Cwl.Patches.Religions;
@@ -23,10 +24,8 @@ internal class FactionElementPatch
 
                 __result.c_idDeity = custom.id;
 
-                foreach (var element in __result.elements.ListElements()) {
-                    if (custom.IsFactionElement(element)) {
-                        element.vExp = -1;
-                    }
+                foreach (var element in __result.elements.ListElements().Where(custom.IsFactionElement)) {
+                    element.vExp = -1;
                 }
             } catch {
                 // noexcept

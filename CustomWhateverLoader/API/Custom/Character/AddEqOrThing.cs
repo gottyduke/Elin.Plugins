@@ -8,7 +8,7 @@ public partial class CustomChara
     private static void AddEqOrThing(Chara chara, string id, string? payload, bool equip = false)
     {
         if (sources.cards.map.TryGetValue(id) is null) {
-            CwlMod.WarnWithPopup<CustomChara>("cwl_warn_thing_gen".Loc(id, chara.id));
+            CwlMod.WarnWithPopup<CustomChara>("cwl_warn_thing_gen".Loc(id, chara.id, payload));
             return;
         }
 

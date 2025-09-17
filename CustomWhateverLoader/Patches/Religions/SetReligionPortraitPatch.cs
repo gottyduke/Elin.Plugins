@@ -29,11 +29,10 @@ internal class SetReligionPortraitPatch
             return;
         }
 
-        var portrait = LayerDrama.Instance.drama.dialog.portrait.portrait;
-        var sprite = file.LoadSprite();
-        sprite ??= portrait.sprite;
+        var portrait = LayerDrama.Instance.drama.dialog.portrait?.portrait;
+        var sprite = file.LoadSprite() ?? portrait?.sprite;
 
-        portrait.sprite = sprite;
-        portrait.material?.SetTexture(_mainTex, sprite.texture);
+        portrait?.sprite = sprite;
+        portrait?.material?.SetTexture(_mainTex, sprite?.texture);
     }
 }

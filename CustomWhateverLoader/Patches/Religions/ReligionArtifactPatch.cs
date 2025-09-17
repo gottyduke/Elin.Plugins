@@ -14,7 +14,8 @@ internal class ReligionArtifactPatch
             return;
         }
 
-        if (__instance is not CustomReligion custom || !EMono.sources.things.map.TryGetValue(id, out var row)) {
+        if (__instance is not CustomReligion custom ||
+            !EMono.sources.things.map.TryGetValue(id, out var row)) {
             return;
         }
 
