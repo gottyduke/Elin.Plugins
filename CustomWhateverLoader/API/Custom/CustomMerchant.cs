@@ -80,8 +80,10 @@ public class CustomMerchant : TraitMerchant
 
         foreach (var item in items) {
             try {
-                if (sources.cards.map.TryGetValue(item.Id) is null) {
-                    continue;
+                switch (item) {
+                    case { Type: StockItemType.Item or StockItemType.Recipe }
+                        when !sources.cards.map.ContainsKey(item.Id):
+                        continue;
                 }
 
                 if (!item.Restock && noRestocks.Contains(item.Id)) {
