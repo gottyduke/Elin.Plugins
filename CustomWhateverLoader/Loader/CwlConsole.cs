@@ -7,7 +7,7 @@ using ReflexCLI.Attributes;
 namespace Cwl;
 
 [ConsoleCommandClassCustomizer("cwl")]
-internal class CwlConsole
+internal class CwlConsole : EClass
 {
     [CwlContextMenu("CWL/BeggarBegone", "cwl_ui_vacate_beggar")]
     internal static string BegoneOfYouChicken()
@@ -19,7 +19,7 @@ internal class CwlConsole
     [ConsoleCommand("remove_all")]
     internal static string BegoneOfYouInsertNameHere(string id)
     {
-        var beggars = EClass.game.cards.globalCharas.Values
+        var beggars = game.cards.globalCharas.Values
             .Where(chara => chara.id == id)
             .ToArray();
 
@@ -34,8 +34,8 @@ internal class CwlConsole
     internal static string EnableDebug(bool enable = true)
     {
         var mode = enable ? ReleaseMode.Debug : ReleaseMode.Public;
-        EClass.core.SetReleaseMode(mode);
-        EClass.core.debug.enable = enable;
+        core.SetReleaseMode(mode);
+        core.debug.enable = enable;
 
         return $"debug : {enable}";
     }
@@ -47,8 +47,25 @@ internal class CwlConsole
         var card = ThingGen.Create("figure3");
         figure.c_idRefCard = card.c_idRefCard = refId;
 
-        var pc = EClass.pc;
         pc.DropThing(figure);
         pc.DropThing(card);
+    }
+
+    [ConsoleCommand("spawn_altar")]
+    internal static string SpawnCustomAltar(string religionId)
+    {
+        if (!game.religions.dictAll.TryGetValue(religionId, out var religion)) {
+            return $"cannot find religion {religionId}";
+        }
+
+        var altar = ThingGen.Create("altar");
+        (altar.trait as TraitAltar)?.SetDeity(religion.id);
+
+        var pos = pc.pos.GetNearestPoint(true, false, false);
+        if (pos is not null) {
+            _zone.AddCard(altar, pos).Install();
+        }
+
+        return $"spawned altar for {religionId}";
     }
 }

@@ -196,9 +196,9 @@ public class GameIOProcessor
                 return false;
             }
 
-            var baseFile = Path.Combine(path, Storage, $"{chunkName}");
-            var chunkc = new FileInfo($"{baseFile}.{CompressedChunkExt}");
-            var legacy = new FileInfo($"{baseFile}.{ChunkExt}");
+            var file = Path.Combine(path, Storage, chunkName);
+            var chunkc = new FileInfo($"{file}.{CompressedChunkExt}");
+            var legacy = new FileInfo($"{file}.{ChunkExt}");
 
             if (!chunkc.Exists || chunkc.LastWriteTime < legacy.LastWriteTime ||
                 !ConfigCereal.ReadData(chunkc.FullName, out inferred)) {
@@ -206,10 +206,38 @@ public class GameIOProcessor
             }
 
             if (inferred is not null) {
-                CwlMod.Log<GameIOContext>($"load {baseFile.ShortPath()}");
+                CwlMod.Log<GameIOContext>($"load {file.ShortPath()}");
             }
 
             return inferred is not null;
+        }
+
+        /// <summary>
+        ///     Remove a chunk
+        /// </summary>
+        /// <param name="chunkName">unique identifier</param>
+        /// <returns>bool indicating removal success</returns>
+        public bool Remove(string chunkName)
+        {
+            var file = Path.Combine(path, Storage, chunkName);
+            if (file.IsInvalidPath()) {
+                return false;
+            }
+
+            try {
+                var chunkc = new FileInfo($"{file}.{CompressedChunkExt}");
+                chunkc.Delete();
+
+                var legacy = new FileInfo($"{file}.{ChunkExt}");
+                legacy.Delete();
+
+                CwlMod.Log<GameIOContext>($"remove {file.ShortPath()}");
+                return true;
+            } catch (Exception ex) {
+                CwlMod.Warn<GameIOContext>($"failed to remove chunk {chunkName} // {file.ShortPath()}\n{ex.Message}");
+                return false;
+                // noexcept
+            }
         }
     }
 }

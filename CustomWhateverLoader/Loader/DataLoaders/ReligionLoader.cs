@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cwl.API;
+using Cwl.API.Attributes;
 using Cwl.API.Custom;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
+using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
@@ -18,11 +20,16 @@ internal partial class DataLoader
 
     [Time]
     [ConsoleCommand("load_god_talk")]
+    [CwlSourceReloadEvent]
     internal static void MergeGodTalk()
     {
         var godTalk = EMono.sources.dataGodTalk;
-        var map = godTalk.sheets[DefaultSheet].map;
+        if (godTalk is null) {
+            CoroutineHelper.Deferred(MergeGodTalk, () => EMono.sources.dataGodTalk is not null);
+            return;
+        }
 
+        var map = godTalk.sheets[DefaultSheet].map;
         foreach (var talk in PackageIterator.GetExcelsFromPackage("Data/god_talk.xlsx", 3)) {
             try {
                 foreach (var (topic, _) in map) {
@@ -47,23 +54,41 @@ internal partial class DataLoader
 
     [Time]
     [ConsoleCommand("load_religion_elements")]
+    [CwlSourceReloadEvent]
     internal static void MergeFactionElements()
     {
-        var elements = PackageIterator.GetJsonsFromPackage<SerializableReligionElement>("Data/religion_elements.json");
-        foreach (var (path, element) in elements) {
-            try {
-                foreach (var (id, list) in element) {
-                    if (!CustomReligion.Managed.TryGetValue(id, out var custom)) {
-                        continue;
-                    }
-
-                    custom.SetElements(list);
-                    CwlMod.Log<DataLoader>("cwl_log_god_elements".Loc(list.Length, custom.id));
-                }
-            } catch (Exception ex) {
-                CwlMod.ErrorWithPopup<DataLoader>("cwl_error_merge_god_elements".Loc(path.ShortPath(), ex.Message), ex);
-                // noexcept
+        var elements = PackageIterator.GetJsonsFromPackage<SerializableReligionElement>("Data/religion_elements.json")
+            .SelectMany(json => json.Item2)
+            .GroupBy(kv => kv.Key, kv => kv.Value)
+            .ToDictionary(g => g.Key, g => g.SelectMany(values => values).ToArray());
+        foreach (var (id, custom) in CustomReligion.Managed) {
+            if (!elements.TryGetValue(id, out var element)) {
+                continue;
             }
+
+            var factionElements = element.Distinct().ToArray();
+            custom.SetElements(factionElements);
+            CwlMod.Log<DataLoader>("cwl_log_god_elements".Loc(factionElements.Length, custom.id));
+        }
+    }
+
+    [Time]
+    [ConsoleCommand("load_religion_offerings")]
+    [CwlSourceReloadEvent]
+    internal static void MergeOfferingMultiplier()
+    {
+        var offerings = PackageIterator.GetJsonsFromPackage<SerializableReligionOffering>("Data/religion_offerings.json")
+            .SelectMany(json => json.Item2)
+            .GroupBy(kv => kv.Key, kv => kv.Value)
+            .ToDictionary(g => g.Key, g => g.Last());
+
+        foreach (var (id, custom) in CustomReligion.Managed) {
+            if (!offerings.TryGetValue(id, out var offering)) {
+                continue;
+            }
+
+            custom.SetOfferingMtp(offering);
+            CwlMod.Log<DataLoader>("cwl_log_god_offering".Loc(offering.Count, custom.id));
         }
     }
 }

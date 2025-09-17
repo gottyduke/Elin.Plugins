@@ -92,6 +92,7 @@ internal sealed partial class CwlMod
 
         DataLoader.MergeGodTalk();
         DataLoader.MergeFactionElements();
+        DataLoader.MergeOfferingMultiplier();
 
         CanContinue = "";
 

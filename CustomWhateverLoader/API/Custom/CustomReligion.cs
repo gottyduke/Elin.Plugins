@@ -13,8 +13,11 @@ public class CustomReligion(string religionId) : Religion, IChunkable
 
     private bool _canJoin;
     private string[] _elements = [];
+
     [JsonProperty] private string _id = religionId;
+
     private bool _isMinor;
+    private Dictionary<string, int> _offeringMtp = [];
 
     public override string id => _id;
     public override bool IsMinorGod => _isMinor;
@@ -48,6 +51,12 @@ public class CustomReligion(string religionId) : Religion, IChunkable
         return this;
     }
 
+    public CustomReligion SetOfferingMtp(Dictionary<string, int> mtp)
+    {
+        _offeringMtp = mtp;
+        return this;
+    }
+
     public bool IsFactionElement(string alias)
     {
         return _elements.Contains(alias);
@@ -64,17 +73,23 @@ public class CustomReligion(string religionId) : Religion, IChunkable
         mood = 0;
     }
 
+    public override int GetOfferingMtp(Thing t)
+    {
+        return _offeringMtp.GetValueOrDefault(t.id, base.GetOfferingMtp(t));
+    }
+
     [Time]
-    [CwlPreSave]
+    [CwlPostSave]
     internal static void SaveCustomReligion(GameIOProcessor.GameIOContext? context)
     {
         if (context is null) {
             return;
         }
 
-        foreach (var custom in game.religions.list.OfType<CustomReligion>()) {
-            context.Save(custom);
-        }
+        var religions = game.religions.list
+            .OfType<CustomReligion>()
+            .ToDictionary(r => r.id, r => r);
+        context.Save(religions, "custom_religions");
     }
 
     [Time]
@@ -85,15 +100,32 @@ public class CustomReligion(string religionId) : Religion, IChunkable
             return;
         }
 
-        foreach (var custom in game.religions.list.OfType<CustomReligion>()) {
-            if (!context.Load<CustomReligion>(out var loaded, custom.ChunkName) ||
-                loaded?._id != custom.id) {
-                continue;
-            }
+        if (context.Load<Dictionary<string, CustomReligion>>(out var religions, "custom_religions") &&
+            religions is not null) {
+            foreach (var custom in game.religions.list.OfType<CustomReligion>()) {
+                if (!religions.TryGetValue(custom.id, out var loaded)) {
+                    continue;
+                }
 
-            custom.giftRank = loaded.giftRank;
-            custom.mood = loaded.mood;
-            custom.relation = loaded.relation;
+                custom.giftRank = loaded.giftRank;
+                custom.mood = loaded.mood;
+                custom.relation = loaded.relation;
+
+                // TODO: remove deprecated code after <5> versions
+                context.Remove(custom.ChunkName);
+            }
+        } else {
+            // TODO: remove deprecated code after <5> versions
+            foreach (var custom in game.religions.list.OfType<CustomReligion>()) {
+                if (!context.Load<CustomReligion>(out var loaded, custom.ChunkName) ||
+                    loaded?._id != custom.id) {
+                    continue;
+                }
+
+                custom.giftRank = loaded.giftRank;
+                custom.mood = loaded.mood;
+                custom.relation = loaded.relation;
+            }
         }
     }
 
