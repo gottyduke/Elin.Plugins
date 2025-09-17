@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Cwl.API.Attributes;
 using Cwl.Helper.Exceptions;
@@ -85,6 +86,16 @@ public partial class DramaExpansion
         return actor.IsPC
             ? player.dialogFlags.TryGetValue(flagVal, out var value) && Compare(value, expr)
             : Compare(actor.GetFlagValue(flagVal), expr);
+    }
+
+    [CwlNodiscard]
+    public static bool if_has_item(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.RequiresAtLeast(1);
+        parameters.RequiresOpt(out var item, out var valueExpr);
+        dm.RequiresActor(out var actor);
+
+        return Compare(actor.FindAllThings(item.Value).Count(), valueExpr.Get(">=1"));
     }
 
     [CwlNodiscard]

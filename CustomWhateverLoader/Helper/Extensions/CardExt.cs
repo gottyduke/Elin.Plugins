@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Cwl.Helper.Extensions;
 
@@ -28,6 +29,32 @@ public static class CardExt
             if (EClass.core?.game?.player?.chara == owner) {
                 EClass.player.dialogFlags[flag] = value;
             }
+        }
+
+        public IEnumerable<Thing> FindAllThings(Func<Thing, bool> predicate)
+        {
+            if (owner.things is null) {
+                yield break;
+            }
+
+            foreach (var thing in owner.things) {
+                if (predicate(thing)) {
+                    yield return thing;
+                }
+
+                if (!thing.CanSearchContents) {
+                    continue;
+                }
+
+                foreach (var subThing in thing.FindAllThings(predicate)) {
+                    yield return subThing;
+                }
+            }
+        }
+
+        public IEnumerable<Thing> FindAllThings(string id)
+        {
+            return owner.FindAllThings(t => string.Equals(t.id, id, StringComparison.InvariantCultureIgnoreCase));
         }
     }
 }
