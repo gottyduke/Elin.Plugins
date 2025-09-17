@@ -1,4 +1,5 @@
 ﻿using Cwl.API.Custom;
+using Cwl.Helper;
 using Cwl.Helper.String;
 using Cwl.Patches.Sources;
 using HarmonyLib;
@@ -15,6 +16,13 @@ internal class SetReligionRowPatch
     internal static void OnSetRow(SourceReligion.Row r)
     {
         if (!SourceInitPatch.SafeToCreate) {
+            return;
+        }
+
+        // qualify external religion types
+        if (r.type != nameof(Religion)) {
+            var qualified = TypeQualifier.TryQualify<Religion>(r.type);
+            r.type = qualified?.FullName ?? r.type;
             return;
         }
 
