@@ -56,7 +56,7 @@ internal sealed partial class CwlMod
             case null:
                 return;
             case Exception ex:
-                var exp = ExceptionProfile.GetFromStackTrace(ex);
+                var exp = ExceptionProfile.GetFromStackTrace(ref ex);
                 exp.CreateAndPop(payload.ToString());
                 break;
             default: {
@@ -88,7 +88,7 @@ internal sealed partial class CwlMod
             case null:
                 return;
             case Exception ex:
-                var exp = ExceptionProfile.GetFromStackTrace(ex);
+                var exp = ExceptionProfile.GetFromStackTrace(ref ex);
                 exp.CreateAndPop(payload.ToString());
                 break;
             default: {

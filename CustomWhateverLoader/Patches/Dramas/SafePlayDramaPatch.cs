@@ -29,11 +29,7 @@ internal class SafePlayDramaPatch
 
         ELayerCleanup.Cleanup<LayerDrama>();
 
-        if (__exception is TargetInvocationException { InnerException: { } ti }) {
-            __exception = ti;
-        }
-
-        var exp = ExceptionProfile.GetFromStackTrace(__exception);
+        var exp = ExceptionProfile.GetFromStackTrace(ref __exception);
         exp.StartAnalyzing();
         exp.CreateAndPop("cwl_warn_drama_play_ex".Loc($"{__exception.GetType().Name}: {__exception.Message}"));
         CwlMod.Log(__exception);

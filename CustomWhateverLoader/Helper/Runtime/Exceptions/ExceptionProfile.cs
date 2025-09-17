@@ -46,9 +46,19 @@ public class ExceptionProfile(string stackTrace)
         return profile;
     }
 
+    public static ExceptionProfile GetFromStackTrace(ref Exception exception)
+    {
+        if (exception is { InnerException: { } inner }) {
+            exception = inner;
+        }
+
+        return GetFromStackTrace(Regex.Replace(exception.StackTrace.IsEmpty(""), @"^(\s+at\s)", ""));
+    }
+
+    [Obsolete("use ref overload for inner exception swap")]
     public static ExceptionProfile GetFromStackTrace(Exception exception)
     {
-        return GetFromStackTrace(Regex.Replace(exception.StackTrace.IsEmpty(""), @"^(\s+at\s)", ""));
+        return GetFromStackTrace(ref exception);
     }
 
     public void CreateAndPop(string message)
