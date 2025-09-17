@@ -11,6 +11,7 @@ internal partial class DataLoader
             if (saveGame) {
                 EClass.game.Save(silent: true);
             }
+
             EMono.scene.Init(Scene.Mode.Title);
         }
 
