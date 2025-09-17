@@ -20,28 +20,26 @@ $Changelogs
 
 
 {topic|1.20.46}
-Updated for 23.191 Nightly
+Updated for 23.200 Stable
 Fixed some logic in the AddActor patch
 Added a warning message when another version of CWL is detected
-Fixed the issue where some assemblies did not display their names correctly in exception profile
-Added a fallback value for c_dyeMat
 Added cell processor for each element in string array parser
 Modified the message format in ModIntegrity check
 Drama Expansion:
+・Added if_has_item(itemId, valueExpression)
 ・Added if_hostility(hostilityExpression)
 ・Added if_in_party()
 ・Added move_to(x, y)
 ・Added console_cmd(...)
-Added automatic activation of cheat mode and debug console commands
-Updated for 23.192 Nightly
+Added console command cwl.data.load_sources for source sheets reload
+Added console command cwl.enable_debug to toggle Debug mode
+Added automatic activation of cheat mode
+Added automatic initialization of console rebuild
 Added a prefilter for modded Hobby
-Updated for 23.195 Nightly
 Removed Transaction.IDCurrency invariant string temp patch (Elin has integrated this fix)
 Added mod character data restoration feature
 Fixed a bug where mod character figures cannot be rendered (thanks, Custom Mob Figure)
-Added automatic initialization of console rebuild
-Added console command cwl.data.load_sources for source sheets reload
-Updated for 23.199 Nightly
+Fixed the issue where some assemblies did not display their names correctly in exception profile
 Fixed drama play error display to show inner exception instead to avoid confusion
 
 {topic|1.20.45}
