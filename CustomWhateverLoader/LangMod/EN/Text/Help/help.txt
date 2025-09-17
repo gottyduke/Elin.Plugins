@@ -19,8 +19,14 @@ $Changelogs
 
 
 
-{topic|1.20.46}
+{topic|1.20.47}
 Updated for 23.200 Stable
+Fixed a bug where custom merchant stock won't generate spell books
+Added support for custom offering multipliers for custom religions
+Added console command cwl.data.load_religion_offerings to reload custom offering multipliers
+Added console command cwl.spawn_altar to spawn an altar for a specified religion for testing purposes
+
+{topic|1.20.46}
 Fixed some logic in the AddActor patch
 Added a warning message when another version of CWL is detected
 Added cell processor for each element in string array parser
@@ -59,6 +65,7 @@ $Console Commands
 {pair|cwl.enable_debug|Enable debug mode for Elin}
 {pair|cwl.remove_every|Remove every chara with ID from global chara list}
 {pair|cwl.add_figures|Add figure and card of chara with ID}
+{pair|cwl.spawn_altar|Test spawn a CWL custom religion altar}
 
 {topic|Data Loader}
 
@@ -67,6 +74,7 @@ $Console Commands
 {pair|cwl.data.load_effect_setting|Reload all Data/EffectSetting.guns.json}
 {pair|cwl.data.load_god_talk|Reload all Data/god_talk.xlsx}
 {pair|cwl.data.load_religion_elements|Reload all Data/religion_elements.json}
+{pair|cwl.data.load_religion_offerings|Reload all Data/religion_offerings.json}
 {pair|cwl.data.load_sound|Preload all sound data from Sound/ folder}
 {pair|cwl.data.clear_effect_cache|Clear all cached Effects}
 {pair|cwl.data.clear_sound_cache|Clear all preloaded sound data}
