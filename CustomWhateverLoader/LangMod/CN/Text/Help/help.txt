@@ -24,6 +24,7 @@ $更新日志
 添加了对自定义信仰的自定义供奉倍数的支持
 添加了控制台命令 cwl.data.load_religion_offerings 用于重载自定义供奉倍数
 添加了控制台命令 cwl.spawn_altar 用于生成指定信仰的祭坛由于测试
+添加了不兼容补丁信息至异常分析以帮助查找不兼容的 Mod
 
 {topic|1.20.46}
 修复了 AddActor 补丁的部分逻辑
@@ -64,6 +65,7 @@ $控制台命令
 {pair|cwl.enable_debug|为Elin启用调试模式}
 {pair|cwl.remove_every|根据ID从全局角色列表中移除所有对应角色}
 {pair|cwl.add_figures|添加指定ID角色的标本和卡片}
+{pair|cwl.spawn_altar|生成指定信仰的祭坛}
 
 {topic|数据加载器}
 
@@ -72,6 +74,7 @@ $控制台命令
 {pair|cwl.data.load_effect_setting|重新加载所有Data/EffectSetting.guns.json}
 {pair|cwl.data.load_god_talk|重新加载所有Data/god_talk.xlsx}
 {pair|cwl.data.load_religion_elements|重新加载所有Data/religion_elements.json}
+{pair|cwl.data.load_religion_offerings|重新加载所有Data/religion_offerings.json}
 {pair|cwl.data.load_sound|预加载Sound/文件夹内所有音频数据}
 {pair|cwl.data.clear_effect_cache|清除所有缓存的特效}
 {pair|cwl.data.clear_sound_cache|清除所有预加载的音频数据}

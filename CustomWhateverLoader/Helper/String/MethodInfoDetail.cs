@@ -1,23 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using Cwl.Helper.Extensions;
+using Cwl.LangMod;
 using HarmonyLib;
 
 namespace Cwl.Helper.String;
 
 public static class MethodInfoDetail
 {
+    internal static readonly HashSet<MethodInfo> InvalidCalls = [];
+
     public static void AppendPatchInfo(this StringBuilder sb, PatchInfo patchInfo)
     {
-        KeyValuePair<string, Patch[]>[] patchers = [
-            new("PREFIX", patchInfo.prefixes),
-            new("POSTFIX", patchInfo.postfixes),
-            new("TRANSPILER", patchInfo.transpilers),
-        ];
-
-        foreach (var (type, patcher) in patchers) {
+        foreach (var (type, patcher) in patchInfo.AllPatches) {
             foreach (var patch in patcher) {
-                sb.AppendLine($"\t+{type}: {patch.PatchMethod.GetAssemblyDetailColor(false)}".TagColor(0x2f2d2d));
+                var patchType = type;
+                if (InvalidCalls.Contains(patch.PatchMethod)) {
+                    patchType += "cwl_ui_invalid_patch".Loc();
+                }
+
+                sb.AppendLine($"\t+{patchType}: {patch.PatchMethod.GetAssemblyDetailColor(false)}".TagColor(0x2f2d2d));
             }
         }
     }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
@@ -32,6 +34,7 @@ public class ExceptionProfile(string stackTrace)
     public string Result { get; private set; } = "cwl_ui_exception_analyzing".Loc();
     public int Key { get; private set; }
     public bool Hidden { get; private set; }
+    public bool IsMissingMethod { get; private set; }
 
     public static ExceptionProfile GetFromStackTrace(string stackTrace)
     {
@@ -75,7 +78,10 @@ public class ExceptionProfile(string stackTrace)
         }
 
         // missing method exception
-        message = message.Replace(nameof(MissingMethodException), "cwl_warn_missing_method".Loc(nameof(MissingMethodException)));
+        IsMissingMethod = message.Contains(nameof(MissingMethodException));
+        if (IsMissingMethod) {
+            message = message.Replace(nameof(MissingMethodException), "cwl_warn_missing_method".Loc(nameof(MissingMethodException)));
+        }
 
         using var scopeExit = ProgressIndicator.CreateProgressScoped(() => new(message, Color: Color.red));
         progress = _activeExceptions[Key] = scopeExit.Get<ProgressIndicator>();
@@ -137,7 +143,7 @@ public class ExceptionProfile(string stackTrace)
         sb.AppendLine("cwl_ui_callstack".Loc());
 
         var terminated = false;
-        foreach (var frame in stackTrace.SplitLines()) {
+        foreach (var frame in stackTrace.SplitLines().Distinct()) {
             if (terminated) {
                 break;
             }
@@ -161,6 +167,10 @@ public class ExceptionProfile(string stackTrace)
                         sb.AppendLine(mono.DetailedMethodCall);
                         var info = mono.Method.GetPatchInfo();
                         if (info is not null) {
+                            if (IsMissingMethod) {
+                                info.TestIncompatiblePatch();
+                            }
+
                             sb.AppendPatchInfo(info);
                         }
                     } catch {
