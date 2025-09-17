@@ -33,8 +33,7 @@ internal class LaserByTraitPatch
             return cm.InstructionEnumeration();
         }
 
-        var harmony = new Harmony(ModInfo.Guid);
-        harmony.Patch(functor, transpiler: new(typeof(LaserByTraitPatch), nameof(OnCheckRailIl)));
+        CwlMod.SharedHarmony.Patch(functor, transpiler: new(typeof(LaserByTraitPatch), nameof(OnCheckRailIl)));
 
         return cm.InstructionEnumeration();
     }

@@ -38,10 +38,9 @@ internal sealed partial class CwlMod
             return;
         }
 
-        var harmony = new Harmony(ModInfo.Guid);
         foreach (var patch in typeof(CwlMod).Assembly.DefinedTypes) {
             try {
-                harmony.CreateClassProcessor(patch).Patch();
+                SharedHarmony.CreateClassProcessor(patch).Patch();
             } catch (Exception ex) {
                 Error<CwlMod>($"failed to patch {patch.Name}\n{ex.InnerException}");
                 // noexcept

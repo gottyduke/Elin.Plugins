@@ -61,11 +61,10 @@ public class ActPerformEvent
     [SwallowExceptions]
     private static void TryPatch()
     {
-        var harmony = new Harmony(ModInfo.Guid);
         var postfix = new HarmonyMethod(typeof(ActPerformEvent), nameof(OnPerform));
         foreach (var perform in TargetMethods()) {
             try {
-                harmony.Patch(perform, postfix: postfix);
+                CwlMod.SharedHarmony.Patch(perform, postfix: postfix);
             } catch {
                 CwlMod.Warn<ActPerformEvent>("cwl_warn_processor".Loc("act_perform",
                     (perform as MethodInfo)?.GetAssemblyDetail(false), null));

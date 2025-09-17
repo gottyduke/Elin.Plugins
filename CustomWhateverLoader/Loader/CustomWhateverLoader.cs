@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using BepInEx;
+using HarmonyLib;
 using ReflexCLI;
 
 namespace Cwl;
@@ -22,6 +23,7 @@ public static class ModInfo
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
 internal sealed partial class CwlMod : BaseUnityPlugin
 {
+    internal static readonly Harmony SharedHarmony = new(ModInfo.Guid);
     internal static CwlMod? Instance { get; private set; }
 
     private void Awake()

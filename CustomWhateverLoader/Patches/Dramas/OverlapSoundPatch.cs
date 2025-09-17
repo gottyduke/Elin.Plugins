@@ -51,8 +51,7 @@ internal class OverlapSoundPatch
             return cm.InstructionEnumeration();
         }
 
-        var harmony = new Harmony(ModInfo.Guid);
-        harmony.Patch(mi, transpiler: new(typeof(OverlapSoundPatch), nameof(InternalSoundStopperIl)));
+        CwlMod.SharedHarmony.Patch(mi, transpiler: new(typeof(OverlapSoundPatch), nameof(InternalSoundStopperIl)));
 
         return cm.InstructionEnumeration();
     }
