@@ -14,6 +14,7 @@ public static class PatchInfoExt
     private static readonly HarmonyMethod _testStub = new(typeof(PatchInfoExt), nameof(StubILPatch));
 
     internal static readonly HashSet<MethodInfo> InvalidCalls = [];
+
     private static IEnumerable<CodeInstruction> StubILPatch(IEnumerable<CodeInstruction> instructions)
     {
         return instructions;
