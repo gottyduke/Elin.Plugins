@@ -11,6 +11,7 @@ namespace Cwl.Helper.Unity;
 public class ContextMenuHelper
 {
     internal static readonly List<ContextMenuProxy> EntryProxies = [];
+    private static readonly List<(MethodInfo, CwlContextMenu)> _delayedEvents = [];
 
     public static void Add(string entry, string displayName, Func<object?>? onClick = null)
     {
@@ -85,8 +86,16 @@ public class ContextMenuHelper
     [Time]
     internal static void RegisterEvents(MethodInfo method, CwlContextMenu ctx)
     {
-        Add(ctx.Entry, ctx.BtnName, () => method.FastInvokeStatic());
-        CwlMod.Log<ContextMenuHelper>("cwl_log_processor_add".Loc("context_menu", ctx.Entry, method.GetAssemblyDetail(false)));
+        _delayedEvents.Add((method, ctx));
+    }
+
+    [CwlSceneInitEvent(Scene.Mode.Title, true)]
+    private static void AddDelayedContextMenu()
+    {
+        foreach (var (method, ctx) in _delayedEvents) {
+            Add(ctx.Entry, ctx.BtnName, () => method.FastInvokeStatic());
+            CwlMod.Log<ContextMenuHelper>("cwl_log_processor_add".Loc("context_menu", ctx.Entry, method.GetAssemblyDetail(false)));
+        }
     }
 
     public class ContextMenuProxy(string entry, string name)
