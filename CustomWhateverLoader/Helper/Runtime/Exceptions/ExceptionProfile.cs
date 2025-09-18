@@ -51,7 +51,7 @@ public class ExceptionProfile(string stackTrace)
 
     public static ExceptionProfile GetFromStackTrace(ref Exception exception)
     {
-        if (exception is { InnerException: { } inner }) {
+        while (exception.InnerException is { } inner) {
             exception = inner;
         }
 
@@ -171,7 +171,7 @@ public class ExceptionProfile(string stackTrace)
                                 info.TestIncompatiblePatch();
                             }
 
-                            sb.AppendPatchInfo(info);
+                            info.DumpPatchDetails(sb);
                         }
                     } catch {
                         // noexcept
