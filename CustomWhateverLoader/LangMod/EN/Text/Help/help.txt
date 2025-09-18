@@ -26,6 +26,8 @@ Added support for custom offering multipliers for custom religions
 Added console command cwl.data.load_religion_offerings to reload custom offering multipliers
 Added console command cwl.spawn_altar to spawn an altar for a specified religion for testing purposes
 Added incompatible patch detection to exception profile to help diagnose outdated mods
+Enabled duplicate CWL version warning
+Fixed a bug where methods can have the same metadata token when used for invoker indexing
 
 {topic|1.20.46}
 Fixed some logic in the AddActor patch

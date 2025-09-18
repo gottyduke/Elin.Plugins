@@ -53,13 +53,12 @@ internal sealed partial class CwlMod
         Warn<T>(payload);
 
         switch (log) {
-            case null:
-                return;
             case Exception ex:
                 var exp = ExceptionProfile.GetFromStackTrace(ref ex);
                 exp.CreateAndPop(payload.ToString());
                 break;
             default: {
+                log ??= payload;
                 LogInternal(log);
                 using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToTruncateString(150)));
                 progress.Get<ProgressIndicator>().AppendHoverText(() => log.ToTruncateString(450).TruncateAllLines(150));
