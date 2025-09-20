@@ -16,6 +16,17 @@ internal class CwlConsole : EClass
         return BegoneOfYouInsertNameHere("chicken");
     }
 
+    [ConsoleCommand("gain_ability")]
+    internal static string CharaGainAbility(string alias)
+    {
+        if (!sources.elements.alias.TryGetValue(alias, out var row)) {
+            return $"no such alias {alias}";
+        }
+
+        pc.GainAbility(row.id);
+        return $"learnt {alias}";
+    }
+
     [ConsoleCommand("remove_all")]
     internal static string BegoneOfYouInsertNameHere(string id)
     {
