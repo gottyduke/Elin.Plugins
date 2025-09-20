@@ -1,49 +1,26 @@
-﻿using System.Collections.Generic;
-using Cwl.API.Custom;
-using Cwl.LangMod;
+﻿using Cwl.API.Attributes;
 using UnityEngine;
 
 namespace Cwl.Patches.Elements;
 
 internal class InvalidateAbilityPatch
 {
-    internal static void InvalidateElements(Chara chara)
+    [CwlCharaOnCreateEvent]
+    internal static void InvalidateAbilities(Chara chara)
     {
-        var elements = EMono.sources.elements;
-        var doReplace = false;
-        List<string> safeActs = [];
-
-        foreach (var act in chara.source.actCombat) {
-            var actId = act.Split("/")[0];
-            if (elements.alias.ContainsKey(actId)) {
-                safeActs.Add(act);
-            } else {
-                doReplace = true;
-                CwlMod.WarnWithPopup<CustomElement>("cwl_warn_fix_actCombat".Loc(actId, chara.id));
-            }
-        }
-
-        if (doReplace) {
-            chara.source.actCombat = safeActs.ToArray();
-        }
-
-        var list = chara._listAbility;
-        if (list is null) {
+        var abilities = chara._listAbility;
+        if (abilities is null) {
             return;
         }
 
-        for (var i = list.Count - 1; i >= 0; --i) {
-            var id = Mathf.Abs(list[i]);
-            if (elements.map.TryGetValue(id, out var ele) && ACT.dict.ContainsKey(ele.alias)) {
-                continue;
+        var elements = EMono.sources.elements.map;
+        abilities.ForeachReverse(a => {
+            if (elements.ContainsKey(Mathf.Abs(a))) {
+                return;
             }
 
-            list.RemoveAt(i);
-            CwlMod.WarnWithPopup<CustomElement>("cwl_warn_fix_listAbility".Loc(id, chara.id));
-        }
-
-        if (list.Count == 0) {
-            chara._listAbility = null;
-        }
+            abilities.Remove(a);
+            CwlMod.Warn<CharaAbility>($"removed invalid ability '{a}' from {chara.id}");
+        });
     }
 }
