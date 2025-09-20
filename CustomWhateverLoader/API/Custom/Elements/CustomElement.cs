@@ -23,12 +23,6 @@ public class CustomElement : Element
     public static void AddElement(SourceElement.Row r, string qualified)
     {
         try {
-            var size = r.group switch {
-                nameof(FEAT) => 32,
-                _ => 48,
-            };
-            SpriteReplacerHelper.AppendSpriteSheet(r.alias, size, size);
-
             if (CwlConfig.QualifyTypeName) {
                 r.type = qualified;
                 if (!Managed.ContainsKey(r.id)) {

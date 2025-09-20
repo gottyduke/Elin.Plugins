@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Cwl.API.Custom;
+﻿using Cwl.API.Custom;
 using Cwl.Helper;
 using Cwl.Patches.Sources;
 using HarmonyLib;
@@ -9,12 +8,6 @@ namespace Cwl.Patches.Elements;
 [HarmonyPatch]
 internal class SetElementRowPatch
 {
-    private static readonly string[] _managedGroups = [
-        nameof(FEAT),
-        nameof(ABILITY),
-        nameof(SPELL),
-    ];
-
     [HarmonyPrefix]
     [HarmonyPatch(typeof(SourceElement), nameof(SourceElement.SetRow))]
     internal static void OnSetRow(SourceElement.Row r)
@@ -23,8 +16,18 @@ internal class SetElementRowPatch
             return;
         }
 
-        if (_managedGroups.All(g => g != r.group)) {
+        var group = r.group;
+        if (group is not (nameof(FEAT) or nameof(ABILITY) or nameof(SPELL))) {
             return;
+        }
+
+        if (r.id is > 10000 or < 0) {
+            var size = group switch {
+                nameof(FEAT) => 32,
+                _ => 48,
+            };
+
+            SpriteReplacerHelper.AppendSpriteSheet(r.alias, size, size);
         }
 
         var qualified = TypeQualifier.TryQualify<Element>(r.type, r.alias);

@@ -132,7 +132,7 @@ public class CustomReligion(string religionId) : Religion, IChunkable
     [CwlActPerformEvent]
     private static void ProcGodTalk(Act act)
     {
-        if (!CustomElement.Managed.ContainsKey(act.id)) {
+        if (!act.HasTag("godAbility")) {
             return;
         }
 
