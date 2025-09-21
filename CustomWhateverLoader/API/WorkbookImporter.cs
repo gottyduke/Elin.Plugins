@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using Cwl.API.Migration;
 using Cwl.API.Processors;
+using Cwl.Helper;
 using Cwl.Helper.Exceptions;
+using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;
@@ -20,16 +23,19 @@ public class WorkbookImporter
         typeof(WorkbookImporter),
         nameof(BySheetName), [typeof(ISheet), typeof(string)]);
 
-    private static FieldInfo[]? _sources;
-
-    internal static FieldInfo[] Sources =>
-        _sources ??= typeof(SourceManager)
+    internal static Dictionary<string, SourceData?>? Sources =>
+        field ??= typeof(SourceManager)
             .GetFields(AccessTools.all)
             .Where(f => typeof(SourceData).IsAssignableFrom(f.FieldType))
-            .ToArray();
+            .ToDictionary(f => f.FieldType.Name, f => f.GetValue(EMono.sources) as SourceData);
+
+    public static SourceData? FindSourceByName(string name)
+    {
+        return Sources.GetValueOrDefault($"Source{name}", Sources.GetValueOrDefault($"Lang{name}"));
+    }
 
     // all sheets from workbook
-    public static IEnumerable<SourceData?> BySheetName(IWorkbook book, string bookName, string[]? fetched = null)
+    public static IEnumerable<SourceData?> BySheetName(IWorkbook book, FileInfo file, string[]? fetched = null)
     {
         List<SourceData> dirty = [];
         HashSet<string> excludedSheet = [..fetched ?? []];
@@ -43,7 +49,7 @@ public class WorkbookImporter
                 continue;
             }
 
-            var source = BySheetName(sheet, bookName);
+            var (source, _) = BySheetName(sheet, file);
             if (source is null) {
                 continue;
             }
@@ -57,35 +63,92 @@ public class WorkbookImporter
     }
 
     // single sheet
-    public static SourceData? BySheetName(ISheet sheet, string bookName)
+    public static (SourceData?, SourceData.BaseRow[]) BySheetName(ISheet sheet, string bookName)
     {
         var sheetName = sheet.SheetName;
         try {
-            var sourceField = Sources.FirstOrDefault(f => f.FieldType.Name == $"Source{sheetName}" ||
-                                                          f.FieldType.Name == $"Lang{sheetName}");
-            if (sourceField?.GetValue(EMono.sources) is not SourceData source) {
-                CwlMod.Log<WorkbookImporter>("cwl_log_sheet_skip".Loc(sheetName));
-                return null;
+            var source = FindSourceByName(sheetName);
+            if (source is null) {
+                return new();
             }
 
             SheetProcessor.PreProcess(sheet);
 
             CwlMod.Log<WorkbookImporter>("cwl_log_sheet".Loc(sheetName));
 
-            var sheetFullName = $"{sourceField.Name}:{bookName}/{sheetName}";
+            IList? rows;
+            // ThingV resets rows
+            if (source is SourceThingV) {
+                rows = EMono.sources.things.rows;
+            } else {
+                rows = source.GetFieldValue("rows") as IList;
+            }
+
+            var begin = rows!.Count;
+
             if (!source.ImportData(sheet, bookName, true)) {
+                var sheetFullName = $"{source.GetType().Name}:{bookName}/{sheetName}";
                 throw new SourceParseException("cwl_error_source_except".Loc(sheetFullName));
+            }
+
+            SourceData.BaseRow[] imported = [];
+            var added = rows.Count - begin;
+            if (added > 0) {
+                imported = rows
+                    .OfType<SourceData.BaseRow>()
+                    .Skip(begin)
+                    .Take(added)
+                    .ToArray();
             }
 
             SheetProcessor.PostProcess(sheet);
 
-            return source;
+            return (source, imported);
         } catch (Exception ex) {
             CwlMod.ErrorWithPopup<WorkbookImporter>("cwl_error_failure".Loc(ex.Message), ex);
             // noexcept
         }
 
-        return null;
+        return new();
+    }
+
+    // load using cache
+    public static (SourceData?, SourceData.BaseRow[]) BySheetName(ISheet sheet, FileInfo file, bool useCache = true)
+    {
+        var sheetName = sheet.SheetName;
+        CacheDetail? detail = null;
+        (SourceData?, SourceData.BaseRow[]) data = new();
+
+        if (useCache) {
+            SheetProcessor.PreProcess(sheet);
+
+            detail = CacheDetail.GetOrAdd(file);
+            if (detail.TryGetCache(sheetName, out data.Item2)) {
+                CwlMod.Log<WorkbookImporter>("cwl_log_sheet".Loc(sheetName));
+
+                data.Item1 = FindSourceByName(sheetName);
+                // ThingV resets rows
+                if (data.Item1 is SourceThingV) {
+                    data.Item1 = EMono.sources.things;
+                }
+
+                var imported = data.Item1?.ImportRows(data.Item2);
+                CwlMod.Log<WorkbookImporter>($"{sheetName}/{imported}");
+            }
+
+            SheetProcessor.PostProcess(sheet);
+        }
+
+        if (data.Item1 is not null) {
+            return data;
+        }
+
+        data = BySheetName(sheet, file.Name);
+        if (useCache) {
+            detail?.EmplaceCache(sheetName, data.Item2 ?? []);
+        }
+
+        return data;
     }
 
     public static void LoadAllFiles(IEnumerable<FileInfo> imports, string prefetch = nameof(Element))
@@ -93,6 +156,7 @@ public class WorkbookImporter
         var alloc = GC.GetTotalMemory(false);
 
         var usePrefetch = true;
+        var useCache = CwlConfig.CacheSourceSheets;
         var chunkSize = CwlConfig.MaxPrefetchLoads;
         if (chunkSize == -1) {
             usePrefetch = false;
@@ -100,9 +164,10 @@ public class WorkbookImporter
         }
 
         CwlMod.Debug<WorkbookImporter>($"prefetch enabled: {usePrefetch}");
+        CwlMod.Debug<WorkbookImporter>($"cache enabled: {useCache}");
 
         List<IWorkbook> books = [];
-        List<(ISheet, string)> fetches = [];
+        List<(ISheet, FileInfo)> fetches = [];
         var sm = EMono.sources;
         HashSet<SourceData> dirty = [sm.elements, sm.materials];
 
@@ -115,7 +180,7 @@ public class WorkbookImporter
                 using var fs = file.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 var book = new XSSFWorkbook(fs);
                 MigrateDetail.GetOrAdd(book)
-                    .SetFile(file.GetFullFileNameWithoutExtension())
+                    .SetFile(file)
                     .SetMod(BaseModManager.Instance.packages.LastOrDefault(p => file.FullName.StartsWith(p.dirInfo.FullName)));
 
                 books.Add(book);
@@ -125,17 +190,17 @@ public class WorkbookImporter
                     var sheet = book.GetSheetAt(j);
                     var sheetName = sheet.SheetName;
                     if (sheetName == prefetch) {
-                        fetches.Add((sheet, file.Name));
+                        fetches.Add((sheet, file));
                     }
                 }
             }
 
             if (usePrefetch) {
                 // load prefetched sheets
-                foreach (var (fetch, bookName) in fetches) {
-                    CwlMod.Log<SourceManager>("cwl_log_workbook".Loc(bookName));
+                foreach (var (fetch, file) in fetches) {
+                    CwlMod.Log<SourceManager>("cwl_log_workbook".Loc(file.Name));
 
-                    var source = BySheetName(fetch, bookName);
+                    var (source, _) = BySheetName(fetch, file);
                     if (source is not null) {
                         dirty.Add(source);
                     }
@@ -154,7 +219,7 @@ public class WorkbookImporter
                     var fileName = migration.SheetFile;
                     CwlMod.Log<SourceManager>("cwl_log_workbook".Loc(fileName.ShortPath()));
 
-                    var sources = BySheetName(book, Path.GetFileName(fileName), [prefetch])
+                    var sources = BySheetName(book, fileName, [prefetch])
                         .OfType<SourceData>();
                     dirty.UnionWith(sources);
                 } catch (Exception ex) {

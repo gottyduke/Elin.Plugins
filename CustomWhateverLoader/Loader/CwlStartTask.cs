@@ -110,6 +110,7 @@ internal sealed partial class CwlMod
             return;
         }
 
+        CacheDetail.InvalidateCache();
         QueryDeclTypes();
         RegisterEvents();
 

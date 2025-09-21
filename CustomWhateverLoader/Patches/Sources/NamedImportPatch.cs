@@ -25,8 +25,8 @@ internal class NamedImportPatch
 
     internal static IEnumerable<MethodBase> TargetMethods()
     {
-        return WorkbookImporter.Sources
-            .Select(MethodInfo? (sf) => sf.FieldType.GetRuntimeMethod("CreateRow", []))
+        return WorkbookImporter.Sources!.Values
+            .Select(MethodInfo? (sd) => sd?.GetType().GetRuntimeMethod("CreateRow", []))
             .OfType<MethodInfo>()
             .Distinct(OverrideMethodComparer.Default);
     }

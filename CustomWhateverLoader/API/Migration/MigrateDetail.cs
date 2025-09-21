@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Cwl.API.Processors;
 using Cwl.Helper.String;
 using Cwl.LangMod;
@@ -41,7 +40,7 @@ public sealed class MigrateDetail
 
     public MigrateSheet? CurrentSheet { get; private set; }
     public BaseModPackage? Mod { get; private set; }
-    public string SheetFile { get; private set; } = "";
+    public FileInfo SheetFile { get; private set; } = null!;
     public long LoadingTime { get; internal set; }
 
     internal static ILookup<BaseModPackage?, MigrateDetail> Details =>
@@ -75,7 +74,7 @@ public sealed class MigrateDetail
         return this;
     }
 
-    public MigrateDetail SetFile(string filePath)
+    public MigrateDetail SetFile(FileInfo filePath)
     {
         SheetFile = filePath;
         return this;
@@ -183,8 +182,7 @@ public sealed class MigrateDetail
             return;
         }
 
-        var file = new FileInfo(SheetFile);
-        CwlMod.Log<MigrateDetail>(file.ShortPath());
+        CwlMod.Log<MigrateDetail>(SheetFile.ShortPath());
 
         var expected = CurrentSheet.Expected
             .OrderBy(c => c.Value)
@@ -238,7 +236,7 @@ public sealed class MigrateDetail
     {
         var elapsed = TimeSpan.Zero;
         var total = 0;
-        var sb = new StringBuilder(2048);
+        using var sb = StringBuilderPool.Get();
         sb.AppendLine();
 
         foreach (var mod in Details) {

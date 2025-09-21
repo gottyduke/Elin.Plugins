@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Cwl.API;
+using Cwl.API.Migration;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
@@ -44,6 +45,8 @@ internal class SourceInitPatch
 
         try {
             WorkbookImporter.LoadAllFiles(imports);
+            CacheDetail.FinalizeCache();
+            CacheDetail.ClearDetail();
         } finally {
             SafeToCreate = false;
             CwlMod.Log<SourceManager>("cwl_log_workbook_complete".Loc());
