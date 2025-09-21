@@ -21,7 +21,7 @@ internal partial class CwlMod
             return;
         }
 
-        var profile = ExceptionProfile.GetFromStackTrace(stackTrace);
+        var profile = ExceptionProfile.GetFromStackTrace(stackTrace, message);
         if (profile.Hidden) {
             return;
         }

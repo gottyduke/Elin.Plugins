@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -7,15 +6,15 @@ using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
+using Cysharp.Threading.Tasks;
 using HarmonyLib.Public.Patching;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Cwl.Helper.Exceptions;
 
-public class ExceptionProfile(string stackTrace)
+public class ExceptionProfile(string message)
 {
-    public enum AnalysisState
+    public enum AnalyzeState
     {
         NotStarted,
         InProgress,
@@ -27,20 +26,23 @@ public class ExceptionProfile(string stackTrace)
 
     public List<MonoFrame> Frames { get; } = [];
 
-    public AnalysisState State { get; private set; } = AnalysisState.NotStarted;
+    public AnalyzeState State { get; private set; } = AnalyzeState.NotStarted;
 
     public int Occurrences { get; private set; } = 1;
     public string Result { get; private set; } = "cwl_ui_exception_analyzing".Loc();
     public int Key { get; private set; }
     public bool Hidden { get; private set; }
     public bool IsMissingMethod { get; private set; }
+    public string StackTrace { get; private init; } = "";
 
-    public static ExceptionProfile GetFromStackTrace(string stackTrace)
+    public static ExceptionProfile GetFromStackTrace(string stackTrace, string message)
     {
         var hash = stackTrace.GetHashCode();
         if (!_cached.TryGetValue(hash, out var profile)) {
-            profile = _cached[hash] = new(stackTrace);
-            profile.Key = hash;
+            profile = _cached[hash] = new(message) {
+                StackTrace = stackTrace,
+                Key = hash,
+            };
         } else {
             profile.Occurrences++;
         }
@@ -54,7 +56,7 @@ public class ExceptionProfile(string stackTrace)
             exception = inner;
         }
 
-        return GetFromStackTrace(Regex.Replace(exception.StackTrace.IsEmpty(""), @"^(\s+at\s)", ""));
+        return GetFromStackTrace(Regex.Replace(exception.StackTrace.IsEmpty(""), @"^(\s+at\s)", ""), exception.Message);
     }
 
     [Obsolete("use ref overload for inner exception swap")]
@@ -63,26 +65,25 @@ public class ExceptionProfile(string stackTrace)
         return GetFromStackTrace(ref exception);
     }
 
-    public void CreateAndPop(string message)
+    public void CreateAndPop(string? display = null)
     {
         EMono.ui?.hud?.imageCover?.SetActive(false);
 
         if (_activeExceptions.TryGetValue(Key, out var progress)) {
             if (progress != null) {
-                progress
-                    .AppendTailText(() => Occurrences <= 999 ? Occurrences.ToString() : "999+")
-                    .ResetProgress();
+                progress.ResetDuration();
                 return;
             }
         }
 
         // missing method exception
-        IsMissingMethod = message.Contains(nameof(MissingMethodException));
+        display ??= message;
+        IsMissingMethod = display.Contains(nameof(MissingMethodException));
         if (IsMissingMethod) {
-            message = message.Replace(nameof(MissingMethodException), "cwl_warn_missing_method".Loc(nameof(MissingMethodException)));
+            display = display.Replace(nameof(MissingMethodException), "cwl_warn_missing_method".Loc(nameof(MissingMethodException)));
         }
 
-        using var scopeExit = ProgressIndicator.CreateProgressScoped(() => new(message, Color: Color.red));
+        using var scopeExit = ProgressIndicator.CreateProgressScoped(() => new(GetOccurrenceString() + display, Color: Color.red));
         progress = _activeExceptions[Key] = scopeExit.Get<ProgressIndicator>();
 
         if (!CwlConfig.ExceptionAnalyze) {
@@ -90,60 +91,63 @@ public class ExceptionProfile(string stackTrace)
         }
 
         progress
-            .AppendHoverText(() => {
+            .OnHover(_ => {
                 StartAnalyzing();
-                return Result.Truncate(2048);
+                GUILayout.Label($"{"cwl_ui_exception_copy".Loc()}\n{Result}");
             })
-            .SetHoverPrompt("cwl_ui_exception_analyzing".Loc(), "cwl_ui_exception_analyze".Loc())
-            .SetClickHandler(ClickHandler);
-
-        CoroutineHelper.Deferred(
-            () => {
-                if (progress == null) {
-                    return;
+            .OnAfterGUI(p => {
+                if (p.IsHovering && State is AnalyzeState.InProgress) {
+                    GUILayout.Label("cwl_ui_exception_analyzing".Loc());
                 }
-
-                progress.SetHoverPrompt();
-            },
-            () => progress == null || State == AnalysisState.Completed);
+            })
+            .OnEvent(ClickHandler);
     }
 
-    public void StartAnalyzing(bool deferred = true)
+    public void StartAnalyzing()
     {
-        if (State != AnalysisState.NotStarted) {
+        if (State is not AnalyzeState.NotStarted) {
             return;
         }
 
-        State = AnalysisState.InProgress;
+        State = AnalyzeState.InProgress;
 
-        if (deferred) {
-            CoroutineHelper.Immediate(DeferredAnalyzer());
-        } else {
-            var enumerator = DeferredAnalyzer();
-            while (enumerator.MoveNext()) {
-            }
+        DeferredAnalyzer().Forget();
+    }
+
+    private void ClickHandler(ProgressIndicator progress, Event eventData)
+    {
+        switch (eventData.button) {
+            case 0 when State is AnalyzeState.Completed:
+                GUIUtility.systemCopyBuffer = $"{message}\n{Result}".RemoveTagColor();
+                break;
+            case 2:
+                Hidden = true;
+                _activeExceptions[Key].Kill();
+                break;
         }
     }
 
-    private void ClickHandler(PointerEventData eventData)
+    private string GetOccurrenceString()
     {
-        if (eventData.button != PointerEventData.InputButton.Middle) {
-            return;
+        if (Occurrences == 1) {
+            return "";
         }
 
-        Hidden = true;
-        _activeExceptions[Key].Kill();
+        var text = Occurrences <= 999 ? Occurrences.ToString() : "999+";
+        return $"<b>({text})</b> ";
     }
 
-    private IEnumerator DeferredAnalyzer()
+    private async UniTaskVoid DeferredAnalyzer()
     {
+        await UniTask.SwitchToThreadPool();
+
         Frames.Clear();
 
         using var sb = StringBuilderPool.Get();
         sb.AppendLine("cwl_ui_callstack".Loc());
 
         var terminated = false;
-        foreach (var frame in stackTrace.SplitLines().Distinct()) {
+        foreach (var frame in StackTrace.SplitLines().Distinct()) {
             if (terminated) {
                 break;
             }
@@ -153,6 +157,10 @@ public class ExceptionProfile(string stackTrace)
             }
 
             var mono = MonoFrame.GetFrame(frame).Parse();
+            if (Frames.Find(f => f.DetailedMethodCall == mono.DetailedMethodCall) is not null) {
+                continue;
+            }
+
             Frames.Add(mono);
 
             switch (mono.frameType) {
@@ -164,7 +172,12 @@ public class ExceptionProfile(string stackTrace)
                     break;
                 case MonoFrame.StackFrameType.Method or MonoFrame.StackFrameType.DynamicMethod:
                     try {
+                        if (IsMissingMethod && !mono.IsVendorMethod) {
+                            mono.Method!.TestIncompatibleIl();
+                        }
+
                         sb.AppendLine(mono.DetailedMethodCall);
+
                         var info = mono.Method.GetPatchInfo();
                         if (info is not null) {
                             if (IsMissingMethod) {
@@ -179,14 +192,14 @@ public class ExceptionProfile(string stackTrace)
 
                     break;
             }
-
-            yield return null;
         }
 
         Result = sb.ToString();
         CwlMod.Log<ExceptionProfile>(Result);
         Result = Result.TruncateAllLines(150);
 
-        State = AnalysisState.Completed;
+        await UniTask.SwitchToMainThread();
+
+        State = AnalyzeState.Completed;
     }
 }

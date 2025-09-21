@@ -14,6 +14,14 @@ public static class SpriteCreator
 {
     private static readonly Dictionary<string, Texture2D> _cached = [];
 
+    public static Texture2D GetSolidColorTexture(Color color)
+    {
+        var texture = new Texture2D(1, 1);
+        texture.SetPixel(0, 0, color);
+        texture.Apply();
+        return texture;
+    }
+
     extension(string spritePath)
     {
         public Sprite? LoadSprite(Vector2? pivot = null,

@@ -27,14 +27,17 @@ public class MonoFrame(string stackFrame)
         "mscorlib",
     ];
 
-    private bool _parsed;
     public StackFrameType frameType = StackFrameType.Unknown;
+
+    public bool Parsed { get; private set; }
 
     public MethodInfo? Method { get; private set; }
     public string StackFrame => stackFrame;
     public string SanitizedMethodCall { get; private set; } = "";
     public string SanitizedParameters { get; private set; } = "";
     public string DetailedMethodCall { get; private set; } = "";
+    public string? AssemblyName => field ??= Method?.DeclaringType?.Assembly.ManifestModule.ScopeName;
+    public bool IsVendorMethod => _vendorExclusion.Any(AssemblyName!.StartsWith);
 
     public static MonoFrame GetFrame(string frame)
     {
@@ -53,7 +56,7 @@ public class MonoFrame(string stackFrame)
     [SwallowExceptions]
     public MonoFrame Parse()
     {
-        if (_parsed) {
+        if (Parsed) {
             return this;
         }
 
@@ -65,20 +68,18 @@ public class MonoFrame(string stackFrame)
             frameType = StackFrameType.Rethrow;
         } else {
             Method = ExtractMethod();
-            frameType = Method is null ? StackFrameType.Unknown :
-                raw.StartsWith("(wrapper dynamic-method)") ? StackFrameType.DynamicMethod : StackFrameType.Method;
+            frameType = Method is null
+                ? StackFrameType.Unknown
+                : raw.StartsWith("(wrapper dynamic-method)")
+                    ? StackFrameType.DynamicMethod
+                    : StackFrameType.Method;
         }
 
-        DetailedMethodCall = frameType switch {
-            StackFrameType.Method or StackFrameType.DynamicMethod
-                when Method is { DeclaringType.Assembly.ManifestModule.ScopeName: { } name } mi
-                => _vendorExclusion.Any(name.StartsWith)
-                    ? mi.GetDetail(false)
-                    : mi.GetAssemblyDetailColor(false),
-            _ => SanitizedMethodCall,
-        };
+        DetailedMethodCall = frameType is StackFrameType.Method or StackFrameType.DynamicMethod
+            ? IsVendorMethod ? Method!.GetDetail(false) : Method!.GetAssemblyDetailColor(false)
+            : SanitizedMethodCall;
 
-        _parsed = true;
+        Parsed = true;
         return this;
     }
 
@@ -121,12 +122,9 @@ public class MonoFrame(string stackFrame)
         }
 
         List<Type> paramTypes = [];
-        foreach (var paramStr in TypeQualifier.SplitParameters(parameters)) {
-            var type = TypeQualifier.GlobalResolve(paramStr.Trim());
-            if (type is not null) {
-                paramTypes.Add(type);
-            }
-        }
+        paramTypes.AddRange(TypeQualifier.SplitParameters(parameters)
+            .Select(p => TypeQualifier.GlobalResolve(p.Trim()))
+            .OfType<Type>());
 
         return paramTypes.ToArray();
     }

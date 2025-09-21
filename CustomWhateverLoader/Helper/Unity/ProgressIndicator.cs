@@ -1,255 +1,291 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cwl.Helper.Exceptions;
+using Cwl.Helper.Extensions;
+using Cwl.Helper.String;
 using Cwl.LangMod;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace Cwl.Helper.Unity;
 
-[RequireComponent(typeof(PopItemText))]
-public class ProgressIndicator : EMono, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
+public class ProgressIndicator
 {
+    private const float UpdateInterval = 0.2f;
+
     private static readonly List<ProgressIndicator> _active = [];
+    private static ProgressIndicatorUpdater? _updater;
+    private static GUIStyle? _defaultStyle;
 
-    private string _hoverClosePrompt = "";
-    private string _hoverDetailPrompt = "";
-    private Func<string>? _onHoverUpdate;
-    private Action<PointerEventData>? _onPointerClick;
-    private Func<string>? _onTailUpdate;
-    private Outline? _outline;
-    private float _remaining;
-    private UIText? _tailText;
-    private ProgressUpdater? _updater;
+    private readonly string _hoverClosePrompt = "cwl_ui_hover_close".Loc();
+    private readonly string _hoverDetailPrompt = "cwl_ui_hover_detail".Loc();
 
-    public PopItemText Pop => GetComponent<PopItemText>();
-    public bool Hovering { get; private set; }
+    private UpdateInfo? _info;
+    private Action<ProgressIndicator>? _onAfterGUI;
+    private Action<ProgressIndicator>? _onBeforeGUI;
+    private Action<ProgressIndicator, Event>? _onEvent;
+    private Action<ProgressIndicator>? _onHover;
+    private Action<ProgressIndicator>? _onKill;
 
-    private void Start()
-    {
-        StartCoroutine(UpdateProgress(0.2f));
-    }
+    public GUIStyle? GUIStyle;
+    public required Func<UpdateInfo> OnUpdate;
+    public required Func<ProgressIndicator, bool> ShouldKill;
 
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        if (eventData.button == PointerEventData.InputButton.Right) {
-            Kill();
-        }
-
-        _onPointerClick?.Invoke(eventData);
-    }
-
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        Hovering = true;
-        _outline!.enabled = true;
-    }
-
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        Hovering = false;
-        _outline!.enabled = false;
-    }
-
-    /// <summary>
-    ///     a wrapper of <see cref="PopItemText" /> that offers continuous updating and various controls
-    /// </summary>
-    /// <param name="onUpdate">update func</param>
-    /// <param name="shouldKill">predicate to notify kill</param>
-    /// <param name="lingerDuration">default 10 seconds linger duration</param>
-    /// <returns>the created instance, null if failed</returns>
-    [SwallowExceptions]
-    public static ProgressIndicator? CreateProgress(Func<UpdateInfo> onUpdate, Func<bool> shouldKill, float lingerDuration = 10f)
-    {
-        if (ui?.popSystem == null) {
-            return null;
-        }
-
-        var pop = ui.popSystem.PopText("", id: "PopAchievement", duration: 999f);
-        if (pop == null) {
-            return null;
-        }
-
-        ui.popSystem.insert = false;
-        ui.popSystem.maxLines = int.MaxValue;
-        ui.popSystem.GetOrCreate<PopUpdater>();
-
-        pop.name = "PopProgress";
-        pop.important = true;
-        pop.text.alignment = TextAnchor.UpperLeft;
-        pop.text.fontType = FontType.Balloon;
-        pop.Rect().pivot = new(1f, 1f);
-
-        var progress = pop.GetOrCreate<ProgressIndicator>();
-        progress._updater = new(onUpdate, shouldKill, Mathf.Max(lingerDuration, 0f));
-        progress.GetOrCreate<UICollider>();
-        progress.SetHoverPrompt().AppendOutline();
-
-        _active.Add(progress);
-        return progress;
-    }
-
-    /// <summary>
-    ///     extremely simple progress that kills itself on scope exit
-    /// </summary>
-    /// <param name="onUpdate">update func</param>
-    /// <param name="lingerDuration">default 10 seconds linger duration</param>
-    /// <returns>
-    ///     <see cref="IDisposable" /> resource via using statement, <see cref="ProgressIndicator" /> can
-    ///     be accessed through property <see cref="ScopeExit.Object" />
-    /// </returns>
-    public static ScopeExit CreateProgressScoped(Func<UpdateInfo> onUpdate, float lingerDuration = 10f)
-    {
-        var scopeExit = new ScopeExit();
-        scopeExit.Object = CreateProgress(onUpdate, () => !scopeExit.Alive, lingerDuration);
-        return scopeExit;
-    }
-
-    public ProgressIndicator AppendHoverText(Func<string> onHover, bool overwrite = false)
-    {
-        if (_onHoverUpdate is null || overwrite) {
-            _onHoverUpdate = onHover;
-        }
-
-        return this;
-    }
-
-    public ProgressIndicator AppendTailText(Func<string> onUpdate, bool overwrite = false)
-    {
-        if (_tailText == null) {
-            var tail = new GameObject("TailText");
-            tail.transform.SetParent(transform);
-
-            _tailText = tail.transform.GetOrCreate<UIText>();
-            _tailText.color = Color.black;
-            _tailText.fontType = FontType.Balloon;
-            _tailText.enabled = true;
-
-            var csf = _tailText.GetOrCreate<ContentSizeFitter>();
-            csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-            csf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
-        }
-
-        if (_onTailUpdate is null || overwrite) {
-            _onTailUpdate = onUpdate;
-        }
-
-        return this;
-    }
-
-    public ProgressIndicator SetHoverPrompt(string? close = null, string? detail = null)
-    {
-        _hoverClosePrompt = close ?? "cwl_ui_hover_close".Loc();
-        _hoverDetailPrompt = detail ?? "cwl_ui_hover_detail".Loc();
-        return this;
-    }
-
-    public ProgressIndicator SetClickHandler(Action<PointerEventData> clickHandler)
-    {
-        _onPointerClick = clickHandler;
-        return this;
-    }
-
-    public ProgressIndicator ResetProgress()
-    {
-        _remaining = _updater?.LingerDuration ?? 0f;
-        return this;
-    }
+    public float DurationRemain { get; private set; }
+    public bool IsHovering { get; private set; }
+    public bool IsKilled { get; private set; }
+    public float DurationTotal { get; private set; }
 
     public void Kill()
     {
-        Pop.important = false;
+        if (IsKilled) {
+            return;
+        }
+
         _active.Remove(this);
-        ui.popSystem.Kill(Pop);
+        _onKill?.Invoke(this);
+
+        IsKilled = true;
     }
 
-    private IEnumerator UpdateProgress(float interval)
-    {
-        if (_updater is null) {
-            yield break;
-        }
-
-        var (onUpdate, shouldKill, lingerTime) = _updater;
-        _remaining = lingerTime;
-
-        var yieldSeconds = new WaitForSeconds(interval);
-        while (_remaining > 0f) {
-            UpdatePopup(onUpdate);
-
-            yield return yieldSeconds;
-
-            if (shouldKill() && !Hovering) {
-                _remaining -= interval;
-            } else {
-                _remaining = lingerTime;
-            }
-        }
-
-        Kill();
-    }
-
-    private void UpdatePopup(Func<UpdateInfo> onUpdate)
+    private void Update()
     {
         try {
-            var (text, sprite, color) = onUpdate();
-
-            if (Hovering) {
-                text += $"\n{_hoverClosePrompt}\n";
+            if (ShouldKill(this) && !IsHovering) {
+                DurationRemain -= UpdateInterval;
+                if (DurationRemain <= 0f) {
+                    Kill();
+                    return;
+                }
+            } else {
+                DurationRemain = DurationTotal;
             }
 
-            if (_onHoverUpdate is not null) {
-                text += Hovering ? $"\n{_onHoverUpdate()}" : $"\n{_hoverDetailPrompt}";
-            }
-
-            Pop.SetText(text, sprite, color ?? default(Color));
-
-            if (_tailText != null && _onTailUpdate is not null) {
-                _tailText.SetText(_onTailUpdate());
-            }
-
-            Pop.RebuildLayout(true);
-        } catch {
+            _info = OnUpdate();
+        } catch (Exception ex) {
+            ExceptionProfile.GetFromStackTrace(ref ex).StartAnalyzing();
+#if DEBUG
+            throw;
+#else
+            Kill();
             // noexcept
+#endif
         }
     }
 
-    private void AppendOutline()
+    private string GetUpdateText()
     {
-        _outline = GetComponentInChildren<Image>().GetOrCreate<Outline>();
-        _outline.effectDistance = new(2f, 2f);
-        _outline.effectColor = Color.black;
-        _outline.enabled = false;
-    }
+        using var sb = StringBuilderPool.Get();
+        sb.Append(_info!.Text);
 
-    private class PopUpdater : EMono
-    {
-        private void OnEnable()
-        {
-            StartCoroutine(UpdatePosition());
+        var hasHover = _onHover is not null;
+        if (IsHovering) {
+            sb.AppendLine();
+            sb.Append(_hoverClosePrompt);
+        } else if (hasHover) {
+            sb.AppendLine();
+            sb.Append(_hoverDetailPrompt);
         }
 
-        private static IEnumerator UpdatePosition()
+        return sb.ToString();
+    }
+
+    private void Draw()
+    {
+        if (_info is null) {
+            return;
+        }
+
+        GUIStyle ??= _defaultStyle ??= new(GUI.skin.label) {
+            fontSize = 16,
+            richText = true,
+            wordWrap = true,
+            alignment = TextAnchor.UpperLeft,
+            padding = new(10, 10, 10, 10),
+            normal = {
+                background = SpriteCreator.GetSolidColorTexture(new(1f, 1f, 1f)),
+                textColor = Color.black,
+            },
+            hover = {
+                background = SpriteCreator.GetSolidColorTexture(new(0.9f, 0.9f, 0.9f)),
+                textColor = Color.black,
+            },
+        };
+
+        var textColor = _info.Color ?? Color.black;
+        GUIStyle.normal.textColor = GUIStyle.hover.textColor = textColor;
+
+        var oldStyle = GUI.skin.label;
+        GUI.skin.label = GUIStyle;
+
+        GUILayout.BeginVertical("box");
         {
-            var yieldSeconds = new WaitForSeconds(0.1f);
-            while (_active.Count >= 0) {
-                var y = 0f;
-                foreach (var pop in ui.popSystem.items) {
-                    var rect = pop.Rect();
-                    if (pop.GetComponent<ProgressIndicator>()?.Hovering ?? false) {
-                        y = rect.anchoredPosition.y - rect.sizeDelta.y;
-                    } else {
-                        rect.anchoredPosition = new(0f, y);
-                        y -= rect.sizeDelta.y;
-                    }
+            _onBeforeGUI?.Invoke(this);
+
+            if (_info.Texture != null) {
+                var width = Mathf.Min(_info.Texture.width, 400f);
+                var height = (float)_info.Texture.height / _info.Texture.width * width;
+                GUILayout.Label(_info.Texture, GUILayout.Width(width), GUILayout.Height(height));
+            }
+
+            GUILayout.Label(GetUpdateText());
+
+            if (IsHovering) {
+                _onHover?.Invoke(this);
+            }
+
+            _onAfterGUI?.Invoke(this);
+        }
+        GUILayout.EndVertical();
+
+        GUI.skin.label = oldStyle;
+
+        var @event = Event.current;
+        switch (@event.type) {
+            case EventType.Repaint:
+                IsHovering = GUILayoutUtility.GetLastRect().Contains(@event.mousePosition);
+                break;
+            case EventType.MouseDown or EventType.KeyDown when IsHovering: {
+                _onEvent?.Invoke(this, @event);
+
+                if (@event.IsRightMouseDown || @event.IsMiddleMouseDown) {
+                    Kill();
                 }
 
-                yield return yieldSeconds;
+                @event.Use();
+                EInput.Consume(true);
+                break;
             }
         }
     }
 
-    public record UpdateInfo(string Text, Sprite? Sprite = null, Color? Color = null);
+    public static void KillAll()
+    {
+        foreach (var progress in _active) {
+            progress.Kill();
+        }
 
-    private record ProgressUpdater(Func<UpdateInfo> OnUpdate, Func<bool> ShouldKill, float LingerDuration);
+        _updater?.StopOnNextUpdate = true;
+    }
+
+    public record UpdateInfo(string Text, Texture2D? Texture = null, Color? Color = null);
+
+    private class ProgressIndicatorUpdater : MonoBehaviour
+    {
+        internal bool StopOnNextUpdate;
+
+        private void Start()
+        {
+            StartCoroutine(ProgressUpdate());
+        }
+
+        private void OnGUI()
+        {
+            if (_active.Count == 0) {
+                return;
+            }
+
+            GUILayout.Space(10f);
+
+            _active.ToArray().ForeachReverse(p => p.Draw());
+        }
+
+        private IEnumerator ProgressUpdate()
+        {
+            var interval = new WaitForSeconds(UpdateInterval);
+            while (!StopOnNextUpdate) {
+                foreach (var progress in _active.ToArray()) {
+                    progress.Update();
+                }
+
+                yield return interval;
+            }
+        }
+    }
+
+#region Factory
+
+    public static ProgressIndicator CreateProgress(Func<UpdateInfo> onUpdate,
+                                                   Func<ProgressIndicator, bool> shouldKill,
+                                                   float duration = 10f)
+    {
+        var progress = new ProgressIndicator {
+            OnUpdate = onUpdate,
+            ShouldKill = shouldKill,
+        };
+
+        duration = Mathf.Max(duration, 0f);
+        progress.SetDuration(duration, duration);
+
+        _active.Add(progress);
+        _updater ??= CwlMod.Instance!.transform.GetOrCreate<ProgressIndicatorUpdater>();
+
+        return progress;
+    }
+
+    public static ScopeExit CreateProgressScoped(Func<UpdateInfo> onUpdate,
+                                                 float duration = 7.5f)
+    {
+        var scopeExit = new ScopeExit();
+        scopeExit.Object = CreateProgress(onUpdate, _ => !scopeExit.Alive, duration);
+        return scopeExit;
+    }
+
+#endregion
+
+#region Setters
+
+    public ProgressIndicator SetGUIStyle(GUIStyle? styleOverride)
+    {
+        GUIStyle = styleOverride;
+        return this;
+    }
+
+    public ProgressIndicator OnHover(Action<ProgressIndicator>? onHover)
+    {
+        _onHover = onHover;
+        return this;
+    }
+
+    public ProgressIndicator OnKill(Action<ProgressIndicator>? onKill)
+    {
+        _onKill = onKill;
+        return this;
+    }
+
+    public ProgressIndicator OnEvent(Action<ProgressIndicator, Event>? onGuiEvent)
+    {
+        _onEvent = onGuiEvent;
+        return this;
+    }
+
+    public ProgressIndicator OnAfterGUI(Action<ProgressIndicator>? onGui)
+    {
+        _onAfterGUI = onGui;
+        return this;
+    }
+
+    public ProgressIndicator OnBeforeGUI(Action<ProgressIndicator>? onGui)
+    {
+        _onBeforeGUI = onGui;
+        return this;
+    }
+
+    public ProgressIndicator ResetDuration()
+    {
+        DurationRemain = DurationTotal;
+        return this;
+    }
+
+    public ProgressIndicator SetDuration(float remain, float total = -1f)
+    {
+        if (total > 0f) {
+            DurationTotal = total;
+        }
+
+        DurationRemain = Mathf.Clamp(remain, 0f, DurationTotal);
+        return this;
+    }
+
+#endregion
 }
