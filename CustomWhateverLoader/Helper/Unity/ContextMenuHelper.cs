@@ -50,7 +50,7 @@ public class ContextMenuHelper
             try {
                 var result = onClick?.Invoke();
                 if (result is not null) {
-                    ProgressIndicator.CreateProgressScoped(() => new(result.ToString()), 5f);
+                    CwlMod.Popup<ContextMenuHelper>(result.ToString());
                 }
             } catch (Exception ex) {
                 CwlMod.WarnWithPopup<ContextMenuHelper>("cwl_warn_processor".Loc("context_menu", entry, ex.Message), ex);

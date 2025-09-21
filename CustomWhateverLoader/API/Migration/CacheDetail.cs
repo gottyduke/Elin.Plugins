@@ -83,10 +83,12 @@ public sealed class CacheDetail(string cacheKey)
     [ConsoleCommand("clear_source_cache")]
     public static string ClearCache()
     {
-        _context.Clear();
-        _context.Save(new CacheVersionManifest(ModInfo.Version, DateTime.UtcNow), "cache_manifest");
+        var manifest = new CacheVersionManifest(ModInfo.Version, DateTime.UtcNow);
 
-        return "source sheets cache cleared";
+        _context.Clear();
+        _context.Save(manifest, "cache_manifest");
+
+        return $"Source sheets cache cleared, next generation in {manifest.NextGen()} days";
     }
 
     [Time]

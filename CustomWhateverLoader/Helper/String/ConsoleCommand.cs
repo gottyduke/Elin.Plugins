@@ -27,7 +27,7 @@ public static class ConsoleCommand
             }
 
             if (msg) {
-                using var progress = ProgressIndicator.CreateProgressScoped(() => new(result.ToString()), 3f);
+                CwlMod.Popup<ReflexConsole>(result.ToString());
             }
         }
     }

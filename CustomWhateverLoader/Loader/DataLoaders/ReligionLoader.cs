@@ -88,7 +88,7 @@ internal partial class DataLoader
             }
 
             custom.SetOfferingMtp(offering);
-            CwlMod.Log<DataLoader>("cwl_log_god_offering".Loc(offering.Count, custom.id));
+            CwlMod.Log<DataLoader>("cwl_log_god_offerings".Loc(offering.Count, custom.id));
         }
     }
 }

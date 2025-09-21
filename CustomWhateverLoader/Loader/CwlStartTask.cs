@@ -26,7 +26,6 @@ namespace Cwl;
 internal sealed partial class CwlMod
 {
     internal static string CurrentLoading = "";
-    internal static string CanContinue = "cwl_log_loading_critical";
     private static bool _duplicate;
 
     [Time]
@@ -63,8 +62,7 @@ internal sealed partial class CwlMod
 
     private IEnumerator LoadTask()
     {
-        using var progress =
-            ProgressIndicator.CreateProgressScoped(() => new("cwl_log_loading".Loc(ModInfo.Version, CurrentLoading, CanContinue.Loc())), 5f);
+        using var progress = ProgressIndicator.CreateProgressScoped(() => new("cwl_log_loading".Loc(ModInfo.Version, CurrentLoading)));
 
         PrebuildDispatchers();
         DramaExpansion.BuildActionList();
@@ -92,14 +90,14 @@ internal sealed partial class CwlMod
         DataLoader.MergeFactionElements();
         DataLoader.MergeOfferingMultiplier();
 
-        CanContinue = "";
-
         CurrentLoading = $"cwl_log_finished_loading_{ModInfo.TargetVersion}".Loc();
 
         OnDisable();
         SetupExceptionHook();
 
         yield return null;
+
+        // auto init console rebuild
         InitConsole();
     }
 

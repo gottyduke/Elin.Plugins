@@ -20,9 +20,9 @@ public class StringBuilderPool(StringBuilder sb) : IDisposable
         return new(_stringBuilderPool.Get());
     }
 
-    public StringBuilderPool AppendLine(string? message = "")
+    public StringBuilderPool AppendLine(string? message = null)
     {
-        sb.AppendLine(message.IsEmpty(Environment.NewLine));
+        sb.AppendLine(message);
         return this;
     }
 

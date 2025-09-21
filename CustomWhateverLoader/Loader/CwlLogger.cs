@@ -58,10 +58,12 @@ internal sealed partial class CwlMod
                 exp.CreateAndPop(payload.ToString());
                 break;
             default: {
-                log ??= payload;
-                LogInternal(log);
+                LogInternal(log ?? payload);
                 using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToTruncateString(150)));
-                progress.Get<ProgressIndicator>().AppendHoverText(() => log.ToTruncateString(450).TruncateAllLines(150));
+                if (log is not null) {
+                    progress.Get<ProgressIndicator>().OnHover(_ => GUILayout.Label(log.ToTruncateString(450).TruncateAllLines(150)));
+                }
+
                 break;
             }
         }
@@ -84,19 +86,26 @@ internal sealed partial class CwlMod
         Error<T>(payload, caller);
 
         switch (log) {
-            case null:
-                return;
             case Exception ex:
                 var exp = ExceptionProfile.GetFromStackTrace(ref ex);
                 exp.CreateAndPop(payload.ToString());
                 break;
             default: {
-                LogInternal(log);
-                using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToTruncateString(150), Color: _warningColor));
-                progress.Get<ProgressIndicator>().AppendHoverText(() => log.ToTruncateString(450).TruncateAllLines(150));
+                LogInternal(log ?? payload);
+                using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToTruncateString(150)));
+                if (log is not null) {
+                    progress.Get<ProgressIndicator>().OnHover(_ => GUILayout.Label(log.ToTruncateString(450).TruncateAllLines(150)));
+                }
+
                 break;
             }
         }
+    }
+
+    internal static void Popup<T>(string message)
+    {
+        Log<T>(message);
+        using var progress = ProgressIndicator.CreateProgressScoped(() => new(message));
     }
 
     [SwallowExceptions]
