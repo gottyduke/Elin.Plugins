@@ -46,12 +46,12 @@ internal partial class DataLoader
                     }
 
                     var id = file.GetFullFileNameWithoutExtension()[(dir.FullName.Length + 1)..].NormalizePath();
-                    CwlMod.CurrentLoading = "cwl_log_sound_loading".Loc(id);
+                    CwlMod.CurrentLoading = "cwl_log_sound_loading".Loc(id, file.ShortPath());
 
                     CachedSounds[id] = file;
                     CwlMod.Log<DataLoader>(CwlMod.CurrentLoading);
                 } catch (Exception ex) {
-                    CwlMod.WarnWithPopup<DataLoader>("cwl_error_sound_loader".Loc(file.Name, ex));
+                    CwlMod.WarnWithPopup<DataLoader>("cwl_error_sound_loader".Loc(file.ShortPath(), ex));
                     // noexcept
                 }
             }

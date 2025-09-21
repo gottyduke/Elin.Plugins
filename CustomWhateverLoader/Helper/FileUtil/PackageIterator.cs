@@ -22,7 +22,7 @@ public class PackageIterator
             .SelectMany(d => d.GetDirectories("Lang*"))
             .SelectMany(d => d.GetFiles(pattern, SearchOption.AllDirectories))
             .Select(f => f.FullName)
-            .Select(PathNormalizer.NormalizePath);
+            .Select(PathTruncation.NormalizePath);
     }
 
     public static IEnumerable<DirectoryInfo> GetLangModFilesFromPackage(string? modId = null)

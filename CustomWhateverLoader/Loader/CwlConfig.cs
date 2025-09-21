@@ -6,41 +6,43 @@ using ReflexCLI.Attributes;
 namespace Cwl;
 
 [ConsoleCommandClassCustomizer("cwl.config")]
-public class CwlConfig
+public abstract class CwlConfig
 {
-    [ConsoleCommand] public static bool LoggingVerbose => Logging.Verbose?.Value is true;
+    [ConsoleCommand] public static bool LoggingVerbose => Logging.Verbose!.Value;
 
-    [ConsoleCommand] public static bool SeamlessStreaming => BGM.SeamlessStreaming?.Value is true;
+    [ConsoleCommand] public static bool SeamlessStreaming => BGM.SeamlessStreaming!.Value;
 
-    [ConsoleCommand] public static bool CacheTalks => Caching.Talks?.Value is true;
-    [ConsoleCommand] public static bool CacheTypes => Caching.Types?.Value is true;
-    [ConsoleCommand] public static bool CachePaths => Caching.Paths?.Value is true;
-    [ConsoleCommand] public static bool CacheSprites => Caching.Sprites?.Value is true;
+    [ConsoleCommand] public static bool CacheTalks => Caching.Talks!.Value;
+    [ConsoleCommand] public static bool CacheTypes => Caching.Types!.Value;
+    [ConsoleCommand] public static bool CachePaths => Caching.Paths!.Value;
+    [ConsoleCommand] public static bool CacheSourceSheets => Caching.SourceSheets!.Value;
+    [ConsoleCommand] public static int CacheSourceSheetsRetention => Caching.SourceSheetsRetention!.Value;
+    [ConsoleCommand] public static bool CacheSprites => Caching.Sprites!.Value;
 
-    [ConsoleCommand] public static bool ExpandedActions => Dialog.ExpandedActions?.Value is true;
-    [ConsoleCommand] public static bool ExpandedActionsExternal => Dialog.ExpandedActionsAllowExternal?.Value is true;
-    [ConsoleCommand] public static bool NoOverlappingSounds => Dialog.NoOverlappingSounds?.Value is true;
-    [ConsoleCommand] public static bool VariableQuote => Dialog.VariableQuote?.Value is true;
+    [ConsoleCommand] public static bool ExpandedActions => Dialog.ExpandedActions!.Value;
+    [ConsoleCommand] public static bool ExpandedActionsExternal => Dialog.ExpandedActionsAllowExternal!.Value;
+    [ConsoleCommand] public static bool NoOverlappingSounds => Dialog.NoOverlappingSounds!.Value;
+    [ConsoleCommand] public static bool VariableQuote => Dialog.VariableQuote!.Value;
 
-    [ConsoleCommand] public static bool ExceptionAnalyze => Exceptions.Analyze?.Value is true;
-    [ConsoleCommand] public static bool ExceptionPopup => Exceptions.Popup?.Value is true;
+    [ConsoleCommand] public static bool ExceptionAnalyze => Exceptions.Analyze!.Value;
+    [ConsoleCommand] public static bool ExceptionPopup => Exceptions.Popup!.Value;
 
-    [ConsoleCommand] public static bool FixBaseGameAvatar => Patches.FixBaseGameAvatar?.Value is true;
-    [ConsoleCommand] public static bool FixBaseGamePopup => Patches.FixBaseGamePopup?.Value is true;
-    [ConsoleCommand] public static bool QualifyTypeName => Patches.QualifyTypeName?.Value is true;
-    [ConsoleCommand] public static bool SafeCreateClass => Patches.SafeCreateClass?.Value is true;
+    [ConsoleCommand] public static bool FixBaseGameAvatar => Patches.FixBaseGameAvatar!.Value;
+    [ConsoleCommand] public static bool FixBaseGamePopup => Patches.FixBaseGamePopup!.Value;
+    [ConsoleCommand] public static bool QualifyTypeName => Patches.QualifyTypeName!.Value;
+    [ConsoleCommand] public static bool SafeCreateClass => Patches.SafeCreateClass!.Value;
 
-    [ConsoleCommand] public static bool AllowProcessors => Source.AllowProcessors?.Value is true;
-    [ConsoleCommand] public static int MaxPrefetchLoads => Source.MaxPrefetchLoads?.Value ?? -1;
-    [ConsoleCommand] public static bool NamedImport => Source.NamedImport?.Value is true;
-    [ConsoleCommand] public static bool OverrideSameId => Source.OverrideSameId?.Value is true;
-    [ConsoleCommand] public static bool RethrowException => Source.RethrowException?.Value is true;
+    [ConsoleCommand] public static bool AllowProcessors => Source.AllowProcessors!.Value;
+    [ConsoleCommand] public static int MaxPrefetchLoads => Source.MaxPrefetchLoads!.Value;
+    [ConsoleCommand] public static bool NamedImport => Source.NamedImport!.Value;
+    [ConsoleCommand] public static bool OverrideSameId => Source.OverrideSameId!.Value;
+    [ConsoleCommand] public static bool RethrowException => Source.RethrowException!.Value;
 
-    [ConsoleCommand] public static bool SheetInspection => Source.SheetInspection?.Value is true;
+    [ConsoleCommand] public static bool SheetInspection => Source.SheetInspection!.Value;
 
     // TODO: disabled due to frequent game updates
-    [ConsoleCommand] public static bool SheetMigrate => false;
-    [ConsoleCommand] public static bool TrimSpaces => Source.TrimSpaces?.Value is true;
+    [ConsoleCommand] public static bool SheetMigrate => Source.SheetMigrate!.Value && false;
+    [ConsoleCommand] public static bool TrimSpaces => Source.TrimSpaces!.Value;
 
     internal static void Load(ConfigFile config)
     {
@@ -106,6 +108,20 @@ public class CwlConfig
             true,
             "Cache paths relocated by CWL instead of iterating new paths\n" +
             "缓存CWL重定向的路径而不是每次重新搜索");
+
+        Caching.SourceSheets = config.Bind(
+            ModInfo.Name,
+            "Caching.SourceSheets",
+            true,
+            "Cache source sheets imported by CWL in persistent data storage\n" +
+            "缓存CWL导入的源表而不是每次重新导入");
+
+        Caching.SourceSheetsRetention = config.Bind(
+            ModInfo.Name,
+            "Caching.SourceSheetsRetention",
+            7,
+            "Retention period in days before automatically regenerating source sheets cache\n" +
+            "源表缓存有效期(日)");
 
         Caching.Sprites = config.Bind(
             ModInfo.Name,
@@ -237,26 +253,28 @@ public class CwlConfig
             "移除单元格数据的前后空格文本，需要允许执行单元格后处理");
     }
 
-    internal class Logging
+    internal abstract class Logging
     {
         internal static ConfigEntry<bool>? Verbose { get; set; }
         internal static ConfigEntry<bool>? Execution { get; set; }
     }
 
-    internal class BGM
+    internal abstract class BGM
     {
         internal static ConfigEntry<bool>? SeamlessStreaming { get; set; }
     }
 
-    internal class Caching
+    internal abstract class Caching
     {
         internal static ConfigEntry<bool>? Talks { get; set; }
         internal static ConfigEntry<bool>? Types { get; set; }
         internal static ConfigEntry<bool>? Paths { get; set; }
+        internal static ConfigEntry<bool>? SourceSheets { get; set; }
+        internal static ConfigEntry<int>? SourceSheetsRetention { get; set; }
         internal static ConfigEntry<bool>? Sprites { get; set; }
     }
 
-    internal class Dialog
+    internal abstract class Dialog
     {
         internal static ConfigEntry<bool>? DynamicCheckIf { get; set; }
         internal static ConfigEntry<bool>? ExpandedActions { get; set; }
@@ -265,13 +283,13 @@ public class CwlConfig
         internal static ConfigEntry<bool>? VariableQuote { get; set; }
     }
 
-    internal class Exceptions
+    internal abstract class Exceptions
     {
         internal static ConfigEntry<bool>? Analyze { get; set; }
         internal static ConfigEntry<bool>? Popup { get; set; }
     }
 
-    internal class Patches
+    internal abstract class Patches
     {
         internal static ConfigEntry<bool>? FixBaseGameAvatar { get; set; }
         internal static ConfigEntry<bool>? FixBaseGamePopup { get; set; }
@@ -279,7 +297,7 @@ public class CwlConfig
         internal static ConfigEntry<bool>? SafeCreateClass { get; set; }
     }
 
-    internal class Source
+    internal abstract class Source
     {
         internal static ConfigEntry<bool>? AllowProcessors { get; set; }
         internal static ConfigEntry<int>? MaxPrefetchLoads { get; set; }
