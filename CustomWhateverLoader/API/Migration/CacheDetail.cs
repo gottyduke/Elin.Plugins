@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Cwl.API.Processors;
 using Cwl.Helper.String;
+using Cwl.LangMod;
 using MethodTimer;
 using ReflexCLI.Attributes;
 
@@ -48,9 +49,7 @@ public sealed class CacheDetail(string cacheKey)
 
     public void GenerateCache()
     {
-        if (_dirty) {
-            _context.Save(_cache, cacheKey);
-        }
+        _context.Save(_cache, cacheKey);
     }
 
     public static CacheDetail GetOrAdd(FileInfo file)
@@ -76,8 +75,7 @@ public sealed class CacheDetail(string cacheKey)
 
     public static void InvalidateCache()
     {
-        if (!_context.Load(out CacheVersionManifest? manifest, "cache_manifest") ||
-            manifest?.ValidateManifest() is not true) {
+        if (CacheVersionManifest.Get()?.ValidateManifest() is not true) {
             ClearCache();
         }
     }
@@ -87,17 +85,21 @@ public sealed class CacheDetail(string cacheKey)
     {
         _context.Clear();
         _context.Save(new CacheVersionManifest(ModInfo.Version, DateTime.UtcNow), "cache_manifest");
-        ClearDetail();
 
         return "source sheets cache cleared";
     }
 
     [Time]
-    public static void FinalizeCache()
+    public static void FinalizeCache(bool dirtyOnly = true)
     {
-        CwlMod.Debug<CacheDetail>(GetDetailString());
-        foreach (var detail in _details.Values) {
+        var details = _details.Values.Where(c => !dirtyOnly || c._dirty).ToArray();
+        foreach (var detail in details) {
             detail.GenerateCache();
+            detail._dirty = false;
+        }
+
+        if (details.Length > 0) {
+            CwlMod.Popup<CacheDetail>("cwl_ui_cache_gen".Loc(CacheVersionManifest.Get()?.NextGen(), GetDetailString(details)));
         }
     }
 
@@ -106,13 +108,19 @@ public sealed class CacheDetail(string cacheKey)
         _details.Clear();
     }
 
-    public static string GetDetailString()
+    public static string GetDetailString(CacheDetail[] details)
     {
-        return $"cache blob count: {_details.Count} | size: {_details.Values.Sum(d => d.BlobSize).ToAllocateString()}";
+        return "cwl_log_cache_detail".Loc(details.Length, details.Sum(d => d.BlobSize).ToAllocateString());
     }
 
     internal sealed record CacheVersionManifest(string Version, DateTime Retention)
     {
+        internal static CacheVersionManifest? Get()
+        {
+            _context.Load(out CacheVersionManifest? manifest, "cache_manifest");
+            return manifest;
+        }
+
         internal bool ValidateManifest()
         {
             if (Version != ModInfo.Version) {
@@ -122,13 +130,20 @@ public sealed class CacheDetail(string cacheKey)
 
             var lifetime = (DateTime.UtcNow - Retention).Days;
             var retention = CwlConfig.CacheSourceSheetsRetention;
-            if (lifetime < retention) {
-                CwlMod.Debug<CacheVersionManifest>($"next retention: {retention - lifetime} day(s)");
-                return true;
+            if (lifetime >= retention) {
+                CwlMod.Log<CacheDetail>($"cache manifest out of date, current: {lifetime}, retention: {retention}");
+                return false;
             }
 
-            CwlMod.Log<CacheDetail>($"cache manifest out of date, current: {lifetime}, retention: {retention}");
-            return false;
+            CwlMod.Debug<CacheVersionManifest>($"next retention: {retention - lifetime} day(s)");
+            return true;
+        }
+
+        internal int NextGen()
+        {
+            var lifetime = (DateTime.UtcNow - Retention).Days;
+            var retention = CwlConfig.CacheSourceSheetsRetention;
+            return retention - lifetime;
         }
     }
 }

@@ -119,6 +119,11 @@ public class WorkbookImporter
         CacheDetail? detail = null;
         (SourceData?, SourceData.BaseRow[]) data = new();
 
+        var sourceData = FindSourceByName(sheetName);
+        if (sourceData is null) {
+            return data;
+        }
+
         if (useCache) {
             SheetProcessor.PreProcess(sheet);
 
@@ -126,7 +131,7 @@ public class WorkbookImporter
             if (detail.TryGetCache(sheetName, out data.Item2)) {
                 CwlMod.Log<WorkbookImporter>("cwl_log_sheet".Loc(sheetName));
 
-                data.Item1 = FindSourceByName(sheetName);
+                data.Item1 = sourceData;
                 // ThingV resets rows
                 if (data.Item1 is SourceThingV) {
                     data.Item1 = EMono.sources.things;
@@ -144,6 +149,7 @@ public class WorkbookImporter
         }
 
         data = BySheetName(sheet, file.Name);
+
         if (useCache) {
             detail?.EmplaceCache(sheetName, data.Item2 ?? []);
         }
