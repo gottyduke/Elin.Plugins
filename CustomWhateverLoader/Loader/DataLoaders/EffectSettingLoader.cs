@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Cwl.API;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
@@ -31,7 +30,7 @@ internal partial class DataLoader
 
         var defaultSprite = Array.Find(sprites, s => s.name == "ranged_gun");
         var guns = Core.Instance.gameSetting.effect.guns;
-        var sb = new StringBuilder();
+        using var sb = StringBuilderPool.Get();
 
         var effects = PackageIterator.GetJsonsFromPackage<SerializableEffectSetting>("Data/EffectSetting.guns.json");
         foreach (var (path, gunData) in effects) {

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using Cwl.API.Migration;
 using Cwl.Helper;
 using Cwl.Helper.Exceptions;
@@ -48,7 +47,7 @@ internal class RethrowParsePatch
         }
 
         var row = ExcelParser.row;
-        var sb = new StringBuilder();
+        using var sb = StringBuilderPool.Get();
 
         if (SourceInitPatch.SafeToCreate && MigrateDetail.CurrentDetail is { } detail) {
             sb.Append($"{detail.Mod!.id.TagColor(0x2f2d2d)} // ");

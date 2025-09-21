@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Cwl.API.Attributes;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
@@ -92,7 +91,7 @@ public partial class CustomPlaylist
     [ConsoleCommand("dump")]
     public static string DumpAllBGMData()
     {
-        var sb = new StringBuilder(2048)
+        using var sb = StringBuilderPool.Get()
             .AppendLine("Playlist Dump");
 
         var pls = Resources.LoadAll<Playlist>($"{DataLoader.SoundPathEntry}BGM/Playlist");
@@ -154,7 +153,7 @@ public partial class CustomPlaylist
     private static string BuildPlaylistString()
     {
         var newPl = SoundManager.current.currentPlaylist;
-        var sb = new StringBuilder()
+        using var sb = StringBuilderPool.Get()
             .AppendLine(newPl.name)
             .AppendLine()
             .AppendLine("cwl_bgm_shuffle".Loc(newPl.shuffle))

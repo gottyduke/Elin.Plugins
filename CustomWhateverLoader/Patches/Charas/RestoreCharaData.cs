@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
 using Cwl.API.Attributes;
 using Cwl.API.Custom;
 using Cwl.API.Processors;
 using Cwl.Helper.Extensions;
+using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;
 
@@ -72,7 +72,7 @@ internal static class RestoreCharaData
 
     private static string BuildRestorationList()
     {
-        var sb = new StringBuilder();
+        using var sb = StringBuilderPool.Get();
 
         foreach (var (chara, row) in Restorable.Take(15)) {
             sb.AppendLine($"{row.GetText()} {row.GetText("aka")}, lv {chara.LV}, {chara.currentZone.Name}");

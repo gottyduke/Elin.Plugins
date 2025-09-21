@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
@@ -139,7 +138,8 @@ public class ExceptionProfile(string stackTrace)
     private IEnumerator DeferredAnalyzer()
     {
         Frames.Clear();
-        var sb = new StringBuilder(stackTrace.Length);
+
+        using var sb = StringBuilderPool.Get();
         sb.AppendLine("cwl_ui_callstack".Loc());
 
         var terminated = false;
@@ -171,7 +171,7 @@ public class ExceptionProfile(string stackTrace)
                                 info.TestIncompatiblePatch();
                             }
 
-                            info.DumpPatchDetails(sb);
+                            info.DumpPatchDetails(sb.StringBuilder);
                         }
                     } catch {
                         // noexcept

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
+using Cwl.Helper.String;
 using Cwl.LangMod;
 
 namespace Cwl;
@@ -18,7 +18,7 @@ internal class ExecutionAnalysis
             return;
         }
 
-        var sb = new StringBuilder(2048)
+        using var sb = StringBuilderPool.Get()
             .AppendLine("cwl_log_execution_analysis".Loc());
 
         var methodNameWidth = _cached.Keys.Max(mi => (mi.DeclaringType?.Name.Length ?? 0) + mi.Name.Length + 7);

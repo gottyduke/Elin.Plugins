@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
 using Cwl.API.Attributes;
 using Cwl.Helper;
@@ -73,7 +72,7 @@ public partial class DramaExpansion
     [ConsoleCommand("dump_action_list")]
     internal static string DumpActionList()
     {
-        var sb = new StringBuilder();
+        using var sb = StringBuilderPool.Get();
         sb.AppendLine("dumping action list");
 
         foreach (var (action, provider) in Actions) {

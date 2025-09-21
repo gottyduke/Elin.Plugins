@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using Cwl.Helper.String;
 using Cwl.Helper.Stubs;
 using Cwl.Helper.Unity;
@@ -154,7 +153,7 @@ public class DebugSampler : MethodStub
             return "empty sequence";
         }
 
-        var sb = new StringBuilder()
+        using var sb = StringBuilderPool.Get()
             .AppendLine("method,counted,average,max,min,total");
 
         foreach (var helper in filtered) {
@@ -183,7 +182,7 @@ public class DebugSampler : MethodStub
 
     private static string BuildSamplerInfo()
     {
-        var sb = new StringBuilder()
+        using var sb = StringBuilderPool.Get()
             .AppendLine("cwl_ui_stub_info".Loc())
             .AppendLine("cwl_ui_stub_header".Loc())
             .AppendLine()

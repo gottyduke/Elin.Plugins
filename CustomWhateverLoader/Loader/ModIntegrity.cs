@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Cwl.API;
 using Cwl.API.Attributes;
 using Cwl.API.Processors;
+using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 
@@ -50,7 +50,7 @@ public class ModIntegrity
 
     private static string BuildMissingList(IReadOnlyList<SerializableModPackage> missing)
     {
-        var sb = new StringBuilder();
+        using var sb = StringBuilderPool.Get();
 
         foreach (var mod in missing.Take(15)) {
             sb.AppendLine($"{mod.ModName}({mod.ModId})");
