@@ -50,15 +50,20 @@ jobs:
         run: dotnet restore ${{ github.workspace }}\CustomWhateverLoader\ --locked-mode
 
       - name: Build
+        id: build
         env:
           ElinGamePath: ${{ github.workspace }}\${{ matrix.version }}
         shell: pwsh
         run: |
           $config = '${{ matrix.version }}' -eq 'stable' ? 'Debug' : 'DebugNightly'
           dotnet build ${{ github.workspace }}\CustomWhateverLoader\CustomWhateverLoader.csproj -o ${{ github.workspace }}\out\${{ matrix.version }} -c $config --no-restore
+          
+          $dllPath = Join-Path -Path "${{ github.workspace }}\out\${{ matrix.version }}" -ChildPath "CustomWhateverLoader.dll"
+          $fileVersion = (Get-Item -Path $dllPath).VersionInfo.FileVersion
+          echo "file_version=$fileVersion" >> $env:GITHUB_OUTPUT
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: cwl-ci-builds-${{ matrix.version }}
+          name: cwl-ci-builds-${{ steps.build.outputs.file_version }}-${{ matrix.version }}
           path: ${{ github.workspace }}\out\${{ matrix.version }}
