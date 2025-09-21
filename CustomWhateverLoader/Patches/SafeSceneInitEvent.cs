@@ -24,17 +24,13 @@ public class SafeSceneInitEvent
     internal static void OnPreSceneInit(Scene.Mode newMode)
     {
         _preLut ??= _preCallbacks.ToLookup(x => x.Item1, x => x.Item2);
-        foreach (var (callback, defer) in _preLut[newMode])
-            try {
-                if (defer) {
-                    CoroutineHelper.Deferred(() => callback.Invoke(null));
-                } else {
-                    callback.Invoke(null);
-                }
-            } catch (Exception ex) {
-                CwlMod.Warn<SafeSceneInitEvent>("cwl_warn_processor".Loc("pre_scene_init", newMode, ex));
-                // noexcept
+        foreach (var (callback, defer) in _preLut[newMode]) {
+            if (defer) {
+                CoroutineHelper.Deferred(() => SafeInvoke(callback, "pre_scene_init", newMode));
+            } else {
+                SafeInvoke(callback, "pre_scene_init", newMode);
             }
+        }
     }
 
     [HarmonyPostfix]
@@ -47,17 +43,13 @@ public class SafeSceneInitEvent
         };
 
         _postLut ??= _postCallbacks.ToLookup(x => x.Item1, x => x.Item2);
-        foreach (var (callback, defer) in _postLut[newMode])
-            try {
-                if (defer) {
-                    CoroutineHelper.Deferred(() => callback.Invoke(null));
-                } else {
-                    callback.Invoke(null);
-                }
-            } catch (Exception ex) {
-                CwlMod.Warn<SafeSceneInitEvent>("cwl_warn_processor".Loc("post_scene_init", newMode, ex));
-                // noexcept
+        foreach (var (callback, defer) in _postLut[newMode]) {
+            if (defer) {
+                CoroutineHelper.Deferred(() => SafeInvoke(callback, "post_scene_init", newMode));
+            } else {
+                SafeInvoke(callback, "post_scene_init", newMode);
             }
+        }
     }
 
     [Time]
@@ -83,6 +75,16 @@ public class SafeSceneInitEvent
     {
         _preLut = null;
         _postLut = null;
+    }
+
+    private static void SafeInvoke(FastInvokeHandler invoker, string type, Scene.Mode mode)
+    {
+        try {
+            invoker.Invoke(null);
+        } catch (Exception ex) {
+            CwlMod.Warn<SafeSceneInitEvent>("cwl_warn_processor".Loc(type, mode, ex));
+            // noexcept
+        }
     }
 
     private record SceneCallback(FastInvokeHandler Callback, bool ShouldDefer);
