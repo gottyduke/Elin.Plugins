@@ -34,7 +34,6 @@ internal sealed partial class CwlMod
     {
         _duplicate = Harmony.HasAnyPatches(ModInfo.Guid);
         if (_duplicate) {
-            WarnWithPopup<CwlMod>("cwl_warn_duplicate_cwl".Loc().TagColor(Color.red));
             return;
         }
 
@@ -107,6 +106,7 @@ internal sealed partial class CwlMod
     private void OnStartCore()
     {
         if (_duplicate) {
+            StartCoroutine(ReportDuplicateVersion());
             return;
         }
 
@@ -175,5 +175,12 @@ internal sealed partial class CwlMod
     {
         CommandRegistry.Rebuild();
         ParameterProcessorRegistry.Init();
+    }
+
+    private static IEnumerator ReportDuplicateVersion()
+    {
+        yield return null;
+        yield return null;
+        WarnWithPopup<CwlMod>("cwl_warn_duplicate_cwl".Loc().TagColor(Color.red));
     }
 }
