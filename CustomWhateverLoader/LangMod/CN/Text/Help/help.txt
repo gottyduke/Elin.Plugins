@@ -18,6 +18,15 @@ $更新日志
 
 
 
+{topic|1.20.48}
+更新了 23.202 Nightly 添加的修改
+为非脚本类能力启用了自定义元素功能(信仰能力触发喊叫, 自定义图标)
+添加了角色能力检查补丁, 用于处理卸载 Mod 后触发的报错
+添加了对自定义信仰额外奖励等级的支持, 允许在第二级奖励之后设置更多奖励等级
+进行了多项API重构
+为工作簿导入器添加了源表缓存, 可配置保留期限, 默认 7 日 或 CWL 更新后
+将 CWL 弹出窗口实现更改为 IMGUI
+
 {topic|1.20.47}
 更新了 23.200 Stable 添加的修改
 修复了自定义商人库存不能正常生成法术类型商品的问题
@@ -81,6 +90,7 @@ $控制台命令
 {pair|cwl.data.load_sound|预加载Sound/文件夹内所有音频数据}
 {pair|cwl.data.clear_effect_cache|清除所有缓存的特效}
 {pair|cwl.data.clear_sound_cache|清除所有预加载的音频数据}
+{pair|cwl.data.clear_source_cache|清除所有生成的源表缓存}
 {pair|cwl.data.clear_path_cache|清除所有缓存的重定位路径}
 
 {topic|BGM播放列表}

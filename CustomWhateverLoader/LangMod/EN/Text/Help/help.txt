@@ -18,6 +18,14 @@ $Changelogs
 
 
 
+{topic|1.20.48}
+Updated for 23.202 Nightly
+Enabled custom element feature(god ability talk proc, custom icon sprite) for non-scripted classes
+Enabled CharaAbility invalidator
+Added support for extended custom religion gift ranks, allowing multiple ranks above tier 2
+Various API refactor
+Added source sheet caching to workbook importer, retention period configurable
+Changed CWL progress indicator popup implementation to IMGUI
 
 {topic|1.20.47}
 Updated for 23.200 Stable
@@ -82,6 +90,7 @@ $Console Commands
 {pair|cwl.data.load_sound|Preload all sound data from Sound/ folder}
 {pair|cwl.data.clear_effect_cache|Clear all cached Effects}
 {pair|cwl.data.clear_sound_cache|Clear all preloaded sound data}
+{pair|cwl.data.clear_source_cache|Clear all source cache blobs}
 {pair|cwl.data.clear_path_cache|Clear all cached package path relocations}
 
 {topic|BGM Playlist}
