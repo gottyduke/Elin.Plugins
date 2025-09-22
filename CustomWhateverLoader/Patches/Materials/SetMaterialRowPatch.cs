@@ -20,11 +20,6 @@ internal class SetMaterialRowPatch
             return;
         }
 
-        var matColors = Core.Instance.Colors.matColors;
-        if (matColors.ContainsKey(r.alias)) {
-            return;
-        }
-
         AddMaterial(r);
     }
 
@@ -32,6 +27,10 @@ internal class SetMaterialRowPatch
     private static void AddMaterial(SourceMaterial.Row r)
     {
         var matColors = Core.Instance.Colors.matColors;
+        if (matColors.ContainsKey(r.alias)) {
+            return;
+        }
+
         Color main = default;
         Color alt = default;
 
@@ -39,6 +38,7 @@ internal class SetMaterialRowPatch
             .Where(t => t.StartsWith("addCol"))
             .Select(t => t[6..])
             .ToArray();
+
         try {
             foreach (var tag in tags) {
                 if (tag.StartsWith("_Main")) {
@@ -48,7 +48,7 @@ internal class SetMaterialRowPatch
                 }
             }
         } catch (Exception ex) {
-            CwlMod.WarnWithPopup<Material>("cwl_warn_mat_color".Loc(r.alias, tags.Join(), ex.Message), ex);
+            CwlMod.WarnWithPopup<SourceMaterial>("cwl_warn_mat_color".Loc(r.alias, tags.Join(), ex.Message), ex);
             return;
         }
 
@@ -56,6 +56,6 @@ internal class SetMaterialRowPatch
             main = main,
             alt = alt,
         };
-        CwlMod.Log<Material>("cwl_log_mat_color".Loc(r.alias, main, alt));
+        CwlMod.Log<SourceMaterial>("cwl_log_mat_color".Loc(r.alias, main, alt));
     }
 }

@@ -92,7 +92,7 @@ public class ExceptionProfile(string message)
 
         progress
             .OnHover(_ => {
-                StartAnalyzing();
+                Analyze();
                 GUILayout.Label($"{"cwl_ui_exception_copy".Loc()}\n{Result}");
             })
             .OnAfterGUI(p => {
@@ -103,7 +103,7 @@ public class ExceptionProfile(string message)
             .OnEvent(ClickHandler);
     }
 
-    public void StartAnalyzing()
+    public void Analyze()
     {
         if (State is not AnalyzeState.NotStarted) {
             return;

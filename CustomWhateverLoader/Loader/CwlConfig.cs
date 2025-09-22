@@ -112,11 +112,11 @@ public abstract class CwlConfig
         Caching.SourceSheetsRetention = config.Bind(
             ModInfo.Name,
             "Caching.SourceSheetsRetention",
-            7,
+            30,
             new ConfigDescription("Retention period in days before automatically regenerating source sheets cache\n" +
                                   "源表缓存有效期(日)\n" +
                                   "ソーステーブルキャッシュの有効期間（日数）",
-                                  new AcceptableValueRange<int>(0, 30)));
+                new AcceptableValueRange<int>(0, 30)));
 
         Caching.Sprites = config.Bind(
             ModInfo.Name,

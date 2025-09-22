@@ -32,9 +32,9 @@ public class ProgressIndicator
     public required Func<ProgressIndicator, bool> ShouldKill;
 
     public float DurationRemain { get; private set; }
+    public float DurationTotal { get; private set; }
     public bool IsHovering { get; private set; }
     public bool IsKilled { get; private set; }
-    public float DurationTotal { get; private set; }
 
     public void Kill()
     {
@@ -63,7 +63,7 @@ public class ProgressIndicator
 
             _info = OnUpdate();
         } catch (Exception ex) {
-            ExceptionProfile.GetFromStackTrace(ref ex).StartAnalyzing();
+            ExceptionProfile.GetFromStackTrace(ref ex).Analyze();
 #if DEBUG
             throw;
 #else
@@ -96,26 +96,12 @@ public class ProgressIndicator
             return;
         }
 
-        GUIStyle ??= _defaultStyle ??= new(GUI.skin.label) {
-            fontSize = 16,
-            richText = true,
-            wordWrap = true,
-            alignment = TextAnchor.UpperLeft,
-            padding = new(10, 10, 10, 10),
-            normal = {
-                background = SpriteCreator.GetSolidColorTexture(new(1f, 1f, 1f)),
-                textColor = Color.black,
-            },
-            hover = {
-                background = SpriteCreator.GetSolidColorTexture(new(0.9f, 0.9f, 0.9f)),
-                textColor = Color.black,
-            },
-        };
+        GUIStyle ??= _defaultStyle ??= GetLabelSkin();
 
         var textColor = _info.Color ?? Color.black;
         GUIStyle.normal.textColor = GUIStyle.hover.textColor = textColor;
 
-        var oldStyle = GUI.skin.label;
+        var oldLabel = GUI.skin.label;
         GUI.skin.label = GUIStyle;
 
         GUILayout.BeginVertical("box");
@@ -138,7 +124,7 @@ public class ProgressIndicator
         }
         GUILayout.EndVertical();
 
-        GUI.skin.label = oldStyle;
+        GUI.skin.label = oldLabel;
 
         var @event = Event.current;
         switch (@event.type) {
@@ -185,9 +171,21 @@ public class ProgressIndicator
                 return;
             }
 
+            var oldScrollView = GUI.skin.scrollView;
+            var oldVerticalScrollbar = GUI.skin.verticalScrollbar;
+            var oldVerticalScrollbarThumb = GUI.skin.verticalScrollbarThumb;
+
+            GUI.skin.scrollView = GetScrollViewSkin();
+            GUI.skin.verticalScrollbar = GetVerticalScrollbarSkin();
+            GUI.skin.verticalScrollbarThumb = GetVerticalScrollbarThumbSkin();
+
             GUILayout.Space(10f);
 
             _active.ToArray().ForeachReverse(p => p.Draw());
+
+            GUI.skin.scrollView = oldScrollView;
+            GUI.skin.verticalScrollbar = oldVerticalScrollbar;
+            GUI.skin.verticalScrollbarThumb = oldVerticalScrollbarThumb;
         }
 
         private IEnumerator ProgressUpdate()
@@ -202,6 +200,74 @@ public class ProgressIndicator
             }
         }
     }
+
+#region Skins
+
+    public static GUIStyle GetLabelSkin()
+    {
+        return new(GUI.skin.label) {
+            fontSize = 16,
+            richText = true,
+            wordWrap = true,
+            alignment = TextAnchor.UpperLeft,
+            padding = new(10, 10, 10, 10),
+            normal = {
+                background = SpriteCreator.GetSolidColorTexture(new(1f, 1f, 1f, 0.95f)),
+                textColor = Color.black,
+            },
+            hover = {
+                background = SpriteCreator.GetSolidColorTexture(new(0.9f, 0.9f, 0.9f)),
+                textColor = Color.black,
+            },
+        };
+    }
+
+    public static GUIStyle GetScrollViewSkin()
+    {
+        return new(GUI.skin.scrollView) {
+            padding = new(0, 10, 0, 0),
+            normal = {
+                background = SpriteCreator.GetSolidColorTexture(new(1f, 1f, 1f, 0.95f)),
+            },
+        };
+    }
+
+    public static GUIStyle GetVerticalScrollbarSkin()
+    {
+        return new(GUI.skin.verticalScrollbar) {
+            fixedWidth = 5f,
+            border = new(0, 0, 0, 0),
+            normal = {
+                background = SpriteCreator.GetSolidColorTexture(new(0.8f, 0.8f, 0.8f)),
+            },
+            hover = {
+                background = SpriteCreator.GetSolidColorTexture(new(0.7f, 0.7f, 0.7f)),
+            },
+            active = {
+                background = SpriteCreator.GetSolidColorTexture(new(0.6f, 0.6f, 0.6f)),
+            },
+        };
+    }
+
+    public static GUIStyle GetVerticalScrollbarThumbSkin()
+    {
+        return new(GUI.skin.verticalScrollbarThumb) {
+            border = new(0, 0, 0, 0),
+            fixedWidth = 10f,
+            normal = {
+                background = SpriteCreator.GetSolidColorTexture(new(0.5f, 0.5f, 0.5f)),
+            },
+            hover = {
+                background = SpriteCreator.GetSolidColorTexture(new(0.4f, 0.4f, 0.4f)),
+            },
+            active = {
+                background = SpriteCreator.GetSolidColorTexture(new(0.3f, 0.3f, 0.3f)),
+            },
+        };
+    }
+
+#endregion
+
 
 #region Factory
 

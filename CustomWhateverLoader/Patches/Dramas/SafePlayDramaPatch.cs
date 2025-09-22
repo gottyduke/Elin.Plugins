@@ -30,7 +30,7 @@ internal class SafePlayDramaPatch
         ELayerCleanup.Cleanup<LayerDrama>();
 
         var exp = ExceptionProfile.GetFromStackTrace(ref __exception);
-        exp.StartAnalyzing();
+        exp.Analyze();
         exp.CreateAndPop("cwl_warn_drama_play_ex".Loc($"{__exception.GetType().Name}: {__exception.Message}"));
         CwlMod.Log(__exception);
 
