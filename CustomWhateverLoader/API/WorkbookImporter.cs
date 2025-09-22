@@ -23,6 +23,8 @@ public class WorkbookImporter
         typeof(WorkbookImporter),
         nameof(BySheetName), [typeof(ISheet), typeof(string)]);
 
+    internal static string LastTiming = "";
+
     internal static Dictionary<string, SourceData?>? Sources =>
         field ??= typeof(SourceManager)
             .GetFields(AccessTools.all)
@@ -241,12 +243,16 @@ public class WorkbookImporter
         var allocDiff = allocNew - alloc;
         CwlMod.Debug<WorkbookImporter>($"prefetch chunk size: {chunkSize} | mem alloc: {allocDiff.ToAllocateString()}");
 
-        MigrateDetail.DumpTiming();
+        LastTiming = MigrateDetail.DumpTiming();
         MigrateDetail.Clear();
+
+        CwlMod.Log<MigrateDetail>(LastTiming);
     }
 
     private static void HotInit(IEnumerable<SourceData> sources)
     {
+        CwlMod.Log<WorkbookImporter>("resetting dirty data...");
+
         foreach (var imported in sources) {
             try {
                 imported.Reset();
@@ -257,5 +263,7 @@ public class WorkbookImporter
                 // noexcept
             }
         }
+
+        CwlMod.Log<WorkbookImporter>("finished resetting dirty data");
     }
 }

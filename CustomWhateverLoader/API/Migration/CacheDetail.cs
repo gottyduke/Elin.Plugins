@@ -13,11 +13,12 @@ namespace Cwl.API.Migration;
 [ConsoleCommandClassCustomizer("cwl.data")]
 public sealed class CacheDetail(string cacheKey)
 {
-    private static readonly GameIOProcessor.GameIOContext _context = GameIOProcessor.GetPersistentModContext(ModInfo.Name)!;
+    private const string CacheStorage = ModInfo.Name;
 
+    private static readonly GameIOProcessor.GameIOContext _context = GameIOProcessor.GetPersistentModContext(CacheStorage)!;
     private static readonly Dictionary<string, CacheDetail> _details = [];
 
-    private readonly Dictionary<string, SourceData.BaseRow[]> _cache = [];
+    private SerializableSourceCache _cache = [];
     private bool _dirty;
 
     public long BlobSize =>
@@ -61,15 +62,12 @@ public sealed class CacheDetail(string cacheKey)
 
         detail = _details[cacheKey] = new(cacheKey);
 
-        if (!_context.Load(out Dictionary<string, SourceData.BaseRow[]>? cache, cacheKey) ||
+        if (!_context.Load(out SerializableSourceCache? cache, cacheKey) ||
             cache is null) {
             return detail;
         }
 
-        foreach (var (k, v) in cache) {
-            detail._cache[k] = v;
-        }
-
+        detail._cache = cache;
         return detail;
     }
 

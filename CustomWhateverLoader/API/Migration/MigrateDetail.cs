@@ -232,7 +232,7 @@ public sealed class MigrateDetail
     }
 
     //[Conditional("DEBUG")]
-    public static void DumpTiming()
+    public static string DumpTiming()
     {
         var elapsed = TimeSpan.Zero;
         var total = 0;
@@ -254,7 +254,8 @@ public sealed class MigrateDetail
         }
 
         sb.AppendLine($"{(int)elapsed.TotalMilliseconds,5}ms[{total,3}] total elapsed");
-        CwlMod.Log<MigrateDetail>(sb);
+
+        return sb.ToString();
     }
 
     public sealed class MigrateSheet

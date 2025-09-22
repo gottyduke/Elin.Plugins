@@ -1,136 +1,139 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
-    <Platforms>AnyCPU</Platforms>
-    <LangVersion>preview</LangVersion>
-    <Nullable>enable</Nullable>
-    <RootNamespace>Cwl</RootNamespace>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <OutputPath>$(ElinGamePath)\Package\Mod_$(AssemblyName)\</OutputPath>
-    <Deterministic>false</Deterministic>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
-    <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
-    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <NoWarn>1701;1702;8620</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <NoWarn>1701;1702;8620</NoWarn>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'DebugNightly' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DefineConstants>$(DefineConstants);NIGHTLY</DefineConstants>
-    <NoWarn>1701;1702;8620</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'ReleaseNightly' ">
-    <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DefineConstants>$(DefineConstants);NIGHTLY</DefineConstants>
-    <NoWarn>1701;1702;8620</NoWarn>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Fody" Version="6.9.3">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="GitVersion.MsBuild" Version="6.4.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="MethodTimer.Fody" Version="3.2.3">
-      <PrivateAssets>all</PrivateAssets>
-      <ExcludeAssets>runtime</ExcludeAssets>
-    </PackageReference>
-    <PackageReference Include="PolySharp" Version="1.15.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="SwallowExceptions.Fody" Version="1.0.1">
-      <PrivateAssets>all</PrivateAssets>
-      <ExcludeAssets>runtime</ExcludeAssets>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="scripts\**" />
-    <Compile Remove="assets\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Remove="scripts\**" />
-    <EmbeddedResource Remove="assets\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="CustomWhateverLoader.csproj.DotSettings" />
-    <None Remove="README.md" />
-    <None Remove="README.CN.md" />
-    <None Remove="README.JP.md" />
-    <None Remove="scripts\**" />
-    <None Remove="packages.lock.json" />
-    <None Update="LangMod\CN\Text\Help\help.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="LangMod\CN\cwl_sources.xlsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="LangMod\EN\Text\Help\help.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="LangMod\EN\cwl_sources.xlsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Remove="assets\**" />
-  </ItemGroup>
-  <Target Name="CopyAssets" AfterTargets="AfterBuild">
+    <PropertyGroup>
+        <TargetFramework>net472</TargetFramework>
+        <Platforms>AnyCPU</Platforms>
+        <LangVersion>preview</LangVersion>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Cwl</RootNamespace>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <OutputPath>$(ElinGamePath)\Package\Mod_$(AssemblyName)\</OutputPath>
+        <Deterministic>false</Deterministic>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <NoWarn>1701;1702;8620</NoWarn>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <DebugType>none</DebugType>
+        <Optimize>true</Optimize>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <NoWarn>1701;1702;8620</NoWarn>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'DebugNightly' ">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <DefineConstants>$(DefineConstants);NIGHTLY</DefineConstants>
+        <NoWarn>1701;1702;8620</NoWarn>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'ReleaseNightly' ">
+        <DebugType>none</DebugType>
+        <Optimize>true</Optimize>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <DefineConstants>$(DefineConstants);NIGHTLY</DefineConstants>
+        <NoWarn>1701;1702;8620</NoWarn>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
     <ItemGroup>
-      <TextureFiles Include="assets\Texture\*.*" />
+        <PackageReference Include="Fody" Version="6.9.3">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="GitVersion.MsBuild" Version="6.4.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="MethodTimer.Fody" Version="3.2.3">
+            <PrivateAssets>all</PrivateAssets>
+            <ExcludeAssets>runtime</ExcludeAssets>
+        </PackageReference>
+        <PackageReference Include="PolySharp" Version="1.15.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="SwallowExceptions.Fody" Version="1.0.1">
+            <PrivateAssets>all</PrivateAssets>
+            <ExcludeAssets>runtime</ExcludeAssets>
+        </PackageReference>
     </ItemGroup>
-    <Copy
+    <ItemGroup>
+        <Compile Remove="scripts\**"/>
+        <Compile Remove="assets\**"/>
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Remove="scripts\**"/>
+        <EmbeddedResource Remove="assets\**"/>
+    </ItemGroup>
+    <ItemGroup>
+        <None Remove="CustomWhateverLoader.csproj.DotSettings"/>
+        <None Remove="README.md"/>
+        <None Remove="README.CN.md"/>
+        <None Remove="README.JP.md"/>
+        <None Remove="scripts\**"/>
+        <None Remove="packages.lock.json"/>
+        <None Update="LangMod\CN\Text\Help\help.txt">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="LangMod\CN\cwl_sources.xlsx">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="LangMod\EN\Text\Help\help.txt">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="LangMod\EN\cwl_sources.xlsx">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Remove="assets\**"/>
+    </ItemGroup>
+    <Target Name="CopyAssets" AfterTargets="AfterBuild">
+        <ItemGroup>
+            <TextureFiles Include="assets\Texture\*.*"/>
+        </ItemGroup>
+        <Copy
                 SourceFiles="@(TextureFiles)"
                 DestinationFiles="@(TextureFiles->'$(TargetDir)Texture\%(Filename)%(Extension)')"
                 SkipUnchangedFiles="true"
                 OverwriteReadOnlyFiles="true"
         />
-    <PropertyGroup>
-      <SourcePreviewImage Condition="'$(Configuration)' == 'Debug' OR '$(Configuration)' == 'Release'">assets\preview_stable.jpg</SourcePreviewImage>
-      <SourcePreviewImage Condition="'$(Configuration)' == 'DebugNightly' OR '$(Configuration)' == 'ReleaseNightly'">assets\preview_nightly.jpg</SourcePreviewImage>
-      <SourcePackageMeta Condition="'$(Configuration)' == 'Debug' OR '$(Configuration)' == 'Release'">assets\package_stable.xml</SourcePackageMeta>
-      <SourcePackageMeta Condition="'$(Configuration)' == 'DebugNightly' OR '$(Configuration)' == 'ReleaseNightly'">assets\package_nightly.xml</SourcePackageMeta>
-    </PropertyGroup>
-    <Copy
+        <PropertyGroup>
+            <SourcePreviewImage Condition="'$(Configuration)' == 'Debug' OR '$(Configuration)' == 'Release'">assets\preview_stable.jpg</SourcePreviewImage>
+            <SourcePreviewImage Condition="'$(Configuration)' == 'DebugNightly' OR '$(Configuration)' == 'ReleaseNightly'">assets\preview_nightly.jpg</SourcePreviewImage>
+            <SourcePackageMeta Condition="'$(Configuration)' == 'Debug' OR '$(Configuration)' == 'Release'">assets\package_stable.xml</SourcePackageMeta>
+            <SourcePackageMeta Condition="'$(Configuration)' == 'DebugNightly' OR '$(Configuration)' == 'ReleaseNightly'">assets\package_nightly.xml</SourcePackageMeta>
+        </PropertyGroup>
+        <Copy
                 SourceFiles="$(SourcePreviewImage)"
                 DestinationFiles="$(TargetDir)preview.jpg"
                 SkipUnchangedFiles="true"
                 OverwriteReadOnlyFiles="true"
                 Condition="'$(SourcePreviewImage)' != ''"
         />
-    <Copy
+        <Copy
                 SourceFiles="$(SourcePackageMeta)"
                 DestinationFiles="$(TargetDir)package.xml"
                 SkipUnchangedFiles="true"
                 OverwriteReadOnlyFiles="true"
                 Condition="'$(SourcePackageMeta)' != ''"
         />
-  </Target>
+    </Target>
+    <Target Name="RemovePdbFromRelease" AfterTargets="Build" Condition="'$(Configuration)' == 'Release' OR '$(Configuration)' == 'ReleaseNightly'">
+        <Delete Files="$(TargetDir)$(TargetName).pdb"/>
+    </Target>
 </Project>

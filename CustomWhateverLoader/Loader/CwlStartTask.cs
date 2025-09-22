@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using Cwl.API;
 using Cwl.API.Attributes;
 using Cwl.API.Custom;
 using Cwl.API.Drama;
@@ -62,7 +63,15 @@ internal sealed partial class CwlMod
 
     private IEnumerator LoadTask()
     {
+        var scrollPosition = Vector2.zero;
         using var progress = ProgressIndicator.CreateProgressScoped(() => new("cwl_log_loading".Loc(ModInfo.Version, CurrentLoading)));
+        progress.Get<ProgressIndicator>().OnHover(_ => {
+            scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.Height(400f));
+            {
+                GUILayout.Label(WorkbookImporter.LastTiming);
+            }
+            GUILayout.EndScrollView();
+        });
 
         PrebuildDispatchers();
         DramaExpansion.BuildActionList();
