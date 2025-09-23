@@ -80,10 +80,12 @@ public class ExceptionProfile(string message)
         display ??= message;
         IsMissingMethod = display.Contains(nameof(MissingMethodException));
         if (IsMissingMethod) {
-            display = display.Replace(nameof(MissingMethodException), "cwl_warn_missing_method".Loc(nameof(MissingMethodException)));
+            display = display.Replace(nameof(MissingMethodException),
+                "cwl_warn_missing_method".Loc(nameof(MissingMethodException)));
         }
 
-        using var scopeExit = ProgressIndicator.CreateProgressScoped(() => new(GetOccurrenceString() + display, Color: Color.red));
+        using var scopeExit =
+            ProgressIndicator.CreateProgressScoped(() => new(GetOccurrenceString() + display, Color: Color.red));
         progress = _activeExceptions[Key] = scopeExit.Get<ProgressIndicator>();
 
         if (!CwlConfig.ExceptionAnalyze) {
@@ -123,6 +125,7 @@ public class ExceptionProfile(string message)
             case 2:
                 Hidden = true;
                 _activeExceptions[Key].Kill();
+                eventData.Use();
                 break;
         }
     }

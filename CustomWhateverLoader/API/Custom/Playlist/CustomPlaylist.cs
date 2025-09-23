@@ -20,8 +20,7 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
 
     public static ILookup<string, CustomPlaylist>? Lut
     {
-        get
-        {
+        get {
             if (field is null || _dirty) {
                 field = _loaded.ToLookup(p => p.Name, p => p);
             }

@@ -26,8 +26,24 @@ namespace Cwl;
 
 internal sealed partial class CwlMod
 {
-    internal static string CurrentLoading = "";
+    private static bool _loadingComplete;
     private static bool _duplicate;
+
+    internal static string CurrentLoading
+    {
+        get;
+        set {
+            field = value;
+
+            if (value.IsEmpty()) {
+                return;
+            }
+
+            if (_loadingComplete) {
+                CreateLoadingProgress();
+            }
+        }
+    } = "";
 
     [Time]
     private static void BuildPatches()
@@ -63,16 +79,6 @@ internal sealed partial class CwlMod
 
     private IEnumerator LoadTask()
     {
-        var scrollPosition = Vector2.zero;
-        using var progress = ProgressIndicator.CreateProgressScoped(() => new("cwl_log_loading".Loc(ModInfo.Version, CurrentLoading)));
-        progress.Get<ProgressIndicator>().OnHover(_ => {
-            scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.Height(400f));
-            {
-                GUILayout.Label(WorkbookImporter.LastTiming);
-            }
-            GUILayout.EndScrollView();
-        });
-
         PrebuildDispatchers();
         DramaExpansion.BuildActionList();
 
@@ -108,6 +114,10 @@ internal sealed partial class CwlMod
 
         // auto init console rebuild
         InitConsole();
+
+        yield return null;
+
+        ReportLoadingComplete();
     }
 
     private void OnStartCore()
@@ -116,6 +126,8 @@ internal sealed partial class CwlMod
             StartCoroutine(ReportDuplicateVersion());
             return;
         }
+
+        CreateLoadingProgress();
 
         CacheDetail.InvalidateCache();
         QueryDeclTypes();
@@ -185,10 +197,38 @@ internal sealed partial class CwlMod
         ParameterProcessorRegistry.Init();
     }
 
+    internal static void CreateLoadingProgress()
+    {
+        _loadingComplete = false;
+
+        var scrollPosition = Vector2.zero;
+        ProgressIndicator
+            .CreateProgress(
+                () => new("cwl_log_loading".Loc(ModInfo.Version, CurrentLoading)),
+                _ => _loadingComplete)
+            .OnHover(_ => {
+                if (!_loadingComplete) {
+                    return;
+                }
+
+                scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.MaxHeight(400f));
+                {
+                    GUILayout.Label(WorkbookImporter.LastTiming);
+                }
+                GUILayout.EndScrollView();
+            });
+    }
+
     private static IEnumerator ReportDuplicateVersion()
     {
         yield return null;
         yield return null;
         WarnWithPopup<CwlMod>("cwl_warn_duplicate_cwl".Loc().TagColor(Color.red));
+    }
+
+    private static void ReportLoadingComplete()
+    {
+        _loadingComplete = true;
+        Log<CwlMod>("loading complete");
     }
 }

@@ -8,9 +8,13 @@ public static class UniTasklet
 {
     public static CancellationToken Timeout(float timeout)
     {
-        return timeout <= 0f
-            ? CancellationToken.None
-            : new CancellationTokenSource(TimeSpan.FromSeconds(timeout)).Token;
+        if (timeout <= 0f) {
+            return CancellationToken.None;
+        }
+
+        var cts = new CancellationTokenSource();
+        cts.CancelAfterSlim(TimeSpan.FromSeconds(timeout));
+        return cts.Token;
     }
 
     extension(UniTaskVoid tasklet)

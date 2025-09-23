@@ -94,7 +94,8 @@ public class ContextMenuHelper
     {
         foreach (var (method, ctx) in _delayedEvents) {
             Add(ctx.Entry, ctx.BtnName, () => method.FastInvokeStatic());
-            CwlMod.Log<ContextMenuHelper>("cwl_log_processor_add".Loc("context_menu", ctx.Entry, method.GetAssemblyDetail(false)));
+            CwlMod.Log<ContextMenuHelper>("cwl_log_processor_add".Loc("context_menu", ctx.Entry,
+                method.GetAssemblyDetail(false)));
         }
     }
 

@@ -69,7 +69,8 @@ public static class MethodInfoDetail
         public string GetAssemblyDetailParamsColor(bool full = true)
         {
             var decl = methodInfo.DeclaringType!;
-            return $"{decl.Assembly.GetName().Name.TagColor(0x7676a7)}::{methodInfo.GetDetail(full)} ({methodInfo.GetParameters().Join()})";
+            return
+                $"{decl.Assembly.GetName().Name.TagColor(0x7676a7)}::{methodInfo.GetDetail(full)} ({methodInfo.GetParameters().Join()})";
         }
     }
 }

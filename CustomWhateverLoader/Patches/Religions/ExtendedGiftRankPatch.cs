@@ -56,7 +56,8 @@ internal class ExtendedGiftRankPatch
                 card.PlayEffect("aura_heaven");
             }
         } catch (Exception ex) {
-            CwlMod.Warn<CustomReligion>($"failed to spawn religion rewards [{currentRank}] / {source.rewards[currentRank]}\n{ex}");
+            CwlMod.Warn<CustomReligion>(
+                $"failed to spawn religion rewards [{currentRank}] / {source.rewards[currentRank]}\n{ex}");
             // noexcept
         }
 

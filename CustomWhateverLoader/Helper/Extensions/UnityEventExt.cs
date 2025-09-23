@@ -10,6 +10,8 @@ public static class UnityEventExt
         public bool IsRightMouseDown => @event is { type: EventType.MouseDown, button: 1 };
         public bool IsMiddleMouseDown => @event is { type: EventType.MouseDown, button: 2 };
 
+        public bool IsUsed => @event.type is EventType.Used;
+
         public bool IsKeyDown(KeyCode keyCode)
         {
             return @event is { type: EventType.KeyDown, keyCode: var k } && k == keyCode;

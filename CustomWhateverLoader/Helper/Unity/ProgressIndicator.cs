@@ -126,19 +126,19 @@ public class ProgressIndicator
 
         GUI.skin.label = oldLabel;
 
-        var @event = Event.current;
-        switch (@event.type) {
+        var eventData = Event.current;
+        switch (eventData.type) {
             case EventType.Repaint:
-                IsHovering = GUILayoutUtility.GetLastRect().Contains(@event.mousePosition);
+                IsHovering = GUILayoutUtility.GetLastRect().Contains(eventData.mousePosition);
                 break;
             case EventType.MouseDown or EventType.KeyDown when IsHovering: {
-                _onEvent?.Invoke(this, @event);
+                _onEvent?.Invoke(this, eventData);
 
-                if (@event.IsRightMouseDown || @event.IsMiddleMouseDown) {
+                if (eventData.IsRightMouseDown) {
                     Kill();
+                    eventData.Use();
                 }
 
-                @event.Use();
                 EInput.Consume(true);
                 break;
             }

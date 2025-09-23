@@ -113,7 +113,8 @@ public static class SpriteCreator
 
             for (var i = 0; i < frames; ++i) {
                 var rect = new Rect(i * width, 0f, width, height);
-                var tile = Sprite.Create(sprite.texture, rect, new(0.5f, 0.5f * (128f / height)), 100f, 0u, SpriteMeshType.FullRect);
+                var tile = Sprite.Create(sprite.texture, rect, new(0.5f, 0.5f * (128f / height)), 100f, 0u,
+                    SpriteMeshType.FullRect);
                 tile.name = $"{baseName}{i:D4}";
                 yield return tile;
             }
