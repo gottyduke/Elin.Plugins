@@ -23,12 +23,12 @@ internal partial class DataLoader
     [CwlSourceReloadEvent]
     internal static void MergeGodTalk()
     {
-        var godTalk = EMono.sources.dataGodTalk;
-        if (godTalk is null) {
-            CoroutineHelper.Deferred(MergeGodTalk, () => EMono.sources.dataGodTalk is not null);
+        if (Lang.setting?.dir is null) {
+            CoroutineHelper.Deferred(MergeGodTalk, () => Lang.setting?.dir is not null);
             return;
         }
 
+        var godTalk = EMono.sources.dataGodTalk;
         var map = godTalk.sheets[DefaultSheet].map;
         foreach (var talk in PackageIterator.GetExcelsFromPackage("Data/god_talk.xlsx", 3)) {
             try {
