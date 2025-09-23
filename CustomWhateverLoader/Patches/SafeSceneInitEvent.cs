@@ -23,8 +23,10 @@ public class SafeSceneInitEvent
     [HarmonyPrefix]
     internal static void OnPreSceneInit(Scene.Mode newMode)
     {
-        _preLut ??= _preCallbacks.ToLookup(x => x.Item1, x => x.Item2);
-        foreach (var (callback, defer) in _preLut[newMode]) {
+        _preLut ??= _preCallbacks
+            .OrderBy(x => x.Item2.Order)
+            .ToLookup(x => x.Item1, x => x.Item2);
+        foreach (var (callback, defer, _) in _preLut[newMode]) {
             if (defer) {
                 CoroutineHelper.Deferred(() => SafeInvoke(callback, "pre_scene_init", newMode));
             } else {
@@ -42,8 +44,10 @@ public class SafeSceneInitEvent
             _ => SafeToCreate,
         };
 
-        _postLut ??= _postCallbacks.ToLookup(x => x.Item1, x => x.Item2);
-        foreach (var (callback, defer) in _postLut[newMode]) {
+        _postLut ??= _postCallbacks
+            .OrderBy(x => x.Item2.Order)
+            .ToLookup(x => x.Item1, x => x.Item2);
+        foreach (var (callback, defer, _) in _postLut[newMode]) {
             if (defer) {
                 CoroutineHelper.Deferred(() => SafeInvoke(callback, "post_scene_init", newMode));
             } else {
@@ -57,7 +61,8 @@ public class SafeSceneInitEvent
     {
         var callback = (onSceneInit.Mode, new SceneCallback(
             MethodInvoker.GetHandler(method, true),
-            onSceneInit.Defer));
+            onSceneInit.Defer,
+            onSceneInit.Order));
 
         if (onSceneInit.PreInit) {
             _preCallbacks.Add(callback);
@@ -69,6 +74,8 @@ public class SafeSceneInitEvent
         CwlMod.Log<SafeSceneInitEvent>("cwl_log_processor_add".Loc($"{initType}_scene_init",
             onSceneInit.Mode,
             method.GetAssemblyDetail(false)));
+
+        RebuildLookupTables();
     }
 
     internal static void RebuildLookupTables()
@@ -83,9 +90,12 @@ public class SafeSceneInitEvent
             invoker.Invoke(null);
         } catch (Exception ex) {
             CwlMod.Warn<SafeSceneInitEvent>("cwl_warn_processor".Loc(type, mode, ex));
+#if DEBUG
+            throw;
+#endif
             // noexcept
         }
     }
 
-    private record SceneCallback(FastInvokeHandler Callback, bool ShouldDefer);
+    private record SceneCallback(FastInvokeHandler Callback, bool ShouldDefer, int Order);
 }
