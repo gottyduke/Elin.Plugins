@@ -33,7 +33,6 @@ public abstract class CwlConfig
     [ConsoleCommand] public static bool SafeCreateClass => Patches.SafeCreateClass!.Value;
 
     [ConsoleCommand] public static bool AllowProcessors => Source.AllowProcessors!.Value;
-    [ConsoleCommand] public static int MaxPrefetchLoads => Source.MaxPrefetchLoads!.Value;
     [ConsoleCommand] public static bool NamedImport => Source.NamedImport!.Value;
     [ConsoleCommand] public static bool OverrideSameId => Source.OverrideSameId!.Value;
     [ConsoleCommand] public static bool RethrowException => Source.RethrowException!.Value;
@@ -224,13 +223,6 @@ public abstract class CwlConfig
             "允许CWL为工作簿、工作表、单元格执行预/后处理\n" +
             "ワークブック・ワークシート・セルに対する前処理/後処理の実行を許可");
 
-        Source.MaxPrefetchLoads = config.Bind(
-            ModInfo.Name,
-            "Source.MaxPrefetchLoads",
-            64,
-            "Allow CWL to prefetch sheets for way faster loading, use -1 to disable\n" +
-            "允许CWL预加载部分源表以极大减少加载时间，设为 -1 禁用");
-
         Source.NamedImport = config.Bind(
             ModInfo.Name,
             "Source.NamedImport",
@@ -327,7 +319,6 @@ public abstract class CwlConfig
     internal abstract class Source
     {
         internal static ConfigEntry<bool>? AllowProcessors { get; set; }
-        internal static ConfigEntry<int>? MaxPrefetchLoads { get; set; }
         internal static ConfigEntry<bool>? NamedImport { get; set; }
         internal static ConfigEntry<bool>? OverrideSameId { get; set; }
         internal static ConfigEntry<bool>? RethrowException { get; set; }

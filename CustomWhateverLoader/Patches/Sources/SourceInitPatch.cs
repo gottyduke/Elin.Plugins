@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Cwl.API;
@@ -34,12 +33,13 @@ internal class SourceInitPatch
         }
 
         var imports = PackageIterator.GetSourcesFromPackage()
-            .Where(f => !f.Name.StartsWith("cwl_") && !f.Name.StartsWith(".") && !f.Name.Contains("~"));
+            .Where(f => !f.Name.StartsWith("cwl_") && !f.Name.StartsWith(".") && !f.Name.Contains("~"))
+            .ToArray();
 
         SafeCreateSources(imports);
     }
 
-    internal static void SafeCreateSources(IEnumerable<FileInfo> imports)
+    internal static void SafeCreateSources(FileInfo[] imports)
     {
         SafeToCreate = true;
 

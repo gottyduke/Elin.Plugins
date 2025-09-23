@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Cwl.Helper.String;
 
 namespace Cwl.Helper.Extensions;
 
@@ -42,6 +44,30 @@ public static class DictExt
         public bool TryGetValue(string key, out TValue value)
         {
             return dict.TryGetValue(key.GetHashCode(), out value);
+        }
+    }
+
+    public class FileInfoComparer : IEqualityComparer<FileInfo>
+    {
+        public static FileInfoComparer Default { get; } = new();
+
+        public bool Equals(FileInfo? lhs, FileInfo? rhs)
+        {
+            if (ReferenceEquals(lhs, rhs)) {
+                return true;
+            }
+
+            if (lhs is null || rhs is null) {
+                return false;
+            }
+
+            return string.Equals(lhs.FullName.NormalizePath(), rhs.FullName.NormalizePath(),
+                StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        public int GetHashCode(FileInfo file)
+        {
+            return file.FullName.NormalizePath().GetHashCode(StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }

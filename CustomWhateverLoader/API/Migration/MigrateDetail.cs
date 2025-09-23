@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Cwl.API.Processors;
+using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using NPOI.SS.UserModel;
@@ -33,18 +35,19 @@ public sealed class MigrateDetail
         "HomeResource",
     ];
 
-    private static readonly Dictionary<IWorkbook, MigrateDetail> _cached = [];
+    private static readonly ConcurrentDictionary<FileInfo, MigrateDetail> _details = new(DictExt.FileInfoComparer.Default);
     private static readonly Stopwatch _sw = new();
 
     internal static MigrateDetail? CurrentDetail { get; private set; }
 
     public MigrateSheet? CurrentSheet { get; private set; }
     public BaseModPackage? Mod { get; private set; }
-    public FileInfo SheetFile { get; private set; } = null!;
     public long LoadingTime { get; internal set; }
+    public IWorkbook? Workbook { get; private set; }
+    public FileInfo SheetFile { get; private init; } = null!;
 
     internal static ILookup<BaseModPackage?, MigrateDetail> Details =>
-        _cached
+        _details
             .OrderByDescending(kv => kv.Value.LoadingTime)
             .ToLookup(kv => kv.Value.Mod, kv => kv.Value);
 
@@ -74,9 +77,9 @@ public sealed class MigrateDetail
         return this;
     }
 
-    public MigrateDetail SetFile(FileInfo filePath)
+    public MigrateDetail SetWorkbook(IWorkbook workbook)
     {
-        SheetFile = filePath;
+        Workbook = workbook;
         return this;
     }
 
@@ -207,28 +210,30 @@ public sealed class MigrateDetail
         }
     }
 
-    public static MigrateDetail GetOrAdd(IWorkbook book)
+    public static MigrateDetail GetOrAdd(FileInfo file)
     {
-        _cached.TryAdd(book, new());
-        return CurrentDetail = _cached[book];
+        _details.TryAdd(file, new() {
+            SheetFile = file,
+        });
+        return CurrentDetail = _details[file];
+    }
+
+    public static MigrateDetail? GetFromWorkbook(IWorkbook workbook)
+    {
+        return _details.Values.FirstOrDefault(m => m.Workbook == workbook);
     }
 
     public static void Clear()
     {
-        _cached.Clear();
+        _details.Clear();
         CurrentDetail = null;
     }
 
     [SwallowExceptions]
     public static void SetupProcessor()
     {
-        SheetProcessor.Add(_ => _sw.Restart(),
-            false);
-        SheetProcessor.Add(s => GetOrAdd(s.Workbook).LoadingTime += _sw.ElapsedTicks,
-            true);
-
-        WorkbookProcessor.Add(b => ExecutionAnalysis.MethodTimeLogger.Log(WorkbookImporter.Importer, new(GetOrAdd(b).LoadingTime), ""),
-            true);
+        SheetProcessor.Add(_ => _sw.Restart(), false);
+        SheetProcessor.Add(s => GetFromWorkbook(s.Workbook)?.LoadingTime += _sw.ElapsedTicks, true);
     }
 
     //[Conditional("DEBUG")]

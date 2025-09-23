@@ -75,7 +75,7 @@ internal class NamedImportPatch
                 var rowType = rowCreator.DeclaringType!;
 
                 cm.SetInstructionAndAdvance(Transpilers.EmitDelegate<Action<object>>(row =>
-                    RelaxedImport(row, id, field!, parser!, rowType, extraParser)));
+                    RelaxedImport(row, id, field, parser!, rowType, extraParser)));
 
                 _expected.TryAdd(rowType, []);
                 _expected[rowType][columnName] = id;
@@ -99,7 +99,7 @@ internal class NamedImportPatch
         }
 
         var sheet = SourceData.row.Sheet;
-        var migrate = MigrateDetail.GetOrAdd(sheet.Workbook);
+        var migrate = MigrateDetail.GetFromWorkbook(sheet.Workbook);
         var expected = _expected[rowCreator];
 
         try {
@@ -114,9 +114,9 @@ internal class NamedImportPatch
                 }
 
                 _cached[sheet] = header;
-                migrate.StartNewSheet(sheet, expected);
+                migrate?.StartNewSheet(sheet, expected);
 
-                var strategy = migrate.CurrentSheet?.MigrateStrategy ?? MigrateDetail.Strategy.Unknown;
+                var strategy = migrate?.CurrentSheet?.MigrateStrategy ?? MigrateDetail.Strategy.Unknown;
                 if (strategy == MigrateDetail.Strategy.Unknown) {
                     strategy = expected.All(header.Contains) &&
                                expected.Count <= header.Count
@@ -124,7 +124,7 @@ internal class NamedImportPatch
                         : MigrateDetail.Strategy.Missing;
                 }
 
-                migrate.SetStrategy(strategy).SetGiven(header);
+                migrate?.SetStrategy(strategy).SetGiven(header);
             }
 
             object? parsed = null;
@@ -160,7 +160,7 @@ internal class NamedImportPatch
             /**/
         } finally {
             if (id == expected.Count - 1) {
-                migrate.FinalizeMigration();
+                migrate?.FinalizeMigration();
             }
         }
     }

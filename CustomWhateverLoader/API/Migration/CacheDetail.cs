@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,16 +17,23 @@ public sealed class CacheDetail(string cacheKey)
     private const string CacheStorage = ModInfo.Name;
 
     private static readonly GameIOProcessor.GameIOContext _context = GameIOProcessor.GetPersistentModContext(CacheStorage)!;
-    private static readonly Dictionary<string, CacheDetail> _details = [];
+    private static readonly ConcurrentDictionary<string, CacheDetail> _details = [];
 
     private SerializableSourceCache _cache = [];
-    private bool _dirty;
 
     public long BlobSize =>
         _context.GetChunkFile(cacheKey) is { Exists: true } file
             ? file.Length
             : 0L;
 
+    public bool DirtyOrEmpty { get; private set; } = true;
+    public FileInfo SheetFile { get; private init; } = null!;
+    public IReadOnlyDictionary<string, SourceData.BaseRow[]> Source => _cache;
+    public MigrateDetail MigrateDetail => MigrateDetail.GetOrAdd(SheetFile);
+
+    /// <summary>
+    ///     Deletes the cached data and removes the detail from the cache manager.
+    /// </summary>
     public void Delete()
     {
         _cache.Clear();
@@ -33,26 +41,46 @@ public sealed class CacheDetail(string cacheKey)
 
         var index = _details.FirstOrDefault(kv => kv.Value == this);
         if (index.Key is not null) {
-            _details.Remove(index.Key);
+            _details.Remove(index.Key, out _);
         }
     }
 
+    /// <summary>
+    ///     Tries to retrieve cached rows for a given key.
+    /// </summary>
+    /// <param name="key">The sheet name for the cached data.</param>
+    /// <param name="rows">The output cached rows if found.</param>
+    /// <returns>true if the data was found, otherwise false.</returns>
     public bool TryGetCache(string key, out SourceData.BaseRow[] rows)
     {
         return _cache.TryGetValue(key, out rows);
     }
 
+    /// <summary>
+    ///     Adds or updates cached rows for a given key and marks the cache as dirty.
+    /// </summary>
+    /// <param name="key">The sheet name for the cached data.</param>
+    /// <param name="rows">The array of rows to cache.</param>
     public void EmplaceCache(string key, SourceData.BaseRow[] rows)
     {
         _cache[key] = rows;
-        _dirty = true;
+        DirtyOrEmpty = true;
     }
 
+    /// <summary>
+    ///     Writes the cache to the file blob.
+    /// </summary>
     public void GenerateCache()
     {
         _context.Save(_cache, cacheKey);
     }
 
+    /// <summary>
+    ///     Gets an existing CacheDetail for a file or creates a new one. <br />
+    ///     The CacheDetail is unique to the file's last written time.
+    /// </summary>
+    /// <param name="file">The FileInfo object for the source file.</param>
+    /// <returns>The CacheDetail instance for the specified file.</returns>
     public static CacheDetail GetOrAdd(FileInfo file)
     {
         var cacheKey = $"blob_{file.ShortPath()}_{file.LastWriteTimeUtc}".GetSha256Code();
@@ -60,7 +88,9 @@ public sealed class CacheDetail(string cacheKey)
             return detail;
         }
 
-        detail = _details[cacheKey] = new(cacheKey);
+        detail = _details[cacheKey] = new(cacheKey) {
+            SheetFile = file,
+        };
 
         if (!_context.Load(out SerializableSourceCache? cache, cacheKey) ||
             cache is null) {
@@ -68,9 +98,15 @@ public sealed class CacheDetail(string cacheKey)
         }
 
         detail._cache = cache;
+        detail.DirtyOrEmpty = false;
+
         return detail;
     }
 
+    /// <summary>
+    ///     Invalidates the cache if the version manifest is outdated.
+    ///     Clears the cache completely if the manifest is invalid.
+    /// </summary>
     public static void InvalidateCache()
     {
         if (CacheVersionManifest.Get()?.ValidateManifest() is not true) {
@@ -78,6 +114,10 @@ public sealed class CacheDetail(string cacheKey)
         }
     }
 
+    /// <summary>
+    ///     Clears all cached source sheet data and creates a new cache manifest.
+    /// </summary>
+    /// <returns>Details of the cache has been cleared and the next generation time.</returns>
     [ConsoleCommand("clear_source_cache")]
     public static string ClearCache()
     {
@@ -89,13 +129,17 @@ public sealed class CacheDetail(string cacheKey)
         return $"Source sheets cache cleared, next generation in {manifest.NextGen()} days";
     }
 
+    /// <summary>
+    ///     Finalizes and saves all dirty caches to file blob.
+    /// </summary>
+    /// <param name="dirtyOnly">If true, only saves caches that have been modified.</param>
     [Time]
     public static void FinalizeCache(bool dirtyOnly = true)
     {
-        var details = _details.Values.Where(c => !dirtyOnly || c._dirty).ToArray();
+        var details = _details.Values.Where(c => !dirtyOnly || c.DirtyOrEmpty).ToArray();
         foreach (var detail in details) {
             detail.GenerateCache();
-            detail._dirty = false;
+            detail.DirtyOrEmpty = false;
         }
 
         if (details.Length > 0) {
@@ -103,11 +147,19 @@ public sealed class CacheDetail(string cacheKey)
         }
     }
 
+    /// <summary>
+    ///     Clears the in-memory dictionary of CacheDetail instances.
+    /// </summary>
     public static void ClearDetail()
     {
         _details.Clear();
     }
 
+    /// <summary>
+    ///     Generates a localized string detailing the number of caches and their total size.
+    /// </summary>
+    /// <param name="details">An array of CacheDetail objects.</param>
+    /// <returns>A formatted string with cache details.</returns>
     public static string GetDetailString(CacheDetail[] details)
     {
         return "cwl_log_cache_detail".Loc(details.Length, details.Sum(d => d.BlobSize).ToAllocateString());
@@ -115,12 +167,20 @@ public sealed class CacheDetail(string cacheKey)
 
     internal sealed record CacheVersionManifest(string Version, DateTime Retention)
     {
+        /// <summary>
+        ///     Retrieves the cache manifest from storage.
+        /// </summary>
+        /// <returns>The CacheVersionManifest instance, or null if it doesn't exist.</returns>
         internal static CacheVersionManifest? Get()
         {
             _context.Load(out CacheVersionManifest? manifest, "cache_manifest");
             return manifest;
         }
 
+        /// <summary>
+        ///     Validates the manifest's version and retention period.
+        /// </summary>
+        /// <returns>True if the manifest is valid, otherwise false.</returns>
         internal bool ValidateManifest()
         {
             if (Version != ModInfo.Version) {
@@ -139,6 +199,10 @@ public sealed class CacheDetail(string cacheKey)
             return true;
         }
 
+        /// <summary>
+        ///     Calculates the number of days until the cache retention period expires.
+        /// </summary>
+        /// <returns>The number of days remaining until the cache needs to be regenerated.</returns>
         internal int NextGen()
         {
             var lifetime = (DateTime.UtcNow - Retention).Days;
