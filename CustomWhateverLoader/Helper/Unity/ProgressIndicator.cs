@@ -25,7 +25,7 @@ public class ProgressIndicator
     private Action<ProgressIndicator>? _onBeforeGUI;
     private Action<ProgressIndicator, Event>? _onEvent;
     private Action<ProgressIndicator>? _onHover;
-    private Action<ProgressIndicator>? _onKill;
+    private Action? _onKill;
 
     public GUIStyle? GUIStyle;
     public required Func<UpdateInfo> OnUpdate;
@@ -43,7 +43,7 @@ public class ProgressIndicator
         }
 
         _active.Remove(this);
-        _onKill?.Invoke(this);
+        _onKill?.Invoke();
 
         IsKilled = true;
     }
@@ -160,6 +160,10 @@ public class ProgressIndicator
     {
         internal bool StopOnNextUpdate;
 
+        private GUIStyle? ScrollViewStyle => field ??= GetScrollViewSkin();
+        private GUIStyle? VerticalScrollbarStyle => field ??= GetVerticalScrollbarSkin();
+        private GUIStyle? VerticalScrollbarThumbStyle => field ??= GetVerticalScrollbarThumbSkin();
+
         private void Start()
         {
             StartCoroutine(ProgressUpdate());
@@ -175,9 +179,9 @@ public class ProgressIndicator
             var oldVerticalScrollbar = GUI.skin.verticalScrollbar;
             var oldVerticalScrollbarThumb = GUI.skin.verticalScrollbarThumb;
 
-            GUI.skin.scrollView = GetScrollViewSkin();
-            GUI.skin.verticalScrollbar = GetVerticalScrollbarSkin();
-            GUI.skin.verticalScrollbarThumb = GetVerticalScrollbarThumbSkin();
+            GUI.skin.scrollView = ScrollViewStyle;
+            GUI.skin.verticalScrollbar = VerticalScrollbarStyle;
+            GUI.skin.verticalScrollbarThumb = VerticalScrollbarThumbStyle;
 
             GUILayout.Space(10f);
 
@@ -268,7 +272,6 @@ public class ProgressIndicator
 
 #endregion
 
-
 #region Factory
 
     public static ProgressIndicator CreateProgress(Func<UpdateInfo> onUpdate,
@@ -313,7 +316,7 @@ public class ProgressIndicator
         return this;
     }
 
-    public ProgressIndicator OnKill(Action<ProgressIndicator>? onKill)
+    public ProgressIndicator OnKill(Action? onKill)
     {
         _onKill = onKill;
         return this;
