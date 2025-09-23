@@ -21,10 +21,7 @@ public sealed class CacheDetail(string cacheKey)
 
     private SerializableSourceCache _cache = [];
 
-    public long BlobSize =>
-        _context.GetChunkFile(cacheKey) is { Exists: true } file
-            ? file.Length
-            : 0L;
+    public long BlobSize => _context.GetChunkFile(cacheKey) is { Exists: true } file ? file.Length : 0L;
 
     public bool DirtyOrEmpty { get; private set; } = true;
     public FileInfo SheetFile { get; private init; } = null!;

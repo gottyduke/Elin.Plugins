@@ -23,7 +23,7 @@ public class WorkbookImporter
 {
     internal static readonly MethodBase Importer = AccessTools.Method(
         typeof(WorkbookImporter),
-        nameof(BySheetName), [typeof(ISheet), typeof(string)]);
+        nameof(BySheetName));
 
     internal static string LastTiming = "";
 
@@ -48,10 +48,10 @@ public class WorkbookImporter
     ///     Import a single sheet by its name that matches a SourceData or SourceLang
     /// </summary>
     /// <param name="sheet">Sheet to import</param>
-    /// <param name="bookName">Useless</param>
+    /// <param name="file">Useless</param>
     /// <returns>SourceData of the sheet and the rows imported</returns>
     /// <exception cref="SourceParseException">Any error occurred during the parsing</exception>
-    public static (SourceData?, SourceData.BaseRow[]) BySheetName(ISheet sheet, string bookName)
+    public static (SourceData?, SourceData.BaseRow[]) BySheetName(ISheet sheet, FileInfo file)
     {
         var sheetName = sheet.SheetName;
         try {
@@ -59,6 +59,8 @@ public class WorkbookImporter
             if (source is null) {
                 return new();
             }
+
+            var migrate = MigrateDetail.GetOrAdd(file);
 
             SheetProcessor.PreProcess(sheet);
 
@@ -75,8 +77,8 @@ public class WorkbookImporter
 
             var begin = rows!.Count;
 
-            if (!source.ImportData(sheet, bookName, true)) {
-                var sheetFullName = $"{source.GetType().Name}:{bookName}/{sheetName}";
+            if (!source.ImportData(sheet, file.Name, true)) {
+                var sheetFullName = $"{source.GetType().Name}:{file.Name}/{sheetName}";
                 throw new SourceParseException("cwl_error_source_except".Loc(sheetFullName));
             }
 
@@ -91,6 +93,8 @@ public class WorkbookImporter
             }
 
             SheetProcessor.PostProcess(sheet);
+
+            migrate.FinalizeMigration();
 
             return (source, imported);
         } catch (Exception ex) {
@@ -130,9 +134,8 @@ public class WorkbookImporter
         HotInit(dirty);
 
         // log timings
-        foreach (var file in files.Select(MigrateDetail.GetOrAdd)) {
-            file.SetMod(BaseModManager.Instance.packages.LastOrDefault(p => file.SheetFile.IsInDirectory(p.dirInfo)));
-            ExecutionAnalysis.MethodTimeLogger.Log(Importer, TimeSpan.FromTicks(file.LoadingTime), "");
+        foreach (var file in files) {
+            ExecutionAnalysis.MethodTimeLogger.Log(Importer, TimeSpan.FromTicks(MigrateDetail.GetOrAdd(file).LoadingTime), "");
         }
 
         LastTiming = MigrateDetail.DumpTiming();
@@ -172,7 +175,8 @@ public class WorkbookImporter
 
                 CwlMod.Log<WorkbookImporter>("cwl_log_workbook".Loc(fileName));
 
-                var (_, rows) = BySheetName(prefetch.Element, prefetch.File.Name);
+                var (_, rows) = BySheetName(prefetch.Element, prefetch.File);
+
                 cache.EmplaceCache(nameof(Element), rows);
             } else if (cache.TryGetCache(nameof(Element), out var rows)) {
                 CwlMod.Log<WorkbookImporter>("cwl_log_workbook_cache".Loc(fileName));
@@ -183,19 +187,27 @@ public class WorkbookImporter
 
         // add regular rows
         foreach (var cache in caches) {
-            if ((!imported.TryGetValue(cache, out var prefetch) || prefetch.Sheets.Length == 0) && cache.DirtyOrEmpty) {
-                continue;
-            }
-
-            CwlMod.Log<WorkbookImporter>("cwl_log_workbook".Loc(cache.SheetFile.ShortPath()));
-
+            var fileName = cache.SheetFile.ShortPath();
             if (cache.DirtyOrEmpty) {
-                foreach (var sheet in prefetch!.Sheets) {
-                    var (sourceData, rows) = BySheetName(sheet, prefetch.File.Name);
+                if (!imported.TryGetValue(cache, out var prefetch) || prefetch.Sheets.Length == 0) {
+                    continue;
+                }
+
+                CwlMod.Log<WorkbookImporter>("cwl_log_workbook".Loc(fileName));
+
+                foreach (var sheet in prefetch.Sheets) {
+                    if (sheet.SheetName == nameof(Element)) {
+                        continue;
+                    }
+
+                    var (sourceData, rows) = BySheetName(sheet, prefetch.File);
+
                     cache.EmplaceCache(sheet.SheetName, rows);
                     dirty.Add(sourceData);
                 }
             } else {
+                CwlMod.Log<WorkbookImporter>("cwl_log_workbook_cache".Loc(fileName));
+
                 foreach (var (type, rowsCached) in cache.Source) {
                     var sourceData = FindSourceByName(type);
                     switch (sourceData) {
@@ -203,7 +215,7 @@ public class WorkbookImporter
                         case SourceThingV:
                             sourceData = EMono.sources.things;
                             break;
-                        case null:
+                        case SourceElement or null:
                             continue;
                     }
 
@@ -238,7 +250,7 @@ public class WorkbookImporter
 
             CwlMod.Log<SourceManager>($"prefetch workbook sheet: {file.ShortPath()}");
 
-            var (source, _) = BySheetName(element, file.Name);
+            var (source, _) = BySheetName(element, file);
             dirty.Add(source);
         }
 
@@ -251,7 +263,7 @@ public class WorkbookImporter
             WorkbookProcessor.PreProcess(migrate.Workbook!);
 
             foreach (var sheet in sheets) {
-                var (source, _) = BySheetName(sheet, file.Name);
+                var (source, _) = BySheetName(sheet, file);
                 dirty.Add(source);
             }
 

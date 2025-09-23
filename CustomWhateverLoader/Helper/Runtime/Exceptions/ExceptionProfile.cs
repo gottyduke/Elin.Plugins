@@ -52,7 +52,7 @@ public class ExceptionProfile(string message)
 
     public static ExceptionProfile GetFromStackTrace(ref Exception exception)
     {
-        while (exception.InnerException is { } inner) {
+        while (exception.InnerException is { } inner and not SourceParseException) {
             exception = inner;
         }
 

@@ -34,8 +34,8 @@ internal class RethrowParsePatch
     internal static IEnumerable<MethodInfo> TargetMethods()
     {
         return typeof(SourceData).GetTypeInfo().GetCachedMethods()
-            .Where(mi => mi.IsStatic && _methodNames.Contains(mi.Name))
-            .Where(mi => mi.ValidateParameterTypes(false, typeof(int)));
+            .Where(mi => mi.IsStatic && _methodNames.Contains(mi.Name) &&
+                         mi.ValidateParameterTypes(false, typeof(int)));
     }
 
     [Time]
@@ -50,8 +50,9 @@ internal class RethrowParsePatch
         using var sb = StringBuilderPool.Get();
 
         if (SourceInitPatch.SafeToCreate && MigrateDetail.CurrentDetail is { } detail) {
-            sb.Append($"{detail.Mod!.id.TagColor(0x2f2d2d)} // ");
+            sb.Append($"{detail.Mod?.id.TagColor(0x2f2d2d)} // ");
             sb.AppendLine(detail.CurrentSheet?.Sheet?.SheetName?.TagColor(0x7676a7));
+            sb.AppendLine(detail.SheetFile.ShortPath());
         }
 
         var expectedType = __originalMethod.ReturnType.Name;

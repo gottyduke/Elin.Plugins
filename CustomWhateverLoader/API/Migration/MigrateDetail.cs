@@ -83,18 +83,12 @@ public sealed class MigrateDetail
         return this;
     }
 
-    public MigrateDetail SetMod(BaseModPackage? mod)
-    {
-        Mod = mod;
-        return this;
-    }
-
     public void FinalizeMigration()
     {
         switch (CurrentSheet?.MigrateStrategy) {
             case Strategy.Reorder: {
                 CwlMod.Warn<MigrateDetail>("cwl_warn_misaligned_sheet".Loc(CwlConfig.Source.NamedImport!.Definition.Key));
-                DumpHeaders();
+                //DumpHeaders();
 
                 if (CwlConfig.SheetMigrate) {
                     ReorderSheet();
@@ -104,7 +98,7 @@ public sealed class MigrateDetail
             }
             case Strategy.Missing: {
                 CwlMod.Warn("cwl_warn_missing_header".Loc());
-                DumpHeaders();
+                //DumpHeaders();
                 break;
             }
         }
@@ -185,7 +179,7 @@ public sealed class MigrateDetail
             return;
         }
 
-        CwlMod.Log<MigrateDetail>(SheetFile.ShortPath());
+        CwlMod.Debug<MigrateDetail>(SheetFile.ShortPath());
 
         var expected = CurrentSheet.Expected
             .OrderBy(c => c.Value)
@@ -212,10 +206,14 @@ public sealed class MigrateDetail
 
     public static MigrateDetail GetOrAdd(FileInfo file)
     {
-        _details.TryAdd(file, new() {
-            SheetFile = file,
-        });
-        return CurrentDetail = _details[file];
+        if (!_details.TryGetValue(file, out var detail)) {
+            _details[file] = detail = new() {
+                SheetFile = file,
+                Mod = BaseModManager.Instance.packages.LastOrDefault(p => file.IsInDirectory(p.dirInfo)),
+            };
+        }
+
+        return CurrentDetail = detail;
     }
 
     public static MigrateDetail? GetFromWorkbook(IWorkbook workbook)

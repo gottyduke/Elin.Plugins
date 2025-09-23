@@ -108,7 +108,6 @@ internal sealed partial class CwlMod
         CurrentLoading = $"cwl_log_finished_loading_{ModInfo.TargetVersion}".Loc();
 
         OnDisable();
-        SetupExceptionHook();
 
         yield return null;
 
@@ -126,6 +125,8 @@ internal sealed partial class CwlMod
             StartCoroutine(ReportDuplicateVersion());
             return;
         }
+
+        SetupExceptionHook();
 
         CreateLoadingProgress();
 

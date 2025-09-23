@@ -9,8 +9,12 @@ public static class SourceDataExt
 {
     extension(SourceData source)
     {
-        public int ImportRows(IEnumerable<SourceData.BaseRow> rows)
+        public int ImportRows(IEnumerable<SourceData.BaseRow>? rows)
         {
+            if (rows is null) {
+                return 0;
+            }
+
             if (source.GetFieldValue("rows") is not IList list) {
                 return 0;
             }
