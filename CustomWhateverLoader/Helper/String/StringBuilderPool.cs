@@ -32,6 +32,12 @@ public class StringBuilderPool(StringBuilder sb) : IDisposable
         return this;
     }
 
+    public StringBuilderPool Clear()
+    {
+        sb.Clear();
+        return this;
+    }
+
     public override string ToString()
     {
         return sb.ToString();

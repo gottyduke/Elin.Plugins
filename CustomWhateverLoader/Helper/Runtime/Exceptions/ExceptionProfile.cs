@@ -30,7 +30,7 @@ public class ExceptionProfile(string message)
 
     public int Occurrences { get; private set; } = 1;
     public string Result { get; private set; } = "cwl_ui_exception_analyzing".Loc();
-    public int Key { get; private set; }
+    public int Key { get; private init; }
     public bool Hidden { get; private set; }
     public bool IsMissingMethod { get; private set; }
     public string StackTrace { get; private init; } = "";
@@ -149,12 +149,7 @@ public class ExceptionProfile(string message)
         using var sb = StringBuilderPool.Get();
         sb.AppendLine("cwl_ui_callstack".Loc());
 
-        var terminated = false;
         foreach (var frame in StackTrace.SplitLines().Distinct()) {
-            if (terminated) {
-                break;
-            }
-
             if (frame.IsEmpty()) {
                 continue;
             }
@@ -168,7 +163,7 @@ public class ExceptionProfile(string message)
 
             switch (mono.frameType) {
                 case MonoFrame.StackFrameType.Rethrow:
-                    terminated = true;
+                    sb.AppendLine("---");
                     break;
                 case MonoFrame.StackFrameType.Unknown:
                     sb.AppendLine(mono.SanitizedMethodCall.ToTruncateString(150));

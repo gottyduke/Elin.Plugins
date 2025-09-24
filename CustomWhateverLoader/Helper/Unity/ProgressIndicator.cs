@@ -27,7 +27,7 @@ public class ProgressIndicator
     private Action<ProgressIndicator>? _onHover;
     private Action? _onKill;
 
-    public GUIStyle GUIStyle = GetLabelSkin();
+    public GUIStyle? GUIStyle => field ??= GetLabelSkin();
     public required Func<UpdateInfo> OnUpdate;
     public required Func<ProgressIndicator, bool> ShouldKill;
 
@@ -103,7 +103,7 @@ public class ProgressIndicator
         }
 
         var textColor = _info.Color ?? Color.black;
-        GUIStyle.normal.textColor = GUIStyle.hover.textColor = textColor;
+        GUIStyle?.normal.textColor = GUIStyle.hover.textColor = textColor;
 
         GUI.skin.label = GUIStyle;
 
@@ -214,7 +214,7 @@ public class ProgressIndicator
 
     public static GUIStyle GetLabelSkin()
     {
-        return new("label") {
+        return new(GUI.skin.label) {
             fontSize = 16,
             richText = true,
             wordWrap = true,
@@ -233,7 +233,7 @@ public class ProgressIndicator
 
     public static GUIStyle GetScrollViewSkin()
     {
-        return new("scrollView") {
+        return new(GUI.skin.scrollView) {
             padding = new(0, 10, 0, 0),
             normal = {
                 background = SpriteCreator.GetSolidColorTexture(new(1f, 1f, 1f, 0.95f)),
@@ -243,7 +243,7 @@ public class ProgressIndicator
 
     public static GUIStyle GetVerticalScrollbarSkin()
     {
-        return new("verticalScrollbar") {
+        return new(GUI.skin.verticalScrollbar) {
             fixedWidth = 5f,
             border = new(0, 0, 0, 0),
             normal = {
@@ -260,7 +260,7 @@ public class ProgressIndicator
 
     public static GUIStyle GetVerticalScrollbarThumbSkin()
     {
-        return new("verticalScrollbarThumb") {
+        return new(GUI.skin.verticalScrollbarThumb) {
             border = new(0, 0, 0, 0),
             fixedWidth = 10f,
             normal = {
@@ -353,12 +353,6 @@ public class ProgressIndicator
         }
 
         DurationRemain = Mathf.Clamp(remain, 0f, DurationTotal);
-        return this;
-    }
-
-    public ProgressIndicator SetGUIStyle(GUIStyle style)
-    {
-        GUIStyle = new(style);
         return this;
     }
 
