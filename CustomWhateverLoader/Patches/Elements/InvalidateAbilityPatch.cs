@@ -1,25 +1,60 @@
-﻿using Cwl.API.Attributes;
+﻿using System;
+using System.Linq;
+using HarmonyLib;
 using UnityEngine;
 
 namespace Cwl.Patches.Elements;
 
+[HarmonyPatch]
 internal class InvalidateAbilityPatch
 {
-    [CwlCharaOnCreateEvent]
-    internal static void InvalidateAbilities(Chara chara)
+    [HarmonyFinalizer]
+    [HarmonyPatch(typeof(CharaAbility), nameof(CharaAbility.Refresh))]
+    internal static Exception? OnInvalidateAbility(Exception? __exception, CharaAbility __instance)
     {
-        var abilities = chara._listAbility;
-        if (abilities is null) {
-            return;
+        if (__exception is null) {
+            return null;
         }
 
-        var elements = EMono.sources.elements.map;
-        abilities.ForeachReverse(a => {
-            if (elements.ContainsKey(Mathf.Abs(a))) {
+        InvalidateAbilities(__instance.owner);
+
+        try {
+            __instance.Refresh();
+        } catch (Exception ex) {
+            return ex;
+        }
+
+        return null;
+    }
+
+    internal static void InvalidateAbilities(Chara chara)
+    {
+        var elements = EMono.sources.elements;
+
+        // invalidate actCombat by alias
+        var actCombat = chara.source.actCombat.ToList();
+        actCombat.ForeachReverse(a => {
+            var act = a.Split('/')[0];
+            if ((chara.MainElement == Element.Void || elements.alias.ContainsKey(act)) &&
+                ACT.dict.ContainsKey(act)) {
                 return;
             }
 
-            abilities.Remove(a);
+            actCombat.Remove(a);
+            CwlMod.WarnWithPopup<CharaAbility>($"removed invalid actCombat '{a.TagColor(Color.red)}' from {chara.id}");
+        });
+
+        if (actCombat.Count != chara.source.actCombat.Length) {
+            chara.source.actCombat = actCombat.ToArray();
+        }
+
+        // invalidate ability by id, including DNA
+        chara._listAbility?.ForeachReverse(a => {
+            if (elements.map.ContainsKey(Mathf.Abs(a))) {
+                return;
+            }
+
+            chara._listAbility.Remove(a);
             CwlMod.Warn<CharaAbility>($"removed invalid ability '{a}' from {chara.id}");
         });
     }
