@@ -45,10 +45,11 @@ public class DebugSampler : MethodStub
         }
 
         _killSamplerProgress = false;
-        _samplerProgress ??= ProgressIndicator.CreateProgress(
-            () => new(GetSamplerInfo()),
-            _ => _killSamplerProgress,
-            1f);
+        _samplerProgress ??= ProgressIndicator
+            .CreateProgress(
+                () => new(GetSamplerInfo()),
+                _ => _killSamplerProgress,
+                1f);
 
         return "enabled stub info view";
     }

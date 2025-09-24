@@ -26,6 +26,10 @@ Added support for extended custom religion gift ranks, allowing multiple ranks a
 Various API refactor
 Added source sheet caching to workbook importer, retention period configurable
 Changed CWL progress indicator popup implementation to IMGUI
+Added support for ? gender in Chara bio column
+Added controls to BGM panel
+Fixed a memory leak when IMGUI is open
+Added warning popup to CharaAbility invalidator
 
 {topic|1.20.47}
 Updated for 23.200 Stable

@@ -24,7 +24,7 @@ public class ContextMenuHelper
         var menus = EntryProxies;
 
         for (var i = 0; i < parts.Length; ++i) {
-            var subMenu = i < parts.Length - 1 || onClick == null;
+            var subMenu = i < parts.Length - 1 || onClick is null;
             var part = parts[i];
 
             var item = menus.Find(p => p.Entry == part);
