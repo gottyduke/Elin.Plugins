@@ -108,7 +108,7 @@ public class WorkbookImporter
     /// <summary>
     ///     Import all workbook files
     /// </summary>
-    /// <param name="imports">List of files to import</param>
+    /// <param name="imports">Files to import</param>
     [Time]
     public static void LoadAllFiles(FileInfo[] imports)
     {
