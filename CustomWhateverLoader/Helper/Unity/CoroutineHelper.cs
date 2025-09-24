@@ -1,25 +1,13 @@
 ﻿using System;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
 namespace Cwl.Helper.Unity;
 
 public class CoroutineHelper : MonoBehaviour
 {
-    private static readonly Lazy<CoroutineHelper> _instance = new(() => {
-        if (GameObject.Find(nameof(CoroutineHelper)) is var go && go?.GetComponent<CoroutineHelper>() is { } globalHelper) {
-            return globalHelper;
-        }
-
-        Destroy(go);
-
-        go = new(nameof(CoroutineHelper));
-        DontDestroyOnLoad(go);
-
-        return go.AddComponent<CoroutineHelper>();
-    });
-
-    public static CoroutineHelper Instance => _instance.Value;
+    [field: AllowNull] private static CoroutineHelper Instance => field ??= CwlMod.Instance.GetOrCreate<CoroutineHelper>();
 
     public static Coroutine Immediate(IEnumerator co)
     {

@@ -26,7 +26,7 @@ public class StringBuilderPool(StringBuilder sb) : IDisposable
         return this;
     }
 
-    public StringBuilderPool Append(string message)
+    public StringBuilderPool Append(string? message)
     {
         sb.Append(message);
         return this;

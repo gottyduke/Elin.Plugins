@@ -25,6 +25,8 @@ public class MonoFrame(string stackFrame)
         "Plugins.",
         "System.",
         "mscorlib",
+        "MonoMod.",
+        "0Harmony",
     ];
 
     public StackFrameType frameType = StackFrameType.Unknown;

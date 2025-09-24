@@ -1,6 +1,6 @@
 ﻿using Cwl.API.Attributes;
 
-namespace Cwl.Patches.Recipes;
+namespace Cwl.Patches.Things;
 
 internal class ForceRarityPatch
 {

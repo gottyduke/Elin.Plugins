@@ -88,7 +88,7 @@ public class CustomReligion(string religionId) : Religion, IChunkable
 
         var religions = game.religions.list
             .OfType<CustomReligion>()
-            .ToDictionary(r => r.id, r => r);
+            .ToDictionary(r => r.id);
         context.Save(religions, "custom_religions");
     }
 

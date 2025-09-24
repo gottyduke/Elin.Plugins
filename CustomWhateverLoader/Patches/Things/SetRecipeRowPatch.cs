@@ -1,7 +1,7 @@
 ﻿using Cwl.Patches.Sources;
 using HarmonyLib;
 
-namespace Cwl.Patches.Recipes;
+namespace Cwl.Patches.Things;
 
 [HarmonyPatch]
 internal class SanitizeComponentsPatch

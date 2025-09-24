@@ -113,8 +113,7 @@ internal sealed partial class CwlMod
 
         // auto init console rebuild
         InitConsole();
-
-        yield return null;
+        ContextMenuHelper.AddDelayedContextMenu();
 
         ReportLoadingComplete();
     }
@@ -198,7 +197,7 @@ internal sealed partial class CwlMod
         ParameterProcessorRegistry.Init();
     }
 
-    internal static void CreateLoadingProgress()
+    private static void CreateLoadingProgress()
     {
         _loadingComplete = false;
 

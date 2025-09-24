@@ -142,7 +142,7 @@ public class GameIOProcessor
         {
             return _chunkDir.GetFiles($"{chunkName}.*")
                 .OrderByDescending(f => f.LastWriteTime)
-                .LastOrDefault();
+                .FirstOrDefault();
         }
 
         /// <summary>

@@ -89,8 +89,7 @@ public class ContextMenuHelper
         _delayedEvents.Add((method, ctx));
     }
 
-    [CwlSceneInitEvent(Scene.Mode.Title, true)]
-    private static void AddDelayedContextMenu()
+    internal static void AddDelayedContextMenu()
     {
         foreach (var (method, ctx) in _delayedEvents) {
             Add(ctx.Entry, ctx.BtnName, () => method.FastInvokeStatic());

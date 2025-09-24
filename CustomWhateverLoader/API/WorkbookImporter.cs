@@ -160,7 +160,7 @@ public class WorkbookImporter
             .Select(c => PrefetchWorkbook(c.SheetFile))
             .ToArray();
         var imported = prefetches
-            .ToDictionary(p => CacheDetail.GetOrAdd(p.File), p => p);
+            .ToDictionary(p => CacheDetail.GetOrAdd(p.File));
 
         var elements = EMono.sources.elements;
         HashSet<SourceData?> dirty = [elements];

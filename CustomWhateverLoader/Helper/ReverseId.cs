@@ -22,7 +22,7 @@ public static class ReverseId
         var id = fallback;
 
         if (_lookup.Count != Core.Instance.refs.bgms.Count) {
-            _lookup = Core.Instance.refs.bgms.ToDictionary(kv => kv.name, kv => kv);
+            _lookup = Core.Instance.refs.bgms.ToDictionary(kv => kv.name);
         }
 
         if (_lookup.TryGetValue(bgmName, out var data) || _lookup.TryGetValue($"BGM/{bgmName}", out data)) {

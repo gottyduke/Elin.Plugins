@@ -18,7 +18,6 @@ public class PlaylistViewer
 
     private ProgressIndicator? _bgmProgress;
     private bool _detailedView;
-    private bool _killBgmProgress;
 
     private string? DetailString => field ??= "cwl_ui_bgm_detail".Loc();
     private string? NextString => field ??= "cwl_ui_bgm_next".Loc();
@@ -134,23 +133,18 @@ public class PlaylistViewer
 
     private void Show()
     {
-        if (!_killBgmProgress && _bgmProgress?.IsKilled is false) {
-            _detailedView = !_detailedView;
-        }
-
-        _killBgmProgress = false;
-        _bgmProgress = ProgressIndicator
+        Kill();
+        _bgmProgress ??= ProgressIndicator
             .CreateProgress(
                 () => new(GetCurrentPlaylistInfo()),
-                _ => _killBgmProgress || !EClass.core.IsGameStarted,
+                _ => !EClass.core.IsGameStarted,
                 0.1f)
-            .OnAfterGUI(DrawControlPanel)
-            .OnKill(() => DisableBGMView());
+            .OnAfterGUI(DrawControlPanel);
     }
 
     private void Kill()
     {
-        _killBgmProgress = true;
+        _bgmProgress?.Kill();
         _bgmProgress = null;
         _detailedView = false;
     }
@@ -242,33 +236,32 @@ public class PlaylistViewer
 
     private void DrawControlButtons()
     {
-        var width = _bgmProgress!.Rect.width;
-        GUILayout.BeginHorizontal(GUILayout.Height(20f), GUILayout.MaxWidth(width));
+        GUILayout.BeginHorizontal(GUILayout.Height(20f));
         {
             var detail = _detailedView ? $"<b>{DetailString}</b>" : DetailString;
             if (GUILayout.Button(detail, ButtonStyle)) {
                 _detailedView = !_detailedView;
             }
 
-            GUILayout.Space(5f);
+            GUILayout.Space(2f);
 
             if (GUILayout.Button(RebuildString, ButtonStyle)) {
                 CustomPlaylist.BuildPlaylists();
             }
 
-            GUILayout.Space(5f);
+            GUILayout.Space(2f);
 
             if (GUILayout.Button(ShuffleString, ButtonStyle)) {
                 ShuffleBGM();
             }
 
-            GUILayout.Space(5f);
+            GUILayout.Space(2f);
 
             if (GUILayout.Button(PreviousString, ButtonStyle)) {
                 LastBGM();
             }
 
-            GUILayout.Space(5f);
+            GUILayout.Space(2f);
 
             if (GUILayout.Button(NextString, ButtonStyle)) {
                 NextBGM();

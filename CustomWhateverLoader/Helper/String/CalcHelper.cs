@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using AK;
@@ -10,42 +9,6 @@ namespace Cwl.Helper.String;
 
 public static class CalcHelper
 {
-    private static readonly Dictionary<object, Dictionary<string, string>> _cached = [];
-
-    public static Dictionary<string, string> Tokenize(object? args)
-    {
-        if (args is null) {
-            return [];
-        }
-
-        if (_cached.TryGetValue(args, out var tokens)) {
-            return tokens;
-        }
-
-        Dictionary<string, object?> store = [];
-        if (args is IDictionary<string, object?> input) {
-            foreach (var (k, v) in input) {
-                store[k] = v;
-            }
-        } else {
-            foreach (var property in args.GetType().GetProperties()) {
-                store[property.Name] = property.GetValue(args);
-            }
-
-            foreach (var field in args.GetType().GetCachedFields()) {
-                store[field.Name] = field.GetValue(args);
-            }
-        }
-
-        foreach (var (k, v) in store.ToArray()) {
-            if (v is null) {
-                store.Remove(k);
-            }
-        }
-
-        return _cached[args] = store.ToDictionary(k => k.Key, v => v.Value!.ToString());
-    }
-
     extension(string expression)
     {
         public bool TryEvaluate(out int result, object? args = null)
@@ -80,7 +43,7 @@ public static class CalcHelper
 
         public Expression GetExpression(object? args = null)
         {
-            var tokens = Tokenize(args);
+            var tokens = args.Tokenize();
             var calc = Cal.Instance.SymbolicateExpression(expression, tokens.Keys.ToArray());
 
             foreach (var (k, v) in tokens) {

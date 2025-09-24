@@ -26,10 +26,10 @@ public class ProgressIndicator
     private Action<ProgressIndicator, Event>? _onEvent;
     private Action<ProgressIndicator>? _onHover;
     private Action? _onKill;
-
-    public GUIStyle? GUIStyle => field ??= GetLabelSkin();
     public required Func<UpdateInfo> OnUpdate;
     public required Func<ProgressIndicator, bool> ShouldKill;
+
+    public GUIStyle? GUIStyle => field ??= GetLabelSkin();
 
     public float DurationRemain { get; private set; }
     public float DurationTotal { get; private set; }
@@ -138,7 +138,7 @@ public class ProgressIndicator
                 IsHovering = Rect.Contains(eventData.mousePosition);
                 Rect = Rect with { size = Rect.size - new Vector2(10f, 10f) };
                 break;
-            case not (EventType.Layout or EventType.Used or EventType.Ignore)
+            case EventType.KeyDown or EventType.MouseDown or EventType.ScrollWheel
                 when IsHovering: {
                 _onEvent?.Invoke(this, eventData);
 
@@ -178,7 +178,7 @@ public class ProgressIndicator
 
         private void Start()
         {
-            ProgressUpdate(this.GetCancellationTokenOnDestroy()).Forget();
+            ProgressUpdateAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
 
         private void OnGUI()
@@ -198,7 +198,7 @@ public class ProgressIndicator
             _active.ToArray().ForeachReverse(p => p.Draw());
         }
 
-        private async UniTaskVoid ProgressUpdate(CancellationToken token)
+        private async UniTaskVoid ProgressUpdateAsync(CancellationToken token)
         {
             while (!StopOnNextUpdate) {
                 foreach (var progress in _active.ToArray()) {

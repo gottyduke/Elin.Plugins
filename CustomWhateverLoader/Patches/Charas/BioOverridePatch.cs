@@ -43,8 +43,8 @@ internal class BioOverridePatch
             return;
         }
 
-        var mom = (Lang.isJP ? bio.Mom_JP : bio.Mom).Split("@");
-        var dad = (Lang.isJP ? bio.Dad_JP : bio.Dad).Split("@");
+        var mom = (Lang.isJP ? bio.Mom_JP : bio.Mom).Split('@');
+        var dad = (Lang.isJP ? bio.Dad_JP : bio.Dad).Split('@');
 
         var info = __instance.transform.GetFirstNestedChildWithName("Content View/Profile/info");
         if (mom.Length > 1) {
@@ -98,16 +98,16 @@ internal class BioOverridePatch
             chara.bio.idDad = langWord.NextUniqueKey();
             langWord[chara.bio.idDad] = new() {
                 id = chara.bio.idDad,
-                name_JP = bio.Dad_JP.Split("@")[0],
-                name = bio.Dad.Split("@")[0],
+                name_JP = bio.Dad_JP.Split('@')[0],
+                name = bio.Dad.Split('@')[0],
             };
 
             chara.bio.idAdvMom = FallbackRowId;
             chara.bio.idMom = langWord.NextUniqueKey();
             langWord[chara.bio.idMom] = new() {
                 id = chara.bio.idMom,
-                name_JP = bio.Mom_JP.Split("@")[0],
-                name = bio.Mom.Split("@")[0],
+                name_JP = bio.Mom_JP.Split('@')[0],
+                name = bio.Mom.Split('@')[0],
             };
 
             chara.bio.idHome = langWord.NextUniqueKey();

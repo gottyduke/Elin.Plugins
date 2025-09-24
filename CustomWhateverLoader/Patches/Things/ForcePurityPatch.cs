@@ -2,7 +2,7 @@
 using Cwl.API.Attributes;
 using Cwl.Helper.Unity;
 
-namespace Cwl.Patches.Recipes;
+namespace Cwl.Patches.Things;
 
 internal class ForcePurityPatch
 {
