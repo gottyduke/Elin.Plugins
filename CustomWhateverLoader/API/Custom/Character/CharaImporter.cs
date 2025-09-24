@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Cwl.API.Attributes;
 using Cwl.Helper.Extensions;
-using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using Cwl.Patches;
-using Cwl.Patches.Charas;
 using MethodTimer;
 
 namespace Cwl.API.Custom;
@@ -20,6 +18,7 @@ public partial class CustomChara
         }
 
         SpawnAtZone(chara, destZone);
+        chara.mapStr.Set("cwl_source_chara_zone", zoneFullName);
     }
 
     public static void SpawnAtZone(Chara chara, Zone zone)
@@ -34,14 +33,9 @@ public partial class CustomChara
     }
 
     [Time]
-    [CwlSceneInitEvent(Scene.Mode.StartGame, true)]
+    [CwlSceneInitEvent(Scene.Mode.StartGame, true, order: CwlSceneEventOrder.CharaImporter)]
     internal static void AddDelayedChara()
     {
-        if (DeferredUntilRestoration && RestoreCharaData.Restorable.Count > 0) {
-            CoroutineHelper.Deferred(AddDelayedChara, () => !DeferredUntilRestoration);
-            return;
-        }
-
         var listAdv = game.cards.listAdv;
         var charas = game.cards.globalCharas.Values.ToLookup(c => c.id);
 
@@ -56,10 +50,10 @@ public partial class CustomChara
                 var skipLoc = isAdv ? "cwl_log_skipped_adv" : "cwl_log_skipped_cm";
                 var addLoc = isAdv ? "cwl_log_added_adv" : "cwl_log_added_cm";
 
-                List<Zone> toAddZones = [];
+                List<(Zone, string)> toAddZones = [];
                 foreach (var toImport in import.Zones) {
                     if (toImport.ValidateZone(out var zone, true) && zone is not null) {
-                        toAddZones.Add(zone);
+                        toAddZones.Add((zone, toImport));
                     } else {
                         CwlMod.WarnWithPopup<CustomChara>("cwl_error_zone_invalid".Loc(id, toImport));
                     }
@@ -87,13 +81,14 @@ public partial class CustomChara
                     // adventurer   -> first zone
                     // unique chara -> each zone needs an instance
                     var toAddZone = isAdv ? toAddZones.FirstOrDefault() : toAddZones.TryGet(i, true);
-                    if (toAddZone is null) {
+                    if (toAddZone.Item1 is null || toAddZone.Item2 is null) {
                         // no tag or invalid tag
                         break;
                     }
 
                     if (CreateTaggedChara(id, out var chara, import) && chara is not null) {
-                        SpawnAtZone(chara, toAddZone);
+                        SpawnAtZone(chara, toAddZone.Item1);
+                        chara.mapStr.Set("cwl_source_chara_zone", toAddZone.Item2);
 
                         if (isAdv) {
                             listAdv.Add(chara);

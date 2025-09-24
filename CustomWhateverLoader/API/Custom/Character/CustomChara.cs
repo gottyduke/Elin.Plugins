@@ -26,7 +26,6 @@ public partial class CustomChara : Chara
     private static readonly Dictionary<string, CharaImport> _delayedCharaImport = [];
     internal static readonly Dictionary<string, string> DramaRoutes = [];
     internal static readonly Dictionary<string, string> BioOverride = [];
-    internal static bool DeferredUntilRestoration;
 
     public static IReadOnlyCollection<string> All => _delayedCharaImport.Keys;
 

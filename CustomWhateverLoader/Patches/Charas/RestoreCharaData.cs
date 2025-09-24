@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
 using Cwl.API.Attributes;
 using Cwl.API.Custom;
-using Cwl.API.Processors;
-using Cwl.Helper.Extensions;
-using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;
 
@@ -15,8 +10,6 @@ namespace Cwl.Patches.Charas;
 [HarmonyPatch]
 internal static class RestoreCharaData
 {
-    internal static readonly Dictionary<Chara, SourceChara.Row> Restorable = [];
-
     [CwlCharaOnCreateEvent]
     internal static void SetOrRestoreCharaData(Chara chara)
     {
@@ -24,65 +17,9 @@ internal static class RestoreCharaData
             return;
         }
 
-        Restorable[chara] = row;
-        CustomChara.DeferredUntilRestoration = true;
-    }
-
-    [CwlPreLoad]
-    internal static void ClearData(GameIOProcessor.GameIOContext? context = null)
-    {
-        CustomChara.DeferredUntilRestoration = false;
-        Restorable.Clear();
-    }
-
-    [CwlSceneInitEvent(Scene.Mode.StartGame)]
-    internal static void PromptRestoration()
-    {
-        if (Restorable.Count == 0) {
-            return;
-        }
-
-        Dialog.YesNo(
-            "cwl_ui_chara_restore".Loc(BuildRestorationList()),
-            RestoreChara,
-            ResetChara,
-            "cwl_ui_chara_restore_yes",
-            "cwl_ui_chara_restore_no");
-    }
-
-    private static void RestoreChara()
-    {
-        foreach (var (chara, row) in Restorable) {
-            chara.id = row.id;
-            chara.SetCardOnDeserialized();
-            CwlMod.Log<CustomChara>("cwl_log_chara_restore".Loc(row.id));
-        }
-
-        ClearData();
-    }
-
-    private static void ResetChara()
-    {
-        foreach (var chara in Restorable.Keys) {
-            chara.mapStr.Remove("cwl_source_chara_id");
-        }
-
-        ClearData();
-    }
-
-    private static string BuildRestorationList()
-    {
-        using var sb = StringBuilderPool.Get();
-
-        foreach (var (chara, row) in Restorable.Take(15)) {
-            sb.AppendLine($"{row.GetText()} {row.GetText("aka")}, lv {chara.LV}, {chara.currentZone.Name}");
-        }
-
-        if (Restorable.Count > 15) {
-            sb.AppendLine($"+ {Restorable.Count - 15}...");
-        }
-
-        return sb.ToString().TrimEnd();
+        chara.id = row.id;
+        chara.SetCardOnDeserialized();
+        CwlMod.Log<CustomChara>("cwl_log_chara_restore".Loc(row.id));
     }
 
     extension(Card card)
