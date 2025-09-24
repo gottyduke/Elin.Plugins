@@ -49,7 +49,7 @@ public partial class DramaExpansion
         var chara = dm.tg.chara;
         var canTalk = chara.IsHumanSpeak || pc.HasElement(FEAT.featAnimalLover);
 
-        if (!chara.HasUniqueRumor() || !canTalk || !dm.customEventsAdded) {
+        if (!chara.HasRumorText("unique") || !canTalk || !dm.customEventsAdded) {
             return;
         }
 
@@ -59,11 +59,11 @@ public partial class DramaExpansion
         dm.lastTalk.choices.Add(choice);
         dm._choices.Add(choice);
 
-        var rumor = chara.GetUniqueRumor(dm.enableTone);
+        var rumor = chara.GetUniqueRumor();
         choice.SetOnClick(() => {
             var firstText = rumor;
             dm.sequence.firstTalk.funcText = () => firstText;
-            rumor = chara.GetUniqueRumor(dm.enableTone);
+            rumor = chara.GetUniqueRumor();
             chara.affinity.OnTalkRumor();
             choice.forceHighlight = true;
         }).SetCondition(() => chara.interest > 0);

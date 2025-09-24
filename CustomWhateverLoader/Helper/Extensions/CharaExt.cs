@@ -1,4 +1,5 @@
 ﻿using Cwl.API.Custom;
+using Cwl.API.Drama;
 using Cwl.LangMod;
 
 namespace Cwl.Helper.Extensions;
@@ -13,12 +14,6 @@ public static class CharaExt
                            chara.c_bossType is BossType.Boss;
             var hostile = !hostileOnly || chara.IsHostile();
             return bossType && hostile;
-        }
-
-        public bool HasUniqueRumor()
-        {
-            var rumors = Lang.GetDialog("unique", chara.id);
-            return rumors.Length > 1 || rumors.TryGet(0, true) != chara.id;
         }
 
         public Element? AddElement(SourceElement.Row element, int power = 1)
@@ -62,10 +57,51 @@ public static class CharaExt
                 : null;
         }
 
-        public string GetUniqueRumor(bool tone = false)
+        public string GetUniqueRumor()
         {
-            var dialog = Lang.GetDialog("unique", chara.id).RandomItem();
-            return tone ? chara.ApplyTone(dialog) : dialog;
+            if (chara.interest <= 0) {
+                return chara.GetDialogText("rumor", "bored");
+            }
+
+            if (chara.HasRumorText("unique")) {
+                return chara.GetDialogText("unique", chara.id);
+            }
+
+            if (EClass.rnd(2) == 0 && !chara.trait.IDRumor.IsEmpty()) {
+                return chara.GetDialogText("rumor", chara.trait.IDRumor);
+            }
+
+            if (EClass.rnd(2) == 0 && chara.HasRumorText("zone", EClass._zone.id)) {
+                return chara.GetDialogText("zone", EClass._zone.id);
+            }
+
+            if (EClass.rnd(2) == 0) {
+                return chara.GetDialogText("rumor", "interest_" + chara.bio.idInterest.ToEnum<Interest>());
+            }
+
+            if (EClass.rnd(2) == 0) {
+                return chara.GetTalkText("rumor");
+            }
+
+            return chara.GetDialogText("rumor", EClass.rnd(4) == 0 ? "hint" : "default");
+        }
+
+        public bool HasRumorText(string idSheet, string? idTopic = null)
+        {
+            idTopic = idTopic.IsEmpty(chara.id);
+            var rumors = Lang.GetDialog(idSheet, idTopic);
+            return rumors.Length > 1 || rumors.TryGet(0, true) != idTopic;
+        }
+
+        public string GetDialogText(string idSheet, string idTopic)
+        {
+            var dm = DramaExpansion.Cookie?.Dm;
+            if (!idTopic.IsEmpty() && (dm?.customTalkTopics.TryGetValue(idTopic, out var text) ?? false)) {
+                return text;
+            }
+
+            var dialog = Lang.GetDialog(idSheet, idTopic).RandomItem();
+            return dm?.enableTone ?? false ? chara.ApplyTone(dialog) : dialog;
         }
 
         public void DestroyImmediate()

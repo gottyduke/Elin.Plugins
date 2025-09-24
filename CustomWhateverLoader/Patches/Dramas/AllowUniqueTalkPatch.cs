@@ -23,6 +23,6 @@ internal class AllowUniqueTalkPatch
 
     private static bool HasUniqueTalk(Chara chara)
     {
-        return chara.IsHumanSpeak || chara.HasUniqueRumor();
+        return chara.IsHumanSpeak || chara.HasRumorText("unique");
     }
 }
