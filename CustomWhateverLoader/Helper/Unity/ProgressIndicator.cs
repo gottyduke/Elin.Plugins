@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
 using Cwl.LangMod;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 namespace Cwl.Helper.Unity;
@@ -15,7 +16,6 @@ public class ProgressIndicator
 
     private static readonly List<ProgressIndicator> _active = [];
     private static ProgressIndicatorUpdater? _updater;
-    private static GUIStyle? _defaultStyle;
 
     private readonly string _hoverClosePrompt = "cwl_ui_hover_close".Loc();
     private readonly string _hoverDetailPrompt = "cwl_ui_hover_detail".Loc();
@@ -27,7 +27,7 @@ public class ProgressIndicator
     private Action<ProgressIndicator>? _onHover;
     private Action? _onKill;
 
-    public GUIStyle? GUIStyle;
+    public GUIStyle GUIStyle = GetLabelSkin();
     public required Func<UpdateInfo> OnUpdate;
     public required Func<ProgressIndicator, bool> ShouldKill;
 
@@ -35,6 +35,12 @@ public class ProgressIndicator
     public float DurationTotal { get; private set; }
     public bool IsHovering { get; private set; }
     public bool IsKilled { get; private set; }
+
+    /// <summary>
+    ///     Rect of current progress gui drawn.<br />
+    ///     Use this as max size reference in OnAfterGUI
+    /// </summary>
+    public Rect Rect { get; private set; }
 
     public void Kill()
     {
@@ -96,12 +102,9 @@ public class ProgressIndicator
             return;
         }
 
-        GUIStyle ??= _defaultStyle ??= GetLabelSkin();
-
         var textColor = _info.Color ?? Color.black;
         GUIStyle.normal.textColor = GUIStyle.hover.textColor = textColor;
 
-        var oldLabel = GUI.skin.label;
         GUI.skin.label = GUIStyle;
 
         GUILayout.BeginVertical("box");
@@ -124,14 +127,19 @@ public class ProgressIndicator
         }
         GUILayout.EndVertical();
 
-        GUI.skin.label = oldLabel;
+        HandleEvent(Event.current);
+    }
 
-        var eventData = Event.current;
+    private void HandleEvent(Event eventData)
+    {
         switch (eventData.type) {
             case EventType.Repaint:
-                IsHovering = GUILayoutUtility.GetLastRect().Contains(eventData.mousePosition);
+                Rect = GUILayoutUtility.GetLastRect();
+                IsHovering = Rect.Contains(eventData.mousePosition);
+                Rect = Rect with { size = Rect.size - new Vector2(10f, 10f) };
                 break;
-            case EventType.MouseDown or EventType.KeyDown when IsHovering: {
+            case not (EventType.Layout or EventType.Used or EventType.Ignore)
+                when IsHovering: {
                 _onEvent?.Invoke(this, eventData);
 
                 if (eventData.IsRightMouseDown) {
@@ -139,6 +147,10 @@ public class ProgressIndicator
                     eventData.Use();
                 }
 
+                EInput.Consume(true);
+                break;
+            }
+            case EventType.Used when IsHovering: {
                 EInput.Consume(true);
                 break;
             }
@@ -166,7 +178,7 @@ public class ProgressIndicator
 
         private void Start()
         {
-            StartCoroutine(ProgressUpdate());
+            ProgressUpdate(this.GetCancellationTokenOnDestroy()).Forget();
         }
 
         private void OnGUI()
@@ -175,32 +187,25 @@ public class ProgressIndicator
                 return;
             }
 
-            var oldScrollView = GUI.skin.scrollView;
-            var oldVerticalScrollbar = GUI.skin.verticalScrollbar;
-            var oldVerticalScrollbarThumb = GUI.skin.verticalScrollbarThumb;
-
             GUI.skin.scrollView = ScrollViewStyle;
             GUI.skin.verticalScrollbar = VerticalScrollbarStyle;
             GUI.skin.verticalScrollbarThumb = VerticalScrollbarThumbStyle;
 
-            GUILayout.Space(10f);
+            // don't overlap with steam fps
+            GUILayout.Space(15f);
 
+            // maybe one day wrap this in a vertical layout group
             _active.ToArray().ForeachReverse(p => p.Draw());
-
-            GUI.skin.scrollView = oldScrollView;
-            GUI.skin.verticalScrollbar = oldVerticalScrollbar;
-            GUI.skin.verticalScrollbarThumb = oldVerticalScrollbarThumb;
         }
 
-        private IEnumerator ProgressUpdate()
+        private async UniTaskVoid ProgressUpdate(CancellationToken token)
         {
-            var interval = new WaitForSeconds(UpdateInterval);
             while (!StopOnNextUpdate) {
                 foreach (var progress in _active.ToArray()) {
                     progress.Update();
                 }
 
-                yield return interval;
+                await UniTask.Delay(200, cancellationToken: token);
             }
         }
     }
@@ -209,7 +214,7 @@ public class ProgressIndicator
 
     public static GUIStyle GetLabelSkin()
     {
-        return new(GUI.skin.label) {
+        return new("label") {
             fontSize = 16,
             richText = true,
             wordWrap = true,
@@ -228,7 +233,7 @@ public class ProgressIndicator
 
     public static GUIStyle GetScrollViewSkin()
     {
-        return new(GUI.skin.scrollView) {
+        return new("scrollView") {
             padding = new(0, 10, 0, 0),
             normal = {
                 background = SpriteCreator.GetSolidColorTexture(new(1f, 1f, 1f, 0.95f)),
@@ -238,7 +243,7 @@ public class ProgressIndicator
 
     public static GUIStyle GetVerticalScrollbarSkin()
     {
-        return new(GUI.skin.verticalScrollbar) {
+        return new("verticalScrollbar") {
             fixedWidth = 5f,
             border = new(0, 0, 0, 0),
             normal = {
@@ -255,7 +260,7 @@ public class ProgressIndicator
 
     public static GUIStyle GetVerticalScrollbarThumbSkin()
     {
-        return new(GUI.skin.verticalScrollbarThumb) {
+        return new("verticalScrollbarThumb") {
             border = new(0, 0, 0, 0),
             fixedWidth = 10f,
             normal = {
@@ -304,18 +309,13 @@ public class ProgressIndicator
 
 #region Setters
 
-    public ProgressIndicator SetGUIStyle(GUIStyle? styleOverride)
-    {
-        GUIStyle = styleOverride;
-        return this;
-    }
-
     public ProgressIndicator OnHover(Action<ProgressIndicator>? onHover)
     {
         _onHover = onHover;
         return this;
     }
 
+    // not thread safe
     public ProgressIndicator OnKill(Action? onKill)
     {
         _onKill = onKill;
@@ -353,6 +353,12 @@ public class ProgressIndicator
         }
 
         DurationRemain = Mathf.Clamp(remain, 0f, DurationTotal);
+        return this;
+    }
+
+    public ProgressIndicator SetGUIStyle(GUIStyle style)
+    {
+        GUIStyle = new(style);
         return this;
     }
 

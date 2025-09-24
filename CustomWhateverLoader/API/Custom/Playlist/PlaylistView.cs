@@ -11,69 +11,84 @@ using UnityEngine;
 namespace Cwl.API.Custom;
 
 [ConsoleCommandClassCustomizer("cwl.bgm")]
-public partial class CustomPlaylist
+public class PlaylistViewer
 {
-    private static ProgressIndicator? _bgmProgress;
-    private static bool _killBgmProgress;
-    private static readonly FastString _lastBgmViewInfo = new(256);
-    private static bool _detailedView;
+    private static PlaylistViewer? _viewer;
+    private readonly FastString _lastBgmViewInfo = new(256);
+
+    private ProgressIndicator? _bgmProgress;
+    private bool _detailedView;
+    private bool _killBgmProgress;
+
+    private string? DetailString => field ??= "cwl_ui_bgm_detail".Loc();
+    private string? NextString => field ??= "cwl_ui_bgm_next".Loc();
+    private string? PreviousString => field ??= "cwl_ui_bgm_last".Loc();
+    private string? RebuildString => field ??= "cwl_ui_bgm_rebuild".Loc();
+    private string? ShuffleString => field ??= "cwl_ui_bgm_shuffle".Loc();
+
+    private GUIStyle? ButtonStyle =>
+        field ??= new(GUI.skin.label) {
+            alignment = TextAnchor.MiddleCenter,
+        };
+
+    private GUIStyle? ProgressBarStyle =>
+        field ??= new(GUI.skin.box) {
+            normal = {
+                background = SpriteCreator.GetSolidColorTexture(new(0.2f, 0.6f, 0.8f)),
+            },
+        };
+
+    private GUIStyle? ProgressBarBgStyle =>
+        field ??= new(GUI.skin.box) {
+            normal = {
+                background = SpriteCreator.GetSolidColorTexture(new(0.5f, 0.5f, 0.5f)),
+            },
+        };
 
     [ConsoleCommand("view")]
-    [CwlContextMenu("BGM/View", "cwl_ui_bgm_view")]
+    [CwlContextMenu("BGM/Show", "cwl_ui_bgm_view")]
     public static string EnableBGMView()
     {
-        if (!_killBgmProgress && _bgmProgress != null) {
-            _detailedView = !_detailedView;
-            return $"detailed view: {_detailedView}";
-        }
-
-        _killBgmProgress = false;
-        _bgmProgress ??= ProgressIndicator.CreateProgress(
-            () => new(GetCurrentPlaylistInfo()),
-            _ => _killBgmProgress,
-            1f);
-
-        return "enabled, use this command again to toggle detailed view";
+        _viewer ??= new();
+        _viewer.Show();
+        return "enabled BGM panel";
     }
 
     [ConsoleCommand("hide")]
-    [CwlContextMenu("BGM/Hide", "cwl_ui_bgm_hide")]
     public static string DisableBGMView()
     {
-        _killBgmProgress = true;
-        _bgmProgress = null;
-        _detailedView = false;
+        _viewer?.Kill();
         return "disabled";
     }
 
     [ConsoleCommand("next")]
-    [CwlContextMenu("BGM/Next", "cwl_ui_bgm_next")]
     public static string NextBGM()
     {
-        var pl = SoundManager.current.currentPlaylist;
-        pl.Play();
-        return pl.currentItem.data._name;
+        var playlist = SoundManager.current.currentPlaylist;
+        return PlayIndex(playlist.nextIndex);
     }
 
     [ConsoleCommand("last")]
-    [CwlContextMenu("BGM/Last", "cwl_ui_bgm_last")]
     public static string LastBGM()
     {
-        var pl = SoundManager.current.currentPlaylist;
-        pl.nextIndex = (pl.nextIndex - 2 + pl.list.Count) % pl.list.Count;
-        pl.Play();
-        return pl.currentItem.data._name;
+        var playlist = SoundManager.current.currentPlaylist;
+        return PlayIndex(playlist.nextIndex - 2 + playlist.list.Count);
     }
 
     [ConsoleCommand("shuffle")]
-    [CwlContextMenu("BGM/Shuffle", "cwl_ui_bgm_shuffle")]
     public static string ShuffleBGM()
     {
-        var pl = SoundManager.current.currentPlaylist;
-        pl.nextIndex = EClass.rnd(pl.list.Count);
-        pl.Shuffle();
-        pl.Play();
-        return pl.currentItem.data._name;
+        var playlist = SoundManager.current.currentPlaylist;
+        playlist.Shuffle();
+        return PlayIndex(EClass.rnd(playlist.list.Count));
+    }
+
+    public static string PlayIndex(int index)
+    {
+        var playlist = SoundManager.current.currentPlaylist;
+        playlist.nextIndex = index % playlist.list.Count;
+        playlist.Play();
+        return playlist.currentItem.data._name;
     }
 
     [ConsoleCommand("add_known")]
@@ -117,27 +132,47 @@ public partial class CustomPlaylist
         return $"output has been dumped to {dump.NormalizePath()}";
     }
 
-    private static string GetCurrentPlaylistInfo()
+    private void Show()
+    {
+        if (!_killBgmProgress && _bgmProgress?.IsKilled is false) {
+            _detailedView = !_detailedView;
+        }
+
+        _killBgmProgress = false;
+        _bgmProgress = ProgressIndicator
+            .CreateProgress(
+                () => new(GetCurrentPlaylistInfo()),
+                _ => _killBgmProgress || !EClass.core.IsGameStarted,
+                0.1f)
+            .OnAfterGUI(DrawControlPanel)
+            .OnKill(() => DisableBGMView());
+    }
+
+    private void Kill()
+    {
+        _killBgmProgress = true;
+        _bgmProgress = null;
+        _detailedView = false;
+    }
+
+    private string GetCurrentPlaylistInfo()
     {
         if (!EClass.core.IsGameStarted) {
             DisableBGMView();
             return "disabled";
         }
 
-        var pl = SoundManager.current.currentPlaylist;
-        if (pl?.currentItem == null) {
+        var playlist = SoundManager.current.currentPlaylist;
+        if (playlist?.currentItem == null) {
             return "disabled";
         }
 
-        var current = pl.currentItem;
-        var played = TimeSpan.FromSeconds(pl.playedTime);
-        var length = TimeSpan.FromSeconds(current.data.clip.length);
         return _lastBgmViewInfo
             .Watch(WatchPlaylistString, BuildPlaylistString)
-            .With($@"{played:mm\:ss} / {length:mm\:ss}");
+            .ToString();
     }
 
-    private static string WatchPlaylistString()
+    private string WatchPlaylistString()
     {
         var pl = SoundManager.current.currentPlaylist;
         if (pl?.currentItem == null) {
@@ -148,20 +183,19 @@ public partial class CustomPlaylist
         return $"{pl.UniqueString()}{_detailedView}{current.data.id}";
     }
 
-    private static string BuildPlaylistString()
+    private string BuildPlaylistString()
     {
-        var newPl = SoundManager.current.currentPlaylist;
+        var playlist = SoundManager.current.currentPlaylist;
         using var sb = StringBuilderPool.Get()
-            .AppendLine(newPl.name)
+            .AppendLine(playlist.name)
             .AppendLine()
-            .AppendLine("cwl_bgm_shuffle".Loc(newPl.shuffle))
-            .AppendLine("cwl_bgm_stream".Loc(CwlConfig.SeamlessStreaming))
-            .AppendLine("cwl_bgm_detail".Loc(_detailedView))
+            .AppendLine($"{ShuffleString}\t {playlist.shuffle}")
+            .AppendLine($"{DetailString}\t {_detailedView}")
             .AppendLine();
 
-        for (var i = 0; i < newPl.list.Count; ++i) {
-            var bgm = newPl.list[i];
-            var bgmName = bgm == newPl.currentItem ? $"<b>{bgm.data._name}</b>" : bgm.data._name;
+        for (var i = 0; i < playlist.list.Count; ++i) {
+            var bgm = playlist.list[i];
+            var bgmName = bgm == playlist.currentItem ? $"<b>{bgm.data._name}</b>" : bgm.data._name;
             sb.Append($"{i + 1:D2}\t{bgmName} ");
 
             if (_detailedView) {
@@ -171,7 +205,75 @@ public partial class CustomPlaylist
             }
         }
 
-        sb.AppendLine();
         return sb.ToString();
+    }
+
+    private void DrawControlPanel(ProgressIndicator progress)
+    {
+        var playlist = SoundManager.current.currentPlaylist;
+        if (playlist == null || playlist.currentItem is not { data.clip.length: > 0f }) {
+            return;
+        }
+
+        DrawProgressBar(playlist);
+        DrawControlButtons();
+    }
+
+    private void DrawProgressBar(Playlist playlist)
+    {
+        var current = playlist.currentItem;
+        var played = TimeSpan.FromSeconds(playlist.playedTime);
+        var length = TimeSpan.FromSeconds(current.data.clip.length);
+        var percent = (float)(played / length);
+
+        var width = _bgmProgress!.Rect.width;
+        var playedPercent = width * percent;
+        var lengthPercent = Mathf.Max(width - width * percent - 10f, 0f);
+
+        GUILayout.BeginHorizontal(GUILayout.Height(20f), GUILayout.MaxWidth(width));
+        {
+            GUILayout.Box($"<b>{played:mm\\:ss}</b>", GUILayout.ExpandWidth(false));
+            GUILayout.Box("", ProgressBarStyle, GUILayout.MaxWidth(playedPercent), GUILayout.ExpandWidth(false));
+            GUILayout.Box("", ProgressBarBgStyle, GUILayout.MaxWidth(lengthPercent), GUILayout.ExpandWidth(false));
+            GUILayout.Box($"<b>{length:mm\\:ss}</b>", GUILayout.ExpandWidth(false));
+        }
+        GUILayout.EndHorizontal();
+    }
+
+    private void DrawControlButtons()
+    {
+        var width = _bgmProgress!.Rect.width;
+        GUILayout.BeginHorizontal(GUILayout.Height(20f), GUILayout.MaxWidth(width));
+        {
+            var detail = _detailedView ? $"<b>{DetailString}</b>" : DetailString;
+            if (GUILayout.Button(detail, ButtonStyle)) {
+                _detailedView = !_detailedView;
+            }
+
+            GUILayout.Space(5f);
+
+            if (GUILayout.Button(RebuildString, ButtonStyle)) {
+                CustomPlaylist.BuildPlaylists();
+            }
+
+            GUILayout.Space(5f);
+
+            if (GUILayout.Button(ShuffleString, ButtonStyle)) {
+                ShuffleBGM();
+            }
+
+            GUILayout.Space(5f);
+
+            if (GUILayout.Button(PreviousString, ButtonStyle)) {
+                LastBGM();
+            }
+
+            GUILayout.Space(5f);
+
+            if (GUILayout.Button(NextString, ButtonStyle)) {
+                NextBGM();
+            }
+        }
+        GUILayout.EndHorizontal();
     }
 }

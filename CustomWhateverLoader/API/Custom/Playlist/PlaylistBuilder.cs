@@ -73,7 +73,6 @@ public partial class CustomPlaylist
 
     // TODO use a deferred mapping to support Playlist filtering
     [ConsoleCommand("rebuild")]
-    [CwlContextMenu("BGM/Rebuild", "cwl_ui_bgm_rebuild")]
     internal static string BuildPlaylists()
     {
         ClearPlaylistCache();
