@@ -18,6 +18,14 @@ $Changelogs
 
 
 
+{topic|1.20.49}
+Updated for 23.206 Nightly
+Added support for humanSpeak tag in Chara sheet
+Fixed potential GUI skin problem
+Added console support in main menu by pressing backquote (`)
+Added extended gun effect data support
+Added support for custom religion portraits in journal
+
 {topic|1.20.48}
 Updated for 23.202 Nightly
 Enabled custom element feature(god ability talk proc, custom icon sprite) for non-scripted classes
