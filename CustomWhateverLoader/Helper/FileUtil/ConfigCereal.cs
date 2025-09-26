@@ -10,7 +10,7 @@ namespace Cwl.Helper.FileUtil;
 
 public class ConfigCereal
 {
-    private static readonly JsonSerializerSettings _settings = new() {
+    public static readonly JsonSerializerSettings Settings = new() {
         NullValueHandling = NullValueHandling.Ignore,
         DefaultValueHandling = DefaultValueHandling.Ignore,
         PreserveReferencesHandling = PreserveReferencesHandling.Objects,
@@ -63,7 +63,7 @@ public class ConfigCereal
         try {
             if (File.Exists(path)) {
                 using var fs = File.Open(path!, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-                var js = JsonSerializer.CreateDefault(_settings);
+                var js = JsonSerializer.CreateDefault(Settings);
 
                 switch (compact) {
                     case CompactLevel.TextIndent:
@@ -105,7 +105,7 @@ public class ConfigCereal
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
 
             using var fs = new FileStream(path, FileMode.Create);
-            var js = JsonSerializer.CreateDefault(_settings);
+            var js = JsonSerializer.CreateDefault(Settings);
             js.Formatting = compact is CompactLevel.TextIndent ? Formatting.Indented : Formatting.None;
 
             switch (compact) {
