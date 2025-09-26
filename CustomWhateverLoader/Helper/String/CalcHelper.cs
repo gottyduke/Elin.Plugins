@@ -65,7 +65,7 @@ public static class CalcHelper
                 ['/', .. { } raw] when float.TryParse(raw, out var rhs) => lhs / rhs,
                 ['=', .. { } raw] when float.TryParse(raw, out var rhs) => rhs,
                 ['=', '=', .. { } raw] when float.TryParse(raw, out var rhs) => rhs,
-                { } raw when float.TryParse(raw, out var rhs) => rhs,
+                { } raw when float.TryParse(raw, out var rhs) => lhs + rhs,
                 _ => lhs,
             };
         }
@@ -82,7 +82,7 @@ public static class CalcHelper
                 ['/', .. { } raw] when int.TryParse(raw, out var rhs) => lhs / rhs,
                 ['=', .. { } raw] when int.TryParse(raw, out var rhs) => rhs,
                 ['=', '=', .. { } raw] when int.TryParse(raw, out var rhs) => rhs,
-                { } raw when int.TryParse(raw, out var rhs) => rhs,
+                { } raw when int.TryParse(raw, out var rhs) => lhs + rhs,
                 _ => lhs,
             };
         }
@@ -107,6 +107,7 @@ public static class CalcHelper
                 ['!', '=', .. { } raw] when float.TryParse(raw, out var rhs) => !Mathf.Approximately(lhs, rhs),
                 ['<', '=', .. { } raw] when float.TryParse(raw, out var rhs) => lhs <= rhs,
                 ['<', .. { } raw] when float.TryParse(raw, out var rhs) => lhs < rhs,
+                { } raw when float.TryParse(raw, out var rhs) => lhs > rhs,
                 _ => false,
             };
         }
@@ -121,6 +122,7 @@ public static class CalcHelper
                 ['!', '=', .. { } raw] when int.TryParse(raw, out var rhs) => lhs != rhs,
                 ['<', '=', .. { } raw] when int.TryParse(raw, out var rhs) => lhs <= rhs,
                 ['<', .. { } raw] when int.TryParse(raw, out var rhs) => lhs < rhs,
+                { } raw when int.TryParse(raw, out var rhs) => lhs > rhs,
                 _ => false,
             };
         }
