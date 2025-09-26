@@ -26,7 +26,7 @@ public class PlaylistViewer
     private string? ShuffleString => field ??= "cwl_ui_bgm_shuffle".Loc();
 
     private GUIStyle? ButtonStyle =>
-        field ??= new(GUI.skin.label) {
+        field ??= new(_bgmProgress?.GUIStyle ?? GUI.skin.label) {
             alignment = TextAnchor.MiddleCenter,
         };
 

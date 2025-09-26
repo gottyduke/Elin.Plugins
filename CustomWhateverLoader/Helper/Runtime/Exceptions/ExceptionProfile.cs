@@ -22,7 +22,7 @@ public class ExceptionProfile(string message)
     }
 
     private static readonly Dictionary<int, ExceptionProfile> _cached = [];
-    private static readonly Dictionary<int, ProgressIndicator> _activeExceptions = [];
+    private ProgressIndicator? _progressIndicator;
 
     public List<MonoFrame> Frames { get; } = [];
 
@@ -69,11 +69,9 @@ public class ExceptionProfile(string message)
     {
         EMono.ui?.hud?.imageCover?.SetActive(false);
 
-        if (_activeExceptions.TryGetValue(Key, out var progress)) {
-            if (progress != null) {
-                progress.ResetDuration();
-                return;
-            }
+        if (_progressIndicator is { IsKilled: false }) {
+            _progressIndicator.ResetDuration();
+            return;
         }
 
         // missing method exception
@@ -86,20 +84,20 @@ public class ExceptionProfile(string message)
 
         using var scopeExit =
             ProgressIndicator.CreateProgressScoped(() => new(GetOccurrenceString() + display, Color: Color.red));
-        progress = _activeExceptions[Key] = scopeExit.Get<ProgressIndicator>();
+        _progressIndicator = scopeExit.Get<ProgressIndicator>();
 
         if (!CwlConfig.ExceptionAnalyze) {
             return;
         }
 
-        progress
-            .OnHover(_ => {
+        _progressIndicator
+            .OnHover(p => {
                 Analyze();
-                GUILayout.Label($"{"cwl_ui_exception_copy".Loc()}\n{Result}");
-            })
-            .OnAfterGUI(p => {
-                if (p.IsHovering && State is AnalyzeState.InProgress) {
-                    GUILayout.Label("cwl_ui_exception_analyzing".Loc());
+
+                GUILayout.Label($"{"cwl_ui_exception_copy".Loc()}\n{Result}", p.GUIStyle);
+
+                if (State is AnalyzeState.InProgress) {
+                    GUILayout.Label("cwl_ui_exception_analyzing".Loc(), p.GUIStyle);
                 }
             })
             .OnEvent(ClickHandler);
@@ -124,7 +122,6 @@ public class ExceptionProfile(string message)
                 break;
             case 2:
                 Hidden = true;
-                _activeExceptions[Key].Kill();
                 eventData.Use();
                 break;
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.Extensions;
@@ -29,7 +30,7 @@ public class ProgressIndicator
     public required Func<UpdateInfo> OnUpdate;
     public required Func<ProgressIndicator, bool> ShouldKill;
 
-    public GUIStyle? GUIStyle => field ??= GetLabelSkin();
+    [field: AllowNull] public GUIStyle GUIStyle => field ??= GetLabelSkin();
 
     public float DurationRemain { get; private set; }
     public float DurationTotal { get; private set; }
@@ -103,21 +104,19 @@ public class ProgressIndicator
         }
 
         var textColor = _info.Color ?? Color.black;
-        GUIStyle?.normal.textColor = GUIStyle.hover.textColor = textColor;
+        GUIStyle.normal.textColor = GUIStyle.hover.textColor = textColor;
 
-        GUI.skin.label = GUIStyle;
-
-        GUILayout.BeginVertical("box");
+        GUILayout.BeginVertical(GUI.skin.box);
         {
             _onBeforeGUI?.Invoke(this);
 
             if (_info.Texture != null) {
                 var width = Mathf.Min(_info.Texture.width, 400f);
                 var height = (float)_info.Texture.height / _info.Texture.width * width;
-                GUILayout.Label(_info.Texture, GUILayout.Width(width), GUILayout.Height(height));
+                GUILayout.Label(_info.Texture, GUIStyle, GUILayout.Width(width), GUILayout.Height(height));
             }
 
-            GUILayout.Label(GetUpdateText());
+            GUILayout.Label(GetUpdateText(), GUIStyle);
 
             if (IsHovering) {
                 _onHover?.Invoke(this);

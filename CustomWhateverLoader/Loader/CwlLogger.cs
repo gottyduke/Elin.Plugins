@@ -62,7 +62,7 @@ internal sealed partial class CwlMod
                 using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToTruncateString(150)));
                 if (log is not null) {
                     progress.Get<ProgressIndicator>()
-                        .OnHover(_ => GUILayout.Label(log.ToTruncateString(450).TruncateAllLines(150)));
+                        .OnHover(p => GUILayout.Label(log.ToTruncateString(450).TruncateAllLines(150), p.GUIStyle));
                 }
 
                 break;
@@ -96,7 +96,7 @@ internal sealed partial class CwlMod
                 using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToTruncateString(150)));
                 if (log is not null) {
                     progress.Get<ProgressIndicator>()
-                        .OnHover(_ => GUILayout.Label(log.ToTruncateString(450).TruncateAllLines(150)));
+                        .OnHover(p => GUILayout.Label(log.ToTruncateString(450).TruncateAllLines(150), p.GUIStyle));
                 }
 
                 break;

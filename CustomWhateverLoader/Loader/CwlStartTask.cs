@@ -20,6 +20,7 @@ using Cwl.Patches.Zones;
 using HarmonyLib;
 using MethodTimer;
 using ReflexCLI;
+using ReflexCLI.UI;
 using UnityEngine;
 
 namespace Cwl;
@@ -57,7 +58,7 @@ internal sealed partial class CwlMod
             try {
                 SharedHarmony.CreateClassProcessor(patch).Patch();
             } catch (Exception ex) {
-                Error<CwlMod>($"failed to patch {patch.Name}\n{ex.InnerException}");
+                Error<CwlMod>($"failed to apply {patch.Name}\n{ex.InnerException}");
                 // noexcept
             }
         }
@@ -212,14 +213,14 @@ internal sealed partial class CwlMod
             .CreateProgress(
                 () => new("cwl_log_loading".Loc(ModInfo.Version, CurrentLoading)),
                 _ => _loadingComplete)
-            .OnHover(_ => {
+            .OnHover(p => {
                 if (!_loadingComplete) {
                     return;
                 }
 
                 scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.MaxHeight(400f));
                 {
-                    GUILayout.Label(WorkbookImporter.LastTiming);
+                    GUILayout.Label(WorkbookImporter.LastTiming, p.GUIStyle);
                 }
                 GUILayout.EndScrollView();
             });
