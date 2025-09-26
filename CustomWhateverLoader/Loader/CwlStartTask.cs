@@ -195,6 +195,12 @@ internal sealed partial class CwlMod
     {
         CommandRegistry.Rebuild();
         ParameterProcessorRegistry.Init();
+
+        var console = ReflexConsole.Instance;
+        console.ui = Instantiate(Resources.Load<ReflexUIManager>("ReflexConsoleCanvas"));
+        console.ui.input.HistoryContainer.AddItem("Logo", console.logo.text);
+
+        Instance.GetOrCreate<CwlConsole>();
     }
 
     private static void CreateLoadingProgress()

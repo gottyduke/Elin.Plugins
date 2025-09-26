@@ -3,12 +3,31 @@ using Cwl.API.Attributes;
 using Cwl.Helper.Extensions;
 using Cwl.LangMod;
 using ReflexCLI.Attributes;
+using ReflexCLI.UI;
+using UnityEngine;
 
 namespace Cwl;
 
 [ConsoleCommandClassCustomizer("cwl")]
-internal class CwlConsole : EClass
+internal class CwlConsole : EMono
 {
+    private void Update()
+    {
+        if (scene.mode is not Scene.Mode.Title) {
+            return;
+        }
+
+        if (!Input.GetKeyDown(KeyCode.BackQuote)) {
+            return;
+        }
+
+        if (ReflexUIManager.IsConsoleOpen()) {
+            ReflexUIManager.StaticClose();
+        } else {
+            ReflexUIManager.StaticOpen();
+        }
+    }
+
     [CwlContextMenu("CWL/BeggarBegone", "cwl_ui_vacate_beggar")]
     internal static string BegoneOfYouChicken()
     {
