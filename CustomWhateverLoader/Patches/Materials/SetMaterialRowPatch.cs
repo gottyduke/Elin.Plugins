@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using Cwl.Patches.Sources;
 using HarmonyLib;
@@ -42,9 +43,9 @@ internal class SetMaterialRowPatch
         try {
             foreach (var tag in tags) {
                 if (tag.StartsWith("_Main")) {
-                    main = Regex.Replace(tag, @"_Main|\(|\)", "").ToColor();
+                    main = Regex.Replace(tag, @"_Main|\(|\)", "").ToColorEx();
                 } else if (tag.StartsWith("_Alt")) {
-                    alt = Regex.Replace(tag, @"_Alt|\(|\)", "").ToColor();
+                    alt = Regex.Replace(tag, @"_Alt|\(|\)", "").ToColorEx();
                 }
             }
         } catch (Exception ex) {
