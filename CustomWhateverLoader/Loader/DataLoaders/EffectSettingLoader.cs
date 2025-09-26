@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Cwl.API;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
@@ -7,6 +8,7 @@ using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using MethodTimer;
+using Newtonsoft.Json;
 using ReflexCLI.Attributes;
 using UnityEngine;
 
@@ -21,6 +23,8 @@ internal partial class DataLoader
     [ConsoleCommand("load_effect_setting")]
     internal static string MergeEffectSetting()
     {
+        CachedEffectData.Clear();
+
         Sprite[] sprites;
         try {
             sprites = Resources.FindObjectsOfTypeAll<Sprite>();
@@ -55,10 +59,6 @@ internal partial class DataLoader
                     guns[id] = data;
                     CachedEffectData[id] = read;
 
-                    if (!read.caneColor.IsEmpty()) {
-                        EClass.Colors.elementColors[id] = read.caneColor.Replace("0x", "").Replace("#", "").ToColor();
-                    }
-
                     CwlMod.CurrentLoading = "cwl_log_effect_loaded".Loc(nameof(guns), id, path.ShortPath());
                     sb.AppendLine(CwlMod.CurrentLoading);
                     CwlMod.Log<DataLoader>(CwlMod.CurrentLoading);
@@ -70,5 +70,22 @@ internal partial class DataLoader
         }
 
         return sb.ToString();
+    }
+
+    [ConsoleCommand("dump_guns")]
+    internal static string DumpGuns()
+    {
+        var guns = EClass.setting.effect.guns;
+        var path = $"{CorePath.rootExe}/guns.json";
+
+        Dictionary<string, SerializableEffectData> effects = [];
+        foreach (var (id, gun) in guns) {
+            var data = new SerializableEffectData();
+            gun.IntrospectCopyTo(data);
+            effects[id] = data;
+        }
+
+        File.WriteAllText(path, JsonConvert.SerializeObject(effects, Formatting.Indented, ConfigCereal.Settings));
+        return $"dumped {effects.Count} guns data to {path}";
     }
 }
