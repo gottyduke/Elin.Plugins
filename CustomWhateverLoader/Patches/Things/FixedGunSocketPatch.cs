@@ -1,11 +1,11 @@
 using System.Linq;
 using Cwl.API.Attributes;
 using Cwl.Helper.Extensions;
-using UnityEngine;
+using Cwl.Helper.String;
 
 namespace Cwl.Patches.Things;
 
-internal class FixedGunSocketPatch
+internal class FixedGunSocketPatch : EClass
 {
     [CwlThingOnCreateEvent]
     internal static void ApplyGunSocket(Thing thing)
@@ -14,11 +14,26 @@ internal class FixedGunSocketPatch
             return;
         }
 
-        var sockets = thing.sockets?.Count ?? 0;
-        var required = row.tag.FirstOrDefault(t => t.StartsWith("addSocket_"))?.Split('_')[1].AsInt(0) ?? 0;
-        var needed = Mathf.Max(required - sockets, 0);
-        for (var i = 0; i < needed; ++i) {
+        var sockets = thing.sockets ??= [];
+        if (row.tag.Contains("noRandomSocket")) {
+            sockets.Clear();
+        }
+
+        var emptyRequired = 0;
+        foreach (var socketExpr in row.tag.Where(t => t.StartsWith("addSocket"))) {
             thing.AddSocket();
+
+            var socket = socketExpr.ExtractInBetween('(', ')');
+            if (socket.IsEmpty()) {
+                emptyRequired++;
+            } else {
+                thing.ApplyRangedSocket(socket);
+            }
+        }
+
+        sockets.RemoveAll(s => s == 0);
+        for (var i = 0; i < emptyRequired; ++i) {
+            sockets.Add(0);
         }
     }
 }

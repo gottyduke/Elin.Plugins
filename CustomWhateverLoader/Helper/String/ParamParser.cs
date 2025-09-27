@@ -20,5 +20,34 @@ public static class ParamParser
 
             return parsed;
         }
+
+        public string ExtractInBetween(string left, string right, string fallback = "")
+        {
+            var leftIndex = input.IndexOf(left, StringComparison.InvariantCultureIgnoreCase);
+            if (leftIndex == -1) {
+                return fallback;
+            }
+
+            var contentIndex = leftIndex + left.Length;
+
+            var rightIndex = input.IndexOf(right, contentIndex, StringComparison.InvariantCultureIgnoreCase);
+            return rightIndex == -1
+                ? fallback
+                : input[contentIndex..rightIndex];
+        }
+
+        public string ExtractInBetween(char left, char right, string fallback = "")
+        {
+            var leftIndex = input.IndexOf(left);
+            if (leftIndex == -1) {
+                return fallback;
+            }
+
+            var contentIndex = leftIndex + 1;
+            var rightIndex = input.IndexOf(right, contentIndex);
+            return rightIndex == -1
+                ? fallback
+                : input[contentIndex..rightIndex];
+        }
     }
 }

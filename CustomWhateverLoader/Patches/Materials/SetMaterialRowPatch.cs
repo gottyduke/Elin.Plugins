@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using System.Text.RegularExpressions;
+using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using Cwl.Patches.Sources;
@@ -37,15 +37,14 @@ internal class SetMaterialRowPatch
 
         var tags = r.tag
             .Where(t => t.StartsWith("addCol"))
-            .Select(t => t[6..])
             .ToArray();
 
         try {
             foreach (var tag in tags) {
-                if (tag.StartsWith("_Main")) {
-                    main = Regex.Replace(tag, @"_Main|\(|\)", "").ToColorEx();
+                if (tag.StartsWith("addCol_Main")) {
+                    main = tag[11..].ExtractInBetween('(', ')').ToColorEx();
                 } else if (tag.StartsWith("_Alt")) {
-                    alt = Regex.Replace(tag, @"_Alt|\(|\)", "").ToColorEx();
+                    alt = tag[10..].ExtractInBetween('(', ')').ToColorEx();
                 }
             }
         } catch (Exception ex) {
