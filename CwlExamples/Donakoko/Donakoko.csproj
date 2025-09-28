@@ -32,7 +32,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Reference Include="$(ElinGamePath)\Package\Mod_CustomWhateverLoader\CustomWhateverLoader.dll">
+        <Reference Include="CustomWhateverLoader">
+            <HintPath>$(SteamContentPath)\2135150\3370512305\CustomWhateverLoader.dll</HintPath>
+            <HintPath>$(SteamContentPath)\2135150\3544010094\CustomWhateverLoader.dll</HintPath>
+            <HintPath>$(ElinGamePath)\Package\Mod_CustomWhateverLoader\CustomWhateverLoader.dll</HintPath>
             <Private>false</Private>
         </Reference>
     </ItemGroup>

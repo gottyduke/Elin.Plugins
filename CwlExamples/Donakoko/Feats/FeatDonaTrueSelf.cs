@@ -44,6 +44,6 @@ internal class FeatDonaTrueSelf : Feat
         // get camera's enchant level
         var cameraLv = owner.Chara.things.Find<TraitDonaCamera>()?.encLV ?? 0;
         // set feat level to camera level
-        vBase = Math.Min(cameraLv, source.max);
+        vBase = Mathf.Min(cameraLv, source.max);
     }
 }

@@ -15,7 +15,11 @@ internal class ConDonaAfterImage : BaseBuff
     public override void OnStart()
     {
         Msg.SetColor(Msg.colors.Ono);
-        Msg.Say(source.GetText("textPhase"), owner);
+        try {
+            Msg.Say(source.GetText("textPhase"), owner);
+        } catch {
+            // noexcept
+        }
 
         // override the duration with config value
         value = DonaConfig.ImageDuration?.Value ?? 100;
