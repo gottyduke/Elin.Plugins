@@ -15,12 +15,19 @@ internal class FixedGunSocketPatch : EClass
         }
 
         var sockets = thing.sockets ??= [];
+        var tags = row.tag
+            .Where(t => t.StartsWith("addSocket"))
+            .ToArray();
+        if (tags.Length == 0) {
+            return;
+        }
+
         if (row.tag.Contains("noRandomSocket")) {
             sockets.Clear();
         }
 
         var emptyRequired = 0;
-        foreach (var socketExpr in row.tag.Where(t => t.StartsWith("addSocket"))) {
+        foreach (var socketExpr in tags) {
             thing.AddSocket();
 
             var socket = socketExpr.ExtractInBetween('(', ')');

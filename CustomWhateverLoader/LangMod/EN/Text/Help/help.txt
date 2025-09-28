@@ -26,6 +26,8 @@ Added console support in main menu by pressing backquote (`)
 Added extended gun effect data support
 Added support for custom religion portraits in journal
 Added support for specifying gun sockets in Thing sheet
+Fixed a bug occurs during gun play
+Fixed a faulty gun socket removal bug
 
 {topic|1.20.48}
 Updated for 23.202 Nightly
