@@ -14,6 +14,7 @@ namespace Cwl.API.Migration;
 [ConsoleCommandClassCustomizer("cwl.data")]
 public sealed class CacheDetail(string cacheKey)
 {
+    private const string CacheVersionV1 = "1.20.49";
     private const string CacheStorage = ModInfo.Name;
 
     private static readonly GameIOProcessor.GameIOContext _context = GameIOProcessor.GetPersistentModContext(CacheStorage)!;
@@ -118,7 +119,7 @@ public sealed class CacheDetail(string cacheKey)
     [ConsoleCommand("clear_source_cache")]
     public static string ClearCache()
     {
-        var manifest = new CacheVersionManifest(ModInfo.Version, DateTime.UtcNow);
+        var manifest = new CacheVersionManifest(CacheVersionV1, DateTime.UtcNow);
 
         _context.Clear();
         _context.Save(manifest, "cache_manifest");
@@ -180,8 +181,8 @@ public sealed class CacheDetail(string cacheKey)
         /// <returns>True if the manifest is valid, otherwise false.</returns>
         internal bool ValidateManifest()
         {
-            if (Version != ModInfo.Version) {
-                CwlMod.Log<CacheDetail>($"cache manifest version mismatch, read: {Version}, current: {ModInfo.Version}");
+            if (Version != CacheVersionV1) {
+                CwlMod.Log<CacheDetail>($"cache manifest version mismatch, read: {Version}, current: {CacheVersionV1}");
                 return false;
             }
 

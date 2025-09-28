@@ -77,7 +77,7 @@ public record SerializableSoundDataV1
         public float failDuration = 0.7f;
         public float failPitch = 0.12f;
         public float pitchDuration = 0.01f;
-        
+
         public List<BGMData.Part> parts = [new()];
     }
 }

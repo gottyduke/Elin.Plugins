@@ -15,7 +15,7 @@ internal class ClassCacheThunk
     {
         return AccessTools.Method(
                 typeof(ClassCache<object>),
-                nameof(ClassCache<object>.Create),
+                nameof(ClassCache<>.Create),
                 [typeof(string), typeof(string)])
             .MakeGenericMethod(typeof(object));
     }

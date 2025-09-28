@@ -38,7 +38,7 @@ public class CustomElement : Element
 
     // credits to 105gun
     [Time]
-    [CwlSceneInitEvent(Scene.Mode.StartGame, true)]
+    [CwlSceneInitEvent(Scene.Mode.StartGame, true, order: CwlSceneEventOrder.AbilityImporter)]
     internal static void GainAbilityOnLoad()
     {
         if (!SafeSceneInitEvent.SafeToCreate) {

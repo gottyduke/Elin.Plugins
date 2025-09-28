@@ -109,7 +109,6 @@ public class WorkbookImporter
     ///     Import all workbook files
     /// </summary>
     /// <param name="imports">Files to import</param>
-    [Time]
     public static void LoadAllFiles(FileInfo[] imports)
     {
         var useCache = CwlConfig.CacheSourceSheets;

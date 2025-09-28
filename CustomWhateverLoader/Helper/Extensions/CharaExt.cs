@@ -118,5 +118,10 @@ public static class CharaExt
 
             chara.Destroy();
         }
+
+        public RendererDir RendererDir()
+        {
+            return (RendererDir)(chara.renderer as CharaRenderer)!.currentDir;
+        }
     }
 }

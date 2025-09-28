@@ -2,6 +2,6 @@
 
 namespace Cwl.API;
 
-public sealed class SerializableReligionElement : Dictionary<string, string[]>;
+public sealed class SerializableReligionElement : Dictionary<string, List<string>>;
 
 public sealed class SerializableReligionOffering : Dictionary<string, Dictionary<string, int>>;

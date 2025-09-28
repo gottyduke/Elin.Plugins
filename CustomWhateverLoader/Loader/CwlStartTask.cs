@@ -83,21 +83,14 @@ internal sealed partial class CwlMod
         PrebuildDispatchers();
         DramaExpansion.BuildActionList();
 
-        LoadResourcesPatch.AddHandler<SoundData>(DataLoader.RelocateSound);
-        LoadResourcesPatch.AddHandler<Sprite>(DataLoader.RelocateSprite);
-
-        DataLoader.SetupEffectTemplate();
-        LoadResourcesPatch.AddHandler<Effect>(DataLoader.RelocateEffect);
+        AddResourceRelocators();
 
         DataLoader.MergeCharaTalk();
         DataLoader.MergeCharaTone();
         DataLoader.PreloadDialog();
         DataLoader.MergeEffectSetting();
 
-        DataLoader.LoadAllSounds();
-
-        CustomPlaylist.RebuildBGM();
-        CustomPlaylist.BuildPlaylists();
+        AddSoundsAndBGM();
 
         // post init tasks
         yield return null;
@@ -135,6 +128,23 @@ internal sealed partial class CwlMod
         RegisterEvents();
 
         StartCoroutine(LoadTask());
+    }
+
+    private static void AddResourceRelocators()
+    {
+        LoadResourcesPatch.AddHandler<SoundData>(DataLoader.RelocateSound);
+        LoadResourcesPatch.AddHandler<Sprite>(DataLoader.RelocateSprite);
+
+        DataLoader.SetupEffectTemplate();
+        LoadResourcesPatch.AddHandler<Effect>(DataLoader.RelocateEffect);
+    }
+
+    private static void AddSoundsAndBGM()
+    {
+        DataLoader.LoadAllSounds();
+
+        CustomPlaylist.RebuildBGM();
+        CustomPlaylist.BuildPlaylists();
     }
 
     [Time]
@@ -223,7 +233,8 @@ internal sealed partial class CwlMod
                     GUILayout.Label(WorkbookImporter.LastTiming, p.GUIStyle);
                 }
                 GUILayout.EndScrollView();
-            });
+            })
+            .OnKill(ReportLoadingComplete);
     }
 
     private static IEnumerator ReportDuplicateVersion()

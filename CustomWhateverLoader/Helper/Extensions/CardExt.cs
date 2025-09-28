@@ -56,5 +56,10 @@ public static class CardExt
         {
             return owner.FindAllThings(t => string.Equals(t.id, id, StringComparison.InvariantCultureIgnoreCase));
         }
+
+        public CardDir CardDir()
+        {
+            return (CardDir)owner.dir;
+        }
     }
 }
