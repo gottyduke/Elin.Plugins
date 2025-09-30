@@ -65,6 +65,19 @@ public class PackageIterator
             .Select(GetPackageMapping);
     }
 
+    private static FileMapping? GetSinglePackageMapping(string modId)
+    {
+        return _mappings.TryGetValue(modId, out var mapping)
+            ? mapping
+            : GetLoadedPackagesAsMapping(modId).FirstOrDefault();
+    }
+
+    public static FileMapping GetPackageMapping(string modId)
+    {
+        var mapping = GetSinglePackageMapping(modId);
+        return mapping ?? GetLoadedPackagesAsMapping(modId).Last();
+    }
+
     public static FileMapping GetPackageMapping(ModPackage package)
     {
         if (_mappings.TryGetValue(package.id, out var mapping)) {
@@ -98,6 +111,21 @@ public class PackageIterator
             .OfType<FileInfo>();
     }
 
+    public static IEnumerable<DirectoryInfo> GetRelocatedDirsFromPackage(string relativePath, string? modId = null)
+    {
+        return BaseModManager.Instance.packages
+            .Where(p => p.activated && !p.builtin)
+            .Where(p => modId is null || p.id == modId)
+            .Select(p => GetRelocatedDirFromPackage(relativePath, p.id))
+            .OfType<DirectoryInfo>();
+    }
+
+    public static DirectoryInfo? GetRelocatedDirFromPackage(string relativePath, string modId)
+    {
+        var resources = GetSinglePackageMapping(modId);
+        return resources?.RelocateDir(relativePath);
+    }
+
     public static ExcelData? GetExcelFromPackage(string relativePath, string modId, int startIndex = 5)
     {
         var excel = GetRelocatedFileFromPackage(relativePath, modId);
@@ -113,7 +141,7 @@ public class PackageIterator
 
     public static FileInfo? GetRelocatedFileFromPackage(string relativePath, string modId)
     {
-        var resources = GetLoadedPackagesAsMapping(modId).LastOrDefault();
+        var resources = GetSinglePackageMapping(modId);
         return resources?.RelocateFile(relativePath);
     }
 

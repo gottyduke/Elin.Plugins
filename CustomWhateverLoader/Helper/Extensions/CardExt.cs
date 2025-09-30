@@ -7,6 +7,8 @@ public static class CardExt
 {
     extension(Card owner)
     {
+        public CardDir CardDir => (CardDir)owner.dir;
+
         public int GetFlagValue(string flag)
         {
             var key = flag.GetHashCode();
@@ -55,11 +57,6 @@ public static class CardExt
         public IEnumerable<Thing> FindAllThings(string id)
         {
             return owner.FindAllThings(t => string.Equals(t.id, id, StringComparison.InvariantCultureIgnoreCase));
-        }
-
-        public CardDir CardDir()
-        {
-            return (CardDir)owner.dir;
         }
     }
 }

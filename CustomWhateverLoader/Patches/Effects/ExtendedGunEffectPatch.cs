@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Cwl.Helper.Exceptions;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.Unity;
 using HarmonyLib;
@@ -42,7 +43,7 @@ internal class ExtendedGunEffectPatch : EClass
             // calculate the effect params before playing effects
             var ccPos = cc.isSynced ? cc.renderer.position : cc.pos.Position();
             var fireFromMuzzle = dataEx?.fireFromMuzzle is true;
-            var pivot = cc.RendererDir() is not (RendererDir.Down or RendererDir.Left) ? 1 : -1;
+            var pivot = cc.RendererDir is not (RendererDir.Down or RendererDir.Left) ? 1 : -1;
             var fireOffset = cc.IsPCC
                 ? data.firePos with { x = data.firePos.x * pivot }
                 : Vector2.zero;
@@ -128,11 +129,7 @@ internal class ExtendedGunEffectPatch : EClass
         } catch (Exception ex) {
             CwlMod.Warn<ExtendedGunEffectPatch>($"failed to apply gun effect {id}\n{ex}");
 
-#if DEBUG
-            throw;
-#else
-            return true;
-#endif
+            return ThrowOrReturn.Return(ex, true);
         }
     }
 }

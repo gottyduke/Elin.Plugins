@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Cwl.Helper.String;
@@ -7,6 +8,7 @@ public static class PathTruncation
 {
     private static readonly char[] _invalidPathChars = Path.GetInvalidPathChars();
     public static ReadOnlySpan<char> InvalidPathChars => _invalidPathChars;
+    public static IEqualityComparer<string> PathComparer { get; } = new PathStringComparer();
 
     extension(string path)
     {
@@ -30,8 +32,49 @@ public static class PathTruncation
     {
         public string ShortPath()
         {
-            var owner = file.Directory!.Parent!.Parent!.Parent;
-            return file.FullName[(owner!.Parent!.FullName.Length + 1)..].NormalizePath();
+            const int trimParents = 4;
+
+            var dir = file.Directory;
+            for (var i = 0; i < trimParents; ++i) {
+                dir = dir?.Parent;
+
+                if (dir is null) {
+                    return file.FullName.NormalizePath();
+                }
+            }
+
+            var parents = dir!.FullName;
+            if (!parents.EndsWith(Path.DirectorySeparatorChar.ToString())) {
+                parents += Path.DirectorySeparatorChar;
+            }
+
+            var shortPath = file.FullName.StartsWith(parents, StringComparison.InvariantCultureIgnoreCase)
+                ? file.FullName[parents.Length..]
+                : file.FullName;
+            return shortPath.NormalizePath();
+        }
+    }
+
+    private sealed class PathStringComparer : IEqualityComparer<string>
+    {
+        public bool Equals(string? lhs, string? rhs)
+        {
+            if (ReferenceEquals(lhs, rhs)) {
+                return true;
+            }
+
+            if (lhs is null || rhs is null) {
+                return false;
+            }
+
+            return string.Equals(NormalizePath(lhs), NormalizePath(rhs), StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        public int GetHashCode(string? obj)
+        {
+            return obj is null
+                ? 0
+                : NormalizePath(obj).ToLowerInvariant().GetHashCode();
         }
     }
 }

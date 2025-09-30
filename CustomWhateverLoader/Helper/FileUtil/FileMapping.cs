@@ -14,11 +14,11 @@ public class FileMapping
     ];
 
     private readonly List<string> _indexed = [];
+    private readonly List<FileInfo> _sources = [];
 
     public FileMapping(ModPackage owner, string langCode = "EN")
     {
         Owner = owner;
-        Sources = [];
         RebuildLangModMapping(langCode);
     }
 
@@ -27,8 +27,7 @@ public class FileMapping
 
     public DirectoryInfo? Primary { get; private set; }
 
-    // primary dir with source sheets
-    public IEnumerable<FileInfo> Sources { get; private set; }
+    public IEnumerable<FileInfo> Sources => _sources;
 
     public DirectoryInfo ModBaseDir => Owner.dirInfo;
 
@@ -38,6 +37,7 @@ public class FileMapping
     {
         Primary = null;
         _indexed.Clear();
+        _sources.Clear();
 
         var baseDir = Owner.dirInfo.FullName;
         var langMod = Path.Combine(baseDir, "LangMod");
@@ -47,49 +47,73 @@ public class FileMapping
 
         var resources = Directory.GetDirectories(langMod);
         if (resources.Length == 0) {
-            return;
-        }
+            // Include baseDir as a fallback even if LangMod is empty
+            _indexed.Add(baseDir);
+        } else {
+            // Use FallbackLut to get an ordered list of language codes to check
+            HashSet<string> ordering = [langCode, ..FallbackLut![langCode], ..FallbackLut["*"]];
+            List<string> tempIndexed = [];
+            var resourceSet = resources.ToHashSet(PathTruncation.PathComparer);
 
-        HashSet<string> ordering = [langCode, ..FallbackLut![langCode], ..FallbackLut["*"]];
-        HashSet<string> indexed = [
-            ..ordering
+            // 1. explicit ordered/fallback language folders that exist
+            var providers = ordering
                 .Select(order => Path.Combine(langMod, order))
-                .Where(resources.Contains),
-            ..resources,
-            // fallback mappings
-            langMod,
-            baseDir,
-        ];
+                .Where(path => resourceSet.Contains(path));
+            foreach (var path in providers) {
+                tempIndexed.Add(path);
+                resourceSet.Remove(path);
+            }
 
-        _indexed.AddRange(indexed);
-        if (_indexed.Count > 0) {
-            Primary = new(_indexed[0]);
+            // 2. remaining resource folders (any other language)
+            tempIndexed.AddRange(resourceSet);
+
+            // 3. fallback mappings
+            tempIndexed.Add(langMod);
+
+            // 4. do not include baseDir in source mappings
+            tempIndexed.Add(baseDir);
+
+            _indexed.AddRange(tempIndexed);
         }
+
+        Primary = new(_indexed[0]);
 
         if (!Mounted) {
             return;
         }
 
-        // do not include baseDir in source mappings
-        foreach (var index in _indexed.ToArray()[..^1]) {
+        foreach (var index in _indexed.Take(_indexed.Count - 1)) {
             var sources = Directory.GetFiles(index, "*.xlsx", SearchOption.TopDirectoryOnly);
             if (sources.Length == 0) {
                 continue;
             }
 
-            Sources = sources.Select(f => new FileInfo(f));
-            break;
+            _sources.AddRange(sources.Select(f => new FileInfo(f)));
+            if (_sources.Count > 0) {
+                break;
+            }
         }
     }
 
     public FileInfo? RelocateFile(string relativePath)
     {
-        if (relativePath.IsInvalidPath()) {
+        if (relativePath.IsInvalidPath() || _indexed.Count == 0) {
             return null;
         }
 
         return _indexed
             .Select(mapping => new FileInfo(Path.Combine(mapping, relativePath)))
             .FirstOrDefault(file => file.Exists);
+    }
+
+    public DirectoryInfo? RelocateDir(string relativePath)
+    {
+        if (relativePath.IsInvalidPath() || _indexed.Count == 0) {
+            return null;
+        }
+
+        return _indexed
+            .Select(mapping => new DirectoryInfo(Path.Combine(mapping, relativePath)))
+            .FirstOrDefault(dir => dir.Exists);
     }
 }

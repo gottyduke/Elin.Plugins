@@ -30,7 +30,8 @@ public class ProgressIndicator
     public required Func<UpdateInfo> OnUpdate;
     public required Func<ProgressIndicator, bool> ShouldKill;
 
-    [field: AllowNull] public GUIStyle GUIStyle => field ??= GetLabelSkin();
+    [field: AllowNull]
+    public GUIStyle GUIStyle => field ??= GetLabelSkin();
 
     public float DurationRemain { get; private set; }
     public float DurationTotal { get; private set; }

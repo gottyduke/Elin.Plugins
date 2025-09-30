@@ -8,6 +8,8 @@ public static class CharaExt
 {
     extension(Chara chara)
     {
+        public RendererDir RendererDir => (RendererDir)(chara.renderer as CharaRenderer)!.currentDir;
+
         public bool IsBoss(bool hostileOnly = false)
         {
             var bossType = chara.source.tag.Contains("boss") ||
@@ -117,11 +119,6 @@ public static class CharaExt
             }
 
             chara.Destroy();
-        }
-
-        public RendererDir RendererDir()
-        {
-            return (RendererDir)(chara.renderer as CharaRenderer)!.currentDir;
         }
     }
 }

@@ -8,40 +8,81 @@ namespace Cwl;
 [ConsoleCommandClassCustomizer("cwl.config")]
 public abstract class CwlConfig
 {
-    [ConsoleCommand] public static bool LoggingVerbose => Logging.Verbose!.Value;
+    [ConsoleCommand]
+    public static bool LoggingVerbose => Logging.Verbose!.Value;
 
-    [ConsoleCommand] public static bool SeamlessStreaming => BGM.SeamlessStreaming!.Value;
+    [ConsoleCommand]
+    public static bool SeamlessStreaming => BGM.SeamlessStreaming!.Value;
 
-    [ConsoleCommand] public static bool CacheTalks => Caching.Talks!.Value;
-    [ConsoleCommand] public static bool CacheTypes => Caching.Types!.Value;
-    [ConsoleCommand] public static bool CachePaths => Caching.Paths!.Value;
-    [ConsoleCommand] public static bool CacheSourceSheets => Caching.SourceSheets!.Value;
-    [ConsoleCommand] public static int CacheSourceSheetsRetention => Caching.SourceSheetsRetention!.Value;
-    [ConsoleCommand] public static bool CacheSprites => Caching.Sprites!.Value;
+    [ConsoleCommand]
+    public static bool CacheTalks => Caching.Talks!.Value;
 
-    [ConsoleCommand] public static bool ExpandedActions => Dialog.ExpandedActions!.Value;
-    [ConsoleCommand] public static bool ExpandedActionsExternal => Dialog.ExpandedActionsAllowExternal!.Value;
-    [ConsoleCommand] public static bool NoOverlappingSounds => Dialog.NoOverlappingSounds!.Value;
-    [ConsoleCommand] public static bool VariableQuote => Dialog.VariableQuote!.Value;
+    [ConsoleCommand]
+    public static bool CacheTypes => Caching.Types!.Value;
 
-    [ConsoleCommand] public static bool ExceptionAnalyze => Exceptions.Analyze!.Value;
-    [ConsoleCommand] public static bool ExceptionPopup => Exceptions.Popup!.Value;
+    [ConsoleCommand]
+    public static bool CachePaths => Caching.Paths!.Value;
 
-    [ConsoleCommand] public static bool FixBaseGameAvatar => Patches.FixBaseGameAvatar!.Value;
-    [ConsoleCommand] public static bool FixBaseGamePopup => Patches.FixBaseGamePopup!.Value;
-    [ConsoleCommand] public static bool QualifyTypeName => Patches.QualifyTypeName!.Value;
-    [ConsoleCommand] public static bool SafeCreateClass => Patches.SafeCreateClass!.Value;
+    [ConsoleCommand]
+    public static bool CacheSourceSheets => Caching.SourceSheets!.Value;
 
-    [ConsoleCommand] public static bool AllowProcessors => Source.AllowProcessors!.Value;
-    [ConsoleCommand] public static bool NamedImport => Source.NamedImport!.Value;
-    [ConsoleCommand] public static bool OverrideSameId => Source.OverrideSameId!.Value;
-    [ConsoleCommand] public static bool RethrowException => Source.RethrowException!.Value;
+    [ConsoleCommand]
+    public static int CacheSourceSheetsRetention => Caching.SourceSheetsRetention!.Value;
 
-    [ConsoleCommand] public static bool SheetInspection => Source.SheetInspection!.Value;
+    [ConsoleCommand]
+    public static bool CacheSprites => Caching.Sprites!.Value;
+
+    [ConsoleCommand]
+    public static bool ExpandedActions => Dialog.ExpandedActions!.Value;
+
+    [ConsoleCommand]
+    public static bool ExpandedActionsExternal => Dialog.ExpandedActionsAllowExternal!.Value;
+
+    [ConsoleCommand]
+    public static bool NoOverlappingSounds => Dialog.NoOverlappingSounds!.Value;
+
+    [ConsoleCommand]
+    public static bool VariableQuote => Dialog.VariableQuote!.Value;
+
+    [ConsoleCommand]
+    public static bool ExceptionAnalyze => Exceptions.Analyze!.Value;
+
+    [ConsoleCommand]
+    public static bool ExceptionPopup => Exceptions.Popup!.Value;
+
+    [ConsoleCommand]
+    public static bool FixBaseGameAvatar => Patches.FixBaseGameAvatar!.Value;
+
+    [ConsoleCommand]
+    public static bool FixBaseGamePopup => Patches.FixBaseGamePopup!.Value;
+
+    [ConsoleCommand]
+    public static bool QualifyTypeName => Patches.QualifyTypeName!.Value;
+
+    [ConsoleCommand]
+    public static bool SafeCreateClass => Patches.SafeCreateClass!.Value;
+
+    [ConsoleCommand]
+    public static bool AllowProcessors => Source.AllowProcessors!.Value;
+
+    [ConsoleCommand]
+    public static bool NamedImport => Source.NamedImport!.Value;
+
+    [ConsoleCommand]
+    public static bool OverrideSameId => Source.OverrideSameId!.Value;
+
+    [ConsoleCommand]
+    public static bool RethrowException => Source.RethrowException!.Value;
+
+    [ConsoleCommand]
+    public static bool SheetInspection => Source.SheetInspection!.Value;
 
     // TODO: disabled due to frequent game updates
-    [ConsoleCommand] public static bool SheetMigrate => Source.SheetMigrate!.Value && false;
-    [ConsoleCommand] public static bool TrimSpaces => Source.TrimSpaces!.Value;
+    [ConsoleCommand]
+    public static bool SheetMigrate => Source.SheetMigrate!.Value && false;
+
+    [ConsoleCommand]
+    public static bool TrimSpaces => Source.TrimSpaces!.Value;
 
     internal static void Load(ConfigFile config)
     {

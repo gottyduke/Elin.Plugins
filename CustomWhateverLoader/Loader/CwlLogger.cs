@@ -93,7 +93,8 @@ internal sealed partial class CwlMod
                 break;
             default: {
                 LogInternal(log ?? payload);
-                using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToTruncateString(150), Color: _warningColor));
+                using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToTruncateString(150),
+                    Color: _warningColor));
                 if (log is not null) {
                     progress.Get<ProgressIndicator>()
                         .OnHover(p => GUILayout.Label(log.ToTruncateString(450).TruncateAllLines(150), p.GUIStyle));

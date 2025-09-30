@@ -7,7 +7,8 @@ namespace Cwl.Helper.Unity;
 
 public class CoroutineHelper : MonoBehaviour
 {
-    [field: AllowNull] private static CoroutineHelper Instance => field ??= CwlMod.Instance.GetOrCreate<CoroutineHelper>();
+    [field: AllowNull]
+    private static CoroutineHelper Instance => field ??= CwlMod.Instance.GetOrCreate<CoroutineHelper>();
 
     public static Coroutine Immediate(IEnumerator co)
     {

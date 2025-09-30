@@ -13,7 +13,6 @@ using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;
-using MethodTimer;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 
