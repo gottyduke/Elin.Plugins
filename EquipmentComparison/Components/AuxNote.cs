@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using EC.Helper;
+﻿using System.Collections;
+using System.Linq;
 using UnityEngine;
 
 namespace EC.Components;
@@ -31,11 +31,13 @@ internal class AuxNote : MonoBehaviour
 
     private void OnEnable()
     {
-        this.StartDeferredCoroutine(AdjustPosition);
+        StartCoroutine(AdjustPosition());
     }
 
-    private void AdjustPosition()
+    private IEnumerator AdjustPosition()
     {
+        yield return null;
+
         var aux = GetComponentInParent<AuxTooltip>();
         var rect = aux.BaseNote!.Rect();
 

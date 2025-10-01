@@ -71,11 +71,16 @@ internal class AuxTooltip : MonoBehaviour
     {
         // stop all renderings
         var tm = TooltipManager.Instance;
-        var @this = tm.gameObject.GetOrAddComponent<AuxTooltip>();
+        var @this = tm.GetOrCreate<AuxTooltip>();
         var notes = @this.GetComponentsInChildren<AuxNote>();
         notes.Do(n => n.SetActive(false));
 
         if (!@this.IsEnabled) {
+            return;
+        }
+
+        // disable if there's any other layers active
+        if (ELayer.ui.TopLayer != null) {
             return;
         }
 
