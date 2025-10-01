@@ -1,69 +1,40 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"
-            Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"/>
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-        <ProjectGuid>{A504BEE4-AD1F-4657-81FA-BEEFDFE162FE}</ProjectGuid>
-        <OutputType>Library</OutputType>
-        <RootNamespace>EC</RootNamespace>
-        <AssemblyName>EquipmentComparison</AssemblyName>
-        <ReferencePath>$(ElinGamePath)/Elin_Data/Managed</ReferencePath>
-        <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+        <TargetFramework>net472</TargetFramework>
+        <Platforms>AnyCPU</Platforms>
         <LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
-        <DebugSymbols>true</DebugSymbols>
-        <DebugType>full</DebugType>
-        <Optimize>false</Optimize>
+        <RootNamespace>EC</RootNamespace>
+        <GenerateDependencyFile>false</GenerateDependencyFile>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <OutputPath>$(ElinGamePath)\Package\Mod_$(AssemblyName)\</OutputPath>
-        <DefineConstants>DEBUG;TRACE</DefineConstants>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-        <PlatformTarget>AnyCPU</PlatformTarget>
-        <DebugType>none</DebugType>
-        <Optimize>true</Optimize>
-        <OutputPath>$(ElinGamePath)\Package\Mod_$(AssemblyName)\</OutputPath>
-        <DefineConstants>TRACE</DefineConstants>
-        <ErrorReport>prompt</ErrorReport>
-        <WarningLevel>4</WarningLevel>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <Deterministic>false</Deterministic>
+        <PackageId>Equipment Comparison</PackageId>
     </PropertyGroup>
     <ItemGroup>
-        <Compile Include="Components\AuxNote.cs"/>
-        <Compile Include="Components\AuxTooltip.cs"/>
-        <Compile Include="EcConfig.cs"/>
-        <Compile Include="EcMod.cs"/>
-        <Compile Include="Helper\ChildrenIterator.cs"/>
-        <Compile Include="Helper\ComparableGrids.cs"/>
-        <Compile Include="Helper\ComponentFetch.cs"/>
-        <Compile Include="Helper\CoroutineHelper.cs"/>
-        <Compile Include="Helper\DeferredCoroutine.cs"/>
-        <Compile Include="Helper\TooltipDataCopy.cs"/>
-        <Compile Include="EcLoc.cs"/>
-        <Compile Include="Patches\ShowTooltipPatch.cs"/>
-        <Compile Include="Patches\TooltipManagerPatch.cs"/>
-    </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="PolySharp" Version="1.14.1">
+        <PackageReference Include="GitVersion.MsBuild" Version="6.4.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="PolySharp" Version="1.15.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="SwallowExceptions.Fody" Version="1.0.1"/>
     </ItemGroup>
-    <ItemGroup>
-        <Content Include="README.md"/>
-        <Content Include="README_CN.md"/>
-    </ItemGroup>
-    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
-    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-           Other similar extension points exist, see Microsoft.Common.targets.
-      <Target Name="BeforeBuild">
-      </Target>
-      <Target Name="AfterBuild">
-      </Target>
-      -->
+    <Target Name="CopyAssets" AfterTargets="AfterBuild">
+        <ItemGroup>
+            <Assets Include="package\**\*.*"/>
+        </ItemGroup>
+        <Copy
+                SourceFiles="@(Assets)"
+                DestinationFiles="@(Assets->'$(OutDir)%(RecursiveDir)%(Filename)%(Extension)')"
+                SkipUnchangedFiles="true"
+        />
+    </Target>
 </Project>
