@@ -13,7 +13,7 @@ internal class ExtendedGunEffectPatch : EClass
 {
     [HarmonyPrefix]
     [HarmonyPatch(typeof(AttackProcess), nameof(AttackProcess.PlayRangedAnime))]
-    internal static bool OnPlayDelayedEffect(AttackProcess __instance, int numFire)
+    internal static bool OnPlayDelayedEffect(AttackProcess __instance, int numFire, float delay)
     {
         if (__instance.weapon is not { } weapon) {
             return false;
@@ -73,7 +73,7 @@ internal class ExtendedGunEffectPatch : EClass
             }
 
             for (var i = 0; i < numFire; ++i) {
-                TweenUtil.Delay(i * data.delay, PlayGunEffect);
+                TweenUtil.Delay(i * data.delay + delay, PlayGunEffect);
             }
 
             return false;
