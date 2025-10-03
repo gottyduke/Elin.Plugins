@@ -13,9 +13,10 @@ internal class LayerModAddon
     internal static void OnLayerModInit(LayerMod __instance)
     {
         var vlg = __instance.list._layoutItems;
-        vlg.gameObject.AddComponent<DragController>();
+        vlg.GetOrCreate<DragController>();
+
         foreach (Transform mod in vlg.transform) {
-            mod.gameObject.AddComponent<DragBehaviour>();
+            mod.GetOrCreate<DragBehaviour>();
         }
 
         __instance.windows[0].AddBottomButton("mvm_ui_save", ModListManager.SaveModList);

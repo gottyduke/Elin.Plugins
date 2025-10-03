@@ -1,0 +1,23 @@
+﻿{image,mvm_banner}
+
+
+
+{image,CWL_real}
+
+
+
+
+
+
+
+
+
+
+
+{topic|1.1.0}
+更新了 CWL 1.20.48 IMGUI 接口
+更新了新的 UIList 方法
+
+{topic|1.0.0}
+基础预设和拖拽排序功能
+预设位置: persistant path / Mod Viewer Plus / chunks

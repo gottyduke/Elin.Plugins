@@ -9,7 +9,7 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.modviewerminus";
     internal const string Name = "Mod Viewer Plus";
-    internal const string Version = "1.0.0";
+    internal const string Version = "1.1.0";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]

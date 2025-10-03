@@ -95,7 +95,11 @@ public class ModListManager : EClass
     public static void RefreshList()
     {
         core.mods.SaveLoadOrder();
-        LayerMod.Instance?.list?.List();
+
+        var viewer = LayerMod.Instance;
+        if (viewer != null) {
+            viewer.list?.List();
+        }
     }
 
     private static void ApplyModList(SerializableModPackage[] list)

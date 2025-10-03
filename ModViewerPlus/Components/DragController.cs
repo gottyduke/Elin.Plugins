@@ -1,11 +1,13 @@
-﻿using ViewerMinus.API;
+﻿using System.Linq;
+using UnityEngine;
+using ViewerMinus.API;
 
 namespace ViewerMinus.Components;
 
 public class DragController : EMono
 {
-    public static DragBehaviour? CurrentDragging { get; internal set; }
     private int _dragThreshold;
+    public static DragBehaviour? CurrentDragging { get; internal set; }
 
     private void Awake()
     {

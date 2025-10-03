@@ -1,0 +1,23 @@
+{image,mvm_banner}
+
+
+
+{image,CWL_real}
+
+
+
+
+
+
+
+
+
+
+
+{topic|1.1.0}
+Updated CWL 1.20.48 IMGUI API
+Updated to new Elin UIList usage
+
+{topic|1.0.0}
+Initial preset and drag to order feature
+Serialization: persistant path / Mod Viewer Plus / chunks
