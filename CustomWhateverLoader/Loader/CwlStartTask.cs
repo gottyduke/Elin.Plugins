@@ -218,22 +218,10 @@ internal sealed partial class CwlMod
     {
         _loadingComplete = false;
 
-        var scrollPosition = Vector2.zero;
         ProgressIndicator
             .CreateProgress(
                 () => new("cwl_log_loading".Loc(ModInfo.Version, CurrentLoading)),
                 _ => _loadingComplete)
-            .OnHover(p => {
-                if (!_loadingComplete) {
-                    return;
-                }
-
-                scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.MaxHeight(400f));
-                {
-                    GUILayout.Label(WorkbookImporter.LastTiming, p.GUIStyle);
-                }
-                GUILayout.EndScrollView();
-            })
             .OnKill(ReportLoadingComplete);
     }
 

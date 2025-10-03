@@ -14,7 +14,8 @@ public class CustomReligion(string religionId) : Religion, IChunkable
     private bool _canJoin;
     private string[] _elements = [];
 
-    [JsonProperty] private string _id = religionId;
+    [JsonProperty]
+    private string _id = religionId;
 
     private bool _isMinor;
     private Dictionary<string, int> _offeringMtp = [];
