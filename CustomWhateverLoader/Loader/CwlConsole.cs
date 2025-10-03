@@ -1,7 +1,9 @@
 ﻿using System.Linq;
 using Cwl.API.Attributes;
+using Cwl.API.Custom;
 using Cwl.Helper.Extensions;
 using Cwl.LangMod;
+using HarmonyLib;
 using ReflexCLI.Attributes;
 using ReflexCLI.UI;
 using UnityEngine;
@@ -49,15 +51,16 @@ internal class CwlConsole : EMono
     [ConsoleCommand("remove_all")]
     internal static string BegoneOfYouInsertNameHere(string id)
     {
-        var beggars = game.cards.globalCharas.Values
+        var charagy = game.cards.globalCharas.Values
+            .Concat(_map.charas)
             .Where(chara => chara.id == id)
             .ToArray();
 
-        foreach (var chara in beggars) {
+        foreach (var chara in charagy) {
             chara.DestroyImmediate();
         }
 
-        return "cwl_log_hobo_begone".Loc(beggars.Length);
+        return "cwl_log_hobo_begone".Loc(charagy.Length);
     }
 
     [ConsoleCommand("enable_debug")]
@@ -97,5 +100,26 @@ internal class CwlConsole : EMono
         }
 
         return $"spawned altar for {religionId}";
+    }
+
+    [ConsoleCommand("identify")]
+    internal static void IdentifyEverything()
+    {
+        pc.things
+            .Flatten()
+            .Do(t => t.Identify(idtSource: IDTSource.SuperiorIdentify));
+    }
+
+    [ConsoleCommand("spawn_zone")]
+    internal static void SpawnZoneThingy(string zoneFullName, int eloX, int eloY)
+    {
+        world.region.SpawnZoneAt(zoneFullName, eloX, eloY);
+    }
+
+    [ConsoleCommand("get_pos")]
+    internal static string GetPos()
+    {
+        var pos = pc.pos;
+        return $"eloX: {pos.eloX}, eloY: {pos.eloY}, x: {pos.x}, y: {pos.z}";
     }
 }
