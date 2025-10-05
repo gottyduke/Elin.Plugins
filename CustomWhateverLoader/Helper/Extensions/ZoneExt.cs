@@ -14,9 +14,7 @@ public static class ZoneExt
                 .OfType<Zone>()
                 .ToArray();
 
-            var (zoneType, zoneLv) = ParseZoneFullName(zoneFullName);
-            var zoneId = zoneType.Replace("Zone_", "");
-
+            var (zoneType, zoneId, zoneLv) = ParseZoneFullName(zoneFullName);
             zone = zones.FirstOrDefault(z => z.GetType().Name == zoneType || z.id == zoneId)?.FindOrCreateLevel(zoneLv);
 
             if (zone is not null) {
@@ -27,24 +25,24 @@ public static class ZoneExt
                 return false;
             }
 
-            var spawnableZones = Array.FindAll(zones, z => z.CanSpawnAdv);
-            zone = spawnableZones.RandomItem();
-
+            zone = Array.FindAll(zones, z => z.CanSpawnAdv).RandomItem();
             return zone is not null;
         }
 
-        private (string, int) ParseZoneFullName()
+        private (string, string, int) ParseZoneFullName()
         {
+            string zoneType;
+            var zoneLv = 0;
+
             var byLv = zoneFullName.LastIndexOfAny(['/', '@']);
-            if (byLv == -1 || byLv >= zoneFullName.Length - 1) {
-                return (zoneFullName.Replace("/", "").Replace("@", ""), 0);
+            if (byLv != -1 && byLv < zoneFullName.Length - 1) {
+                zoneType = zoneFullName[..byLv];
+                zoneLv = zoneFullName[(byLv + 1)..].AsInt(0);
+            } else {
+                zoneType = zoneFullName.Replace("/", "").Replace("@", "");
             }
 
-            var zoneLv = zoneFullName[(byLv + 1)..];
-            return (
-                zoneFullName[..byLv],
-                zoneLv.AsInt(0)
-            );
+            return (zoneType, zoneType.Replace("Zone_", ""), zoneLv);
         }
     }
 
@@ -76,15 +74,31 @@ public static class ZoneExt
 
     extension(Region region)
     {
-        public void SpawnZoneAt(string zoneFullName, int eloX, int eloY)
+        public void DestroyZoneAt(int eloX, int eloY)
         {
-            if (EClass.game.spatials.Find((Zone z) => z.x == eloX && z.y == eloY) is { } existZone) {
-                CwlMod.Warn<SpatialGen>("cwl_warn_exist_zone".Loc(zoneFullName, eloX, eloY, existZone.Name));
-                return;
+            if (region.GetZoneAt(out var existZone, eloX, eloY)) {
+                existZone?.Destroy();
+            }
+        }
+
+        public bool GetZoneAt(out Zone? existZone, int eloX, int eloY)
+        {
+            existZone = EClass.game.spatials.Find((Zone z) => z.x == eloX && z.y == eloY);
+            return existZone is not null;
+        }
+
+        public void SpawnZoneAt(string zoneFullName, int eloX, int eloY, bool forceSpawn = true)
+        {
+            if (region.GetZoneAt(out var existZone, eloX, eloY)) {
+                if (forceSpawn) {
+                    existZone?.Destroy();
+                } else {
+                    CwlMod.Warn<SpatialGen>("cwl_warn_exist_zone".Loc(zoneFullName, eloX, eloY, existZone?.Name));
+                    return;
+                }
             }
 
-            var (zoneType, zoneLv) = ParseZoneFullName(zoneFullName);
-            var zoneId = zoneType.Replace("Zone_", "");
+            var (_, zoneId, zoneLv) = ParseZoneFullName(zoneFullName);
             var zoneParent = SpatialGen.Create(zoneId, region, true, eloX, eloY) as Zone;
             var zone = zoneParent?.FindOrCreateLevel(zoneLv);
 
