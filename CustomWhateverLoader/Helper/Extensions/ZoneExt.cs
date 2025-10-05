@@ -14,16 +14,16 @@ public static class ZoneExt
                 .OfType<Zone>()
                 .ToArray();
 
-            var (matchZone, byLv) = ParseZoneFullName(zoneFullName);
-            var byId = matchZone.Replace("Zone_", "");
+            var (zoneType, zoneLv) = ParseZoneFullName(zoneFullName);
+            var zoneId = zoneType.Replace("Zone_", "");
 
-            zone = zones.FirstOrDefault(z => z.GetType().Name == matchZone || z.id == byId)?.FindOrCreateLevel(byLv);
+            zone = zones.FirstOrDefault(z => z.GetType().Name == zoneType || z.id == zoneId)?.FindOrCreateLevel(zoneLv);
 
             if (zone is not null) {
                 return true;
             }
 
-            if (byId != "*" && !randomFallback) {
+            if (zoneId != "*" && !randomFallback) {
                 return false;
             }
 
@@ -40,17 +40,17 @@ public static class ZoneExt
                 return (zoneFullName.Replace("/", "").Replace("@", ""), 0);
             }
 
-            var lv = zoneFullName[(byLv + 1)..];
+            var zoneLv = zoneFullName[(byLv + 1)..];
             return (
                 zoneFullName[..byLv],
-                lv.AsInt(0)
+                zoneLv.AsInt(0)
             );
         }
     }
 
     extension(Zone zone)
     {
-        public Zone? FindOrCreateLevel(int lv)
+        public Zone? FindOrCreateLevel(int lv, string id = "")
         {
             try {
                 var newZone = zone.FindZone(lv);
@@ -58,7 +58,7 @@ public static class ZoneExt
                     return newZone;
                 }
 
-                newZone = (SpatialGen.Create(zone.GetNewZoneID(lv), zone, true) as Zone)!;
+                newZone = (SpatialGen.Create(id.IsEmpty(zone.GetNewZoneID(lv)), zone, true) as Zone)!;
                 newZone.lv = lv;
                 newZone.x = zone.x;
                 newZone.y = zone.y;
@@ -78,12 +78,17 @@ public static class ZoneExt
     {
         public void SpawnZoneAt(string zoneFullName, int eloX, int eloY)
         {
-            if (region.children.Find(z => z.x == eloX && z.y == eloY) is { } existZone) {
+            if (EClass.game.spatials.Find((Zone z) => z.x == eloX && z.y == eloY) is { } existZone) {
                 CwlMod.Warn<SpatialGen>("cwl_warn_exist_zone".Loc(zoneFullName, eloX, eloY, existZone.Name));
                 return;
             }
 
-            if (!zoneFullName.ValidateZone(out var zone) || zone is null) {
+            var (zoneType, zoneLv) = ParseZoneFullName(zoneFullName);
+            var zoneId = zoneType.Replace("Zone_", "");
+            var zoneParent = SpatialGen.Create(zoneId, region, true, eloX, eloY) as Zone;
+            var zone = zoneParent?.FindOrCreateLevel(zoneLv);
+
+            if (zone is null) {
                 CwlMod.Warn<SpatialGen>($"failed to create zone: {zoneFullName}");
                 return;
             }
