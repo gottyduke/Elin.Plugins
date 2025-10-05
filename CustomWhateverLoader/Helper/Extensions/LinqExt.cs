@@ -52,8 +52,7 @@ public static class LinqExt
 
         public IEnumerable<TSource> Flatten()
         {
-            foreach (var item in source)
-            {
+            foreach (var item in source) {
                 if (item is IEnumerable<TSource> subList && item is not string) {
                     foreach (var subItem in Flatten(subList)) {
                         yield return subItem;
