@@ -21,15 +21,16 @@ public static class ConsoleCommand
                 result = ex3.Message;
             }
 
-            if (result is null or "") {
+            var resultStr = result?.ToString();
+            if (resultStr.IsEmpty()) {
                 return "";
             }
 
             if (msg) {
-                CwlMod.Popup<ReflexConsole>(result.ToString());
+                CwlMod.Popup<ReflexConsole>(resultStr!);
             }
 
-            return result.ToString();
+            return resultStr!;
         }
     }
 }

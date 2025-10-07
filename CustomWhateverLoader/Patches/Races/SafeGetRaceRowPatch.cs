@@ -9,7 +9,7 @@ internal class SafeGetRaceRowPatch
     [HarmonyPatch(typeof(SourceChara.Row), nameof(SourceChara.Row.race_row), MethodType.Getter)]
     internal static void OnSafeGetRaceRow(SourceChara.Row __instance)
     {
-        if (EClass.sources.races.map.ContainsKey(__instance.race)) {
+        if (EMono.sources.races.map.ContainsKey(__instance.race)) {
             return;
         }
 

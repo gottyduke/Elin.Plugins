@@ -134,7 +134,7 @@ public class ExceptionProfile(string message)
         }
 
         var text = Occurrences <= 999 ? Occurrences.ToString() : "999+";
-        return $"<b>({text.TagColor(Color.black)})</b> ";
+        return $"<color=black><b>({text})</b></color> ";
     }
 
     private async UniTaskVoid DeferredAnalyzer()

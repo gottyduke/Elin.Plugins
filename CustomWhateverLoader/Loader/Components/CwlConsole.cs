@@ -7,7 +7,7 @@ using ReflexCLI.Attributes;
 using ReflexCLI.UI;
 using UnityEngine;
 
-namespace Cwl;
+namespace Cwl.Components;
 
 [ConsoleCommandClassCustomizer("cwl")]
 internal class CwlConsole : EMono

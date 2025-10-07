@@ -8,7 +8,7 @@ using Cwl.Helper.String;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
-namespace Cwl;
+namespace Cwl.Components;
 
 internal class CwlPipe : EMono
 {
@@ -16,33 +16,21 @@ internal class CwlPipe : EMono
     private static readonly CancellationTokenSource _cts = new();
 
     private readonly ConcurrentQueue<string> _commands = new();
-    private readonly List<NamedPipeServerStream> _connections = [];
+    private readonly List<UniTask> _connections = [];
 
     private void Awake()
     {
         StartConsoleServer().Forget();
         StartCoroutine(ProcessCommands());
-        CwlMod.Log<CwlPipe>($@"Started external console server at \\.\pipe\{PipeName}");
+        CwlMod.Log<CwlPipe>($@"external console opened \\.\pipe\{PipeName}");
     }
 
     private void OnApplicationQuit()
     {
         _cts.Cancel();
-        CloseAllConnections();
-    }
 
-    private void CloseAllConnections()
-    {
         lock (_connections) {
-            foreach (var connection in _connections.ToArray()) {
-                try {
-                    connection.Dispose();
-                } catch {
-                    // noexcept
-                }
-            }
-
-            _connections.Clear();
+            UniTask.WhenAll(_connections).Forget();
         }
     }
 
@@ -52,7 +40,7 @@ internal class CwlPipe : EMono
 
         while (!_cts.IsCancellationRequested) {
             while (_commands.TryDequeue(out var cmd)) {
-                cmd.ExecuteAsCommand();
+                cmd.ExecuteAsCommand(true);
             }
 
             yield return wait;
@@ -69,10 +57,6 @@ internal class CwlPipe : EMono
                 PipeTransmissionMode.Byte,
                 PipeOptions.Asynchronous);
 
-            lock (_connections) {
-                _connections.Add(server);
-            }
-
             try {
                 await server.WaitForConnectionAsync(_cts.Token);
             } catch {
@@ -86,25 +70,23 @@ internal class CwlPipe : EMono
                 break;
             }
 
-            HandleConnection(server).Forget();
+            lock (_connections) {
+                _connections.Add(HandleConnection(server));
+            }
             CwlMod.Log<CwlPipe>("external console connected");
         }
     }
 
-    private async UniTask DisposeServer(NamedPipeServerStream server)
+    private static async UniTask DisposeServer(NamedPipeServerStream server)
     {
         try {
             await server.DisposeAsync();
         } catch {
             // noexcept
         }
-
-        lock (_connections) {
-            _connections.Remove(server);
-        }
     }
 
-    private async UniTaskVoid HandleConnection(NamedPipeServerStream server)
+    private async UniTask HandleConnection(NamedPipeServerStream server)
     {
         try {
             var buffer = new byte[1024];
@@ -141,6 +123,8 @@ internal class CwlPipe : EMono
                 sb.Clear();
                 sb.Append(current);
             }
+        } catch {
+            // noexcept
         } finally {
             await DisposeServer(server);
         }
