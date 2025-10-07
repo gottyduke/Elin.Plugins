@@ -59,11 +59,6 @@ internal class BioOverridePatch
     [CwlCharaOnCreateEvent]
     internal static void SetCharaBioOverride(Chara chara)
     {
-        // allow ??? gender
-        if (chara.source.bio.Split('/')[0] == "?") {
-            chara.bio.SetGender(Gender.unknown);
-        }
-
         // override mode
         if (!CustomChara.BioOverride.TryGetValue(chara.id, out var file) ||
             _cached.ContainsKey(chara.HashKey())) {

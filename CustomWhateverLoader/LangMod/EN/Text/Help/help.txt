@@ -18,6 +18,11 @@ $Changelogs
 
 
 
+{topic|1.20.51}
+Updated for 23.214 Nightly
+Removed support for the Chara humanSpeak tag (added by Elin in the 23.214 Nightly)
+Removed support for the Chara bio/? gender (added by Elin in the 23.214 Nightly)
+
 {topic|1.20.50}
 Updated for 23.210 Nightly
 Added support for new instrument's custom tracks
@@ -26,6 +31,7 @@ Added zone spawning helpers
 Added console command cwl.spawn_zone for spawning zones
 Added console command cwl.get_pos to retrieve the current position and elomap coordinates
 Added console command cwl.identify to identify all items
+Added console pipe server at \\.\pipe\Elin\Console
 
 {topic|1.20.49}
 Updated for 23.209 Stable

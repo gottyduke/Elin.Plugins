@@ -18,6 +18,11 @@ $更新日志
 
 
 
+{topic|1.20.51}
+更新至 23.214 Nightly 版本
+移除了 Chara humanSpeak 标签支持(Elin已添加于 23.214 Nightly 版本)
+移除了 Chara bio/? 性别支持(Elin已添加于 23.214 Nightly 版本)
+
 {topic|1.20.50}
 更新至 23.210 Nightly 版本
 添加了新乐器的自定义音乐支持
@@ -26,6 +31,7 @@ $更新日志
 添加了控制台命令 cwl.spawn_zone 用于生成区域
 添加了控制台命令 cwl.get_pos 获取当前位置和大地图坐标
 添加了控制台命令 cwl.identify 鉴定所有物品
+添加了控制台管道 \\.\pipe\Elin\Console
 
 {topic|1.20.49}
 更新至 23.209 Stable 版本
