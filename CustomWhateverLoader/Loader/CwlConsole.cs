@@ -52,6 +52,7 @@ internal class CwlConsole : EMono
     {
         var charagy = game.cards.globalCharas.Values
             .Concat(_map.charas)
+            .Distinct()
             .Where(chara => chara.id == id)
             .ToArray();
 
@@ -62,8 +63,8 @@ internal class CwlConsole : EMono
         return "cwl_log_hobo_begone".Loc(charagy.Length);
     }
 
-    [ConsoleCommand("enable_debug")]
-    internal static string EnableDebug(bool enable = true)
+    [ConsoleCommand("elin_debug")]
+    internal static string EnableElinDebug(bool enable = true)
     {
         var mode = enable ? ReleaseMode.Debug : ReleaseMode.Public;
         core.SetReleaseMode(mode);
@@ -110,9 +111,35 @@ internal class CwlConsole : EMono
     }
 
     [ConsoleCommand("spawn_zone")]
-    internal static void SpawnZoneThingy(string zoneFullName, int eloX, int eloY)
+    internal static void SpawnZoneThingy(string zoneFullName, int eloX = 99999, int eloY = 99999)
     {
-        world.region.SpawnZoneAt(zoneFullName, eloX, eloY);
+        var pos = pc.pos;
+
+        if (eloX == 99999) {
+            eloX = pos.eloX;
+        }
+
+        if (eloY == 99999) {
+            eloY = pos.eloY;
+        }
+
+        world.region.SpawnZoneAt(zoneFullName, eloX, eloY, false);
+    }
+
+    [ConsoleCommand("remove_zone")]
+    internal static void DeleteZoneThingy(int eloX = 99999, int eloY = 99999)
+    {
+        var pos = pc.pos;
+
+        if (eloX == 99999) {
+            eloX = pos.eloX;
+        }
+
+        if (eloY == 99999) {
+            eloY = pos.eloY;
+        }
+
+        world.region.DestroyZoneAt(eloX, eloY);
     }
 
     [ConsoleCommand("get_pos")]

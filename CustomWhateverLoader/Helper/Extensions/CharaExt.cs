@@ -65,6 +65,20 @@ public static class CharaExt
                 return chara.GetDialogText("rumor", "bored");
             }
 
+            if (EClass.rnd(20) == 0 || EClass.debug.showFav) {
+                var list = chara.ListHobbies();
+                var hobby = list.TryGet(0, true);
+                if (EClass.rnd(2) == 0 || hobby is null) {
+                    GameLang.refDrama1 = chara.GetFavCat().GetName().ToLower();
+                    GameLang.refDrama2 = chara.GetFavFood().GetName();
+                    chara.knowFav = true;
+                    return chara.GetDialogText("general", "talk_fav");
+                }
+
+                GameLang.refDrama1 = hobby.Name.ToLower();
+                return chara.GetDialogText("general", "talk_hobby");
+            }
+
             if (chara.HasRumorText("unique")) {
                 return chara.GetDialogText("unique", chara.id);
             }
@@ -108,15 +122,11 @@ public static class CharaExt
 
         public void DestroyImmediate()
         {
-            var branch = EClass.BranchOrHomeBranch;
-            if (branch?.members.Contains(chara) is true) {
-                branch.RemoveMemeber(chara);
+            if (chara.homeBranch is { } branch) {
+                branch.BanishMember(chara, true);
             }
 
-            var adv = EClass.game.cards.listAdv;
-            if (adv.Contains(chara)) {
-                adv.Remove(chara);
-            }
+            EClass.game.cards.listAdv.Remove(chara);
 
             chara.Destroy();
         }

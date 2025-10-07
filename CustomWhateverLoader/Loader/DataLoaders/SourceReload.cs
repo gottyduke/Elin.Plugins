@@ -1,3 +1,4 @@
+using Cwl.Helper.Unity;
 using ReflexCLI.Attributes;
 
 namespace Cwl;
@@ -5,11 +6,13 @@ namespace Cwl;
 internal partial class DataLoader
 {
     [ConsoleCommand("load_sources")]
-    internal static void ReloadSources(bool saveGame = false)
+    internal static void ReloadSources(bool reloadGame = false)
     {
         if (EClass.core.IsGameStarted) {
-            if (saveGame) {
-                EClass.game.Save(silent: true);
+            if (reloadGame) {
+                var game = EClass.game;
+                game.Save(silent: true);
+                CoroutineHelper.Deferred(() => Game.Load(Game.id, game.isCloud));
             }
 
             EMono.scene.Init(Scene.Mode.Title);

@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using BepInEx;
 using HarmonyLib;
 using ReflexCLI;
@@ -17,7 +18,12 @@ public static class ModInfo
 #endif
     public const string Guid = "dk.elinplugins.customdialogloader";
     public const string Name = "Custom Whatever Loader";
+
     public const string Version = "1.20.50";
+
+    // for runtime versions
+    [field: MaybeNull]
+    public static string BuildVersion => field ??= Assembly.GetExecutingAssembly().GetName().Version.ToString();
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
@@ -40,8 +46,6 @@ internal sealed partial class CwlMod : BaseUnityPlugin
 
     private void OnDisable()
     {
-        if (CwlConfig.Logging.Execution?.Value is true) {
-            ExecutionAnalysis.DispatchAnalysis();
-        }
+        ExecutionAnalysis.DispatchAnalysis();
     }
 }
