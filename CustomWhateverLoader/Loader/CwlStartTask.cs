@@ -100,13 +100,13 @@ internal sealed partial class CwlMod
 
         CurrentLoading = $"cwl_log_finished_loading_{ModInfo.TargetVersion}".Loc();
 
-        OnDisable();
-
         yield return null;
 
         // auto init console rebuild
         InitConsole();
         ContextMenuHelper.AddDelayedContextMenu();
+
+        ExecutionAnalysis.DispatchAnalysis();
 
         ReportLoadingComplete();
     }
@@ -211,6 +211,7 @@ internal sealed partial class CwlMod
         console.ui.input.HistoryContainer.AddItem("Logo", console.logo.text);
 
         Instance.GetOrCreate<CwlConsole>();
+        Instance.GetOrCreate<CwlPipe>();
     }
 
     private static void CreateLoadingProgress()
@@ -220,8 +221,7 @@ internal sealed partial class CwlMod
         ProgressIndicator
             .CreateProgress(
                 () => new("cwl_log_loading".Loc(ModInfo.Version, CurrentLoading)),
-                _ => _loadingComplete)
-            .OnKill(ReportLoadingComplete);
+                _ => _loadingComplete);
     }
 
     private static IEnumerator ReportDuplicateVersion()
