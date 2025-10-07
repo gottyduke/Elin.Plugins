@@ -18,6 +18,10 @@ internal class ExecutionAnalysis
             return;
         }
 
+        if (!CwlConfig.Logging.Execution!.Value) {
+            return;
+        }
+
         using var sb = StringBuilderPool.Get()
             .AppendLine("cwl_log_execution_analysis".Loc());
 

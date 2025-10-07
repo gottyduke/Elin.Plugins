@@ -189,7 +189,7 @@ public class PlaylistViewer
 
         for (var i = 0; i < playlist.list.Count; ++i) {
             var bgm = playlist.list[i];
-            var bgmName = bgm == playlist.currentItem ? $"<b>{bgm.data._name}</b>" : bgm.data._name;
+            var bgmName = bgm == playlist.currentItem ? bgm.data._name.TagStyle("b") : bgm.data._name;
             sb.Append($"{i + 1:D2}\t{bgmName} ");
 
             if (_detailedView) {
@@ -238,7 +238,7 @@ public class PlaylistViewer
     {
         GUILayout.BeginHorizontal(GUILayout.Height(20f));
         {
-            var detail = _detailedView ? $"<b>{DetailString}</b>" : DetailString;
+            var detail = _detailedView ? DetailString!.TagStyle("b") : DetailString;
             if (GUILayout.Button(detail, ButtonStyle)) {
                 _detailedView = !_detailedView;
             }

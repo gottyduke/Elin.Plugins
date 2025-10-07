@@ -39,7 +39,7 @@ internal class SafeGetHobbyPatch
         }
 
         foreach (var invalid in __instance.source.hobbies.Except(filtered)) {
-            CwlMod.WarnWithPopup<SourceHobby>("cwl_warn_invalid_hobby".Loc(__instance.Name, invalid));
+            CwlMod.WarnWithPopup<SourceHobby>("cwl_warn_invalid_hobby".Loc(invalid, __instance.Name));
         }
 
         __instance.source.hobbies = filtered;

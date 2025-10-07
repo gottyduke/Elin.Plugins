@@ -29,7 +29,7 @@ public static class ZoneExt
             return zone is not null;
         }
 
-        private (string, string, int) ParseZoneFullName()
+        private (string zoneType, string zoneId, int zoneLv) ParseZoneFullName()
         {
             string zoneType;
             var zoneLv = 0;
@@ -93,7 +93,7 @@ public static class ZoneExt
                 if (forceSpawn) {
                     existZone?.Destroy();
                 } else {
-                    CwlMod.Warn<SpatialGen>("cwl_warn_exist_zone".Loc(zoneFullName, eloX, eloY, existZone?.Name));
+                    CwlMod.WarnWithPopup<SpatialGen>("cwl_warn_exist_zone".Loc(zoneFullName, eloX, eloY, existZone?.Name));
                     return;
                 }
             }

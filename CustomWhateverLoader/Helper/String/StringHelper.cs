@@ -78,6 +78,11 @@ public static class StringHelper
             return input.TagColor(onSwitch() ? good : bad);
         }
 
+        public string TagStyle(string style)
+        {
+            return $"<{style}>{input}</{style}>";
+        }
+
         public string RemoveTagColor()
         {
             return Regex.Replace(input.ToString(), "<color(=[^>]*)?>|</color>", "");

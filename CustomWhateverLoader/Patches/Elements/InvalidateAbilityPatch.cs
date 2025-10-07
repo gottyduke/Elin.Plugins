@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Cwl.LangMod;
 using HarmonyLib;
 using UnityEngine;
 
@@ -41,7 +42,7 @@ internal class InvalidateAbilityPatch
             }
 
             actCombat.Remove(a);
-            CwlMod.WarnWithPopup<CharaAbility>($"removed invalid actCombat '{a.TagColor(Color.red)}' from {chara.id}");
+            CwlMod.WarnWithPopup<CharaAbility>("cwl_warn_fix_actCombat".Loc(a, chara.id));
         });
 
         if (actCombat.Count != chara.source.actCombat.Length) {
@@ -55,7 +56,7 @@ internal class InvalidateAbilityPatch
             }
 
             chara._listAbility.Remove(a);
-            CwlMod.Warn<CharaAbility>($"removed invalid ability '{a}' from {chara.id}");
+            CwlMod.Warn<CharaAbility>("cwl_warn_fix_listAbility".Loc(a, chara.id));
         });
     }
 }

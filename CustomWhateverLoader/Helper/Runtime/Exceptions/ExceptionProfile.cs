@@ -118,7 +118,7 @@ public class ExceptionProfile(string message)
     {
         switch (eventData.button) {
             case 0 when State is AnalyzeState.Completed:
-                GUIUtility.systemCopyBuffer = $"{message}\n```cs\n{Result}\n```".RemoveTagColor();
+                GUIUtility.systemCopyBuffer = $"{message}\n```ts\n{Result}\n```".RemoveTagColor();
                 break;
             case 2:
                 Hidden = true;
@@ -134,7 +134,7 @@ public class ExceptionProfile(string message)
         }
 
         var text = Occurrences <= 999 ? Occurrences.ToString() : "999+";
-        return $"<b>({text})</b> ";
+        return $"<b>({text.TagColor(Color.black)})</b> ";
     }
 
     private async UniTaskVoid DeferredAnalyzer()

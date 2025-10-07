@@ -82,6 +82,10 @@ public static class ActionParameterHelper
     public static void RequiresPerson(this DramaManager dm, out Person? person)
     {
         var actorId = DramaExpansion.Cookie?.Line["actor"].Replace("?", "") ?? "tg";
+        if (DramaExpansion.Cookie?.Dm.tg.chara.id == actorId) {
+            actorId = "tg";
+        }
+
         if (dm.sequence.GetActor(actorId) is not { owner: { } owner }) {
             throw new DramaActorMissingException(actorId);
         }

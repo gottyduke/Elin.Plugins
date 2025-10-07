@@ -214,7 +214,7 @@ public class ProgressIndicator
 
     public static GUIStyle GetLabelSkin()
     {
-        return new(GUI.skin.label) {
+        return new() {
             fontSize = 16,
             richText = true,
             wordWrap = true,

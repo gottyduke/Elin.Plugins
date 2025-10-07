@@ -8,7 +8,7 @@ public static class ConsoleCommand
 {
     extension(string commandStr)
     {
-        public void ExecuteAsCommand(bool msg = false)
+        public string ExecuteAsCommand(bool msg = false)
         {
             object? result;
             try {
@@ -22,12 +22,14 @@ public static class ConsoleCommand
             }
 
             if (result is null or "") {
-                return;
+                return "";
             }
 
             if (msg) {
                 CwlMod.Popup<ReflexConsole>(result.ToString());
             }
+
+            return result.ToString();
         }
     }
 }
