@@ -95,6 +95,11 @@ public class WorkbookImporter
 
             migrate.FinalizeMigration();
 
+            if (migrate.Mod is ModPackage mod) {
+                RowExt.Rows.TryAdd(mod, []);
+                RowExt.Rows[mod].UnionWith(imported);
+            }
+
             return (source, imported);
         } catch (Exception ex) {
             CwlMod.ErrorWithPopup<WorkbookImporter>("cwl_error_failure".Loc(ex.Message), ex);
@@ -180,6 +185,11 @@ public class WorkbookImporter
                 CwlMod.Log<WorkbookImporter>("cwl_log_workbook_cache".Loc(fileName));
 
                 elements.ImportRows(rows);
+
+                if (cache.MigrateDetail.Mod is ModPackage mod) {
+                    RowExt.Rows.TryAdd(mod, []);
+                    RowExt.Rows[mod].UnionWith(rows);
+                }
             }
         }
 
@@ -218,6 +228,12 @@ public class WorkbookImporter
                     }
 
                     sourceData.ImportRows(rowsCached);
+
+                    if (cache.MigrateDetail.Mod is ModPackage mod) {
+                        RowExt.Rows.TryAdd(mod, []);
+                        RowExt.Rows[mod].UnionWith(rowsCached);
+                    }
+
                     dirty.Add(sourceData);
                 }
             }
