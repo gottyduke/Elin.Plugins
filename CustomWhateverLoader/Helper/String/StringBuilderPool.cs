@@ -32,6 +32,12 @@ public class StringBuilderPool(StringBuilder sb) : IDisposable
         return this;
     }
 
+    public StringBuilderPool Append(char singleChar)
+    {
+        sb.Append(singleChar);
+        return this;
+    }
+
     public StringBuilderPool Append(char[] message)
     {
         sb.Append(message);

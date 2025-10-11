@@ -30,6 +30,22 @@ public static class StringHelper
         return $"{fmt:0.##} {suffixes[suffix]}";
     }
 
+    public static class Cjk
+    {
+        private const string CjkCharRange = @"\u4E00-\u9FFF\u3040-\u309F\u30A0-\u30FF\uAC00-\uD7AF";
+
+        public static readonly Regex Splitter = new(
+            $"[{CjkCharRange}]" +
+            @"|[A-Za-z0-9'\-]+" +
+            @"|[，。！？、；：「」『』（）《》〈〉【】〔〕—…～·]+" +
+            @"|[^\s]",
+            RegexOptions.Compiled);
+
+        public static readonly Regex Char = new($"[{CjkCharRange}]", RegexOptions.Compiled);
+
+        public static readonly Regex Punc = new(@"[，。！？、；：「」『』（）《》〈〉【】〔〕—…～·]", RegexOptions.Compiled);
+    }
+
     extension(string input)
     {
         public string Capitalize()
@@ -52,6 +68,48 @@ public static class StringHelper
         public string[] SplitLines()
         {
             return input.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        public string Wrap(int segments = 6, int segmentsCjk = 14)
+        {
+            input = input.TrimNewLines().Replace("\n", "").Trim();
+
+            var matches = Cjk.Splitter.Matches(input);
+            var count = 0;
+            var lastCjk = false;
+            var inCjkSegment = false;
+
+            using var sb = StringBuilderPool.Get();
+
+            foreach (Match match in matches) {
+                var token = match.Value;
+                var isCjk = Cjk.Char.IsMatch(token);
+                var isCjkPunc = Cjk.Punc.IsMatch(token);
+
+                if (count > 0 && !isCjk && !lastCjk) {
+                    sb.Append(' ');
+                }
+
+                sb.Append(token);
+
+                if (!isCjkPunc) {
+                    count++;
+                }
+
+                if (!token.IsEmpty()) {
+                    inCjkSegment = isCjk;
+                }
+
+                var limit = inCjkSegment ? segmentsCjk : segments;
+                if (count >= limit) {
+                    sb.AppendLine();
+                    count = 0;
+                }
+
+                lastCjk = isCjk || isCjkPunc;
+            }
+
+            return sb.ToString().TrimEnd();
         }
     }
 
