@@ -33,20 +33,28 @@ internal class InvalidateAbilityPatch
         var elements = EMono.sources.elements;
 
         // invalidate actCombat by alias
-        var actCombat = chara.source.actCombat.ToList();
-        actCombat.ForeachReverse(a => {
-            var act = a.Split('/')[0];
+        var actCombats = chara.source.actCombat.ToList();
+        var replacement = false;
+        for (var i = actCombats.Count - 1; i >= 0; --i) {
+            var actCombat = actCombats[i];
+            var act = actCombat.Split('/')[0];
             if ((chara.MainElement == Element.Void || elements.alias.ContainsKey(act)) &&
                 ACT.dict.ContainsKey(act)) {
-                return;
+                continue;
             }
 
-            actCombat.Remove(a);
-            CwlMod.WarnWithPopup<CharaAbility>("cwl_warn_fix_actCombat".Loc(a, chara.id));
-        });
+            if (FuzzyLookup.TryFuzzyGetValue(elements.alias, act, out var fuzzyRow)) {
+                actCombats[i] = actCombat.Replace(act, fuzzyRow.alias);
+            } else {
+                actCombats.RemoveAt(i);
+                CwlMod.WarnWithPopup<CharaAbility>("cwl_warn_fix_actCombat".Loc(actCombat, chara.id));
+            }
 
-        if (actCombat.Count != chara.source.actCombat.Length) {
-            chara.source.actCombat = actCombat.ToArray();
+            replacement = true;
+        }
+
+        if (replacement) {
+            chara.source.actCombat = actCombats.ToArray();
         }
 
         // invalidate ability by id, including DNA

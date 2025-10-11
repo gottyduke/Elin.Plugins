@@ -27,7 +27,7 @@ internal class FuzzyLookup
             .InstructionEnumeration();
     }
 
-    private static bool TryFuzzyGetValue(Dictionary<string, SourceElement.Row> aliasMap, string alias, out SourceElement.Row row)
+    internal static bool TryFuzzyGetValue(Dictionary<string, SourceElement.Row> aliasMap, string alias, out SourceElement.Row row)
     {
         alias = alias.IsEmpty("_void");
 
