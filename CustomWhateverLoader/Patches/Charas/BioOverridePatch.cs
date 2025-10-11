@@ -14,7 +14,7 @@ using HarmonyLib;
 namespace Cwl.Patches.Charas;
 
 [HarmonyPatch]
-internal class BioOverridePatch
+public class BioOverridePatch
 {
     private const int FallbackRowId = -1;
     private static readonly Dictionary<string, SerializableBioData> _cached = [];
@@ -126,7 +126,7 @@ internal class BioOverridePatch
         }
     }
 
-    private static string GetNpcBackground(string fallback, Chara c)
+    public static string GetNpcBackground(string fallback, Chara c)
     {
         if (!_cached.TryGetValue(c.HashKey(), out var bio)) {
             return fallback;

@@ -46,13 +46,9 @@ public class FileMapping
         }
 
         var resources = Directory.GetDirectories(langMod);
-        if (resources.Length == 0) {
-            // Include baseDir as a fallback even if LangMod is empty
-            _indexed.Add(baseDir);
-        } else {
-            // Use FallbackLut to get an ordered list of language codes to check
+        if (resources.Length != 0) {
+            // use FallbackLut to get an ordered list of language codes to check
             HashSet<string> ordering = [langCode, ..FallbackLut![langCode], ..FallbackLut["*"]];
-            List<string> tempIndexed = [];
             var resourceSet = resources.ToHashSet(PathTruncation.PathComparer);
 
             // 1. explicit ordered/fallback language folders that exist
@@ -60,21 +56,18 @@ public class FileMapping
                 .Select(order => Path.Combine(langMod, order))
                 .Where(path => resourceSet.Contains(path));
             foreach (var path in providers) {
-                tempIndexed.Add(path);
+                _indexed.Add(path);
                 resourceSet.Remove(path);
             }
 
             // 2. remaining resource folders (any other language)
-            tempIndexed.AddRange(resourceSet);
+            _indexed.AddRange(resourceSet);
 
             // 3. fallback mappings
-            tempIndexed.Add(langMod);
-
-            // 4. do not include baseDir in source mappings
-            tempIndexed.Add(baseDir);
-
-            _indexed.AddRange(tempIndexed);
+            _indexed.Add(langMod);
         }
+
+        _indexed.Add(baseDir);
 
         Primary = new(_indexed[0]);
 

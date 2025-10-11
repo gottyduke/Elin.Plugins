@@ -6,22 +6,18 @@ namespace Cwl.Helper.Unity;
 
 public static class UniTasklet
 {
-    public static CancellationToken Timeout(float timeout)
+    public static CancellationTokenSource Timeout(float timeout)
     {
-        if (timeout <= 0f) {
-            return CancellationToken.None;
-        }
-
         var cts = new CancellationTokenSource();
         cts.CancelAfterSlim(TimeSpan.FromSeconds(timeout));
-        return cts.Token;
+        return cts;
     }
 
     extension(UniTaskVoid tasklet)
     {
-        public void RunOnPool()
+        public void RunOnPool(CancellationToken token = default)
         {
-            UniTask.RunOnThreadPool(tasklet.Forget);
+            UniTask.RunOnThreadPool(() => tasklet, cancellationToken: token).Forget();
         }
     }
 }

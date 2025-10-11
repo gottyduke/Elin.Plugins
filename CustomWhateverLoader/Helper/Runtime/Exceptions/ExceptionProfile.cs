@@ -122,6 +122,7 @@ public class ExceptionProfile(string message)
                 break;
             case 2:
                 Hidden = true;
+                progress.Kill();
                 eventData.Use();
                 break;
         }

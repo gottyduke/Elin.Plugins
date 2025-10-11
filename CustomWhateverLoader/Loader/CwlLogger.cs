@@ -48,6 +48,7 @@ internal sealed partial class CwlMod
         Warn($"[{typeof(T).Name}] {payload}");
     }
 
+    // not thread safe
     internal static void WarnWithPopup<T>(object payload, object? log = null)
     {
         Warn<T>(payload);
@@ -82,6 +83,7 @@ internal sealed partial class CwlMod
         Error($"[{typeof(T).Name}] {payload}", caller);
     }
 
+    // not thread safe
     internal static void ErrorWithPopup<T>(object payload, object? log = null, [CallerMemberName] string caller = "")
     {
         Error<T>(payload, caller);
@@ -105,6 +107,7 @@ internal sealed partial class CwlMod
         }
     }
 
+    // not thread safe
     internal static void Popup<T>(string message)
     {
         Log<T>(message);

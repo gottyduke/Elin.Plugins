@@ -13,7 +13,7 @@ public class ConfigCereal
     public static readonly JsonSerializerSettings Settings = new() {
         NullValueHandling = NullValueHandling.Ignore,
         DefaultValueHandling = DefaultValueHandling.Ignore,
-        PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+        PreserveReferencesHandling = PreserveReferencesHandling.None,
         TypeNameHandling = TypeNameHandling.Auto,
         ContractResolver = new WritablePropertiesOnlyResolver(),
     };

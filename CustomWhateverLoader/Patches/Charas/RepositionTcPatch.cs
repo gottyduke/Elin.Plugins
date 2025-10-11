@@ -20,7 +20,7 @@ internal class RepositionTcPatch
     private static bool IsSpriteReplacerBased(TC tc)
     {
         var renderer = tc.render;
-        return renderer is { actor.isPCC: false, usePass: false };
+        return renderer is { actor.owner.IsPC: false, usePass: false };
     }
 
     [HarmonyPatch]

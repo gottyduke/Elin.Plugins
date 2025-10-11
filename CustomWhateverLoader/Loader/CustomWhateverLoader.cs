@@ -22,7 +22,7 @@ public static class ModInfo
     public const string Version = "1.20.50";
 
     // for runtime versions
-    [field: MaybeNull]
+    [field: AllowNull]
     public static string BuildVersion => field ??= Assembly.GetExecutingAssembly().GetName().Version.ToString();
 }
 

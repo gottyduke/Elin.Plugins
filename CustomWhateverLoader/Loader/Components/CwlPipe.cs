@@ -60,9 +60,9 @@ internal class CwlPipe : EMono
             try {
                 await server.WaitForConnectionAsync(_cts.Token);
             } catch {
-                // noexcept
                 await DisposeServer(server);
                 continue;
+                // noexcept
             }
 
             if (_cts.IsCancellationRequested) {
@@ -73,6 +73,7 @@ internal class CwlPipe : EMono
             lock (_connections) {
                 _connections.Add(HandleConnection(server));
             }
+
             CwlMod.Log<CwlPipe>("external console connected");
         }
     }

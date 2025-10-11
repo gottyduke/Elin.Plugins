@@ -4,7 +4,7 @@ namespace Cwl.Helper.Exceptions;
 
 public static class ThrowOrReturn
 {
-    public static void NoReturn(Exception ex)
+    public static void Void(Exception ex)
     {
 #if DEBUG
         throw ex;
