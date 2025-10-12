@@ -1,0 +1,74 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <Platforms>AnyCPU</Platforms>
+        <LangVersion>preview</LangVersion>
+        <Nullable>enable</Nullable>
+        <RootNamespace>Emmersive</RootNamespace>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <GenerateDependencyFile>false</GenerateDependencyFile>
+        <OutputPath>$(ElinGamePath)\Package\Mod_$(AssemblyName)\</OutputPath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <Deterministic>false</Deterministic>
+        <PackageId>Emmersive</PackageId>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Remove="Directory.Build.props"/>
+        <None Remove="LICENSE"/>
+        <None Remove="README.md"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="CustomWhateverLoader">
+            <HintPath>$(SteamContentPath)\2135150\3370512305\CustomWhateverLoader.dll</HintPath>
+            <HintPath>$(SteamContentPath)\2135150\3544010094\CustomWhateverLoader.dll</HintPath>
+            <HintPath>$(ElinGamePath)\Package\Mod_CustomWhateverLoader\CustomWhateverLoader.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="$(SteamContentPath)\2135150\3400020753\YKFramework.dll">
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="$(ElinGamePath)\Elin_Data\Managed\System.Net.Http.dll">
+            <Private>False</Private>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SemanticKernel" Version="1.66.0"/>
+        <PackageReference Include="Microsoft.SemanticKernel.Connectors.Google" Version="1.66.0-alpha"/>
+        <PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.66.0"/>
+        <PackageReference Include="Microsoft.SemanticKernel.Core" Version="1.66.0"/>
+        <PackageReference Include="Fody" Version="6.9.3">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="GitVersion.MsBuild" Version="6.4.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="PolySharp" Version="1.15.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="SwallowExceptions.Fody" Version="1.0.1">
+            <PrivateAssets>all</PrivateAssets>
+            <ExcludeAssets>runtime</ExcludeAssets>
+        </PackageReference>
+    </ItemGroup>
+    <ItemGroup>
+        <None Remove="package\LangMod\EN\Emmersive\SystemPrompt.txt"/>
+        <EmbeddedResource Include="package\LangMod\EN\Emmersive\SystemPrompt.txt"/>
+    </ItemGroup>
+    <Target Name="CopyAssets" AfterTargets="AfterBuild">
+        <ItemGroup>
+            <Assets Include="package\**\*.*"/>
+        </ItemGroup>
+        <Copy
+                SourceFiles="@(Assets)"
+                DestinationFiles="@(Assets->'$(OutDir)%(RecursiveDir)%(Filename)%(Extension)')"
+                SkipUnchangedFiles="true"
+        />
+    </Target>
+</Project>
