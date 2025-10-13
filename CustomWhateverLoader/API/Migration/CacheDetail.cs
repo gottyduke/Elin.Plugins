@@ -90,8 +90,7 @@ public sealed class CacheDetail(string cacheKey)
             SheetFile = file,
         };
 
-        if (!_context.Load(out SerializableSourceCache? cache, cacheKey) ||
-            cache is null) {
+        if (!_context.Load(out SerializableSourceCache? cache, cacheKey)) {
             return detail;
         }
 
@@ -119,7 +118,7 @@ public sealed class CacheDetail(string cacheKey)
     [ConsoleCommand("clear_source_cache")]
     public static string ClearCache()
     {
-        var manifest = new CacheVersionManifest(CacheVersionV1, DateTime.UtcNow);
+        var manifest = new CacheVersionManifest(CacheVersionV1, DateTime.Now);
 
         _context.Clear();
         _context.Save(manifest, "cache_manifest");
@@ -186,7 +185,7 @@ public sealed class CacheDetail(string cacheKey)
                 return false;
             }
 
-            var lifetime = (DateTime.UtcNow - Retention).Days;
+            var lifetime = (DateTime.Now - Retention).Days;
             var retention = CwlConfig.CacheSourceSheetsRetention;
             if (lifetime >= retention) {
                 CwlMod.Log<CacheDetail>($"cache manifest out of date, current: {lifetime}, retention: {retention}");
@@ -203,7 +202,7 @@ public sealed class CacheDetail(string cacheKey)
         /// <returns>The number of days remaining until the cache needs to be regenerated.</returns>
         internal int NextGen()
         {
-            var lifetime = (DateTime.UtcNow - Retention).Days;
+            var lifetime = (DateTime.Now - Retention).Days;
             var retention = CwlConfig.CacheSourceSheetsRetention;
             return retention - lifetime;
         }

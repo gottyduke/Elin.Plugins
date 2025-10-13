@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using Cwl.Helper.Exceptions;
 using Cysharp.Threading.Tasks;
 
 namespace Cwl.Helper.Unity;
@@ -13,11 +14,11 @@ public static class UniTasklet
         return cts;
     }
 
-    extension(UniTaskVoid tasklet)
+    extension(UniTask tasklet)
     {
         public void RunOnPool(CancellationToken token = default)
         {
-            UniTask.RunOnThreadPool(() => tasklet, cancellationToken: token).Forget();
+            UniTask.RunOnThreadPool(() => tasklet, false, token).Forget(ExceptionProfile.DefaultExceptionHandler);
         }
     }
 }

@@ -116,6 +116,7 @@ internal sealed partial class CwlMod
     {
         if (_duplicate) {
             StartCoroutine(ReportDuplicateVersion());
+            CwlReloadTask.Unload();
             return;
         }
 

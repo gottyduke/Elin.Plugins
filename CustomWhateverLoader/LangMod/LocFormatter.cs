@@ -1,19 +1,49 @@
-﻿namespace Cwl.LangMod;
+﻿using System;
+using Cwl.Helper.Exceptions;
+
+namespace Cwl.LangMod;
 
 public static class LocFormatter
 {
-    public static string Loc(this string id, params object?[] args)
+    extension(string id)
     {
-        try {
-            return string.Format(id.lang(), args);
-        } catch {
-            var fmt = string.Join(", ", [id, ..args]);
-#if DEBUG
-            CwlMod.Warn($"log fmt failure / {fmt}");
-            throw;
-#else
-            return fmt;
-#endif
+        public string Loc(params object?[] args)
+        {
+            var lang = id.lang();
+            if (args.Length == 0) {
+                return lang;
+            }
+
+            try {
+                return string.Format(lang, args);
+            } catch (Exception ex) {
+                var fmt = string.Join(", ", [id, ..args]);
+                CwlMod.Warn($"log fmt failure / {fmt}");
+                return DebugThrow.Return(ex, fmt);
+            }
+        }
+    }
+
+    extension(LangGeneral.Row row)
+    {
+        public string Loc(params object?[] args)
+        {
+            var lang = Lang.isBuiltin
+                ? row.text_L.IsEmpty() && !row.text.IsEmpty() ? row.text : row.text_L
+                : Lang.isJP
+                    ? row.text_JP
+                    : row.text;
+            if (args.Length == 0) {
+                return lang;
+            }
+
+            try {
+                return string.Format(lang, args);
+            } catch (Exception ex) {
+                var fmt = string.Join(", ", [row.id, ..args]);
+                CwlMod.Warn($"log fmt failure / {fmt}");
+                return DebugThrow.Return(ex, fmt);
+            }
         }
     }
 }

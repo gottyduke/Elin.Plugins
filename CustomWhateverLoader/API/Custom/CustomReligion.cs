@@ -101,8 +101,7 @@ public class CustomReligion(string religionId) : Religion, IChunkable
             return;
         }
 
-        if (context.Load<Dictionary<string, CustomReligion>>(out var religions, "custom_religions") &&
-            religions is not null) {
+        if (context.Load<Dictionary<string, CustomReligion>>(out var religions, "custom_religions")) {
             foreach (var custom in game.religions.list.OfType<CustomReligion>()) {
                 if (!religions.TryGetValue(custom.id, out var loaded)) {
                     continue;
@@ -119,7 +118,7 @@ public class CustomReligion(string religionId) : Religion, IChunkable
             // TODO: remove deprecated code after <5> versions
             foreach (var custom in game.religions.list.OfType<CustomReligion>()) {
                 if (!context.Load<CustomReligion>(out var loaded, custom.ChunkName) ||
-                    loaded?._id != custom.id) {
+                    loaded._id != custom.id) {
                     continue;
                 }
 

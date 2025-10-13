@@ -28,7 +28,9 @@ public class CoroutineHelper : MonoBehaviour
     public static void Deferred(Action action, int frames = 1)
     {
         if (frames == 1) {
-            Core.Instance.actionsNextFrame.Add(action);
+            lock (Core.Instance.actionsNextFrame) {
+                Core.Instance.actionsNextFrame.Add(action);
+            }
         } else {
             Instance.StartDeferredCoroutine(action, frames);
         }
@@ -39,7 +41,13 @@ public class CoroutineHelper : MonoBehaviour
     /// </summary>
     public static void Deferred(Action action, float seconds)
     {
-        Instance.StartDeferredCoroutine(action, seconds);
+        if (seconds == 0f) {
+            lock (Core.Instance.actionsNextFrame) {
+                Core.Instance.actionsNextFrame.Add(action);
+            }
+        } else {
+            Instance.StartDeferredCoroutine(action, seconds);
+        }
     }
 
     /// <summary>

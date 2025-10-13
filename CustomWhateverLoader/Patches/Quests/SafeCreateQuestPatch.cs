@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Cwl.API.Attributes;
+using Cwl.API.Processors;
 using Cwl.LangMod;
 using HarmonyLib;
 
@@ -34,7 +35,7 @@ internal class SafeCreateQuestPatch
 
     [SwallowExceptions]
     [CwlPostLoad]
-    private static void PostCleanup()
+    private static void PostCleanup(GameIOProcessor.GameIOContext context)
     {
         var quests = EMono.game.quests;
         HashSet<Quest> list = [..quests.globalList, ..quests.list];

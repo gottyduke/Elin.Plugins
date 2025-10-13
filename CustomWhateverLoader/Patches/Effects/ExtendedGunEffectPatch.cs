@@ -131,7 +131,7 @@ internal class ExtendedGunEffectPatch : EClass
         } catch (Exception ex) {
             CwlMod.Warn<ExtendedGunEffectPatch>($"failed to apply gun effect {id}\n{ex}");
 
-            return ThrowOrReturn.Return(ex, true);
+            return DebugThrow.Return(ex, true);
         }
     }
 }

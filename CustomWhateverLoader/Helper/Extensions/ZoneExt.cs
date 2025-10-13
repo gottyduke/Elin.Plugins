@@ -48,6 +48,8 @@ public static class ZoneExt
 
     extension(Zone zone)
     {
+        public string ZoneFullName => $"Zone_{zone.id}/{zone.lv}";
+
         public Zone? FindOrCreateLevel(int lv, string id = "")
         {
             try {

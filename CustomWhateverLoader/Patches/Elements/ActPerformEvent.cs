@@ -67,7 +67,7 @@ public class ActPerformEvent
                 CwlMod.SharedHarmony.Patch(perform, postfix: postfix);
             } catch {
                 CwlMod.Warn<ActPerformEvent>("cwl_warn_processor".Loc("act_perform",
-                    (perform as MethodInfo)?.GetAssemblyDetail(false), null));
+                    (perform as MethodInfo)?.GetAssemblyDetail(false), null!));
                 // noexcept
             }
         }

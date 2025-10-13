@@ -9,6 +9,8 @@ namespace Cwl.Patches.Elements;
 [HarmonyPatch]
 internal class InvalidateAbilityPatch
 {
+    private static bool _retry;
+
     [HarmonyFinalizer]
     [HarmonyPatch(typeof(CharaAbility), nameof(CharaAbility.Refresh))]
     internal static Exception? OnInvalidateAbility(Exception? __exception, CharaAbility __instance)
@@ -17,9 +19,15 @@ internal class InvalidateAbilityPatch
             return null;
         }
 
+        if (_retry) {
+            _retry = false;
+            return __exception;
+        }
+
         InvalidateAbilities(__instance.owner);
 
         try {
+            _retry = true;
             __instance.Refresh();
         } catch (Exception ex) {
             return ex;
@@ -38,6 +46,13 @@ internal class InvalidateAbilityPatch
         for (var i = actCombats.Count - 1; i >= 0; --i) {
             var actCombat = actCombats[i];
             var act = actCombat.Split('/')[0];
+
+            if (act.IsEmpty()) {
+                actCombats.RemoveAt(i);
+                replacement = true;
+                continue;
+            }
+
             if ((chara.MainElement == Element.Void || elements.alias.ContainsKey(act)) &&
                 ACT.dict.ContainsKey(act)) {
                 continue;

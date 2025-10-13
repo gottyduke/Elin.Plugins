@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -182,7 +183,7 @@ public class GameIOProcessor
         /// <param name="inferred">arbitrary data, default(null) for class type and default({}) for value type</param>
         /// <param name="chunkName">unique identifier, omit/null will use full qualified type name</param>
         /// <returns>bool indicating success</returns>
-        public bool Load<T>(out T? inferred, string? chunkName = null)
+        public bool Load<T>([NotNullWhen(true)] out T? inferred, string? chunkName = null)
         {
             inferred = default;
 

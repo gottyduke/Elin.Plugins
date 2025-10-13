@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
@@ -38,27 +39,27 @@ public class ConfigCereal
         WriteDataImpl(data, path, CompactLevel.Binary);
     }
 
-    public static bool ReadConfig<T>(string? path, out T? inferred)
+    public static bool ReadConfig<T>(string? path, [NotNullWhen(true)] out T? inferred)
     {
         return ReadDataImpl(path, out inferred, CompactLevel.TextIndent);
     }
 
-    public static bool ReadData<T>(string? path, out T? inferred)
+    public static bool ReadData<T>(string? path, [NotNullWhen(true)] out T? inferred)
     {
         return ReadDataImpl(path, out inferred, CompactLevel.TextFlat);
     }
 
-    public static bool ReadDataCompressed<T>(string? path, out T? inferred)
+    public static bool ReadDataCompressed<T>(string? path, [NotNullWhen(true)] out T? inferred)
     {
         return ReadDataImpl(path, out inferred, CompactLevel.Compress);
     }
 
-    public static bool ReadDataBinary<T>(string? path, out T? inferred)
+    public static bool ReadDataBinary<T>(string? path, [NotNullWhen(true)] out T? inferred)
     {
         return ReadDataImpl(path, out inferred, CompactLevel.Binary);
     }
 
-    private static bool ReadDataImpl<T>(string? path, out T? inferred, CompactLevel compact)
+    private static bool ReadDataImpl<T>(string? path, [NotNullWhen(true)] out T? inferred, CompactLevel compact)
     {
         try {
             if (File.Exists(path)) {
@@ -143,7 +144,7 @@ public class ConfigCereal
         Binary,
     }
 
-    private class WritablePropertiesOnlyResolver : DefaultContractResolver
+    public class WritablePropertiesOnlyResolver : DefaultContractResolver
     {
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {

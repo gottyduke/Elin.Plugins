@@ -7,6 +7,7 @@ using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using Cysharp.Threading.Tasks;
+using HarmonyLib;
 using HarmonyLib.Public.Patching;
 using UnityEngine;
 
@@ -65,6 +66,12 @@ public class ExceptionProfile(string message)
         return GetFromStackTrace(ref exception);
     }
 
+    public static void DefaultExceptionHandler(Exception exception)
+    {
+        var profile = GetFromStackTrace(ref exception);
+        profile.CreateAndPop();
+    }
+
     public void CreateAndPop(string? display = null)
     {
         EMono.ui?.hud?.imageCover?.SetActive(false);
@@ -94,7 +101,9 @@ public class ExceptionProfile(string message)
             .OnHover(p => {
                 Analyze();
 
-                GUILayout.Label($"{"cwl_ui_exception_copy".Loc()}\n{Result}", p.GUIStyle);
+                GUILayout.Label($"{"cwl_ui_exception_copy".Loc()}\n{Result.SplitLines()
+                    .Take(20)
+                    .Join(r => r, Environment.NewLine)}", p.GUIStyle);
 
                 if (State is AnalyzeState.InProgress) {
                     GUILayout.Label("cwl_ui_exception_analyzing".Loc(), p.GUIStyle);
@@ -138,7 +147,7 @@ public class ExceptionProfile(string message)
         return $"<color=black><b>({text})</b></color> ";
     }
 
-    private async UniTaskVoid DeferredAnalyzer()
+    private async UniTask DeferredAnalyzer()
     {
         await UniTask.SwitchToThreadPool();
 

@@ -37,7 +37,6 @@ internal sealed partial class CwlMod
         Debug($"[{typeof(T).Name}] {payload}", caller);
     }
 
-    [SwallowExceptions]
     internal static void Warn(object payload)
     {
         LogInternal($"[CWL][WARN] {payload}");
@@ -71,7 +70,6 @@ internal sealed partial class CwlMod
         }
     }
 
-    [SwallowExceptions]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Error(object payload, [CallerMemberName] string caller = "")
     {
@@ -114,7 +112,6 @@ internal sealed partial class CwlMod
         using var progress = ProgressIndicator.CreateProgressScoped(() => new(message));
     }
 
-    [SwallowExceptions]
     private static void LogInternal(object log)
     {
         UnityEngine.Debug.Log(log.RemoveTagColor());

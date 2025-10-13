@@ -85,7 +85,7 @@ public partial class CustomPlaylist
 
                 var playlists = playlistDir.EnumerateFiles("*.json", SearchOption.TopDirectoryOnly);
                 foreach (var playlist in playlists) {
-                    if (!ConfigCereal.ReadConfig<SerializablePlaylist>(playlist.FullName, out var data) || data is null) {
+                    if (!ConfigCereal.ReadConfig<SerializablePlaylist>(playlist.FullName, out var data)) {
                         continue;
                     }
 

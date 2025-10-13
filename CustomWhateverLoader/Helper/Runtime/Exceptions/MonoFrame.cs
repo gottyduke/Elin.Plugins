@@ -55,6 +55,11 @@ public class MonoFrame(string stackFrame)
         return _cached.ContainsKey(frame);
     }
 
+    public static void AddVendorExclusion(string assemblyName)
+    {
+        _vendorExclusion.Add(assemblyName);
+    }
+
     [SwallowExceptions]
     public MonoFrame Parse()
     {

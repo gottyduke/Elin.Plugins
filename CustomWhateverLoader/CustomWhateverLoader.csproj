@@ -12,6 +12,7 @@
         <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
         <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <NoWarn>1701;1702;8620;8604</NoWarn>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Fody" Version="6.9.3">

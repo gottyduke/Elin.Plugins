@@ -23,7 +23,7 @@ public class ModIntegrity
     [CwlPostLoad]
     private static void CheckModList(GameIOProcessor.GameIOContext context)
     {
-        if (!context.Load<SerializableModPackage[]>(out var mods, "active_mods") || mods is null) {
+        if (!context.Load<SerializableModPackage[]>(out var mods, "active_mods")) {
             return;
         }
 

@@ -66,7 +66,7 @@ public class BioOverridePatch
         }
 
         try {
-            if (!ConfigCereal.ReadConfig<SerializableBioData>(file, out var bio) || bio is null) {
+            if (!ConfigCereal.ReadConfig<SerializableBioData>(file, out var bio)) {
                 return;
             }
 
