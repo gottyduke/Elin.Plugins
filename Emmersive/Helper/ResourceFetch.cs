@@ -72,12 +72,11 @@ public class ResourceFetch
         }
 
         var fallbackResource = GetAvailableResources(path).LastOrDefault();
-        if (fallbackResource is not null) {
-            resource = File.ReadAllText(fallbackResource.Provider.FullName);
-            SetActiveResource(path, resource);
-        } else {
-            resource = GetDefaultResource(path);
-        }
+        resource = fallbackResource is not null
+            ? File.ReadAllText(fallbackResource.Provider.FullName)
+            : "";
+
+        SetActiveResource(path, resource);
 
         return resource;
     }

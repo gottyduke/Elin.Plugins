@@ -16,7 +16,26 @@ namespace Emmersive.Components;
 
 public partial class EmScheduler
 {
-    private static void RequestScenePlayWithTrigger()
+    public static void RequestScenePlay(ContextBuilder contextBuilder)
+    {
+        EmMod.Log<EmScheduler>("scene play scheduled");
+
+        var ctx = contextBuilder.Build();
+        ScenePlayAsync(ctx.ToHistory()).Forget(ExceptionProfile.DefaultExceptionHandler);
+    }
+
+    [ConsoleCommand("trigger_current")]
+    [CwlContextMenu("Test")]
+    internal static void TestCurrentZone()
+    {
+        var builder = ContextBuilder
+            .Create()
+            .Add(new NearbyCharaContext(EClass.pc));
+
+        RequestScenePlay(builder);
+    }
+
+    internal static void RequestScenePlayWithTrigger()
     {
         var builder = ContextBuilder
             .Create()
@@ -26,27 +45,12 @@ public partial class EmScheduler
         RequestScenePlay(builder);
     }
 
-    [ConsoleCommand("trigger_current")]
-    [CwlContextMenu("Test")]
-    private static void TestCurrentZone()
+    internal static async UniTask ScenePlayAsync(ChatHistory context, int retries = -1)
     {
-        var builder = ContextBuilder
-            .Create()
-            .Add(new NearbyCharaContext(EClass.pc));
+        if (retries < 0) {
+            retries = EmConfig.Policy.Retries.Value;
+        }
 
-        RequestScenePlay(builder);
-    }
-
-    internal static void RequestScenePlay(ContextBuilder contextBuilder)
-    {
-        EmMod.Log<EmScheduler>("scene play scheduled");
-
-        var ctx = contextBuilder.Build();
-        ScenePlayAsync(ctx.ToHistory()).Forget(ExceptionProfile.DefaultExceptionHandler);
-    }
-
-    internal static async UniTask ScenePlayAsync(ChatHistory context, int retries = 1)
-    {
         var kernel = EmKernel.Kernel ?? EmKernel.RebuildKernel();
 
         var apiPool = ApiPoolSelector.Instance;
@@ -83,6 +87,8 @@ public partial class EmScheduler
             pc.Profile.SetTalked();
         } catch (OperationCanceledException) {
             EmMod.Warn<EmScheduler>($"request timeout after {EmConfig.Policy.Timeout.Value}s");
+
+            provider.MarkUnavailable("timeout");
         } catch (HttpOperationException httpEx) {
             EmMod.Warn<EmScheduler>($"request failed: {httpEx.StatusCode}\\{httpEx.Message}");
 
@@ -97,7 +103,7 @@ public partial class EmScheduler
         } catch (Exception ex) {
             EmMod.Warn("request failed");
 
-            apiPool.CurrentProvider?.MarkUnavailable(ex.Message);
+            apiPool.CurrentProvider?.MarkUnavailable(ex.GetType().Name);
 
             throw;
         } finally {

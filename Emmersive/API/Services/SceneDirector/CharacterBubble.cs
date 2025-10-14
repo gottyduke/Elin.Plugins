@@ -11,6 +11,7 @@ namespace Emmersive.API.Services.SceneDirector;
 
 public partial class SceneDirector
 {
+    [SwallowExceptions]
     [KernelFunction("character_bubble")]
     [Description("Displays a dialogue, gesture, or thought above character's head. Use multiple if needed, DO NOT mix contents.")]
     public void DoPopText([Description("The unique identifier (uid) of the character who will speak or act.")] int uid,
@@ -45,6 +46,7 @@ public partial class SceneDirector
             CoroutineHelper.Deferred(PopText, delay);
             continue;
 
+            [SwallowExceptions]
             void PopText()
             {
                 if (chara is not { isDestroyed: false, ExistsOnMap: true }) {
@@ -56,14 +58,13 @@ public partial class SceneDirector
                     color = Msg.colors.Ono;
                 } else {
                     color = Msg.colors.Talk;
-                    text = text.Replace("&", "").Bracket();
+                    text = text.Replace("&", "");
                 }
 
-                var logText = text.StripBrackets();
-                RecentActionContext.Add(chara.Name, logText);
+                RecentActionContext.Add(chara.Name, text);
 
                 Msg.SetColor(color);
-                chara.Say(logText);
+                chara.Say(text);
 
                 chara.HostRenderer.Say(text.Wrap(), duration: duration);
 

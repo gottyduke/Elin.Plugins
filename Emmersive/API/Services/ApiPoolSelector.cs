@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Emmersive.ChatProviders;
+using Emmersive.Helper;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Services;
 
@@ -18,20 +20,72 @@ public sealed class ApiPoolSelector : IAIServiceSelector
     public void AddService(IChatProvider provider)
     {
         _providers.Add(provider);
+
+        provider.LoadProviderParam();
+
         EmMod.Log<ApiPoolSelector>($"added {provider.Id}");
+    }
+
+    public void ReorderService(IChatProvider provider, int mod)
+    {
+        _providers.Move(provider, mod);
     }
 
     public void RemoveService(IChatProvider provider)
     {
-        if (_providers.Remove(provider)) {
-            EmMod.Log<ApiPoolSelector>($"removed {provider.Id}");
+        _providers.Remove(provider);
+
+        if (CurrentProvider == provider) {
+            CurrentProvider = null;
         }
+
+        provider.RemoveProviderParam();
+
+        EmMod.Log<ApiPoolSelector>($"removed {provider.Id}");
     }
 
     public void ClearServices()
     {
-        _providers.Clear();
-        EmMod.Log<ApiPoolSelector>("cleared services");
+        foreach (var provider in _providers) {
+            RemoveService(provider);
+        }
+    }
+
+    public void SaveServices()
+    {
+        var context = ResourceFetch.Context;
+
+        context.Save(_providers, "active_providers");
+
+        foreach (var provider in _providers) {
+            provider.SaveProviderParam();
+        }
+
+        context.Save(ChatProviderBase.ServiceCount, "service_count");
+    }
+
+    public void LoadServices(bool clear = true)
+    {
+        EmMod.Log<ApiPoolSelector>("loading active services");
+
+        if (clear) {
+            _providers.Clear();
+        }
+
+        var context = ResourceFetch.Context;
+
+        if (!context.Load<List<IChatProvider>>(out var providers, "active_providers")) {
+            return;
+        }
+
+        foreach (var provider in providers) {
+            AddService(provider);
+            provider.LoadProviderParam();
+        }
+
+        if (context.Load<int>(out var serviceCount, "service_count")) {
+            ChatProviderBase.ServiceCount = serviceCount;
+        }
     }
 
 #region AI Selector
@@ -42,14 +96,14 @@ public sealed class ApiPoolSelector : IAIServiceSelector
                                       [NotNullWhen(true)] out T? service,
                                       out PromptExecutionSettings? serviceSettings) where T : class, IAIService
     {
+        serviceSettings = null;
+
         if (TryGetNextAvailable(out var provider)) {
             service = kernel.GetRequiredService<T>(provider.Id);
-            serviceSettings = provider.ExecutionSettings;
             return true;
         }
 
         service = null;
-        serviceSettings = null;
         return false;
     }
 
@@ -70,7 +124,7 @@ public sealed class ApiPoolSelector : IAIServiceSelector
 
         EmMod.Warn<ApiPoolSelector>($"no chat provider available, {_providers.Count} registered");
 
-        next = null;
+        next = CurrentProvider = null;
         return false;
     }
 

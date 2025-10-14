@@ -29,6 +29,15 @@ internal class EmConfig
                 "超时后，将不会重新请求",
                 new AcceptableValueRange<float>(1f, 20f)));
 
+        Policy.Retries = config.Bind(
+            "RuntimePolicy",
+            "Retries",
+            1,
+            new ConfigDescription(
+                "Retries attempts after a failed request\n" +
+                "生成请求失败后的重试次数",
+                new AcceptableValueRange<int>(0, 5)));
+
         Context.DisabledProviders = config.Bind(
             "Context",
             "DisabledProviders",
@@ -137,6 +146,7 @@ internal class EmConfig
     internal static class Policy
     {
         internal static ConfigEntry<float> Timeout { get; set; } = null!;
+        internal static ConfigEntry<int> Retries { get; set; } = null!;
         internal static ConfigEntry<bool> Verbose { get; set; } = null!;
     }
 }

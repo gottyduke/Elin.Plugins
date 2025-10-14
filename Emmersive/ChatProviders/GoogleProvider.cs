@@ -6,11 +6,12 @@ using Emmersive.API.Services.SceneDirector;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.Google;
+using Newtonsoft.Json;
 using YKF;
 
 namespace Emmersive.ChatProviders;
 
-public sealed class GoogleProvider(string apiKey) : ChatProviderBase
+public sealed class GoogleProvider : ChatProviderBase
 {
     [field: AllowNull]
     public override string Id
@@ -19,32 +20,19 @@ public sealed class GoogleProvider(string apiKey) : ChatProviderBase
         set;
     }
 
-    public override IReadOnlyList<string> Models => [
-        "gemini-2.5-pro",
-        "gemini-2.5-flash",
-    ];
-
     public override string CurrentModel { get; set; } = "gemini-2.5-flash";
+    public override IDictionary<string, object> RequestParams { get; set; } = new Dictionary<string, object>();
 
+    [JsonIgnore]
     public override PromptExecutionSettings ExecutionSettings { get; set; } = new GeminiPromptExecutionSettings {
-        ResponseSchema = SceneReaction.Schema,
         ResponseMimeType = "application/json",
+        ResponseSchema = typeof(SceneReaction[]),
     };
-
-    public override void OnLayout(YKLayout layout)
-    {
-    }
-
-    protected override void Register(IKernelBuilder builder, string model)
-    {
-        builder.AddGoogleAIGeminiChatCompletion(model, apiKey, serviceId: Id);
-    }
 
     public override async UniTask<ChatMessageContent> HandleRequest(Kernel kernel, ChatHistory context, CancellationToken token)
     {
         var response = await base.HandleRequest(kernel, context, token);
-
-        if (response is not GeminiChatMessageContent { Metadata: { } metadata } message) {
+        if (response is not GeminiChatMessageContent { Metadata: { } metadata }) {
             return response;
         }
 
@@ -55,5 +43,22 @@ public sealed class GoogleProvider(string apiKey) : ChatProviderBase
         }
 
         return response;
+    }
+
+    public override void MergeExtensionData(IDictionary<string, object> data)
+    {
+        if (data.TryGetValue("generationConfig", out var geminiRequest) &&
+            geminiRequest is Dictionary<string, object> generationConfig) {
+            base.MergeExtensionData(generationConfig);
+        }
+    }
+
+    protected override void OnLayoutInternal(YKLayout card)
+    {
+    }
+
+    protected override void Register(IKernelBuilder builder, string model)
+    {
+        builder.AddGoogleAIGeminiChatCompletion(model, ApiKey, serviceId: Id);
     }
 }

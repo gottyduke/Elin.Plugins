@@ -22,6 +22,11 @@ public class RelationContext(IReadOnlyList<Chara> charas) : ContextProviderBase
 
     public override string Name => "relationship";
 
+    protected override void Localize(IDictionary<string, object> data, string? prefixOverride = null)
+    {
+        // no need to localize character names
+    }
+
     protected override IDictionary<string, object>? BuildInternal()
     {
         if (charas.Count < 2) {

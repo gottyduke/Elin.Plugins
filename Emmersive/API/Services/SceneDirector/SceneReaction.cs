@@ -4,12 +4,10 @@ namespace Emmersive.API.Services.SceneDirector;
 
 public class SceneReaction
 {
-    public int uid { get; set; }
-
-    public string text { get; set; } = null!;
-    public float duration { get; set; }
-
-    public float delay { get; set; }
+    public required int uid { get; set; }
+    public required string text { get; set; }
+    public required float duration { get; set; } = 2f;
+    public required float delay { get; set; } = 0f;
 
     internal static string Schema =>
         """
@@ -36,6 +34,5 @@ public class SceneReaction
             "required": ["uid", "text", "duration", "delay"]
           }
         }
-
         """;
 }

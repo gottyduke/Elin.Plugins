@@ -3,17 +3,25 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Emmersive.Helper;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
+using Newtonsoft.Json;
 using OpenAI.Chat;
 using YKF;
 using ChatMessageContent = Microsoft.SemanticKernel.ChatMessageContent;
 
 namespace Emmersive.ChatProviders;
 
-internal class OpenAIProvider(string apiKey) : ChatProviderBase
+internal class OpenAIProvider : ChatProviderBase
 {
+    [JsonIgnore]
+    private UIInputText? _aliasInput;
+
+    [JsonIgnore]
+    private UIInputText? _endpointInput;
+
     [field: AllowNull]
     public override string Id
     {
@@ -21,34 +29,25 @@ internal class OpenAIProvider(string apiKey) : ChatProviderBase
         set;
     }
 
-    public override IReadOnlyList<string> Models => [
-        "deepseek-chat",
-        "gpt-5",
-        "gpt-5-mini",
-        "gpt-5-nano",
-    ];
-
     public override string CurrentModel { get; set; } = "gpt-5-nano";
 
+    public override IDictionary<string, object> RequestParams { get; set; } = new Dictionary<string, object> {
+        ["reasoning_effort"] = "minimal",
+    };
+
+    public string EndPoint { get; set; } = "https://api.openai.com/v1";
+    public string Alias { get; set; } = "OpenAI";
+
+    [JsonIgnore]
     public override PromptExecutionSettings ExecutionSettings { get; set; } = new OpenAIPromptExecutionSettings {
-        // use no-brainer to reduce latency
-        ReasoningEffort = "minimal",
-        Temperature = 1f,
         // as of 1.66.0 openai ResponseFormat cannot be set to a type or schema
         // which will cause serializer failure on WriteCore
         // DeepSeek does not use json schema either
         ResponseFormat = new {
             type = "json_object",
         },
+        ReasoningEffort = "minimal",
     };
-
-    public string EndPoint { get; set; } = "https://api.openai.com/v1";
-    public string Alias { get; set; } = "OpenAI";
-
-    protected override void Register(IKernelBuilder builder, string model)
-    {
-        builder.AddOpenAIChatCompletion(CurrentModel, new Uri(EndPoint), apiKey, serviceId: Id);
-    }
 
     public override async UniTask<ChatMessageContent> HandleRequest(Kernel kernel, ChatHistory context, CancellationToken token)
     {
@@ -69,8 +68,27 @@ internal class OpenAIProvider(string apiKey) : ChatProviderBase
         return message;
     }
 
-    public override void OnLayout(YKLayout layout)
+    public override void OnLayoutConfirm()
     {
-        base.OnLayout(layout);
+        if (_endpointInput != null) {
+            EndPoint = _endpointInput.Text;
+        }
+
+        if (_aliasInput != null) {
+            Alias = _aliasInput.Text;
+        }
+
+        base.OnLayoutConfirm();
+    }
+
+    protected override void OnLayoutInternal(YKLayout card)
+    {
+        _endpointInput = card.AddPair("em_ui_endpoint".lang(), EndPoint);
+        _aliasInput = card.AddPair("em_ui_alias".lang(), Alias);
+    }
+
+    protected override void Register(IKernelBuilder builder, string model)
+    {
+        builder.AddOpenAIChatCompletion(CurrentModel, new Uri(EndPoint), ApiKey, serviceId: Id);
     }
 }

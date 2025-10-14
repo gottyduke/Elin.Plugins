@@ -1,3 +1,4 @@
+using System.Net.Http;
 using Emmersive.API.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
@@ -17,6 +18,7 @@ public static class EmKernel
         return Kernel = Kernel
             .CreateBuilder()
             .AddScenePlugin()
+            .AddExtensionHandler()
             .AddChatProviders()
             .Build();
     }
@@ -26,6 +28,12 @@ public static class EmKernel
         private IKernelBuilder AddScenePlugin()
         {
             builder.Services.AddSingleton(new SceneDirector());
+            return builder;
+        }
+
+        private IKernelBuilder AddExtensionHandler()
+        {
+            builder.Services.AddSingleton(new HttpClient(ExtensionDataHandler.Instance, false));
             return builder;
         }
 

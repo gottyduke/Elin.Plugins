@@ -5,6 +5,7 @@ namespace Emmersive.Contexts;
 
 public class BackgroundContext(Chara chara) : ContextProviderBase
 {
+    private const string NotProvided = "<not provided>";
     public override string Name => "background";
 
     public override object? Build()
@@ -14,17 +15,17 @@ public class BackgroundContext(Chara chara) : ContextProviderBase
         var resourceKey = $"Emmersive/Characters/{id}.txt";
 
         var background = ResourceFetch.GetActiveResource(resourceKey);
-        if (!background.IsEmpty()) {
-            return background;
+        if (background == NotProvided) {
+            return null;
         }
 
         background = chara.IsPC
             ? EClass.player.GetBackgroundText()
-            : BioOverridePatch.GetNpcBackground("", chara);
+            : BioOverridePatch.GetNpcBackground(NotProvided, chara);
 
         ResourceFetch.SetActiveResource(resourceKey, background);
 
-        return !background.IsEmpty()
+        return background != NotProvided
             ? background
             : null;
     }

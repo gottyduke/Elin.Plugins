@@ -3,23 +3,47 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Emmersive.API;
-using Emmersive.API.Services;
+using Emmersive.Helper;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
-using YKF;
-using Object = UnityEngine.Object;
+using Newtonsoft.Json;
 
 namespace Emmersive.ChatProviders;
 
-public abstract class ChatProviderBase : IChatProvider
+public abstract partial class ChatProviderBase : IChatProvider, IExtensionMerger
 {
+    [JsonIgnore]
     private DateTime _cooldownUntil = DateTime.MinValue;
-    protected static int ServiceCount => ++field;
+
+    [JsonIgnore]
+    private UIInputText? _modelInput;
+
+    protected ChatProviderBase()
+    {
+        ServiceCount++;
+    }
+
+    public static int ServiceCount { get; internal set; }
+
+    [JsonIgnore]
+    public abstract PromptExecutionSettings ExecutionSettings { get; set; }
+
+    [JsonIgnore]
+    public required string ApiKey { protected get; set; }
+
+    [JsonProperty]
+    protected string EncryptedKey
+    {
+        get => ApiKey.DecryptAes();
+        set => ApiKey = value.EncryptAes();
+    }
 
     public abstract string Id { get; set; }
-    public abstract IReadOnlyList<string> Models { get; }
     public abstract string CurrentModel { get; set; }
-    public abstract PromptExecutionSettings ExecutionSettings { get; set; }
+
+    [JsonIgnore]
+    public abstract IDictionary<string, object> RequestParams { get; set; }
+
     public virtual bool IsAvailable => DateTime.Now >= _cooldownUntil;
 
     public void Register(IKernelBuilder builder)
@@ -31,9 +55,10 @@ public abstract class ChatProviderBase : IChatProvider
     {
         _cooldownUntil = DateTime.Now + TimeSpan.FromSeconds(15f);
         EmMod.Warn($"[{Id}] temporarily unavailable: {message}");
+        EmMod.DebugPopup<IChatProvider>($"[{Id}] temporarily unavailable: {message}");
     }
 
-    public void UpdateAvailability()
+    public virtual void UpdateAvailability()
     {
         if (DateTime.Now >= _cooldownUntil) {
             _cooldownUntil = DateTime.MinValue;
@@ -47,20 +72,17 @@ public abstract class ChatProviderBase : IChatProvider
             .ConfigureAwait(false);
     }
 
-    public virtual void OnLayout(YKLayout layout)
+    public virtual void MergeExtensionData(IDictionary<string, object> data)
     {
-        var card = layout.Vertical();
-        card.Layout.childForceExpandWidth = true;
+        if (RequestParams.Count == 0) {
+            return;
+        }
 
-        var header = card.Horizontal();
-        header.Layout.childForceExpandWidth = true;
-
-        header.TextFlavor(Id, FontColor.Good);
-        header.Button("Remove", () => {
-            ApiPoolSelector.Instance.RemoveService(this);
-            EmKernel.RebuildKernel();
-            Object.DestroyImmediate(card.gameObject);
-        });
+        foreach (var (k, v) in RequestParams) {
+            if (!k.IsEmpty() && v is not null) {
+                data[k] = v;
+            }
+        }
     }
 
     protected abstract void Register(IKernelBuilder builder, string model);

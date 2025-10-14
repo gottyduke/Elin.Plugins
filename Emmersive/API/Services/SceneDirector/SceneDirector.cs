@@ -39,6 +39,6 @@ public partial class SceneDirector : EClass
             DoPopText(reaction.uid, reaction.text, reaction.duration, reaction.delay);
         }
 
-        EmScheduler.SetScenePlayDelay(maxDelay);
+        EmScheduler.SetScenePlayDelay(maxDelay + 1f);
     }
 }
