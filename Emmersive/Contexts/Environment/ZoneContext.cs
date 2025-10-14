@@ -1,42 +1,39 @@
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
+using Cwl.Helper.Extensions;
+using Emmersive.Helper;
 
 namespace Emmersive.Contexts;
 
-public class ZoneContext(Zone zone) : FileContextBase<ZoneContext.ZoneBackground>
+public class ZoneContext(Zone zone) : ContextProviderBase
 {
     public override string Name => "zone_data";
 
-    [field: AllowNull]
-    public static ZoneContext Default => field ??= new(null!);
-
-    protected override IDictionary<string, object> BuildCore()
+    protected override IDictionary<string, object>? BuildInternal()
     {
         Dictionary<string, object> data = new() {
             ["name"] = zone.NameWithDangerLevel,
         };
 
         if (zone.IsRegion) {
-            data["type"] = "World Map of North Tyris";
-        } else {
-            switch (zone) {
-                case Zone_Dungeon or Zone_RandomDungeon:
-                    data["type"] = "Dungeon";
-                    break;
-                case Zone_Civilized:
-                    data["allow_crime"] = zone.AllowCriminal;
-                    data["has_law"] = zone.HasLaw;
-                    data["is_town"] = zone.IsTown;
-                    data["player_influence"] = zone.influence;
+            //data["type"] = "World Map of North Tyris";
+            return null;
+        }
 
-                    if (zone.IsFestival) {
-                        data["is_festival"] = true;
-                    }
+        switch (zone) {
+            case Zone_Dungeon or Zone_RandomDungeon:
+                data["type"] = "Dungeon";
+                break;
+            case Zone_Civilized:
+                data["allow_crime"] = zone.AllowCriminal;
+                data["has_law"] = zone.HasLaw;
+                data["is_town"] = zone.IsTown;
+                data["player_influence"] = zone.influence;
 
-                    break;
-            }
+                if (zone.IsFestival) {
+                    data["is_festival"] = true;
+                }
+
+                break;
         }
 
         if (zone.IsUnderwater) {
@@ -47,26 +44,11 @@ public class ZoneContext(Zone zone) : FileContextBase<ZoneContext.ZoneBackground
             data["in_room"] = room.Name;
         }
 
+        var background = ResourceFetch.GetActiveResource($"Emmersive/Zones/{zone.ZoneFullName}.txt");
+        if (!background.IsEmpty()) {
+            data["background"] = background;
+        }
+
         return data;
     }
-
-    protected override ZoneBackground LoadFromFile(FileInfo file)
-    {
-        var path = file.FullName;
-        var id = Path.GetFileNameWithoutExtension(path);
-        return new(id, File.ReadAllText(path), file);
-    }
-
-    public static void Init()
-    {
-        Lookup = Default.LoadAllContexts("Emmersive/Zones").ToLookup(ctx => ctx.ZoneId);
-    }
-
-    public static void Clear()
-    {
-        Lookup = null!;
-        Overrides.Clear();
-    }
-
-    public record ZoneBackground(string ZoneId, string Prompt, FileInfo Provider);
 }

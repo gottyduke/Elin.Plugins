@@ -8,7 +8,7 @@ public class CharaContext(Chara chara) : ContextProviderBase
 {
     public override string Name => "character_data";
 
-    protected override IDictionary<string, object> BuildCore()
+    protected override IDictionary<string, object> BuildInternal()
     {
         Dictionary<string, object> data = new() {
             ["name"] = chara.NameSimple,

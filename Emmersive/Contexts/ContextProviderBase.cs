@@ -7,12 +7,12 @@ namespace Emmersive.Contexts;
 
 public abstract class ContextProviderBase : IContextProvider
 {
-    public bool IsDisabled => EmConfig.Context.DisabledProviders.Value.Contains(Name);
+    public bool IsAvailable => !EmConfig.Context.DisabledProviders.Value.Contains(Name);
     public abstract string Name { get; }
 
     public virtual object? Build()
     {
-        var data = BuildCore();
+        var data = BuildInternal();
         if (data is null) {
             return null;
         }
@@ -36,7 +36,7 @@ public abstract class ContextProviderBase : IContextProvider
         }
     }
 
-    protected virtual IDictionary<string, object>? BuildCore()
+    protected virtual IDictionary<string, object>? BuildInternal()
     {
         return null;
     }

@@ -45,6 +45,13 @@ internal class EmConfig
                 "最大拉取的作为上下文的游戏日志条数",
                 new AcceptableValueRange<int>(0, 100)));
 
+        Context.RecentTalkOnly = config.Bind(
+            "Context",
+            "RecentTalkOnly",
+            false,
+            "Only fetch talk logs, do not include combat or gameplay info\n" +
+            "仅拉取对话日志，不使用战斗或其他游戏信息");
+
         Scene.MaxReactions = config.Bind(
             "Scene",
             "MaxReactions",
@@ -61,24 +68,22 @@ internal class EmConfig
         Scene.NearbyRadius = config.Bind(
             "Scene",
             "NearbyRadius",
-            -1,
+            4,
             new ConfigDescription(
                 "Radius in tiles to scan for nearby characters\n" +
                 "Bigger radius may involve more characters and lengthy token input\n" +
-                "Set to -1 to include all visible characters\n" +
                 "以玩家为中心检测附近角色的半径块数\n" +
-                "更大的半径会包含更多的角色，但会增加token消耗\n" +
-                "设为-1会引用所有可见的角色",
-                new AcceptableValueRange<int>(-1, 8)));
+                "更大的半径会包含更多的角色，但会增加token消耗",
+                new AcceptableValueRange<int>(2, 8)));
 
         Scene.TurnsCooldown = config.Bind(
             "Scene",
             "TurnsCooldown",
-            8,
+            12,
             new ConfigDescription(
                 "Minimum turns required before next scene request\n" +
                 "两次请求之间的最低间隔回合数",
-                new AcceptableValueRange<int>(0, int.MaxValue)));
+                new AcceptableValueRange<int>(0, 100)));
 
         Scene.SecondsCooldown = config.Bind(
             "Scene",
@@ -87,14 +92,27 @@ internal class EmConfig
             new ConfigDescription(
                 "Minimum seconds in realtime required before next scene request\n" +
                 "两次请求之间的最低间隔秒数",
-                new AcceptableValueList<float>(0f, float.MaxValue)));
+                new AcceptableValueRange<float>(0f, 100)));
 
-        Scene.BlockGlobalTalk = config.Bind(
+        Scene.SceneTriggerWindow = config.Bind(
             "Scene",
-            "BlockGlobalTalk",
+            "SceneTriggerWindow",
+            0.05f,
+            new ConfigDescription(
+                "Small window to buffer all scene trigger talks\n" +
+                "This can prevent everyone talk at once such as after loading a save\n" +
+                "Probably do not change this unless you are instructed to\n" +
+                "抓取场景激活对话的简短缓冲时间\n" +
+                "可以防止例如刚加载存档时所有人都同时说话的状况\n" +
+                "除非知道在做什么，不建议更改",
+                new AcceptableValueRange<float>(0f, 1f)));
+
+        Scene.BlockCharaTalk = config.Bind(
+            "Scene",
+            "BlockCharaTalk",
             true,
-            "Block global character's talk and use them as context for scene play\n" +
-            "May skip original talks if character is on scene play cooldown or API is unavailable\n" +
+            "Block character's talks and use them as context for scene play when possible\n" +
+            "May skip non-generic talks if character is on scene play cooldown or API is unavailable\n" +
             "禁用全局角色的原版喊叫，并将它们用于上下文\n" +
             "如果该角色在冷却中或请求失败，可能会跳过该喊叫");
     }
@@ -105,13 +123,15 @@ internal class EmConfig
         internal static ConfigEntry<int> NearbyRadius { get; set; } = null!;
         internal static ConfigEntry<int> TurnsCooldown { get; set; } = null!;
         internal static ConfigEntry<float> SecondsCooldown { get; set; } = null!;
-        internal static ConfigEntry<bool> BlockGlobalTalk { get; set; } = null!;
+        internal static ConfigEntry<float> SceneTriggerWindow { get; set; } = null!;
+        internal static ConfigEntry<bool> BlockCharaTalk { get; set; } = null!;
     }
 
     internal static class Context
     {
         internal static ConfigEntry<string> DisabledProviders { get; set; } = null!;
         internal static ConfigEntry<int> RecentLogDepth { get; set; } = null!;
+        internal static ConfigEntry<bool> RecentTalkOnly { get; set; } = null!;
     }
 
     internal static class Policy

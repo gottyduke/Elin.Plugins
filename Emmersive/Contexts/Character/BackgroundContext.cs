@@ -1,51 +1,31 @@
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
 using Cwl.Patches.Charas;
+using Emmersive.Helper;
 
 namespace Emmersive.Contexts;
 
-public class BackgroundContext(Chara chara) : FileContextBase<BackgroundContext.BackgroundPrompt>
+public class BackgroundContext(Chara chara) : ContextProviderBase
 {
     public override string Name => "background";
 
-    [field: AllowNull]
-    public static BackgroundContext Default => field ??= new(null!);
-
     public override object? Build()
     {
-        if (Lookup is null) {
-            Init();
-        }
-
         var id = chara.IsPC ? "player" : chara.id;
-        var background = GetContext(id)?.Prompt;
-        if (background is not null) {
+
+        var resourceKey = $"Emmersive/Characters/{id}.txt";
+
+        var background = ResourceFetch.GetActiveResource(resourceKey);
+        if (!background.IsEmpty()) {
             return background;
         }
 
-        return chara.IsPC
+        background = chara.IsPC
             ? EClass.player.GetBackgroundText()
-            : BioOverridePatch.GetNpcBackground(null!, chara);
-    }
+            : BioOverridePatch.GetNpcBackground("", chara);
 
-    protected override BackgroundPrompt LoadFromFile(FileInfo file)
-    {
-        var path = file.FullName;
-        var id = Path.GetFileNameWithoutExtension(path);
-        return new(id, File.ReadAllText(path), file);
-    }
+        ResourceFetch.SetActiveResource(resourceKey, background);
 
-    public static void Init()
-    {
-        Lookup = Default.LoadAllContexts("Emmersive/Characters").ToLookup(ctx => ctx.CharaId);
+        return !background.IsEmpty()
+            ? background
+            : null;
     }
-
-    public static void Clear()
-    {
-        Lookup = null!;
-        Overrides.Clear();
-    }
-
-    public record BackgroundPrompt(string CharaId, string Prompt, FileInfo Provider);
 }

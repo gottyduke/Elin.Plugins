@@ -1,6 +1,12 @@
+using System.Collections.Generic;
 using System.Reflection;
 using BepInEx;
 using Cwl.Helper.Exceptions;
+using Cwl.Helper.FileUtil;
+using Emmersive.API.Services;
+using Emmersive.ChatProviders;
+using Emmersive.Components;
+using Emmersive.Helper;
 using HarmonyLib;
 using ReflexCLI;
 
@@ -16,6 +22,8 @@ internal static class ModInfo
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
 internal sealed partial class EmMod : BaseUnityPlugin
 {
+    internal static readonly Assembly Assembly = Assembly.GetExecutingAssembly();
+
     internal static EmMod Instance { get; private set; } = null!;
 
     private void Awake()
@@ -23,10 +31,8 @@ internal sealed partial class EmMod : BaseUnityPlugin
         Instance = this;
 
         EmConfig.Bind(Config);
-
-        var assembly = Assembly.GetExecutingAssembly();
-        CommandRegistry.assemblies.Add(assembly);
-        Harmony.CreateAndPatchAll(assembly, ModInfo.Guid);
+        CommandRegistry.assemblies.Add(Assembly);
+        Harmony.CreateAndPatchAll(Assembly, ModInfo.Guid);
 
         transform.GetOrCreate<EmScheduler>();
     }
@@ -34,5 +40,37 @@ internal sealed partial class EmMod : BaseUnityPlugin
     private void Start()
     {
         MonoFrame.AddVendorExclusion("Microsoft.");
+
+
+#if DEBUG
+        var apiPool = ApiPoolSelector.Instance;
+        var (_, keys) = PackageIterator
+            .GetJsonFromPackage<Dictionary<string, string[]>>("Emmersive/DebugKeys.json", ModInfo.Guid);
+
+        foreach (var key in keys!["Em_GoogleGeminiAPI_Dummy"]) {
+            apiPool.AddService(new GoogleProvider(key));
+        }
+
+        foreach (var key in keys["Em_DeepSeekAPI_Dummy"]) {
+            apiPool.AddService(new OpenAIProvider(key) {
+                EndPoint = "https://api.deepseek.com/v1",
+                Alias = "DeepSeek",
+                CurrentModel = "deepseek-chat",
+            });
+        }
+
+        foreach (var key in keys["Em_OpenAIAPI_Dummy"]) {
+            apiPool.AddService(new OpenAIProvider(key) {
+                CurrentModel = "gpt-5-nano",
+            });
+        }
+#endif
+
+        EmKernel.RebuildKernel();
+    }
+
+    private void OnApplicationQuit()
+    {
+        Localizer.DumpUnlocalized();
     }
 }

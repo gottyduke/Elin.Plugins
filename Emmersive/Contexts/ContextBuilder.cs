@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Cwl.Helper.Exceptions;
+using Cwl.Helper.String;
 using Emmersive.API;
 using Emmersive.Helper;
 using Microsoft.SemanticKernel;
@@ -54,7 +56,7 @@ public sealed class ContextBuilder
         return this;
     }
 
-    public KernelArguments Build(Func<IContextProvider, Exception, bool>? haltOnError = null)
+    public KernelArguments Build()
     {
         if (!EClass.core.IsGameStarted) {
             return [];
@@ -62,9 +64,9 @@ public sealed class ContextBuilder
 
         var sw = Stopwatch.StartNew();
 
-        Dictionary<string, object> contexts = [];
+        using var sb = StringBuilderPool.Get();
 
-        foreach (var provider in _providers.Where(provider => !provider.IsDisabled)) {
+        foreach (var provider in _providers.Where(provider => provider.IsAvailable)) {
             try {
                 var context = provider.Build();
                 if (context is null) {
@@ -72,28 +74,28 @@ public sealed class ContextBuilder
                 }
 
                 provider.Name.TryLocalize(out var contextName);
-                contexts[contextName] = context;
+
+                sb.AppendLine($"[{contextName}]");
+                sb.AppendLine(context.ToCompactJson());
+
                 EmMod.Debug<ContextBuilder>($"{provider.Name}\n{context.ToIndentedJson()}");
             } catch (Exception ex) {
-                EmMod.Warn<ContextBuilder>($"provider {provider.Name} failed");
-
-                if (haltOnError is not null && SafeErrorHandling(() => haltOnError(provider, ex))) {
-                    return [];
-                }
+                EmMod.Warn<ContextBuilder>($"provider {provider.Name} failed\n{ex}");
+                DebugThrow.Void(ex);
                 // noexcept
             }
         }
 
-        var lang = MOD.langs[EClass.core.config.lang];
+        var lang = MOD.langs[Lang.langCode];
         var data = new KernelArguments {
             ["system_prompt"] = SystemContext.Build(),
-            ["game_contexts"] = $"Current game state in JSON:\n{contexts.ToCompactJson()}",
+            ["game_contexts"] = $"Current game state in JSON:\n{sb}",
             ["language_code"] = $"{lang.name}({lang.name_en})",
             ["max_reactions"] = EmConfig.Scene.MaxReactions.Value,
         };
 
         sw.Stop();
-        EmMod.Debug<ContextBuilder>($"time spent: {sw.Elapsed.Milliseconds}ms");
+        EmMod.Debug<ContextBuilder>($"took {sw.Elapsed.Milliseconds}ms");
 
         return data;
     }
@@ -101,15 +103,5 @@ public sealed class ContextBuilder
     public static void ResetAllContexts()
     {
         SystemContext = null!;
-    }
-
-    private static bool SafeErrorHandling(Func<bool> errorHandler)
-    {
-        try {
-            return errorHandler();
-        } catch {
-            return false;
-            // noexcept
-        }
     }
 }

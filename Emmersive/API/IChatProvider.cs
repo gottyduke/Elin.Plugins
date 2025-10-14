@@ -3,6 +3,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+using YKF;
 
 namespace Emmersive.API;
 
@@ -21,4 +22,6 @@ public interface IChatProvider
     public void UpdateAvailability();
 
     public UniTask<ChatMessageContent> HandleRequest(Kernel kernel, ChatHistory context, CancellationToken token);
+
+    public void OnLayout(YKLayout layout);
 }

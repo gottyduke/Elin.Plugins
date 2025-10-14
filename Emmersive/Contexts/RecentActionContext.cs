@@ -1,40 +1,102 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cwl.API.Attributes;
-using Cwl.API.Processors;
 
 namespace Emmersive.Contexts;
 
 public class RecentActionContext : ContextProviderBase
 {
-    internal static readonly List<string> Session = [];
+    private const int BufSize = 1024;
+
+    internal static readonly List<(string actor, string text)> RecentActions = [];
+    private static int _indexSinceStart;
     public override string Name => "previous_action_log";
 
     public override object? Build()
     {
-        var logs = Session
-            .TakeLast(EmConfig.Context.RecentLogDepth.Value)
-            .ToArray();
+        List<string> actions;
+        var depth = EmConfig.Context.RecentLogDepth.Value;
+        var session = RecentActions.TakeLast(depth);
 
-        return logs.Length == 0
+        if (EmConfig.Context.RecentTalkOnly.Value) {
+            lock (RecentActions) {
+                actions = session
+                    .Select(tl => $"{tl.actor}: {tl.text}")
+                    .ToList();
+            }
+        } else {
+            var fullLog = EClass.game.log;
+            var lastId = fullLog.currentLogIndex - 1;
+            var dict = fullLog.dict;
+
+            IEnumerable<string> logs;
+            lock (dict) {
+                logs = Enumerable
+                    .Range(1, lastId)
+                    .Skip(Math.Max(_indexSinceStart, lastId - depth))
+                    .Select(i => dict[i].text);
+            }
+
+            actions = [];
+            var sanitizedSession = session.ToArray();
+
+            foreach (var log in logs) {
+                var sanitized = log;
+
+                if (sanitized.StartsWith('"') && sanitized.EndsWith('"') && sanitized.Length > 2) {
+                    sanitized = sanitized[1..^1];
+                }
+
+                foreach (var (actor, talk) in sanitizedSession) {
+                    if (sanitized != talk) {
+                        continue;
+                    }
+
+                    sanitized = $"{actor}: {talk}";
+                    break;
+                }
+
+                actions.Add(sanitized);
+            }
+        }
+
+        return actions.Count == 0
             ? null
-            : logs;
+            : actions;
     }
 
-    public static void Add(string entry)
+    public static void Add(string actor, string entry)
     {
-        if (Session.Count > 0) {
-            if (Session[^1] == entry) {
+        if (actor == EClass.pc.NameSimple) {
+            actor = "you".lang().ToTitleCase();
+        }
+
+        if (RecentActions.Count > 0) {
+            if (RecentActions[^1].actor == entry && RecentActions[^1].text == entry) {
                 return;
             }
         }
 
-        Session.Add(entry);
+        RecentActions.Add((actor, entry));
+
+        var trim = Math.Max(BufSize, EmConfig.Context.RecentLogDepth.Value * 2);
+        if (RecentActions.Count >= trim) {
+            TrimExcess(trim);
+        }
+    }
+
+    public static void TrimExcess(int bufSize)
+    {
+        RecentActions.RemoveRange(0, RecentActions.Count - bufSize);
     }
 
     [CwlPostLoad]
-    public static void ClearSession(GameIOProcessor.GameIOContext context)
+    public static void ClearSession()
     {
-        Session.Clear();
+        RecentActions.Clear();
+        lock (EClass.game.log) {
+            _indexSinceStart = EClass.game.log.currentLogIndex - 1;
+        }
     }
 }

@@ -7,37 +7,48 @@ namespace Emmersive;
 public record EmActivity : IDisposable
 {
     public static readonly List<EmActivity> Session = [];
-    private readonly Stopwatch _sw = Stopwatch.StartNew();
+    private readonly Stopwatch _sw;
+
+    public readonly Dictionary<string, object> Data = [];
 
     private EmActivity()
     {
+        _sw = Stopwatch.StartNew();
     }
 
     public static EmActivity? Current { get; private set; }
 
-    public TimeSpan Latency { get; private set; }
-    public int Token { get; set; }
     public DateTime RequestTime { get; private init; }
-    public required string ServiceId { get; init; }
+    public DateTime EndTime { get; private set; }
+    public int InputToken { get; set; }
+    public int OutputToken { get; set; }
+    public TimeSpan Latency { get; set; } = TimeSpan.Zero;
+    public required string ServiceName { get; init; }
 
     public void Dispose()
     {
-        if (Current is null) {
-            return;
+        if (Current != this) {
+            Current?.Dispose();
         }
 
-        Latency = _sw.Elapsed;
+        EndTime = DateTime.Now;
+
+        if (Latency == TimeSpan.Zero) {
+            Latency = _sw.Elapsed;
+        }
+
         Session.Add(this);
 
         Current = null;
 
-        EmMod.Debug<EmActivity>($"[{ServiceId}] {RequestTime:hh:mm:ss} - {Latency.TotalMilliseconds}ms - {Token}");
+        EmMod.Debug<EmActivity>(
+            $"[{ServiceName}] {RequestTime:hh:mm:ss} {Latency.TotalMilliseconds}ms {InputToken + OutputToken}");
     }
 
     public static EmActivity StartNew(string serviceId)
     {
         return Current = new() {
-            ServiceId = serviceId,
+            ServiceName = serviceId,
             RequestTime = DateTime.Now,
         };
     }

@@ -2,7 +2,7 @@ namespace Emmersive.API;
 
 public interface IContextProvider
 {
-    public bool IsDisabled { get; }
+    public bool IsAvailable { get; }
     public string Name { get; }
     public object? Build();
 }

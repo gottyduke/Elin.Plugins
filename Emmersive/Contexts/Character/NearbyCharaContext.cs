@@ -8,7 +8,7 @@ public class NearbyCharaContext(Chara focus) : ContextProviderBase
 {
     public override string Name => "nearby_characters";
 
-    protected override IDictionary<string, object>? BuildCore()
+    protected override IDictionary<string, object>? BuildInternal()
     {
         var charas = focus.Nearby;
         if (charas.Count == 0) {

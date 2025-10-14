@@ -6,7 +6,7 @@ public class EnvironmentContext : ContextProviderBase
 {
     public override string Name => "environment_data";
 
-    protected override IDictionary<string, object> BuildCore()
+    protected override IDictionary<string, object> BuildInternal()
     {
         var world = EClass.world;
 

@@ -1,18 +1,23 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Emmersive.API.Services.SceneDirector;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.Google;
+using YKF;
 
 namespace Emmersive.ChatProviders;
 
-public sealed class GoogleChatProvider(string apiKey) : ChatProviderBase
+public sealed class GoogleProvider(string apiKey) : ChatProviderBase
 {
     [field: AllowNull]
-    public override string Id => field ??= $"GoogleGemini#{ServiceCount}";
+    public override string Id
+    {
+        get => field ??= $"GoogleGemini#{ServiceCount}";
+        set;
+    }
 
     public override IReadOnlyList<string> Models => [
         "gemini-2.5-pro",
@@ -21,7 +26,14 @@ public sealed class GoogleChatProvider(string apiKey) : ChatProviderBase
 
     public override string CurrentModel { get; set; } = "gemini-2.5-flash";
 
-    public override PromptExecutionSettings ExecutionSettings { get; set; } = new GeminiPromptExecutionSettings();
+    public override PromptExecutionSettings ExecutionSettings { get; set; } = new GeminiPromptExecutionSettings {
+        ResponseSchema = SceneReaction.Schema,
+        ResponseMimeType = "application/json",
+    };
+
+    public override void OnLayout(YKLayout layout)
+    {
+    }
 
     protected override void Register(IKernelBuilder builder, string model)
     {
@@ -32,12 +44,15 @@ public sealed class GoogleChatProvider(string apiKey) : ChatProviderBase
     {
         var response = await base.HandleRequest(kernel, context, token);
 
-        // don't count the round trip
-        if (context.FirstOrDefault(c => c is { Metadata: GeminiMetadata })?.Metadata is not GeminiMetadata metadata) {
+        if (response is not GeminiChatMessageContent { Metadata: { } metadata } message) {
             return response;
         }
 
-        EmActivity.Current?.Token = metadata.TotalTokenCount;
+        var activity = EmActivity.Current;
+        if (activity is not null) {
+            activity.InputToken = metadata.PromptTokenCount;
+            activity.OutputToken = metadata.CandidatesTokenCount;
+        }
 
         return response;
     }

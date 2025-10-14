@@ -1,15 +1,20 @@
-using System;
+using UnityEngine;
 
 namespace Emmersive.API.Profiles;
 
-public class CharaProfile(int uid)
+public class CharaProfile(Chara chara)
 {
-    public Chara? GlobalChara => EClass.game.cards.Find(uid);
-    public DateTime LastReactionTime { get; set; } = DateTime.MinValue;
-    public int LastReactionTurn { get; set; } = int.MinValue;
+    public float LastReactionTime { get; set; } = -1f;
+    public int LastReactionTurn { get; set; } = -1;
     public string? ExtraData { get; set; } = null;
 
     public bool CanTalk =>
-        (DateTime.Now - LastReactionTime).TotalSeconds > EmConfig.Scene.SecondsCooldown.Value &&
-        GlobalChara!.turn - LastReactionTurn > EmConfig.Scene.TurnsCooldown.Value;
+        Time.unscaledTime - LastReactionTime > EmConfig.Scene.SecondsCooldown.Value &&
+        chara.turn - LastReactionTurn > EmConfig.Scene.TurnsCooldown.Value;
+
+    public void SetTalked()
+    {
+        LastReactionTime = Time.unscaledTime;
+        LastReactionTurn = chara.turn;
+    }
 }

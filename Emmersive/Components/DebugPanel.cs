@@ -1,4 +1,3 @@
-using Cwl.API.Attributes;
 using Cwl.Helper.Unity;
 
 namespace Emmersive.Components;
@@ -9,7 +8,6 @@ internal class DebugPanel
 
     private ProgressIndicator? _debugProgress;
 
-    [CwlContextMenu("Emmersive")]
     internal static void EnableDebugView()
     {
         _debugger ??= new();

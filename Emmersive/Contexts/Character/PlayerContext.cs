@@ -12,9 +12,9 @@ public class PlayerContext() : CharaContext(EClass.pc)
         base.Localize(data, Name);
     }
 
-    protected override IDictionary<string, object> BuildCore()
+    protected override IDictionary<string, object> BuildInternal()
     {
-        var data = base.BuildCore();
+        var data = base.BuildInternal();
         data["fame"] = EClass.player.fame;
         return data;
     }

@@ -71,4 +71,7 @@
                 SkipUnchangedFiles="true"
         />
     </Target>
+    <Target Name="RemoveDebugKeys" AfterTargets="CopyAssets" Condition="'$(Configuration)' == 'Release' OR '$(Configuration)' == 'ReleaseNightly'">
+        <Delete Files="OutputFolder/LangMod/EN/Emmersive/DebugKeys.json"/>
+    </Target>
 </Project>

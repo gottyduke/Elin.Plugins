@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
-using SwallowExceptions.Fody;
 using UnityEngine;
 
 namespace Emmersive;
@@ -24,6 +23,7 @@ internal sealed partial class EmMod
         Log($"[{typeof(T).Name}] {payload}");
     }
 
+    [Conditional("DEBUG")]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Debug(object? payload, [CallerMemberName] string caller = "")
     {
@@ -34,18 +34,17 @@ internal sealed partial class EmMod
         LogInternal($"[EMME][DEBUG] [{caller}] {payload}");
     }
 
+    [Conditional("DEBUG")]
     internal static void Debug<T>(object? payload, [CallerMemberName] string caller = "")
     {
         Debug($"[{typeof(T).Name}] {payload}", caller);
     }
 
-    [Conditional("DEBUG")]
     internal static void Trace<T>(object? payload, [CallerMemberName] string caller = "")
     {
         Debug($"[{typeof(T).Name}] {payload}", caller);
     }
 
-    [SwallowExceptions]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Warn(object? payload)
     {
@@ -79,7 +78,6 @@ internal sealed partial class EmMod
         }
     }
 
-    [SwallowExceptions]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Error(object? payload, [CallerMemberName] string caller = "")
     {
@@ -130,7 +128,6 @@ internal sealed partial class EmMod
         using var progress = ProgressIndicator.CreateProgressScoped(() => new(message));
     }
 
-    [SwallowExceptions]
     private static void LogInternal(object log)
     {
         UnityEngine.Debug.Log(log.RemoveTagColor());

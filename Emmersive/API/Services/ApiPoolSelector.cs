@@ -15,6 +15,27 @@ public sealed class ApiPoolSelector : IAIServiceSelector
     [field: AllowNull]
     public static ApiPoolSelector Instance => field ??= new();
 
+    public void AddService(IChatProvider provider)
+    {
+        _providers.Add(provider);
+        EmMod.Log<ApiPoolSelector>($"added {provider.Id}");
+    }
+
+    public void RemoveService(IChatProvider provider)
+    {
+        if (_providers.Remove(provider)) {
+            EmMod.Log<ApiPoolSelector>($"removed {provider.Id}");
+        }
+    }
+
+    public void ClearServices()
+    {
+        _providers.Clear();
+        EmMod.Log<ApiPoolSelector>("cleared services");
+    }
+
+#region AI Selector
+
     public bool TrySelectAIService<T>(Kernel kernel,
                                       KernelFunction function,
                                       KernelArguments arguments,
@@ -30,12 +51,6 @@ public sealed class ApiPoolSelector : IAIServiceSelector
         service = null;
         serviceSettings = null;
         return false;
-    }
-
-    public void Register(IKernelBuilder builder, IChatProvider provider)
-    {
-        _providers.Add(provider);
-        provider.Register(builder);
     }
 
     public bool TryGetNextAvailable([NotNullWhen(true)] out IChatProvider? next)
@@ -58,4 +73,6 @@ public sealed class ApiPoolSelector : IAIServiceSelector
         next = null;
         return false;
     }
+
+#endregion
 }

@@ -1,10 +1,11 @@
 using System.ComponentModel;
 using System.Text.Json.Serialization;
+using Cwl.Helper.Unity;
 using Microsoft.SemanticKernel;
 
 // ReSharper disable InconsistentNaming
 
-namespace Emmersive.API.Plugins.SceneDirector;
+namespace Emmersive.API.Services.SceneDirector;
 
 public partial class SceneDirector
 {
@@ -32,7 +33,8 @@ public partial class SceneDirector
             return;
         }
 
-        DeferAction(() => chara.ShowEmo((Emo)emote, duration), delay);
+
+        CoroutineHelper.Deferred(() => chara.ShowEmo((Emo)emote, duration), delay);
         EmMod.Debug<SceneDirector>($"{chara.Name} emotes (delay: {delay}): {emote}");
     }
 }

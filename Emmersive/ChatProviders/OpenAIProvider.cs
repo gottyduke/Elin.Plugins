@@ -1,24 +1,25 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
 using System.Threading;
-using Cwl.Helper.Exceptions;
 using Cysharp.Threading.Tasks;
-using Emmersive.API.Plugins.SceneDirector;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using OpenAI.Chat;
+using YKF;
 using ChatMessageContent = Microsoft.SemanticKernel.ChatMessageContent;
 
 namespace Emmersive.ChatProviders;
 
-internal class OpenAIProvider(string apiKey, string endPoint = "https://api.openai.com/v1", string alias = "OpenAI")
-    : ChatProviderBase
+internal class OpenAIProvider(string apiKey) : ChatProviderBase
 {
     [field: AllowNull]
-    public override string Id => field ??= $"{alias}#{ServiceCount}";
+    public override string Id
+    {
+        get => field ??= $"{Alias}#{ServiceCount}";
+        set;
+    }
 
     public override IReadOnlyList<string> Models => [
         "deepseek-chat",
@@ -41,38 +42,35 @@ internal class OpenAIProvider(string apiKey, string endPoint = "https://api.open
         },
     };
 
+    public string EndPoint { get; set; } = "https://api.openai.com/v1";
+    public string Alias { get; set; } = "OpenAI";
+
     protected override void Register(IKernelBuilder builder, string model)
     {
-        builder.AddOpenAIChatCompletion(CurrentModel, new Uri(endPoint), apiKey, serviceId: Id);
+        builder.AddOpenAIChatCompletion(CurrentModel, new Uri(EndPoint), apiKey, serviceId: Id);
     }
 
     public override async UniTask<ChatMessageContent> HandleRequest(Kernel kernel, ChatHistory context, CancellationToken token)
     {
         var response = await base.HandleRequest(kernel, context, token);
 
-        if (response is not OpenAIChatMessageContent { Content: { } content } message) {
+        if (response is not OpenAIChatMessageContent message) {
             return response;
         }
 
-        if (message.Metadata?.GetValueOrDefault("Usage") is ChatTokenUsage usage) {
-            EmActivity.Current?.Token = usage.TotalTokenCount;
-        }
-
-        SceneReaction[]? reactions;
-
-        try {
-            reactions = JsonSerializer.Deserialize<SceneReaction[]>(content);
-        } catch (Exception ex) {
-            return ThrowOrReturn.Return(ex, message);
-            // noexcept
-        }
-
-        var director = kernel.GetRequiredService<SceneDirector>();
-
-        foreach (var reaction in reactions ?? []) {
-            director.DoPopText(reaction.uid, reaction.text, reaction.duration, reaction.delay);
+        var activity = EmActivity.Current;
+        if (activity is not null) {
+            if (message.Metadata?.GetValueOrDefault("Usage") is ChatTokenUsage usage) {
+                activity.InputToken = usage.InputTokenCount;
+                activity.OutputToken = usage.OutputTokenCount;
+            }
         }
 
         return message;
+    }
+
+    public override void OnLayout(YKLayout layout)
+    {
+        base.OnLayout(layout);
     }
 }
