@@ -9,6 +9,7 @@ public static class DebugThrow
     public static void Void(Exception ex)
     {
 #if DEBUG
+        ExceptionProfile.GetFromStackTrace(ref ex).CreateAndPop();
         throw ex;
 #endif
     }
@@ -16,6 +17,7 @@ public static class DebugThrow
     public static T Return<T>(Exception ex, T value)
     {
 #if DEBUG
+        ExceptionProfile.GetFromStackTrace(ref ex).CreateAndPop();
         throw ex;
 #else
         return value;

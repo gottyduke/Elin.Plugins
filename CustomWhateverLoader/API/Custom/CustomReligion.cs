@@ -81,12 +81,8 @@ public class CustomReligion(string religionId) : Religion, IChunkable
 
     [Time]
     [CwlPostSave]
-    internal static void SaveCustomReligion(GameIOProcessor.GameIOContext? context)
+    internal static void SaveCustomReligion(GameIOProcessor.GameIOContext context)
     {
-        if (context is null) {
-            return;
-        }
-
         var religions = game.religions.list
             .OfType<CustomReligion>()
             .ToDictionary(r => r.id);
@@ -95,12 +91,8 @@ public class CustomReligion(string religionId) : Religion, IChunkable
 
     [Time]
     [CwlPostLoad]
-    internal static void LoadCustomReligion(GameIOProcessor.GameIOContext? context)
+    internal static void LoadCustomReligion(GameIOProcessor.GameIOContext context)
     {
-        if (context is null) {
-            return;
-        }
-
         if (context.Load<Dictionary<string, CustomReligion>>(out var religions, "custom_religions")) {
             foreach (var custom in game.religions.list.OfType<CustomReligion>()) {
                 if (!religions.TryGetValue(custom.id, out var loaded)) {

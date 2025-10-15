@@ -107,7 +107,11 @@ public class GameIOProcessor
             _ => throw new NotImplementedException(io.GetType().Name),
         };
 
-        Add(ctx => method.FastInvokeStatic(ctx!), save, post);
+        if (method.GetParameters().Length == 0) {
+            Add(_ => method.FastInvokeStatic(), save, post);
+        } else {
+            Add(ctx => method.FastInvokeStatic(ctx!), save, post);
+        }
 
         var state = post ? "post" : "pre";
         var type = save ? "save" : "load";
@@ -123,7 +127,6 @@ public class GameIOProcessor
         private const string ChunkExt = ".chunk";
         private const string BinaryChunkExt = ".chunkb";
         private const string CompressedChunkExt = ".chunkc";
-        private readonly DirectoryInfo _chunkDir;
 
         private readonly string _path;
 
@@ -134,14 +137,16 @@ public class GameIOProcessor
             }
 
             _path = path;
-            _chunkDir = new(Path.Combine(path, Storage));
 
-            _chunkDir.Create();
+            ChunkDir = new(Path.Combine(path, Storage));
+            ChunkDir.Create();
         }
+
+        public DirectoryInfo ChunkDir { get; }
 
         public FileInfo? GetChunkFile(string chunkName)
         {
-            return _chunkDir.GetFiles($"{chunkName}.*")
+            return ChunkDir.GetFiles($"{chunkName}.*")
                 .OrderByDescending(f => f.LastWriteTime)
                 .FirstOrDefault();
         }
@@ -174,7 +179,7 @@ public class GameIOProcessor
         /// <param name="chunkName">unique identifier, omit/null will use full qualified type name</param>
         public void SaveUncompressed<T>(T data, string? chunkName = null)
         {
-            SaveImpl(data, chunkName, ChunkExt, ConfigCereal.WriteData);
+            SaveImpl(data, chunkName, ChunkExt, ConfigCereal.WriteConfig);
         }
 
         /// <summary>
@@ -190,10 +195,7 @@ public class GameIOProcessor
             var type = typeof(T);
             chunkName ??= $"{type.Assembly.GetName().Name}.{type.FullName ?? type.Name}";
 
-            if (chunkName.IsInvalidPath()) {
-                CwlMod.Warn<GameIOContext>($"invalid chunk {chunkName}");
-                return false;
-            }
+            chunkName = chunkName.SanitizeFileName();
 
             var file = GetChunkFile(chunkName);
             if (file is null) {
@@ -228,7 +230,7 @@ public class GameIOProcessor
         public bool Remove(string chunkName)
         {
             try {
-                _chunkDir.GetFiles($"{chunkName}.*")
+                ChunkDir.GetFiles($"{chunkName}.*")
                     .Do(f => f.Delete());
 
                 return true;
@@ -245,7 +247,7 @@ public class GameIOProcessor
         public void Clear()
         {
             try {
-                _chunkDir.Delete(true);
+                ChunkDir.Delete(true);
             } catch {
                 // noexcept
             }
@@ -264,12 +266,9 @@ public class GameIOProcessor
 
             chunkName ??= $"{type.Assembly.GetName().Name}.{type.FullName ?? type.Name}";
 
-            if (chunkName.IsInvalidPath()) {
-                CwlMod.Warn<GameIOContext>($"invalid chunk {chunkName}");
-                return;
-            }
+            chunkName = chunkName.SanitizeFileName();
 
-            var file = Path.Combine(_chunkDir.FullName, $"{chunkName}{ext}");
+            var file = Path.Combine(ChunkDir.FullName, $"{chunkName}{ext}");
             writer(data, file);
 
             CwlMod.Log<GameIOContext>($"save {file.ShortPath()}");

@@ -24,6 +24,11 @@ public class ConfigCereal
         WriteDataImpl(data, path, CompactLevel.TextIndent);
     }
 
+    public static void WriteConfig<T>(T data, string path, JsonSerializerSettings settings)
+    {
+        WriteDataImpl(data, path, CompactLevel.TextIndent, settings);
+    }
+
     public static void WriteData<T>(T data, string path)
     {
         WriteDataImpl(data, path, CompactLevel.TextFlat);
@@ -39,31 +44,31 @@ public class ConfigCereal
         WriteDataImpl(data, path, CompactLevel.Binary);
     }
 
-    public static bool ReadConfig<T>(string? path, [NotNullWhen(true)] out T? inferred)
+    public static bool ReadConfig<T>(string path, [NotNullWhen(true)] out T? inferred)
     {
         return ReadDataImpl(path, out inferred, CompactLevel.TextIndent);
     }
 
-    public static bool ReadData<T>(string? path, [NotNullWhen(true)] out T? inferred)
+    public static bool ReadData<T>(string path, [NotNullWhen(true)] out T? inferred)
     {
         return ReadDataImpl(path, out inferred, CompactLevel.TextFlat);
     }
 
-    public static bool ReadDataCompressed<T>(string? path, [NotNullWhen(true)] out T? inferred)
+    public static bool ReadDataCompressed<T>(string path, [NotNullWhen(true)] out T? inferred)
     {
         return ReadDataImpl(path, out inferred, CompactLevel.Compress);
     }
 
-    public static bool ReadDataBinary<T>(string? path, [NotNullWhen(true)] out T? inferred)
+    public static bool ReadDataBinary<T>(string path, [NotNullWhen(true)] out T? inferred)
     {
         return ReadDataImpl(path, out inferred, CompactLevel.Binary);
     }
 
-    private static bool ReadDataImpl<T>(string? path, [NotNullWhen(true)] out T? inferred, CompactLevel compact)
+    private static bool ReadDataImpl<T>(string path, [NotNullWhen(true)] out T? inferred, CompactLevel compact)
     {
         try {
             if (File.Exists(path)) {
-                using var fs = File.Open(path!, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                using var fs = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 var js = JsonSerializer.CreateDefault(Settings);
 
                 switch (compact) {
@@ -100,13 +105,13 @@ public class ConfigCereal
         return false;
     }
 
-    private static void WriteDataImpl<T>(T data, string path, CompactLevel compact)
+    private static void WriteDataImpl<T>(T data, string path, CompactLevel compact, JsonSerializerSettings? settings = null)
     {
         try {
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
 
             using var fs = new FileStream(path, FileMode.Create);
-            var js = JsonSerializer.CreateDefault(Settings);
+            var js = JsonSerializer.CreateDefault(settings ?? Settings);
             js.Formatting = compact is CompactLevel.TextIndent ? Formatting.Indented : Formatting.None;
 
             switch (compact) {

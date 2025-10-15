@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cwl.API.Attributes;
-using Cwl.API.Processors;
 using Cwl.Helper.Extensions;
 using Cwl.LangMod;
 using Cwl.Patches;
@@ -68,7 +67,7 @@ public class CustomElement : Element
     // https://github.com/105gun/ElinInduceVomiting/blob/master/ElementMissingWorkAround.cs
     [Time]
     [CwlPreSave]
-    private static void PurgeBeforeSave(GameIOProcessor.GameIOContext context)
+    private static void PurgeBeforeSave()
     {
         if (core?.game?.player?.currentHotItem is not HotItemAct act ||
             Managed.Keys.All(r => act.id != r)) {
@@ -82,7 +81,7 @@ public class CustomElement : Element
 
     [Time]
     [CwlPostSave]
-    private static void RestoreAfterSave(GameIOProcessor.GameIOContext context)
+    private static void RestoreAfterSave()
     {
         if (core?.game?.player?.chara is null ||
             _held is null) {

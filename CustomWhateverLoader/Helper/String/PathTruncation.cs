@@ -7,7 +7,7 @@ namespace Cwl.Helper.String;
 public static class PathTruncation
 {
     private static readonly char[] _invalidPathChars = Path.GetInvalidPathChars();
-    public static ReadOnlySpan<char> InvalidPathChars => _invalidPathChars;
+    private static readonly char[] _invalidFileChars = Path.GetInvalidFileNameChars();
     public static IEqualityComparer<string> PathComparer { get; } = new PathStringComparer();
 
     extension(string path)
@@ -19,7 +19,34 @@ public static class PathTruncation
 
         public bool IsInvalidPath()
         {
-            return path.IndexOfAny(InvalidPathChars) != -1;
+            return path.IndexOfAny(_invalidPathChars) != -1;
+        }
+
+        public bool IsInvalidFileName()
+        {
+            return path.IndexOfAny(_invalidFileChars) != -1;
+        }
+
+        public string SanitizePath(char replacement = '_')
+        {
+            using var sb = StringBuilderPool.Get();
+
+            foreach (var c in path) {
+                sb.Append(_invalidPathChars.IndexOf(c) != -1 ? replacement : c);
+            }
+
+            return sb.ToString();
+        }
+
+        public string SanitizeFileName(char replacement = '_')
+        {
+            using var sb = StringBuilderPool.Get();
+
+            foreach (var c in path) {
+                sb.Append(_invalidFileChars.IndexOf(c) != -1 ? replacement : c);
+            }
+
+            return sb.ToString();
         }
 
         public string ShortPath()
