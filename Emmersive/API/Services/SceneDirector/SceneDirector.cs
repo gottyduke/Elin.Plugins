@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Emmersive.API.Plugins;
 using Emmersive.Components;
 using Newtonsoft.Json;
@@ -52,9 +53,16 @@ public partial class SceneDirector : EClass
         // openai schema output
         try {
             var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(content);
-            if (dict is not null && dict.TryGetValue("items", out var items)) {
-                EmMod.Debug<SceneReaction>("json_schema mode");
-                return JsonConvert.DeserializeObject<SceneReaction[]>(JsonConvert.SerializeObject(items));
+            if (dict is not null) {
+                if (dict.TryGetValue("items", out var items)) {
+                    EmMod.Debug<SceneReaction>("json_schema mode");
+                    return JsonConvert.DeserializeObject<SceneReaction[]>(JsonConvert.SerializeObject(items));
+                }
+
+                if (dict.FirstOrDefault() is var firstCollection) {
+                    EmMod.Debug<SceneReaction>("json_schema mode - forward");
+                    return JsonConvert.DeserializeObject<SceneReaction[]>(JsonConvert.SerializeObject(firstCollection));
+                }
             }
         } catch {
             // noexcept
@@ -63,7 +71,7 @@ public partial class SceneDirector : EClass
         // single item output, some wild models do this
         try {
             var single = JsonConvert.DeserializeObject<SceneReaction>(content);
-            if (single != null) {
+            if (single is not null) {
                 EmMod.Debug<SceneReaction>("single item json");
                 return [single];
             }
