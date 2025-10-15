@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using Cwl.Helper.FileUtil;
+using Cwl.Helper.String;
 using Cwl.LangMod;
 using Emmersive.API;
 using Newtonsoft.Json;
@@ -60,16 +60,34 @@ public static class RequestParamHelper
                 provider.SaveProviderParam();
             }
 
+            // TODO: use CWL version after updating
+            //OpenFileOrPath.Run(path);
+
+            path = path.NormalizePath();
             try {
-                Util.Run(path);
+                Process.Start(path);
             } catch {
-                EmMod.Popup<ResourceFetch>("em_ui_failed_shellex".Loc());
+                EmMod.Popup<OpenFileOrPath>("em_ui_failed_shellex".Loc());
+
+                var proton = !"PROTON_VERSION".EnvVar.IsEmpty() ||
+                             !"STEAM_COMPAT_DATA_PATH".EnvVar.IsEmpty();
 
                 try {
-                    Process.Start("notepad.exe", path);
-                } catch (Exception ex) {
-                    EmMod.Popup<ResourceFetch>("em_ui_failed_shellex".Loc(path, ex.Message));
-                    Util.Run(Path.GetDirectoryName(path));
+                    if (proton) {
+                        Process.Start("xdg-open", $"\"{path}\"");
+                    } else {
+                        Process.Start("notepad.exe", path);
+                    }
+                } catch {
+                    try {
+                        if (proton) {
+                            Process.Start("xdg-open", $"\"{path}\"");
+                        } else {
+                            Process.Start("notepad.exe", path);
+                        }
+                    } catch {
+                        // noexcept
+                    }
                     // noexcept
                 }
                 // noexcept

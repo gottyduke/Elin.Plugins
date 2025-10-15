@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Cwl.LangMod;
 using Emmersive.API.Plugins;
 using Emmersive.Components;
 using Newtonsoft.Json;
@@ -24,7 +25,7 @@ public partial class SceneDirector : EClass
     {
         var reactions = TryParseReactions(content);
         if (reactions is not { Length: > 0 }) {
-            EmMod.Warn<SceneDirector>($"failed to parse scene scripts\n{content}");
+            EmMod.Warn<SceneDirector>("em_ui_scene_parse_error".Loc(content));
             return;
         }
 
@@ -39,6 +40,10 @@ public partial class SceneDirector : EClass
 
     private SceneReaction[]? TryParseReactions(string content)
     {
+        if (content.IsEmpty()) {
+            return null;
+        }
+
         // json_object mode, straight forward
         try {
             var array = JsonConvert.DeserializeObject<SceneReaction[]>(content);
@@ -60,7 +65,7 @@ public partial class SceneDirector : EClass
                 }
 
                 if (dict.FirstOrDefault() is var firstCollection) {
-                    EmMod.Debug<SceneReaction>("json_schema mode - forward");
+                    EmMod.Debug<SceneReaction>("json_schema_forward mode");
                     return JsonConvert.DeserializeObject<SceneReaction[]>(JsonConvert.SerializeObject(firstCollection));
                 }
             }
@@ -72,7 +77,7 @@ public partial class SceneDirector : EClass
         try {
             var single = JsonConvert.DeserializeObject<SceneReaction>(content);
             if (single is not null) {
-                EmMod.Debug<SceneReaction>("single item json");
+                EmMod.Debug<SceneReaction>("json_single_item mode");
                 return [single];
             }
         } catch {

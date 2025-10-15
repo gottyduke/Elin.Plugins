@@ -118,7 +118,7 @@ internal sealed partial class EmMod
         }
 
         Log<T>(message);
-        using var progress = ProgressIndicator.CreateProgressScoped(() => new(message));
+        using var progress = ProgressIndicator.CreateProgressScoped(() => new(message), 2.5f);
     }
 
     internal static void Popup<T>(string message)

@@ -17,5 +17,6 @@ public static class ProfileHelper
     extension(Chara chara)
     {
         public CharaProfile Profile => _profiles.GetOrAdd(chara.uid, _ => new(chara));
+        public string UnifiedId => chara.IsPC ? "player" : chara.id;
     }
 }

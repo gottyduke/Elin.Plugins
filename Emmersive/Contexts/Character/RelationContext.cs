@@ -33,7 +33,7 @@ public class RelationContext(IReadOnlyList<Chara> charas) : ContextProviderBase
             return null;
         }
 
-        var charaIds = charas.Select(c => c.id);
+        var charaIds = charas.Select(c => c.UnifiedId);
         var relationKeys = BuildAllRelationKeys(charaIds).ToArray();
         if (relationKeys.Length == 0) {
             return null;

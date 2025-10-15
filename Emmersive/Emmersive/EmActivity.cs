@@ -143,8 +143,8 @@ public record EmActivity : IDisposable
         public long TokensOutput { get; init; }
         public int TokensLastHour { get; init; }
         public long TokensTotal => TokensInput + TokensOutput;
-
         public double TokensPerMin => TotalLatencyMin > 0 ? TokensTotal / TotalLatencyMin : 0;
+        public double TokensPerRequest => RequestTotal > 0 ? (double)TokensTotal / RequestTotal : 0;
 
         public double TotalLatencySec { get; init; }
         public double TotalLatencyMin { get; init; }

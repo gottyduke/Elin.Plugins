@@ -10,9 +10,7 @@ public class BackgroundContext(Chara chara) : ContextProviderBase
 
     public override object? Build()
     {
-        var id = chara.IsPC ? "player" : chara.id;
-
-        var resourceKey = $"Emmersive/Characters/{id}.txt";
+        var resourceKey = $"Emmersive/Characters/{chara.UnifiedId}.txt";
 
         var background = ResourceFetch.GetActiveResource(resourceKey);
         if (background == NotProvided) {

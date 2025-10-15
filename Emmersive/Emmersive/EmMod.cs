@@ -6,6 +6,7 @@ using Emmersive.Components;
 using Emmersive.Helper;
 using HarmonyLib;
 using ReflexCLI;
+using ReflexCLI.Attributes;
 
 namespace Emmersive;
 
@@ -13,9 +14,10 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.emmersive";
     internal const string Name = "Elin with AI (Beta)";
-    internal const string Version = "0.9.0";
+    internal const string Version = "0.9.2";
 }
 
+[ConsoleCommandClassCustomizer("em")]
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
 internal sealed partial class EmMod : BaseUnityPlugin
 {
@@ -52,7 +54,14 @@ internal sealed partial class EmMod : BaseUnityPlugin
     private void OnApplicationQuit()
     {
         ApiPoolSelector.Instance.SaveServices();
+        ApiPoolSelector.Instance.CleanServiceParams();
         Localizer.DumpUnlocalized();
         ExecutionAnalysis.DumpSessionActivities();
+    }
+
+    [ConsoleCommand("reload_cfg")]
+    private static void LoadConfig()
+    {
+        EmConfig.Bind(Instance.Config);
     }
 }

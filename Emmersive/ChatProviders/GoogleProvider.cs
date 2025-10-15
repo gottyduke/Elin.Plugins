@@ -14,6 +14,14 @@ namespace Emmersive.ChatProviders;
 
 public sealed class GoogleProvider(string apiKey) : ChatProviderBase(apiKey)
 {
+    private static readonly JObject _disableThinking = JObject.FromObject(new {
+        thinkingBudget = 0,
+    });
+
+    private static readonly JObject _disableThinkingPro = JObject.FromObject(new {
+        thinkingBudget = 128,
+    });
+
     [field: AllowNull]
     public override string Id
     {
@@ -24,9 +32,7 @@ public sealed class GoogleProvider(string apiKey) : ChatProviderBase(apiKey)
     public override string CurrentModel { get; set; } = "gemini-2.5-flash";
 
     public override IDictionary<string, object> RequestParams { get; set; } = new Dictionary<string, object> {
-        ["thinkingConfig"] = JObject.FromObject(new {
-            thinkingBudget = 0,
-        }),
+        ["thinkingConfig"] = _disableThinking,
     };
 
     [JsonIgnore]
@@ -59,15 +65,9 @@ public sealed class GoogleProvider(string apiKey) : ChatProviderBase(apiKey)
         }
 
         // TODO: maybe change this in the future, for now, keep it as disabled
-        if (CurrentModel == "gemini-2.5-pro") {
-            RequestParams["thinkingConfig"] = JObject.FromObject(new {
-                thinkingBudget = 128,
-            });
-        } else {
-            RequestParams["thinkingConfig"] = JObject.FromObject(new {
-                thinkingBudget = 0,
-            });
-        }
+        RequestParams["thinkingConfig"] = CurrentModel == "gemini-2.5-pro"
+            ? _disableThinkingPro
+            : _disableThinking;
 
         base.MergeExtensionData(generationConfig);
     }

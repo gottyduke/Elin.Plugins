@@ -85,15 +85,15 @@ public abstract partial class ChatProviderBase : ILayoutProvider
         left.TopicDomain("em_ui_requests_total", $"{summary.RequestTotal:N0}");
         left.TopicDomain("em_ui_requests_success", $"{summary.RequestSuccess:N0}");
         left.TopicDomain("em_ui_requests_failed", $"{summary.RequestFailure:N0}");
-        left.TopicDomain("em_ui_requests_rph", $"{summary.RequestLastHour:N0}");
         left.TopicDomain("em_ui_requests_rpm", $"{summary.RequestSuccessPerMin:N0}");
+        left.TopicDomain("em_ui_avg_latency", $"{summary.AverageLatency:N1}s");
 
         var right = card.Vertical();
         right.TopicDomain("em_ui_tokens_total", $"{summary.TokensTotal:N0}");
         right.TopicDomain("em_ui_tokens_input", $"{summary.TokensInput:N0}");
-        right.TopicDomain("em_ui_avg_latency", $"{summary.AverageLatency:N1}s");
         right.TopicDomain("em_ui_tokens_tph", $"{summary.TokensLastHour:N0}");
-        right.TopicDomain("em_ui_tokens_tpm", $"{summary.TokensPerMin:N1}");
+        right.TopicDomain("em_ui_tokens_tpm", $"{summary.TokensPerMin:N0}");
+        right.TopicDomain("em_ui_tokens_tpr", $"{summary.TokensPerRequest:N0}");
     }
 
     protected abstract void OnLayoutInternal(YKLayout card);

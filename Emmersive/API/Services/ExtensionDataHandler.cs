@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Cwl.Helper.Exceptions;
+using Emmersive.Components;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -30,6 +31,7 @@ public class ExtensionDataHandler()
 
         // merge into params
         var json = await request.Content.ReadAsStringAsync();
+        var finalized = "";
         try {
             var root = JObject.Parse(json);
 
@@ -45,8 +47,8 @@ public class ExtensionDataHandler()
 
             provider.MergeExtensionData(dict);
 
-            var merged = JsonConvert.SerializeObject(dict, Formatting.None);
-            request.Content = new StringContent(merged, Encoding.UTF8, "application/json");
+            finalized = JsonConvert.SerializeObject(dict, Formatting.None);
+            request.Content = new StringContent(finalized, Encoding.UTF8, "application/json");
         } catch (Exception ex) {
             EmMod.Warn<ExtensionDataHandler>($"failed to merge ExtensionData into request\n{ex}");
             DebugThrow.Void(ex);
@@ -55,6 +57,11 @@ public class ExtensionDataHandler()
 
         request.Headers.Remove("Semantic-Kernel");
         request.Headers.Remove("User-Agent");
+
+        if (EmScheduler.Mode == EmScheduler.ScheduleMode.DryRun) {
+            EmMod.Log<EmScheduler>(finalized);
+            throw new OperationCanceledException();
+        }
 
         return await base.SendAsync(request, cancellationToken);
     }
