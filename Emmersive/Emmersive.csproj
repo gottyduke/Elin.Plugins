@@ -23,12 +23,14 @@
     </ItemGroup>
     <ItemGroup>
         <Reference Include="CustomWhateverLoader">
-            <HintPath>$(SteamContentPath)\2135150\3370512305\CustomWhateverLoader.dll</HintPath>
-            <HintPath>$(SteamContentPath)\2135150\3544010094\CustomWhateverLoader.dll</HintPath>
-            <HintPath>$(ElinGamePath)\Package\Mod_CustomWhateverLoader\CustomWhateverLoader.dll</HintPath>
+            <HintPath Condition="Exists('$(SteamContentPath)\2135150\3370512305')">$(SteamContentPath)\2135150\3370512305\CustomWhateverLoader.dll</HintPath>
+            <HintPath Condition="Exists('$(SteamContentPath)\2135150\3544010094')">$(SteamContentPath)\2135150\3544010094\CustomWhateverLoader.dll</HintPath>
+            <HintPath Condition="Exists('$(ElinGamePath)\Package\Mod_CustomWhateverLoader')">$(ElinGamePath)\Package\Mod_CustomWhateverLoader\CustomWhateverLoader.dll</HintPath>
             <Private>false</Private>
         </Reference>
-        <Reference Include="$(SteamContentPath)\2135150\3400020753\YKFramework.dll">
+        <Reference Include="YKFramework">
+            <HintPath Condition="Exists('$(ElinGamePath)\2135150\3400020753')">$(ElinGamePath)\2135150\3400020753\YKFramework.dll</HintPath>
+            <HintPath Condition="Exists('$(SteamContentPath)\2135150\3400020753')">$(SteamContentPath)\2135150\3400020753\YKFramework.dll</HintPath>
             <Private>false</Private>
         </Reference>
         <Reference Include="$(ElinGamePath)\Elin_Data\Managed\System.Net.Http.dll">

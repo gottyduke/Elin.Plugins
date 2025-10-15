@@ -61,6 +61,7 @@ jobs:
         shell: pwsh
         run: |
           $config = '${{ matrix.version }}' -eq 'stable' ? 'Debug' : 'DebugNightly'
+          dotnet build ${{ github.workspace }}\CustomWhateverLoader\CustomWhateverLoader.csproj -o ${{ github.workspace }}\${{ matrix.version }}\Package\Mod_CustomWhateverLoader -c $config --no-restore
           dotnet build ${{ github.workspace }}\Emmersive\Emmersive.csproj -o ${{ github.workspace }}\out\${{ matrix.version }} -c $config --no-restore
 
           $dllPath = Join-Path -Path "${{ github.workspace }}\out\${{ matrix.version }}" -ChildPath "Emmersive.dll"
