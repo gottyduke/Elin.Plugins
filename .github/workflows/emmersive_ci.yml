@@ -1,9 +1,9 @@
-name: Custom Whatever Loader CI Deploy
+name: Emmersive Elin CI Deploy
 
 on:
   push:
     branches: ["*"]
-    paths: ["CustomWhateverLoader/**"]
+    paths: ["Emmersive/**"]
   pull_request:
   workflow_dispatch:
 
@@ -19,8 +19,6 @@ jobs:
     strategy:
       matrix:
         version: [stable, nightly]
-    env:
-      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
     steps:
       - name: Checkout Code
@@ -29,8 +27,8 @@ jobs:
           fetch-depth: 0
           sparse-checkout: |
             CustomWhateverLoader/
+            Emmersive/
             Directory.Build.props
-            global.json
           sparse-checkout-cone-mode: false
 
       - name: Checkout Deps
@@ -46,10 +44,14 @@ jobs:
         with:
           global-json-file: ${{ github.workspace }}\global.json
           cache: true
-          cache-dependency-path: ${{ github.workspace }}\CustomWhateverLoader\packages.lock.json
+          cache-dependency-path: |
+            ${{ github.workspace }}\CustomWhateverLoader\packages.lock.json,
+            ${{ github.workspace }}\Emmersive\packages.lock.json,
 
       - name: Setup Packages
-        run: dotnet restore ${{ github.workspace }}\CustomWhateverLoader\ --locked-mode
+        run: |
+          dotnet restore ${{ github.workspace }}\CustomWhateverLoader\ --locked-mode
+          dotnet restore ${{ github.workspace }}\Emmersive\ --locked-mode
 
       - name: Build
         id: build
@@ -58,14 +60,14 @@ jobs:
         shell: pwsh
         run: |
           $config = '${{ matrix.version }}' -eq 'stable' ? 'Debug' : 'DebugNightly'
-          dotnet build ${{ github.workspace }}\CustomWhateverLoader\CustomWhateverLoader.csproj -o ${{ github.workspace }}\out\${{ matrix.version }} -c $config --no-restore
+          dotnet build ${{ github.workspace }}\Emmersive\Emmersive.csproj -o ${{ github.workspace }}\out\${{ matrix.version }} -c $config --no-restore
 
-          $dllPath = Join-Path -Path "${{ github.workspace }}\out\${{ matrix.version }}" -ChildPath "CustomWhateverLoader.dll"
+          $dllPath = Join-Path -Path "${{ github.workspace }}\out\${{ matrix.version }}" -ChildPath "Emmersive.dll"
           $fileVersion = (Get-Item -Path $dllPath).VersionInfo.FileVersion
           echo "file_version=$fileVersion" >> $env:GITHUB_OUTPUT
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: cwl-ci-builds-${{ steps.build.outputs.file_version }}-${{ matrix.version }}
+          name: emmersive-ci-builds-${{ steps.build.outputs.file_version }}-${{ matrix.version }}
           path: ${{ github.workspace }}\out\${{ matrix.version }}
