@@ -7,6 +7,7 @@ using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.Google;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using YKF;
 
 namespace Emmersive.ChatProviders;
@@ -21,7 +22,12 @@ public sealed class GoogleProvider(string apiKey) : ChatProviderBase(apiKey)
     }
 
     public override string CurrentModel { get; set; } = "gemini-2.5-flash";
-    public override IDictionary<string, object> RequestParams { get; set; } = new Dictionary<string, object>();
+
+    public override IDictionary<string, object> RequestParams { get; set; } = new Dictionary<string, object> {
+        ["thinkingConfig"] = JObject.FromObject(new {
+            thinkingBudget = 0,
+        }),
+    };
 
     [JsonIgnore]
     public override PromptExecutionSettings ExecutionSettings { get; set; } = new GeminiPromptExecutionSettings {
@@ -47,10 +53,18 @@ public sealed class GoogleProvider(string apiKey) : ChatProviderBase(apiKey)
 
     public override void MergeExtensionData(IDictionary<string, object> data)
     {
-        if (data.TryGetValue("generationConfig", out var geminiRequest) &&
-            geminiRequest is Dictionary<string, object> generationConfig) {
-            base.MergeExtensionData(generationConfig);
+        if (!data.TryGetValue("generationConfig", out var geminiRequest) ||
+            geminiRequest is not Dictionary<string, object> generationConfig) {
+            return;
         }
+
+        if (CurrentModel == "gemini-2.5-pro") {
+            RequestParams["thinkingConfig"] = JObject.FromObject(new {
+                thinkingBudget = 128,
+            });
+        }
+
+        base.MergeExtensionData(generationConfig);
     }
 
     protected override void OnLayoutInternal(YKLayout card)
