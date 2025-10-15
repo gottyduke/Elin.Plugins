@@ -44,7 +44,8 @@ public class ZoneContext(Zone zone) : ContextProviderBase
             data["in_room"] = room.Name;
         }
 
-        var background = ResourceFetch.GetActiveResource($"Emmersive/Zones/{zone.ZoneFullName}.txt");
+        var background = ResourceFetch.GetActiveResource($"Emmersive/Zones/{zone.ZoneFullName}.txt")
+            .IsEmpty(ResourceFetch.GetActiveResource($"Emmersive/Zones/Zone_{zone.id}.txt"));
         if (!background.IsEmpty()) {
             data["background"] = background;
         }

@@ -9,7 +9,6 @@ using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OpenAI.Chat;
 using YKF;
 using ChatMessageContent = Microsoft.SemanticKernel.ChatMessageContent;

@@ -23,7 +23,6 @@ internal sealed partial class EmMod
         Log($"[{typeof(T).Name}] {payload}");
     }
 
-    [Conditional("DEBUG")]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Debug(object? payload, [CallerMemberName] string caller = "")
     {
@@ -34,7 +33,6 @@ internal sealed partial class EmMod
         LogInternal($"[EMME][DEBUG] [{caller}] {payload}");
     }
 
-    [Conditional("DEBUG")]
     internal static void Debug<T>(object? payload, [CallerMemberName] string caller = "")
     {
         Debug($"[{typeof(T).Name}] {payload}", caller);
@@ -112,6 +110,7 @@ internal sealed partial class EmMod
         }
     }
 
+    [Conditional("DEBUG")]
     internal static void DebugPopup<T>(string message)
     {
         if (!EmConfig.Policy.Verbose.Value) {

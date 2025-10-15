@@ -71,6 +71,8 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionMerger
 
     public virtual async UniTask<ChatMessageContent> HandleRequest(Kernel kernel, ChatHistory context, CancellationToken token)
     {
+        EmActivity.Current?.Status = EmActivity.StatusType.InProgress;
+
         var service = kernel.GetRequiredService<IChatCompletionService>(Id);
         return await service.GetChatMessageContentAsync(context, ExecutionSettings, kernel, token)
             .ConfigureAwait(false);

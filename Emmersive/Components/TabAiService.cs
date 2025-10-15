@@ -4,6 +4,7 @@ using Cwl.Helper.FileUtil;
 using Emmersive.API;
 using Emmersive.API.Services;
 using Emmersive.ChatProviders;
+using Emmersive.Contexts;
 using Emmersive.Helper;
 using UnityEngine;
 using UnityEngine.UI;
@@ -81,7 +82,10 @@ internal class TabAiService : TabEmmersiveBase
             .WithSpace(10);
         btnGroup.Layout.childForceExpandWidth = true;
 
-        btnGroup.Button("em_ui_reload_prompts".lang(), ResourceFetch.ClearActiveResources);
+        btnGroup.Button("em_ui_reload_prompts".lang(), () => {
+            ResourceFetch.ClearActiveResources();
+            RelationContext.Clear();
+        });
 
         btnGroup.Button("em_ui_test_generation".lang(), () => {
             LayerEmmersivePanel.Instance!.OnLayoutConfirm();

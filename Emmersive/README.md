@@ -50,6 +50,8 @@ Emmersive(Elin with AI) requires the AI service with **function-calling**(or **t
 
 Your API keys will be encrypted locally your computer, not sent anywhere.
 
+By adding multiple AI services, Emmersive(Elin with AI) will pool them on request failure and enable auto-retry seamlessly.
+
 ### Google(Free!)
 
 Head to [Google AI Studio](https://aistudio.google.com/projects), create a project. If you are using free tier, I recommend making 3 projects (rate limit is per project, not per API key) and generate an API key for each project.
