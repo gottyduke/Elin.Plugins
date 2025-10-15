@@ -18,6 +18,14 @@ $Changelogs
 
 
 
+{topic|1.20.52}
+Updated for 23.219 Nightly
+Updated PackageIterator with a new extension API
+Updated ConfigCereal with a new extension API
+Updated GameIOProcessor.GameIOContext with a new extension API
+Allowed methods annotated with the CwlLoadEvent attribute to omit GameIOContext parameter
+Updated miscellaneous helpers
+
 {topic|1.20.51}
 Updated for 23.214 Nightly
 Removed support for the Chara humanSpeak tag (added by Elin in the 23.214 Nightly)

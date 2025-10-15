@@ -18,6 +18,14 @@ $更新日志
 
 
 
+{topic|1.20.52}
+更新至 23.219 Nightly 版本
+更新了 PackageIterator 新拓展API
+更新了 ConfigCereal 新拓展API
+更新了 GameIOProcessor.GameIOContext 新拓展API
+允许 CwlLoadEvent 特性标注的方法不使用 GameIOContext 参数
+更新了杂项方法
+
 {topic|1.20.51}
 更新至 23.214 Nightly 版本
 移除了 Chara humanSpeak 标签支持(Elin已添加于 23.214 Nightly 版本)

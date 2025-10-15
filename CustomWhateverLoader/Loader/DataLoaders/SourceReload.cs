@@ -6,7 +6,7 @@ namespace Cwl;
 internal partial class DataLoader
 {
     [ConsoleCommand("load_sources")]
-    internal static void ReloadSources(bool reloadGame = false)
+    internal static void ReloadSources(bool reloadGame = true)
     {
         if (EClass.core.IsGameStarted) {
             if (reloadGame) {
