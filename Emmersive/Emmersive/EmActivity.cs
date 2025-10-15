@@ -42,7 +42,7 @@ public record EmActivity : IDisposable
         Current = null;
 
         EmMod.Debug<EmActivity>(
-            $"[{ServiceName}] {RequestTime:hh:mm:ss} {Latency.TotalMilliseconds}ms {InputToken + OutputToken}");
+            $"[{ServiceName}] {RequestTime:HH:mm:ss} {Latency.TotalMilliseconds}ms {InputToken + OutputToken}");
     }
 
     public static EmActivity StartNew(string serviceId)

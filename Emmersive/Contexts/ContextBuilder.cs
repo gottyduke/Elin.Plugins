@@ -35,7 +35,7 @@ public sealed class ContextBuilder
         set;
     }
 
-    public static ContextBuilder Create()
+    public static ContextBuilder CreateStandard()
     {
         return new ContextBuilder()
             .Add(EnvironmentContext)
@@ -44,6 +44,10 @@ public sealed class ContextBuilder
             .Add(RecentActionContext);
     }
 
+    public static ContextBuilder CreateDefault()
+    {
+        return new();
+    }
     public ContextBuilder Add(IContextProvider provider)
     {
         _providers.Add(provider);

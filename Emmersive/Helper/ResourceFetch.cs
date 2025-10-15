@@ -90,7 +90,7 @@ public class ResourceFetch
     public static void ClearActiveResources()
     {
         _activeResources.Clear();
-        EmMod.Log<ResourceFetch>("cleared active resources");
+        EmMod.Popup<ResourceFetch>("cleared active resources");
     }
 
 #endregion

@@ -1,10 +1,10 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
 using Cwl.Helper.Exceptions;
 using Emmersive.API.Plugins;
 using Emmersive.Components;
+using Newtonsoft.Json;
 
 // ReSharper disable InconsistentNaming
 
@@ -25,7 +25,7 @@ public partial class SceneDirector : EClass
         SceneReaction[]? reactions;
 
         try {
-            reactions = JsonSerializer.Deserialize<SceneReaction[]>(content);
+            reactions = JsonConvert.DeserializeObject<SceneReaction[]>(content);
         } catch (Exception ex) {
             EmMod.Warn<SceneDirector>($"failed to parse scene scripts\n{ex.Message}\n{content}");
             DebugThrow.Void(ex);

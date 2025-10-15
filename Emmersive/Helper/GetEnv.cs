@@ -6,6 +6,6 @@ public static class GetEnv
 {
     extension(string env)
     {
-        public string EnvVar => Environment.GetEnvironmentVariable(env, EnvironmentVariableTarget.User) ?? "";
+        public string EnvVar => Environment.GetEnvironmentVariable(env) ?? "";
     }
 }

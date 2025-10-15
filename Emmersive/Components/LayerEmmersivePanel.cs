@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Cwl.API.Attributes;
 using Emmersive.API.Services;
 using ReflexCLI.Attributes;
@@ -13,14 +14,16 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
     public override string Title => "Elin Immersive Talks";
     public override Rect Bound => new(Vector2.zero, new(Screen.width / 1.5f, Screen.height / 1.5f));
 
+    private List<TabEmmersiveBase> _tabs = [];
+
     public static LayerEmmersivePanel? Instance { get; private set; }
 
     public override void OnLayout()
     {
         Instance = this;
 
-        CreateTab<TabAiService>("em_ui_tab_ai_service", "em_tab_ai_service");
-        CreateTab<TabPromptSetting>("em_ui_tab_prompts", "em_tab_prompt_setting");
+        _tabs.Add(CreateTab<TabAiService>("em_ui_tab_ai_service", "em_tab_ai_service"));
+        _tabs.Add(CreateTab<TabPromptSetting>("em_ui_tab_prompts", "em_tab_prompt_setting"));
     }
 
     public override void OnAfterAddLayer()
@@ -32,17 +35,25 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
 
     public override void OnKill()
     {
+        OnLayoutConfirm();
         Instance = null;
-
-        _browsedPosition = Window.transform.localPosition;
-
-        ApiPoolSelector.Instance.SaveServices();
     }
 
     public void Reopen()
     {
-        Kill();
+        ui.RemoveLayer(this);
         OpenPanelSesame();
+    }
+
+    public void OnLayoutConfirm()
+    {
+        foreach (var tab in _tabs) {
+            tab.OnLayoutConfirm();
+        }
+
+        _browsedPosition = Window.transform.localPosition;
+
+        ApiPoolSelector.Instance.SaveServices();
     }
 
     [ConsoleCommand("open")]

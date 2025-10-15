@@ -2,23 +2,34 @@ using System.Collections.Generic;
 using System.IO;
 using Cwl.Helper.FileUtil;
 using Emmersive.API;
+using Newtonsoft.Json;
 
 namespace Emmersive.Helper;
 
 public static class RequestParamHelper
 {
+    public static readonly JsonSerializerSettings Settings = new() {
+        NullValueHandling = NullValueHandling.Ignore,
+        DefaultValueHandling = DefaultValueHandling.Ignore,
+        PreserveReferencesHandling = PreserveReferencesHandling.None,
+        TypeNameHandling = TypeNameHandling.None,
+        ContractResolver = new ConfigCereal.WritablePropertiesOnlyResolver(),
+    };
+
     extension(IChatProvider provider)
     {
         public void SaveProviderParam()
         {
             var path = Path.Combine(ResourceFetch.CustomFolder, $"params/{provider.Id}.json");
-            ConfigCereal.WriteConfig(provider.RequestParams, path);
+            ConfigCereal.WriteConfig(provider.RequestParams, path, Settings);
         }
 
         public void RemoveProviderParam()
         {
             var path = Path.Combine(ResourceFetch.CustomFolder, $"params/{provider.Id}.json");
-            File.Delete(path);
+            if (File.Exists(path)) {
+                File.Delete(path);
+            }
         }
 
         public Dictionary<string, object>? GetProviderParam()
@@ -42,6 +53,10 @@ public static class RequestParamHelper
         public void OpenProviderParam()
         {
             var path = Path.Combine(ResourceFetch.CustomFolder, $"params/{provider.Id}.json");
+            if (!File.Exists(path)) {
+                provider.SaveProviderParam();
+            }
+
             Util.Run(path);
         }
     }

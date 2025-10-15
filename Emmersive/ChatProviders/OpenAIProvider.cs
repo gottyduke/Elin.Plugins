@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Emmersive.Helper;
@@ -8,13 +9,14 @@ using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OpenAI.Chat;
 using YKF;
 using ChatMessageContent = Microsoft.SemanticKernel.ChatMessageContent;
 
 namespace Emmersive.ChatProviders;
 
-internal class OpenAIProvider : ChatProviderBase
+internal class OpenAIProvider(string apiKey) : ChatProviderBase(apiKey)
 {
     [JsonIgnore]
     private UIInputText? _aliasInput;
@@ -33,6 +35,9 @@ internal class OpenAIProvider : ChatProviderBase
 
     public override IDictionary<string, object> RequestParams { get; set; } = new Dictionary<string, object> {
         ["reasoning_effort"] = "minimal",
+        ["response_format"] = JObject.FromObject(new {
+            type = "json_object",
+        }),
     };
 
     public string EndPoint { get; set; } = "https://api.openai.com/v1";
@@ -43,10 +48,6 @@ internal class OpenAIProvider : ChatProviderBase
         // as of 1.66.0 openai ResponseFormat cannot be set to a type or schema
         // which will cause serializer failure on WriteCore
         // DeepSeek does not use json schema either
-        ResponseFormat = new {
-            type = "json_object",
-        },
-        ReasoningEffort = "minimal",
     };
 
     public override async UniTask<ChatMessageContent> HandleRequest(Kernel kernel, ChatHistory context, CancellationToken token)
@@ -75,6 +76,7 @@ internal class OpenAIProvider : ChatProviderBase
         }
 
         if (_aliasInput != null) {
+            Id = Id.Replace(Alias, _aliasInput.Text);
             Alias = _aliasInput.Text;
         }
 

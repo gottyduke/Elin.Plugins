@@ -1,7 +1,10 @@
+using System.Collections.Generic;
 using System.Reflection;
 using BepInEx;
 using Cwl.Helper.Exceptions;
+using Cwl.Helper.FileUtil;
 using Emmersive.API.Services;
+using Emmersive.ChatProviders;
 using Emmersive.Components;
 using Emmersive.Helper;
 using HarmonyLib;
@@ -12,8 +15,8 @@ namespace Emmersive;
 internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.emmersive";
-    internal const string Name = "Elin Immersive Talks";
-    internal const string Version = "1.0.0";
+    internal const string Name = "Elin With AI";
+    internal const string Version = "0.7.0";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
@@ -40,22 +43,20 @@ internal sealed partial class EmMod : BaseUnityPlugin
         MonoFrame.AddVendorExclusion("Microsoft.");
         MonoFrame.AddVendorExclusion("OpenAI");
 
-#if !DEBUG
+#if EM_TEST_SERVICE
         var apiPool = ApiPoolSelector.Instance;
         var (_, keys) = PackageIterator
             .GetJsonFromPackage<Dictionary<string, string[]>>("Emmersive/DebugKeys.json", ModInfo.Guid);
 
         if (keys is not null) {
             foreach (var key in keys["Em_GoogleGeminiAPI_Dummy"]) {
-                apiPool.AddService(new GoogleProvider {
-                    ApiKey = key,
+                apiPool.AddService(new GoogleProvider(key) {
                     CurrentModel = "gemini-2.5-flash",
                 });
             }
 
             foreach (var key in keys["Em_DeepSeekAPI_Dummy"]) {
-                apiPool.AddService(new OpenAIProvider {
-                    ApiKey = key,
+                apiPool.AddService(new OpenAIProvider(key) {
                     EndPoint = "https://api.deepseek.com/v1",
                     Alias = "DeepSeek",
                     CurrentModel = "deepseek-chat",
@@ -63,16 +64,15 @@ internal sealed partial class EmMod : BaseUnityPlugin
             }
 
             foreach (var key in keys["Em_OpenAIAPI_Dummy"]) {
-                apiPool.AddService(new OpenAIProvider {
-                    ApiKey = key,
+                apiPool.AddService(new OpenAIProvider(key) {
                     CurrentModel = "gpt-5-nano",
                 });
             }
         }
 #else
+        ApiPoolSelector.Instance.LoadServices();
 #endif
 
-        ApiPoolSelector.Instance.LoadServices();
         EmKernel.RebuildKernel();
     }
 

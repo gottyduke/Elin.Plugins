@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Cwl.Helper.FileUtil;
 using Emmersive.API;
 using Emmersive.API.Services;
 using Emmersive.ChatProviders;
@@ -71,17 +72,19 @@ internal class TabAiService : TabEmmersiveBase
             .WithSpace(10);
         btnGroup.Layout.childForceExpandWidth = true;
 
-        btnGroup.Button("em_ui_reload_prompts".lang(), () => {
-            ResourceFetch.ClearActiveResources();
-            EmMod.DebugPopup<ResourceFetch>("cleared resources");
-        });
+        btnGroup.Button("em_ui_reload_prompts".lang(), ResourceFetch.ClearActiveResources);
 
         btnGroup.Button("em_ui_test_generation".lang(), () => {
+            LayerEmmersivePanel.Instance!.OnLayoutConfirm();
             EmScheduler.TestCurrentZone();
             ELayer.ui.RemoveLayer<LayerEmmersivePanel>();
         });
 
-        btnGroup.Button("em_ui_open_debug".lang(), () => { });
+        btnGroup.Button("em_ui_open_debug".lang(), () => {
+            EmConfig.Policy.Verbose.Value = true;
+            var path = PackageIterator.GetRelocatedDirFromPackage("Emmersive", ModInfo.Guid);
+            Util.Run(path!.FullName);
+        });
     }
 
     private void BuildServiceButtons()
@@ -90,12 +93,8 @@ internal class TabAiService : TabEmmersiveBase
             .WithSpace(10);
         btnGroup.Layout.childForceExpandWidth = true;
 
-        AddServiceButton("em_ui_add_service_google".lang(), apiKey => new GoogleProvider {
-            ApiKey = apiKey,
-        });
-        AddServiceButton("em_ui_add_service_openai".lang(), apiKey => new OpenAIProvider {
-            ApiKey = apiKey,
-        });
+        AddServiceButton("em_ui_add_service_google".lang(), apiKey => new GoogleProvider(apiKey));
+        AddServiceButton("em_ui_add_service_openai".lang(), apiKey => new OpenAIProvider(apiKey));
 
         return;
 
@@ -116,7 +115,6 @@ internal class TabAiService : TabEmmersiveBase
         }
     }
 
-    //[TestFixture]
     private static void AddService(IChatProvider provider)
     {
         ApiPoolSelector.Instance.AddService(provider);

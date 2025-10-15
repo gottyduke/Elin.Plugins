@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Meta>
-    <title>Elin Immersive Talks</title>
+    <title>Elin With AI</title>
     <id>dk.elinplugins.emmersive</id>
     <author>DK</author>
     <builtin>false</builtin>
     <loadPriority>100</loadPriority>
     <version>1.14.514</version>
     <tag>AI,Talks,Chat,Integration</tag>
+    <visibility>Unlisted</visibility>
     <description/>
 </Meta>

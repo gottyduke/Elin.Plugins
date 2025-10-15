@@ -9,7 +9,7 @@ namespace Emmersive.Helper;
 internal static class AesKeyBin
 {
     [field: AllowNull]
-    private static byte[] KeyBin => field ??= GetAesKeyBin();
+    internal static byte[] KeyBin => field ??= GetAesKeyBin();
 
     private static byte[] GetAesKeyBin()
     {
@@ -28,33 +28,33 @@ internal static class AesKeyBin
 
     extension(string data)
     {
-        internal string DecryptAes()
+        internal string DecryptAes(byte[]? key = null)
         {
             var buf = Convert.FromBase64String(data);
             var iv = new byte[16];
             Array.Copy(buf, iv, iv.Length);
 
             using var aes = Aes.Create();
-            aes.Key = KeyBin;
+            aes.Key = key ?? KeyBin;
             aes.IV = iv;
             aes.Mode = CipherMode.CBC;
             aes.Padding = PaddingMode.PKCS7;
 
             using var ms = new MemoryStream(buf, iv.Length, buf.Length - iv.Length);
-            using var cs = new CryptoStream(ms, aes.CreateEncryptor(), CryptoStreamMode.Read);
+            using var cs = new CryptoStream(ms, aes.CreateDecryptor(), CryptoStreamMode.Read);
             using var sr = new StreamReader(cs, Encoding.UTF8);
 
             return sr.ReadToEnd();
         }
 
-        internal string EncryptAes()
+        internal string EncryptAes(byte[]? key = null)
         {
             var buf = Encoding.UTF8.GetBytes(data);
             var iv = new byte[16];
             RandomNumberGenerator.Fill(iv);
 
             using var aes = Aes.Create();
-            aes.Key = KeyBin;
+            aes.Key = key ?? KeyBin;
             aes.IV = iv;
             aes.Mode = CipherMode.CBC;
             aes.Padding = PaddingMode.PKCS7;

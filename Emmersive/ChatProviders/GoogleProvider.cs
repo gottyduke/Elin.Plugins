@@ -11,7 +11,7 @@ using YKF;
 
 namespace Emmersive.ChatProviders;
 
-public sealed class GoogleProvider : ChatProviderBase
+public sealed class GoogleProvider(string apiKey) : ChatProviderBase(apiKey)
 {
     [field: AllowNull]
     public override string Id

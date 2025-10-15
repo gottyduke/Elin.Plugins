@@ -1,7 +1,9 @@
 using System;
+using System.Net;
 using System.Threading;
 using Cwl.API.Attributes;
 using Cwl.Helper.Exceptions;
+using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cysharp.Threading.Tasks;
 using Emmersive.API.Services;
@@ -25,11 +27,10 @@ public partial class EmScheduler
     }
 
     [ConsoleCommand("trigger_current")]
-    [CwlContextMenu("Test")]
     internal static void TestCurrentZone()
     {
         var builder = ContextBuilder
-            .Create()
+            .CreateStandard()
             .Add(new NearbyCharaContext(EClass.pc));
 
         RequestScenePlay(builder);
@@ -38,7 +39,7 @@ public partial class EmScheduler
     internal static void RequestScenePlayWithTrigger()
     {
         var builder = ContextBuilder
-            .Create()
+            .CreateStandard()
             .Add(new NearbyCharaContext(EClass.pc))
             .Add(new SceneTriggerContext(_buffer));
 
@@ -86,13 +87,9 @@ public partial class EmScheduler
 
             pc.Profile.SetTalked();
         } catch (OperationCanceledException) {
-            EmMod.Warn<EmScheduler>($"request timeout after {EmConfig.Policy.Timeout.Value}s");
-
-            provider.MarkUnavailable("timeout");
-        } catch (HttpOperationException httpEx) {
-            EmMod.Warn<EmScheduler>($"request failed: {httpEx.StatusCode}\\{httpEx.Message}");
-
-            provider.MarkUnavailable(httpEx.StatusCode.ToString());
+            MarkUnavailable($"timeout after {EmConfig.Policy.Timeout.Value}s");
+        } catch (HttpOperationException httpEx) when (httpEx.StatusCode != HttpStatusCode.BadRequest) {
+            MarkUnavailable($"request failed: {httpEx.StatusCode!.TagColor(0xff0000)}\\{httpEx.Message}");
 
             if (retries == 0) {
                 EmMod.Debug<EmScheduler>("no more retries");
@@ -101,9 +98,7 @@ public partial class EmScheduler
 
             ScenePlayAsync(context, --retries).Forget(ExceptionProfile.DefaultExceptionHandler);
         } catch (Exception ex) {
-            EmMod.Warn("request failed");
-
-            apiPool.CurrentProvider?.MarkUnavailable(ex.GetType().Name);
+            MarkUnavailable($"request failed\n{ex.GetType().Name}");
 
             throw;
         } finally {
@@ -115,8 +110,14 @@ public partial class EmScheduler
         void Cleanup()
         {
             timeoutCts.Dispose();
-            cts.Dispose();
             _sceneCts?.Dispose();
+            cts.Dispose();
+        }
+
+        void MarkUnavailable(string message)
+        {
+            EmMod.Warn<EmScheduler>(message);
+            provider.MarkUnavailable(message);
         }
     }
 

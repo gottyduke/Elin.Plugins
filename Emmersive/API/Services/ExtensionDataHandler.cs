@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Cwl.Helper.Exceptions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Emmersive.API.Services;
 
@@ -29,27 +30,28 @@ public class ExtensionDataHandler()
 
         // merge into params
         var json = await request.Content.ReadAsStringAsync();
-        try {
-            var doc = JsonDocument.Parse(json);
-            var root = doc.RootElement;
+        try
+        {
+            var root = JObject.Parse(json);
 
-            Dictionary<string, object> dict = [];
-            foreach (var prop in root.EnumerateObject()) {
-                dict[prop.Name] = prop.Value.ValueKind switch {
-                    JsonValueKind.String => prop.Value.GetString()!,
-                    JsonValueKind.Object => JsonSerializer.Deserialize<Dictionary<string, object>>(prop.Value.GetRawText())!,
-                    _ => JsonSerializer.Deserialize<object>(prop.Value.GetRawText())!,
+            var dict = new Dictionary<string, object>();
+            foreach (var prop in root.Properties())
+            {
+                dict[prop.Name] = prop.Value.Type switch {
+                    JTokenType.Object => prop.Value.ToObject<Dictionary<string, object>>()!,
+                    JTokenType.Array => prop.Value.ToObject<object[]>()!,
+                    JTokenType.Null => null!,
+                    _ => ((JValue)prop.Value).Value!,
                 };
             }
 
             provider.MergeExtensionData(dict);
 
-            var merged = JsonSerializer.Serialize(dict);
-            request.Content = new ByteArrayContent(Encoding.UTF8.GetBytes(merged));
-            request.Content.Headers.ContentType = new("application/json") {
-                CharSet = "utf-8",
-            };
-        } catch (Exception ex) {
+            var merged = JsonConvert.SerializeObject(dict, Formatting.None);
+            request.Content = new StringContent(merged, Encoding.UTF8, "application/json");
+        }
+        catch (Exception ex)
+        {
             EmMod.Warn<ExtensionDataHandler>($"failed to merge ExtensionData into request\n{ex}");
             DebugThrow.Void(ex);
             // noexcept

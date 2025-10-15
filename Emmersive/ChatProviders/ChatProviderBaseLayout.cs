@@ -23,10 +23,9 @@ public abstract partial class ChatProviderBase : ILayoutProvider
         var serviceId = header.Text(Id, IsAvailable ? FontColor.Good : FontColor.Bad);
         serviceId.fontSize *= 2;
 
-        var btn = header.Button("em_ui_remove".lang(), () => {
-            ApiPoolSelector.Instance.RemoveService(this);
-            EmKernel.RebuildKernel();
-            Object.DestroyImmediate(card.transform.parent.gameObject);
+        var btn = header.Button("em_ui_reload".lang(), () => {
+            OnLayoutConfirm();
+            LayerEmmersivePanel.Instance?.Reopen();
         }).GetComponent<Image>();
         btn.color = Color.red;
 
@@ -34,6 +33,10 @@ public abstract partial class ChatProviderBase : ILayoutProvider
         cardBg.sprite = btn.sprite;
         cardBg.type = Image.Type.Sliced;
         cardBg.color = IsAvailable ? Color.cyan : Color.red;
+
+        if (!IsAvailable && !UnavailableReason.IsEmpty()) {
+            card.TextLong(UnavailableReason!);
+        }
 
         _modelInput = card.AddPair("em_ui_model".lang(), CurrentModel);
 
@@ -44,7 +47,11 @@ public abstract partial class ChatProviderBase : ILayoutProvider
 
         controlGroup.Button("em_ui_edit_params".lang(), this.OpenProviderParam);
 
-        controlGroup.Button("em_ui_confirm".lang(), OnLayoutConfirm).GetOrCreate<Image>().color = Color.yellow;
+        controlGroup.Button("em_ui_remove".lang(), () => {
+            ApiPoolSelector.Instance.RemoveService(this);
+            EmKernel.RebuildKernel();
+            Object.DestroyImmediate(card.transform.parent.gameObject);
+        }).GetOrCreate<Image>().color = Color.yellow;
     }
 
     public virtual void OnLayoutConfirm()
@@ -53,8 +60,9 @@ public abstract partial class ChatProviderBase : ILayoutProvider
             CurrentModel = _modelInput.Text;
         }
 
+        this.LoadProviderParam();
+
         EmKernel.RebuildKernel();
-        LayerEmmersivePanel.Instance?.Reopen();
     }
 
     protected abstract void OnLayoutInternal(YKLayout card);

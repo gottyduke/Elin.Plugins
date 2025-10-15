@@ -18,9 +18,10 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionMerger
     [JsonIgnore]
     private UIInputText? _modelInput;
 
-    protected ChatProviderBase()
+    protected ChatProviderBase(string apiKey)
     {
         ServiceCount++;
+        ApiKey = apiKey;
     }
 
     public static int ServiceCount { get; internal set; }
@@ -29,14 +30,17 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionMerger
     public abstract PromptExecutionSettings ExecutionSettings { get; set; }
 
     [JsonIgnore]
-    public required string ApiKey { protected get; set; }
+    protected string ApiKey { get; set; }
 
     [JsonProperty]
     protected string EncryptedKey
     {
-        get => ApiKey.DecryptAes();
-        set => ApiKey = value.EncryptAes();
+        get => ApiKey.EncryptAes();
+        set => ApiKey = value.DecryptAes();
     }
+
+    [JsonIgnore]
+    protected string? UnavailableReason;
 
     public abstract string Id { get; set; }
     public abstract string CurrentModel { get; set; }
@@ -53,8 +57,8 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionMerger
 
     public virtual void MarkUnavailable(string? message = null)
     {
+        UnavailableReason = message;
         _cooldownUntil = DateTime.Now + TimeSpan.FromSeconds(15f);
-        EmMod.Warn($"[{Id}] temporarily unavailable: {message}");
         EmMod.DebugPopup<IChatProvider>($"[{Id}] temporarily unavailable: {message}");
     }
 
