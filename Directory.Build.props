@@ -1,4 +1,7 @@
 <Project>
+    <PropertyGroup>
+        <NoWarn>1701;1702;8620;8604</NoWarn>
+    </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <DebugSymbols>true</DebugSymbols>
         <DebugType>full</DebugType>

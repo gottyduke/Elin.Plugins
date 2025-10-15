@@ -1,6 +1,9 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using Cwl.Helper.FileUtil;
+using Cwl.LangMod;
 using Emmersive.API;
 using Newtonsoft.Json;
 
@@ -57,7 +60,20 @@ public static class RequestParamHelper
                 provider.SaveProviderParam();
             }
 
-            Util.Run(path);
+            try {
+                Util.Run(path);
+            } catch {
+                EmMod.Popup<ResourceFetch>("em_ui_failed_shellex".Loc());
+
+                try {
+                    Process.Start("notepad.exe", path);
+                } catch (Exception ex) {
+                    EmMod.Popup<ResourceFetch>("em_ui_failed_shellex".Loc(path, ex.Message));
+                    Util.Run(Path.GetDirectoryName(path));
+                    // noexcept
+                }
+                // noexcept
+            }
         }
     }
 }
