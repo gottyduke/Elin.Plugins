@@ -66,7 +66,9 @@ public partial class SceneDirector
                 Msg.SetColor(color);
                 chara.Say(text);
 
-                chara.HostRenderer.Say(text.Wrap(), duration: duration);
+                if (pc.CanSee(chara)) {
+                    chara.HostRenderer.Say(text.Wrap(7), duration: duration);
+                }
 
                 chara.Profile.SetTalked();
             }
