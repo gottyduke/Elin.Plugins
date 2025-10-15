@@ -13,7 +13,7 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.emmersive";
     internal const string Name = "Elin with AI (Beta)";
-    internal const string Version = "0.8.0";
+    internal const string Version = "0.9.0";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]

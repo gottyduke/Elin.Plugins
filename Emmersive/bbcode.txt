@@ -1,0 +1,267 @@
+[b][h2]Elin with AI[/h2][/b]
+
+[img]https://raw.githubusercontent.com/gottyduke/Elin.Plugins/master/Emmersive/assets/Em_banner.png[/img]
+
+[url=https://img.shields.io/badge/Version-Beta%20Testing-R?style=flat&labelColor=red&color=blue][img]https://img.shields.io/badge/Version-Beta%20Testing-R?style=flat&labelColor=red&color=blue[/img][/url]
+
+Power up Elin with AI and LLMs, make the world alive by generating contextual aware talks.
+
+[b]Requires Custom Whatever Loader & YKFramework[/b]
+
+[list]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3370512305]Custom Whatever Loader[/url] (Pick the Stable [b]OR[/b] Nightly)
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3400020753]YKFramework[/url]
+[/list]
+
+Place both mods above this mod in the mod list viewer.
+
+[b]Features & Todos:[/b]
+
+This is a [b]beta test[/b] version, mainly for gathering reports and feedback.
+
+[list]
+[*][b]Support Google AI Studio (gemini)[/b] ✅
+[*][b]Support OpenAI chatGPT[/b] ✅
+[*][b]Support OpenAI-compatible providers[/b] ✅
+[*][b]Test services at runtime[/b] ✅
+[list]
+[*]...with easy UI ✅
+[*]Service pooling ✅
+[/list]
+[*][b]Character context[/b] ✅
+[list]
+[*]Nearby characters ✅
+[*]Character backgrounds ✅ (Puddles wrote a bunch)
+[*]Character relationships ✅ (Puddles wrote a bunch)
+[*]Character original talk triggers ✅
+[/list]
+[*][b]Recent action context[/b] ✅
+[list]
+[*]Toggle between talk-only and full action ✅
+[/list]
+[*][b]Zone context[/b] ✅
+[list]
+[*]Zone backgrounds ✅
+[/list]
+[*][b]Environment context[/b] ✅
+[*][b]Item/Equipment context[/b] ⬜
+[list]
+[*]Nearby things ⬜
+[/list]
+[*][b]Religion context[/b] ⬜
+[*][b]Quest context[/b] ⬜
+[list]
+[*]Random quest generation ⬜
+[/list]
+[*][b]Response choices[/b] ⬜
+[*][b]Customize context prompts[/b] ✅
+[list]
+[*]...with easy UI (currently by hot reloading files) ⬜
+[*]Builtin localization support (by CWL) ✅
+[/list]
+[/list]
+
+[b]How to Add Services[/b]
+
+Emmersive(Elin with AI) requires the AI service with [b]function-calling[/b] (or [b]tool-call[/b]) and [b]structured output[/b] (or [b]json mode[/b]) capabilities.
+
+Your API keys will be encrypted locally on your computer, not sent anywhere.
+
+[b]Google(Free!)[/b]
+
+Head to [url=https://aistudio.google.com/projects]Google AI Studio[/url], create a project. If you are using free tier, I recommend making 3 projects (rate limit is per project, not per API key) and generate an API key for each project.
+
+Launch game, load up a save, press Esc and go to Mods → Emmersive → Add Google Gemini.
+
+You can modify the model as you wish, do note that free tier is likely to be slower, even so on heavier models like gemini-2.5-pro.
+
+After adding all the API keys to the game, close the panel and start walking around and see some talking.
+
+[b]OpenAI chatGPT[/b]
+
+Head to [url=https://platform.openai.com/api-keys]OpenAI Platform[/url], and generate a new API key.
+
+Launch game, load up a save, press Esc and go to Mods → Emmersive → Add OpenAI Provider.
+
+You can modify the model as you wish, but note that thinking(reasoning) is disabled by default, to avoid noticeable latencies. You can however, edit the params yourself.
+
+[b]DeepSeek & Other OpenAI Compatible Providers[/b]
+
+Head to [url=https://platform.deepseek.com/api_keys]DeepSeek Platform[/url], and generate a new API key.
+
+Launch game, load up a save, press Esc and go to Mods → Emmersive → Add OpenAI Provider.
+
+[i]Important![/i]
+
+Depending on your provider, you'll need to change the endpoint to the correct one. E.g. for DeepSeek it will be [u]http://api.deepseek.com/v1[/u]
+
+Modify the model to your provider, e.g. deepseek-chat (the thinking-disabled variant of DeepSeekV3.2-Exp).
+
+[i]Important![/i]
+
+Depending on your provider, you'll need to change the request parameters. E.g. for DeepSeek, open up the param file and change the entire block:
+
+[code]
+"response_format": {
+  "type": "json_schema",
+  "json_schema": {
+    ...
+  }
+}
+[/code]
+
+to
+
+[code]
+"response_format": {
+  "type": "json_object"
+}
+[/code]
+
+This is because DeepSeek doesn't support json schema output mode.
+
+[b]Add/Tweak Parameters[/b]
+
+You can change each AI service's parameters individually, such as [b]temperature[/b], [b]top_p[/b], [b]presence_penalty[/b]. After saving the params, click Reload button to load it immediately.
+
+[b]Configurations[/b]
+
+Please check the [url=https://github.com/gottyduke/Elin.Plugins/tree/master/Emmersive]github source[/url] for details.
+
+[b]Feedback[/b]
+
+For any suggestions, feedbacks, bug reports, or feature requests, prepare the Player.log file, and ping Omega at Elona Discord.
+
+---
+
+[b][h2]Elin with AI[/h2][/b]
+
+[img]https://raw.githubusercontent.com/gottyduke/Elin.Plugins/master/Emmersive/assets/Em_banner.png[/img]
+
+[img]https://img.shields.io/badge/Version-Beta%20Testing-R?style=flat&labelColor=red&color=blue[/img]
+
+[url=./README.md]English[/url]
+
+使用 AI 大语言模型增强 Elin，让世界充满生机，生成具有环境感知的对话。
+
+[h2]依赖 Custom Whatever Loader & YKFramework[/h2]
+
+[list]
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3370512305]Custom Whatever Loader[/url] (使用[b]正确的[/b]版本)
+[*][url=https://steamcommunity.com/sharedfiles/filedetails/?id=3400020753]YKFramework[/url]
+[/list]
+
+将这俩模组置于 Elin with AI 上方。
+
+[h2]功能与饼[/h2]
+
+这是一个[b]测试版[/b]，用于收集反馈并优化。
+
+[list]
+[*]✅ 支持 Google AI Studio (Gemini)
+[*]✅ 支持 OpenAI chatGPT
+[*]✅ 支持 OpenAI 兼容的服务（DeepSeek、Qwen 等）
+    [list]
+    [*]✅ 自定义模型参数
+    [/list]
+[*]✅ 运行时测试服务
+    [list]
+    [*]✅ 提供简单 UI
+    [*]✅ 服务池管理
+    [/list]
+[*]✅ 角色上下文
+    [list]
+    [*]✅ 附近角色
+    [*]✅ 角色背景
+    [*]✅ 角色关系
+    [*]✅ 角色原始对话触发场景
+    [/list]
+[*]✅ 最近动作上下文
+    [list]
+    [*]✅ 切换仅对话 / 全动作模式
+    [/list]
+[*]✅ 区域上下文
+    [list]
+    [*]✅ 区域背景
+    [/list]
+[*]✅ 环境上下文
+[*]⬜ 物品/装备上下文
+    [list]
+    [*]⬜ 附近物品
+    [/list]
+[*]⬜ 信仰上下文
+[*]⬜ 任务上下文
+    [list]
+    [*]⬜ 随机任务生成
+    [/list]
+[*]✅ 响应选项
+[*]✅ 自定义上下文提示词
+    [list]
+    [*]⬜ 通过 UI 编辑（当前通过热重载文件的方式）
+    [*]✅ 内置本地化支持（使用 CWL）
+    [/list]
+[/list]
+
+[h2]如何添加 AI 服务[/h2]
+
+Emmersive（Elin with AI）要求使用的 AI 服务具备 [b]函数调用[/b]（或 [b]工具调用[/b]）和 [b]结构化输出[/b]（或 [b]JSON 模式[/b]）能力。
+
+你的 API 密钥会在本地加密存储，不会发送到任何地方。
+
+[h3]Google（免费！）[/h3]
+
+访问 [url=https://aistudio.google.com/projects]Google AI Studio[/url]，创建一个项目。如果使用免费套餐，建议创建 3 个项目（速率限制按项目计算，而非 API Key），并为每个项目生成一个 API Key。
+
+启动游戏，载入存档，按 Esc → Mods → Emmersive → 添加 Google Gemini。
+
+你可以根据需求修改模型，但免费套餐可能会较慢，尤其是像 [b]gemini-2.5-pro[/b] 这样的思考模型。
+
+[h3]OpenAI chatGPT[/h3]
+
+访问 [url=https://platform.openai.com/api-keys]OpenAI 平台[/url]，生成一个新的 API 密钥。
+
+启动游戏，载入存档，按 Esc → Mods → Emmersive → 添加 OpenAI 服务。
+
+你可以修改模型，但默认禁用“思考/推理”以避免明显延迟。如果需要，可以自行编辑参数。
+
+[h3]DeepSeek 及其他 OpenAI 兼容模型[/h3]
+
+访问 [url=https://platform.deepseek.com/api_keys]DeepSeek 平台[/url]，生成新的 API 密钥。
+
+启动游戏，载入存档，按 Esc → Mods → Emmersive → 添加 OpenAI 服务。
+
+[b]注意事项：[/b]
+
+[list]
+[*]根据模型提供商要求，需要将基址改为正确的地址。例如 DeepSeek 的基址是 [u]http://api.deepseek.com/v1[/u]。
+[*]修改模型名称为对应服务，例如 [u]deepseek-chat[/u]（DeepSeekV3.2-Exp 的禁用思考版本）。
+[*]根据模型提供商要求，需要修改请求参数。例如 DeepSeek 不支持 JSON Schema 输出模式，需要将参数块：
+[code]
+"response_format": {
+  "type": "json_schema",
+  "json_schema": {
+    ...
+  }
+}
+[/code]
+改为：
+[code]
+"response_format": {
+  "type": "json_object"
+}
+[/code]
+[/list]
+
+[h2]参数 & 配置项[/h2]
+
+[h3]请求参数[/h3]
+
+你可以单独修改每个 AI 服务的请求参数，如 [b]temperature[/b]、[b]topP[/b]、[b]presence_penalty[/b] 等。保存参数后，点击“Reload”即可立即生效。
+
+[h3]Mod 配置[/h3]
+
+使用 Mod Config GUI 或者 编辑配置文件 [b]Elin\BepInEx\config\dk.elinplugins.emmersive.cfg[/b]。
+
+[h2]反馈[/h2]
+
+如有建议、反馈、Bug 报告或功能请求，请请请请请请请请请请请请请请请请请请请请请请请请请请请请<生成失败>
