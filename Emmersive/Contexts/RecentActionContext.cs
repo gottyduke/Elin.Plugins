@@ -11,7 +11,7 @@ public class RecentActionContext : ContextProviderBase
 
     internal static readonly List<(string actor, string text)> RecentActions = [];
     private static int _indexSinceStart;
-    public override string Name => "previous_action_log";
+    public override string Name => "recent_action_log";
 
     public override object? Build()
     {

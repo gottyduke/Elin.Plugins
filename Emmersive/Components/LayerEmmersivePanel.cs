@@ -11,10 +11,10 @@ namespace Emmersive.Components;
 internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
 {
     private static Vector2 _browsedPosition = Vector2.zero;
+
+    private readonly List<TabEmmersiveBase> _tabs = [];
     public override string Title => "Elin Immersive Talks";
     public override Rect Bound => new(Vector2.zero, new(Screen.width / 1.5f, Screen.height / 1.5f));
-
-    private List<TabEmmersiveBase> _tabs = [];
 
     public static LayerEmmersivePanel? Instance { get; private set; }
 
@@ -57,7 +57,7 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
     }
 
     [ConsoleCommand("open")]
-    [CwlContextMenu("Emmersive~")]
+    [CwlContextMenu("em_ui_open_sesame")]
     internal static void OpenPanelSesame()
     {
         YK.CreateLayer<LayerEmmersivePanel, LayerCreationData>(new());

@@ -98,7 +98,7 @@ public partial class EmScheduler
 
             ScenePlayAsync(context, --retries).Forget(ExceptionProfile.DefaultExceptionHandler);
         } catch (Exception ex) {
-            MarkUnavailable($"request failed\n{ex.GetType().Name}");
+            MarkUnavailable($"request failed\n{ex.GetType().Name}\n{ex.Message}");
 
             throw;
         } finally {

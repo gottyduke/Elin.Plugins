@@ -1,3 +1,4 @@
+using System;
 using Emmersive.API;
 using Emmersive.API.Services;
 using Emmersive.Components;
@@ -5,6 +6,7 @@ using Emmersive.Helper;
 using UnityEngine;
 using UnityEngine.UI;
 using YKF;
+using Object = UnityEngine.Object;
 
 namespace Emmersive.ChatProviders;
 
@@ -27,7 +29,7 @@ public abstract partial class ChatProviderBase : ILayoutProvider
             OnLayoutConfirm();
             LayerEmmersivePanel.Instance?.Reopen();
         }).GetComponent<Image>();
-        btn.color = Color.red;
+        btn.color = Color.yellow;
 
         var cardBg = card.Layout.gameObject.AddComponent<Image>();
         cardBg.sprite = btn.sprite;
@@ -51,7 +53,7 @@ public abstract partial class ChatProviderBase : ILayoutProvider
             ApiPoolSelector.Instance.RemoveService(this);
             EmKernel.RebuildKernel();
             Object.DestroyImmediate(card.transform.parent.gameObject);
-        }).GetOrCreate<Image>().color = Color.yellow;
+        }).GetOrCreate<Image>().color = Color.red;
     }
 
     public virtual void OnLayoutConfirm()
@@ -59,6 +61,8 @@ public abstract partial class ChatProviderBase : ILayoutProvider
         if (_modelInput is not null) {
             CurrentModel = _modelInput.Text;
         }
+
+        _cooldownUntil = DateTime.MinValue;
 
         this.LoadProviderParam();
 

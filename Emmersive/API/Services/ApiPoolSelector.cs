@@ -55,7 +55,7 @@ public sealed class ApiPoolSelector : IAIServiceSelector
     {
         var context = ResourceFetch.Context;
 
-        context.SaveUncompressed(_providers, "active_providers");
+        context.Save(_providers, "active_providers");
 
         foreach (var provider in _providers) {
             provider.SaveProviderParam();

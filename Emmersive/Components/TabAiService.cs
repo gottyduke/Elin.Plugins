@@ -66,6 +66,15 @@ internal class TabAiService : TabEmmersiveBase
         GetComponentInParent<UIScrollView>().normalizedPosition = _browsedPosition;
     }
 
+    public override void OnLayoutConfirm()
+    {
+        var layouts = ApiPoolSelector.Instance.Providers
+            .OfType<ILayoutProvider>();
+        foreach (var provider in layouts) {
+            provider.OnLayoutConfirm();
+        }
+    }
+
     private void BuildDebugButtons()
     {
         var btnGroup = Horizontal()

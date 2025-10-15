@@ -1,10 +1,7 @@
-using System.Collections.Generic;
 using System.Reflection;
 using BepInEx;
 using Cwl.Helper.Exceptions;
-using Cwl.Helper.FileUtil;
 using Emmersive.API.Services;
-using Emmersive.ChatProviders;
 using Emmersive.Components;
 using Emmersive.Helper;
 using HarmonyLib;
@@ -15,8 +12,8 @@ namespace Emmersive;
 internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.emmersive";
-    internal const string Name = "Elin With AI";
-    internal const string Version = "0.7.0";
+    internal const string Name = "Elin with AI (Beta)";
+    internal const string Version = "0.8.0";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]

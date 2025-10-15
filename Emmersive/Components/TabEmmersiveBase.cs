@@ -7,12 +7,5 @@ namespace Emmersive.Components;
 
 internal abstract class TabEmmersiveBase : YKLayout<LayerCreationData>
 {
-    public virtual void OnLayoutConfirm()
-    {
-        var layouts = ApiPoolSelector.Instance.Providers
-            .OfType<ILayoutProvider>();
-        foreach (var provider in layouts) {
-            provider.OnLayoutConfirm();
-        }
-    }
+    public abstract void OnLayoutConfirm();
 }

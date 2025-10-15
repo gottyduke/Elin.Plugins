@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Net;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Emmersive.API.Services.SceneDirector;
 using Emmersive.Helper;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -35,9 +35,7 @@ internal class OpenAIProvider(string apiKey) : ChatProviderBase(apiKey)
 
     public override IDictionary<string, object> RequestParams { get; set; } = new Dictionary<string, object> {
         ["reasoning_effort"] = "minimal",
-        ["response_format"] = JObject.FromObject(new {
-            type = "json_object",
-        }),
+        ["response_format"] = SceneReaction.OpenAiSchema,
     };
 
     public string EndPoint { get; set; } = "https://api.openai.com/v1";

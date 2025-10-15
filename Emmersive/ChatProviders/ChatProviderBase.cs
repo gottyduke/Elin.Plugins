@@ -18,6 +18,9 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionMerger
     [JsonIgnore]
     private UIInputText? _modelInput;
 
+    [JsonIgnore]
+    protected string? UnavailableReason;
+
     protected ChatProviderBase(string apiKey)
     {
         ServiceCount++;
@@ -38,9 +41,6 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionMerger
         get => ApiKey.EncryptAes();
         set => ApiKey = value.DecryptAes();
     }
-
-    [JsonIgnore]
-    protected string? UnavailableReason;
 
     public abstract string Id { get; set; }
     public abstract string CurrentModel { get; set; }

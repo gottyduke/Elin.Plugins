@@ -48,6 +48,7 @@ public sealed class ContextBuilder
     {
         return new();
     }
+
     public ContextBuilder Add(IContextProvider provider)
     {
         _providers.Add(provider);
@@ -77,9 +78,7 @@ public sealed class ContextBuilder
                     continue;
                 }
 
-                provider.Name.TryLocalize(out var contextName);
-
-                sb.AppendLine($"[{contextName}]");
+                sb.AppendLine($"[{provider.Name}]");
                 sb.AppendLine(context.ToCompactJson());
 
                 EmMod.Debug<ContextBuilder>($"{provider.Name}\n{context.ToIndentedJson()}");
