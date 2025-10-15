@@ -89,6 +89,41 @@ public sealed class ApiPoolSelector : IAIServiceSelector
         }
     }
 
+#region Test Services
+
+    internal static void MockTestServices()
+    {
+        var apiPool = Instance;
+        var (_, keys) = PackageIterator
+            .GetJsonFromPackage<Dictionary<string, string[]>>("Emmersive/DebugKeys.json", ModInfo.Guid);
+
+        if (keys is null) {
+            return;
+        }
+
+        foreach (var key in keys["Em_GoogleGeminiAPI_Dummy"]) {
+            apiPool.AddService(new GoogleProvider(key) {
+                CurrentModel = "gemini-2.5-flash",
+            });
+        }
+
+        foreach (var key in keys["Em_DeepSeekAPI_Dummy"]) {
+            apiPool.AddService(new OpenAIProvider(key) {
+                EndPoint = "https://api.deepseek.com/v1",
+                Alias = "DeepSeek",
+                CurrentModel = "deepseek-chat",
+            });
+        }
+
+        foreach (var key in keys["Em_OpenAIAPI_Dummy"]) {
+            apiPool.AddService(new OpenAIProvider(key) {
+                CurrentModel = "gpt-5-nano",
+            });
+        }
+    }
+
+#endregion
+
 #region AI Selector
 
     public bool TrySelectAIService<T>(Kernel kernel,
@@ -127,41 +162,6 @@ public sealed class ApiPoolSelector : IAIServiceSelector
 
         next = CurrentProvider = null;
         return false;
-    }
-
-#endregion
-
-#region Test Services
-
-    internal static void MockTestServices()
-    {
-        var apiPool = Instance;
-        var (_, keys) = PackageIterator
-            .GetJsonFromPackage<Dictionary<string, string[]>>("Emmersive/DebugKeys.json", ModInfo.Guid);
-
-        if (keys is null) {
-            return;
-        }
-
-        foreach (var key in keys["Em_GoogleGeminiAPI_Dummy"]) {
-            apiPool.AddService(new GoogleProvider(key) {
-                CurrentModel = "gemini-2.5-flash",
-            });
-        }
-
-        foreach (var key in keys["Em_DeepSeekAPI_Dummy"]) {
-            apiPool.AddService(new OpenAIProvider(key) {
-                EndPoint = "https://api.deepseek.com/v1",
-                Alias = "DeepSeek",
-                CurrentModel = "deepseek-chat",
-            });
-        }
-
-        foreach (var key in keys["Em_OpenAIAPI_Dummy"]) {
-            apiPool.AddService(new OpenAIProvider(key) {
-                CurrentModel = "gpt-5-nano",
-            });
-        }
     }
 
 #endregion
