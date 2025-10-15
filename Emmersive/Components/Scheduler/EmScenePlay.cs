@@ -59,7 +59,7 @@ public partial class EmScheduler
             return;
         }
 
-        using var _ = EmActivity.StartNew(provider.Id);
+        using var activity = EmActivity.StartNew(provider.Id);
 
         _sceneCts?.Dispose();
         _sceneCts = new();
@@ -86,6 +86,8 @@ public partial class EmScheduler
             EmMod.Log($"finished\n{response}");
 
             pc.Profile.SetTalked();
+
+            activity.Status = EmActivity.StatusType.Completed;
         } catch (OperationCanceledException) {
             MarkUnavailable($"timeout after {EmConfig.Policy.Timeout.Value}s");
         } catch (HttpOperationException httpEx) when (httpEx.StatusCode != HttpStatusCode.BadRequest) {
@@ -118,6 +120,7 @@ public partial class EmScheduler
         {
             EmMod.Warn<EmScheduler>(message);
             provider.MarkUnavailable(message);
+            activity.Status = EmActivity.StatusType.Failed;
         }
     }
 

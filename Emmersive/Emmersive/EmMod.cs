@@ -41,31 +41,7 @@ internal sealed partial class EmMod : BaseUnityPlugin
         MonoFrame.AddVendorExclusion("OpenAI");
 
 #if EM_TEST_SERVICE
-        var apiPool = ApiPoolSelector.Instance;
-        var (_, keys) = PackageIterator
-            .GetJsonFromPackage<Dictionary<string, string[]>>("Emmersive/DebugKeys.json", ModInfo.Guid);
-
-        if (keys is not null) {
-            foreach (var key in keys["Em_GoogleGeminiAPI_Dummy"]) {
-                apiPool.AddService(new GoogleProvider(key) {
-                    CurrentModel = "gemini-2.5-flash",
-                });
-            }
-
-            foreach (var key in keys["Em_DeepSeekAPI_Dummy"]) {
-                apiPool.AddService(new OpenAIProvider(key) {
-                    EndPoint = "https://api.deepseek.com/v1",
-                    Alias = "DeepSeek",
-                    CurrentModel = "deepseek-chat",
-                });
-            }
-
-            foreach (var key in keys["Em_OpenAIAPI_Dummy"]) {
-                apiPool.AddService(new OpenAIProvider(key) {
-                    CurrentModel = "gpt-5-nano",
-                });
-            }
-        }
+        ApiPoolSelector.MockTestServices();
 #else
         ApiPoolSelector.Instance.LoadServices();
 #endif
@@ -77,5 +53,6 @@ internal sealed partial class EmMod : BaseUnityPlugin
     {
         ApiPoolSelector.Instance.SaveServices();
         Localizer.DumpUnlocalized();
+        ExecutionAnalysis.DumpSessionActivities();
     }
 }
