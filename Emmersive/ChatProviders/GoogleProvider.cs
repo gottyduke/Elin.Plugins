@@ -58,9 +58,14 @@ public sealed class GoogleProvider(string apiKey) : ChatProviderBase(apiKey)
             return;
         }
 
+        // TODO: maybe change this in the future, for now, keep it as disabled
         if (CurrentModel == "gemini-2.5-pro") {
             RequestParams["thinkingConfig"] = JObject.FromObject(new {
                 thinkingBudget = 128,
+            });
+        } else {
+            RequestParams["thinkingConfig"] = JObject.FromObject(new {
+                thinkingBudget = 0,
             });
         }
 
