@@ -86,7 +86,7 @@ public partial class CustomChara
                         break;
                     }
 
-                    if (CreateTaggedChara(id, out var chara, import) && chara is not null) {
+                    if (CreateTaggedChara(id, out var chara, import)) {
                         SpawnAtZone(chara, toAddZone.Item1);
                         chara.mapStr.Set("cwl_source_chara_zone", toAddZone.Item2);
 

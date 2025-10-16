@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Cwl.API.Attributes;
 using Cwl.Helper.Extensions;
@@ -109,7 +110,7 @@ public partial class CustomChara : Chara
         _delayedCharaImport[r.id] = new(import, zones.ToArray(), equips.ToArray(), things.ToArray());
     }
 
-    public static bool CreateTaggedChara(string id, out Chara? chara)
+    public static bool CreateTaggedChara(string id, [NotNullWhen(true)] out Chara? chara)
     {
         chara = null;
         if (!sources.charas.map.TryGetValue(id, out var row)) {
@@ -120,12 +121,15 @@ public partial class CustomChara : Chara
         return _delayedCharaImport.TryGetValue(id, out var import) && CreateTaggedChara(id, out chara, import);
     }
 
-    public static bool CreateTaggedChara(string id, out Chara? chara, CharaImport import)
+    public static bool CreateTaggedChara(string id, [NotNullWhen(true)] out Chara? chara, CharaImport import)
     {
         return CreateTaggedChara(id, out chara, import.Equips, import.Things);
     }
 
-    public static bool CreateTaggedChara(string id, out Chara? chara, string[]? equips, string[]? things = null)
+    public static bool CreateTaggedChara(string id,
+                                         [NotNullWhen(true)] out Chara? chara,
+                                         string[]? equips,
+                                         string[]? things = null)
     {
         chara = null;
 
@@ -180,6 +184,14 @@ public partial class CustomChara : Chara
         }
     }
 
+    [CwlSourceReloadEvent]
+    internal static void ClearAllLoadedData()
+    {
+        _delayedCharaImport.Clear();
+        DramaRoutes.Clear();
+        BioOverride.Clear();
+    }
+
     public static bool IsRestorable(Chara chara, out SourceChara.Row row)
     {
         row = chara.source;
@@ -192,7 +204,7 @@ public partial class CustomChara : Chara
     [ConsoleCommand("spawn")]
     public static string SpawnTagged(string id)
     {
-        if (!CreateTaggedChara(id, out var chara) || chara is null) {
+        if (!CreateTaggedChara(id, out var chara)) {
             return "uwu failed";
         }
 
