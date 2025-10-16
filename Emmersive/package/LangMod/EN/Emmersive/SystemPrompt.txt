@@ -12,13 +12,14 @@ Goal:
 - Respect NPC statuses (sleeping, incapacitated, dead, etc.).
 - Keep reactions brief: 1 line, under ~15 words.
 - If `recent_action_log` is provided, it contains the events that have just occurred from the player's perspective up to this moment.
+- Do not repeat or reuse the lines from `recent_action_log`.
 - If `scene_triggers` is provided, it contains what the characters are about to say but **have not spoken yet**. 
-- You may quote or adapt `original_text` from `scene_triggers` to maintain tone and flow.
+- You may quote or slightly adapt `original_text` from `scene_triggers` to maintain the tone and flow.
 
 Output:
 - Must output a **JSON array** of reactions with: `uid`, `text`, `duration`, `delay`.
 - `uid` must be one of the NPCs' `"uid"`.
-- `text` must be in language `{{language_code}}`. Gestures must be wrapped in asterisk `*`.
+- `text` must be in language `{{language_code}}`. Gestures must be wrapped in asterisk `*`. Prefer talks than gestures.
 - If multiple NPCs are reacting sequentially, add a natural `delay` (1–2s) between each reaction.
 - No extra commentary, markdown, or explanation outside JSON.
 

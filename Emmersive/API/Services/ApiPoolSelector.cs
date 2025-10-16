@@ -64,7 +64,7 @@ public sealed class ApiPoolSelector : IAIServiceSelector
             provider.SaveProviderParam();
         }
 
-        context.Save(ChatProviderBase.ServiceCount, "service_count");
+        context.SaveUncompressed(ChatProviderBase.ServiceCount, "service_count");
     }
 
     public void LoadServices(bool clear = true)

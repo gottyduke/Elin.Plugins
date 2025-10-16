@@ -3,7 +3,7 @@ using Emmersive.API.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using ReflexCLI.Attributes;
-using SceneDirector = Emmersive.API.Services.SceneDirector.SceneDirector;
+using SceneDirector = Emmersive.API.Plugins.SceneDirector;
 
 namespace Emmersive;
 

@@ -1,18 +1,17 @@
-// ReSharper disable InconsistentNaming
-
 using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json.Linq;
 
-namespace Emmersive.API.Services.SceneDirector;
+namespace Emmersive.API.Plugins;
 
+// ReSharper disable InconsistentNaming
 public class SceneReaction
 {
-    public required int uid { get; set; }
-    public required string text { get; set; }
-    public required float duration { get; set; } = 2f;
-    public required float delay { get; set; } = 0f;
+    public required int uid { get; init; }
+    public required string text { get; init; }
+    public required float duration { get; init; }
+    public required float delay { get; init; }
 
-    internal static string Schema =>
+    internal static string SchemaStr =>
         """
         {
           "type": "array",
@@ -46,6 +45,23 @@ public class SceneReaction
         """;
 
     [field: AllowNull]
+    internal static JObject Schema =>
+        field ??= JObject.FromObject(new {
+            type = "array",
+            items = new {
+                type = "object",
+                properties = new {
+                    uid = new { type = "integer" },
+                    text = new { type = "string" },
+                    duration = new { type = "number", format = "float" },
+                    delay = new { type = "number", format = "float" },
+                },
+                required = new[] { "uid", "text", "duration", "delay" },
+                additionalProperties = false,
+            },
+        });
+
+    [field: AllowNull]
     internal static JObject OpenAiSchema =>
         field ??= JObject.FromObject(new {
                 type = "json_schema",
@@ -55,20 +71,7 @@ public class SceneReaction
                     schema = new {
                         type = "object",
                         properties = new {
-                            items = new {
-                                type = "array",
-                                items = new {
-                                    type = "object",
-                                    properties = new {
-                                        uid = new { type = "integer" },
-                                        text = new { type = "string" },
-                                        duration = new { type = "number", format = "float" },
-                                        delay = new { type = "number", format = "float" },
-                                    },
-                                    required = new[] { "uid", "text", "duration", "delay" },
-                                    additionalProperties = false,
-                                },
-                            },
+                            items = Schema,
                         },
                         required = new[] { "items" },
                         additionalProperties = false,

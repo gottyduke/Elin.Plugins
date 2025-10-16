@@ -24,6 +24,11 @@ public class CharaContext(Chara chara) : ContextProviderBase
             ["gender"] = Lang._gender(chara.bio.gender),
         };
 
+        var personality = new PersonalityContext(chara).Build();
+        if (personality is not null) {
+            data["personality"] = personality;
+        }
+
         if (!chara.IsPC) {
             var hostility = chara.hostility;
             data["hostility"] = hostility.ToString();

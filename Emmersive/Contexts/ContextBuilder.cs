@@ -35,13 +35,19 @@ public sealed class ContextBuilder
         set;
     }
 
-    public static ContextBuilder CreateStandard()
+    /// <summary>
+    ///     <see cref="EnvironmentContext" />
+    ///     <see cref="CurrentZoneContext" />
+    ///     <see cref="PlayerContext" />
+    ///     <see cref="RecentActionContext" />
+    /// </summary>
+    public static ContextBuilder CreateStandardPrefix()
     {
         return new ContextBuilder()
             .Add(EnvironmentContext)
             .Add(CurrentZoneContext)
-            .Add(PlayerContext)
-            .Add(RecentActionContext);
+            .Add(RecentActionContext)
+            .Add(PlayerContext);
     }
 
     public static ContextBuilder CreateDefault()

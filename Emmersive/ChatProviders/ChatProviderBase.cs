@@ -12,13 +12,9 @@ namespace Emmersive.ChatProviders;
 
 public abstract partial class ChatProviderBase : IChatProvider, IExtensionMerger
 {
-    [JsonIgnore]
     private DateTime _cooldownUntil = DateTime.MinValue;
-
-    [JsonIgnore]
     private UIInputText? _modelInput;
 
-    [JsonIgnore]
     protected string? UnavailableReason;
 
     protected ChatProviderBase(string apiKey)
@@ -32,7 +28,6 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionMerger
     [JsonIgnore]
     public abstract PromptExecutionSettings ExecutionSettings { get; set; }
 
-    [JsonIgnore]
     protected string ApiKey { get; set; }
 
     [JsonProperty]
@@ -58,7 +53,7 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionMerger
     public virtual void MarkUnavailable(string? message = null)
     {
         UnavailableReason = message;
-        _cooldownUntil = DateTime.Now + TimeSpan.FromSeconds(15f);
+        _cooldownUntil = DateTime.Now + TimeSpan.FromSeconds(EmConfig.Policy.ServiceCooldown.Value);
         EmMod.DebugPopup<IChatProvider>($"[{Id}] temporarily unavailable: {message}");
     }
 
@@ -71,11 +66,26 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionMerger
 
     public virtual async UniTask<ChatMessageContent> HandleRequest(Kernel kernel, ChatHistory context, CancellationToken token)
     {
-        EmActivity.Current?.Status = EmActivity.StatusType.InProgress;
+        var activity = EmActivity.Current!;
+        activity.SetStatus(EmActivity.StatusType.InProgress);
+
+        var timeout = EmConfig.Policy.Timeout.Value;
 
         var service = kernel.GetRequiredService<IChatCompletionService>(Id);
-        return await service.GetChatMessageContentAsync(context, ExecutionSettings, kernel, token)
-            .ConfigureAwait(false);
+        var task = service.GetChatMessageContentAsync(context, ExecutionSettings, kernel, token)
+            .AsUniTask(false)
+            .Preserve();
+
+        var tasklet = await UniTask.WhenAny(task, UniTask.Delay(TimeSpan.FromSeconds(timeout), cancellationToken: token));
+        if (!tasklet.hasResultLeft) {
+            activity.SetStatus(EmActivity.StatusType.Timeout);
+        }
+
+        var response = await task;
+
+        HandleRequestInternal(response, activity);
+
+        return response;
     }
 
     public virtual void MergeExtensionData(IDictionary<string, object> data)
@@ -92,4 +102,6 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionMerger
     }
 
     protected abstract void Register(IKernelBuilder builder, string model);
+
+    protected abstract void HandleRequestInternal(ChatMessageContent response, EmActivity activity);
 }

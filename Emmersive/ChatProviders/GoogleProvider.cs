@@ -1,27 +1,15 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using Cysharp.Threading.Tasks;
-using Emmersive.API.Services.SceneDirector;
+using Emmersive.API.Plugins;
 using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.Google;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using YKF;
 
 namespace Emmersive.ChatProviders;
 
 public sealed class GoogleProvider(string apiKey) : ChatProviderBase(apiKey)
 {
-    private static readonly JObject _disableThinking = JObject.FromObject(new {
-        thinkingBudget = 0,
-    });
-
-    private static readonly JObject _disableThinkingPro = JObject.FromObject(new {
-        thinkingBudget = 128,
-    });
-
     [field: AllowNull]
     public override string Id
     {
@@ -31,43 +19,26 @@ public sealed class GoogleProvider(string apiKey) : ChatProviderBase(apiKey)
 
     public override string CurrentModel { get; set; } = "gemini-2.5-flash";
 
+    [JsonIgnore]
     public override IDictionary<string, object> RequestParams { get; set; } = new Dictionary<string, object> {
-        ["thinkingConfig"] = _disableThinking,
+        //
     };
 
     [JsonIgnore]
     public override PromptExecutionSettings ExecutionSettings { get; set; } = new GeminiPromptExecutionSettings {
         ResponseMimeType = "application/json",
         ResponseSchema = typeof(SceneReaction[]),
+        ThinkingConfig = new() {
+            ThinkingBudget = 0,
+        },
     };
-
-    public override async UniTask<ChatMessageContent> HandleRequest(Kernel kernel, ChatHistory context, CancellationToken token)
-    {
-        var response = await base.HandleRequest(kernel, context, token);
-        if (response is not GeminiChatMessageContent { Metadata: { } metadata }) {
-            return response;
-        }
-
-        var activity = EmActivity.Current;
-        if (activity is not null) {
-            activity.InputToken = metadata.PromptTokenCount;
-            activity.OutputToken = metadata.CandidatesTokenCount;
-        }
-
-        return response;
-    }
 
     public override void MergeExtensionData(IDictionary<string, object> data)
     {
         if (!data.TryGetValue("generationConfig", out var geminiRequest) ||
-            geminiRequest is not Dictionary<string, object> generationConfig) {
+            geminiRequest is not IDictionary<string, object> generationConfig) {
             return;
         }
-
-        // TODO: maybe change this in the future, for now, keep it as disabled
-        RequestParams["thinkingConfig"] = CurrentModel == "gemini-2.5-pro"
-            ? _disableThinkingPro
-            : _disableThinking;
 
         base.MergeExtensionData(generationConfig);
     }
@@ -79,5 +50,18 @@ public sealed class GoogleProvider(string apiKey) : ChatProviderBase(apiKey)
     protected override void Register(IKernelBuilder builder, string model)
     {
         builder.AddGoogleAIGeminiChatCompletion(model, ApiKey, serviceId: Id);
+    }
+
+    protected override void HandleRequestInternal(ChatMessageContent response, EmActivity activity)
+    {
+        (ExecutionSettings as GeminiPromptExecutionSettings)?.ThinkingConfig?.ThinkingBudget =
+            CurrentModel.EndsWith("pro") ? 128 : 0;
+
+        if (response is not GeminiChatMessageContent { Metadata: { } metadata }) {
+            return;
+        }
+
+        activity.InputToken = metadata.PromptTokenCount;
+        activity.OutputToken = metadata.CandidatesTokenCount;
     }
 }

@@ -4,9 +4,11 @@ namespace Emmersive.Helper;
 
 public static class PointScan
 {
+    public static List<Chara> LastNearby { get; private set; } = [];
+
     extension(Chara focus)
     {
         public List<Chara> Nearby =>
-            focus.pos.ListCharasInRadius(focus, EmConfig.Scene.NearbyRadius.Value, c => !c.IsPC && !c.IsAnimal);
+            LastNearby = focus.pos.ListCharasInRadius(focus, EmConfig.Scene.NearbyRadius.Value, c => !c.IsPC && !c.IsAnimal);
     }
 }

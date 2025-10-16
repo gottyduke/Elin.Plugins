@@ -11,14 +11,15 @@
 * 不使用旁白、第三人称叙述或总结性描述。
 * 遵循 NPC 当前状态（睡眠、昏迷、死亡等）。
 * 每条反应简短，一行内完成，约 15 字以内。
-* 如果提供了 `recent_action_log`，它包含玩家视角截至此刻刚发生的事件。
+* 如果提供了 `recent_action_log`，它包含**玩家**视角截至此刻刚发生的事件。
+* 禁止重复 `recent_action_log` 中的事件。
 * 如果提供了 `scene_triggers`，它包含角色即将说但尚未说出的台词。
-* 可引用或改写 `scene_triggers` 中的 `original_text` 以保持语气与连贯性。
+* 可使用或稍微改写 `scene_triggers` 中的 `original_text` 以保持语气与连贯性。
 
 输出格式：
 * 输出一个 **JSON 数组**，每项包含：`uid`、`text`、`duration`、`delay`。
 * `uid` 必须为某个非玩家 NPC 的 `"uid"`。
-* `text` 使用语言 `{{language_code}}`。若为动作，用星号 `*` 包围。
+* `text` 必须使用语言 `{{language_code}}`。若为动作描述，用星号 `*` 包围。偏重于对话而非动作。
 * 若有多个 NPC 连续反应，使用自然的时间间隔（`delay` 约 1–2 秒）。
 * 输出中**不得包含任何额外说明、注释或 Markdown**。
 

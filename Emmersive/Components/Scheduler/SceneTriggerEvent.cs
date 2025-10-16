@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Emmersive.API.Plugins.SceneScheduler;
+namespace Emmersive.Components;
 
 public class SceneTriggerEvent
 {

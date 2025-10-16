@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Emmersive.API.Plugins.SceneScheduler;
+using Emmersive.Components;
 
 namespace Emmersive.Contexts;
 
@@ -8,10 +8,14 @@ public class SceneTriggerContext(IEnumerable<SceneTriggerEvent> triggers) : Cont
 {
     public override string Name => "scene_triggers";
 
-    public override object Build()
+    public override object? Build()
     {
-        return triggers
+        var sceneTriggers = triggers
             .Select(t => t.TransformContext())
             .ToArray();
+
+        return sceneTriggers.Length == 0
+            ? null
+            : sceneTriggers;
     }
 }

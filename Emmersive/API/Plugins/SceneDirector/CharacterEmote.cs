@@ -5,7 +5,7 @@ using Microsoft.SemanticKernel;
 
 // ReSharper disable InconsistentNaming
 
-namespace Emmersive.API.Services.SceneDirector;
+namespace Emmersive.API.Plugins;
 
 public partial class SceneDirector
 {

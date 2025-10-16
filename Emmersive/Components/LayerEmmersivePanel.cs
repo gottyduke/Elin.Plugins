@@ -14,7 +14,7 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
 
     private readonly List<TabEmmersiveBase> _tabs = [];
     public override string Title => "Elin Immersive Talks";
-    public override Rect Bound => new(Vector2.zero, new(Screen.width / 1.5f, Screen.height / 1.5f));
+    public override Rect Bound => FitWindow();
 
     public static LayerEmmersivePanel? Instance { get; private set; }
 
@@ -61,5 +61,12 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
     internal static void OpenPanelSesame()
     {
         YK.CreateLayer<LayerEmmersivePanel, LayerCreationData>(new());
+    }
+
+    private static Rect FitWindow()
+    {
+        var scaler = ui.canvasScaler.scaleFactor;
+        var size = new Vector2(Screen.width / 1.5f, Screen.height / 1.5f) / scaler;
+        return new(Vector2.zero, size);
     }
 }

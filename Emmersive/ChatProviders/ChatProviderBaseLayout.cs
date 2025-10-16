@@ -31,6 +31,8 @@ public abstract partial class ChatProviderBase : ILayoutProvider
         }).GetComponent<Image>();
         btn.color = Color.yellow;
 
+        card.Spacer(5);
+
         var cardBg = card.Layout.gameObject.AddComponent<Image>();
         cardBg.sprite = btn.sprite;
         cardBg.type = Image.Type.Sliced;
@@ -38,6 +40,7 @@ public abstract partial class ChatProviderBase : ILayoutProvider
 
         if (!IsAvailable && !UnavailableReason.IsEmpty()) {
             card.TextLong(UnavailableReason!);
+            card.Spacer(5);
         }
 
         ShowActivityInfo(card);
@@ -93,7 +96,9 @@ public abstract partial class ChatProviderBase : ILayoutProvider
         right.TopicDomain("em_ui_tokens_input", $"{summary.TokensInput:N0}");
         right.TopicDomain("em_ui_tokens_tph", $"{summary.TokensLastHour:N0}");
         right.TopicDomain("em_ui_tokens_tpm", $"{summary.TokensPerMin:N0}");
-        right.TopicDomain("em_ui_tokens_tpr", $"{summary.TokensPerRequest:N0}");
+        right.TopicDomain("em_ui_tokens_tpr", $"{summary.TokensPerRequest:N1}");
+
+        card.Spacer(5);
     }
 
     protected abstract void OnLayoutInternal(YKLayout card);

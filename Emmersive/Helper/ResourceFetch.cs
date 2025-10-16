@@ -61,6 +61,11 @@ public class ResourceFetch
 
 #region Active Resource
 
+    public static bool HasActiveResource(string path)
+    {
+        return _activeResources.ContainsKey(path);
+    }
+
     public static string GetActiveResource(string path, bool autoSet = true)
     {
         if (_activeResources.TryGetValue(path, out var resource)) {

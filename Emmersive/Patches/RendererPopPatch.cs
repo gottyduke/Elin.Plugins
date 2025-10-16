@@ -61,7 +61,7 @@ internal class RendererPopPatch
             return "";
         }
 
-        if (!chara.Profile.CanTalk) {
+        if (!chara.Profile.TalkOnCooldown) {
             if (!EmConfig.Scene.BlockCharaTalk.Value) {
                 // let non-blocked gc talk
                 Msg.Say(text);
@@ -81,22 +81,23 @@ internal class RendererPopPatch
             return;
         }
 
-        if (EmScheduler.IsInProgress) {
+        var profile = chara.Profile;
+        if (EmScheduler.IsInProgress && profile.LockedInRequest) {
             // block all talks during scene request
+            EmMod.DebugPopup<EmScheduler>($"blocked {chara.NameSimple}");
             return;
         }
 
-        if (!chara.Profile.CanTalk) {
+        if (!profile.TalkOnCooldown && !EClass.pc.Profile.TalkOnCooldown) {
+            EmScheduler.OnTalkTrigger(new() {
+                Chara = chara,
+                Trigger = text,
+            });
+        } else {
+            // can't trigger yet
             if (!EmConfig.Scene.BlockCharaTalk.Value) {
                 // let non-blocked gc talk
                 renderer.Say(text, color, duration);
-            }
-        } else {
-            if (EClass.pc.Profile.CanTalk) {
-                EmScheduler.OnTalkTrigger(new() {
-                    Chara = chara,
-                    Trigger = text,
-                });
             }
         }
 

@@ -1,14 +1,16 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using Cwl.API.Attributes;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
-using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using Cysharp.Threading.Tasks;
+using Emmersive.API.Exceptions;
+using Emmersive.API.Plugins;
 using Emmersive.API.Services;
-using Emmersive.API.Services.SceneDirector;
 using Emmersive.Contexts;
 using Emmersive.Helper;
 using Microsoft.SemanticKernel;
@@ -19,11 +21,18 @@ namespace Emmersive.Components;
 
 public partial class EmScheduler
 {
-    [ConsoleCommand("trigger_current")]
-    internal static void TestCurrentZone()
+    [field: AllowNull]
+    private static CancellationTokenSource SceneCts
+    {
+        get => field ??= new();
+        set;
+    }
+
+    [ConsoleCommand("test_current")]
+    internal static void TestCurrent()
     {
         var builder = ContextBuilder
-            .CreateStandard()
+            .CreateStandardPrefix()
             .Add(new NearbyCharaContext(EClass.pc));
 
         RequestScenePlay(builder);
@@ -32,7 +41,7 @@ public partial class EmScheduler
     internal static void RequestScenePlayWithTrigger()
     {
         var builder = ContextBuilder
-            .CreateStandard()
+            .CreateStandardPrefix()
             .Add(new NearbyCharaContext(EClass.pc))
             .Add(new SceneTriggerContext(_buffer));
 
@@ -47,8 +56,13 @@ public partial class EmScheduler
     internal static async UniTask ScenePlayAsync(ContextBuilder contextBuilder, int retries = -1)
     {
         await UniTask.SwitchToThreadPool();
-        var context = contextBuilder.Build().ToHistory();
-        await ScenePlayAsync(context, retries);
+
+        try {
+            var context = contextBuilder.Build().ToHistory();
+            await ScenePlayAsync(context, retries);
+        } finally {
+            await UniTask.Yield();
+        }
     }
 
     internal static async UniTask ScenePlayAsync(ChatHistory context, int retries = -1)
@@ -63,6 +77,15 @@ public partial class EmScheduler
 
         EmMod.Log<EmScheduler>("em_ui_scene_scheduled".Loc(retries));
 
+        await ScenePlayAsyncInternal(context, retries);
+    }
+
+    internal static async UniTask ScenePlayAsyncInternal(ChatHistory context, int retries)
+    {
+        if (retries < 0) {
+            return;
+        }
+
         var kernel = EmKernel.Kernel ?? EmKernel.RebuildKernel();
 
         var apiPool = ApiPoolSelector.Instance;
@@ -72,68 +95,73 @@ public partial class EmScheduler
 
         using var activity = EmActivity.StartNew(provider.Id);
 
-        _sceneCts?.Dispose();
-        _sceneCts = new();
+        EmMod.DebugPopup<EmScheduler>("em_ui_scene_requesting".Loc());
 
         var timeout = EmConfig.Policy.Timeout.Value;
-        var timeoutCts = UniTasklet.Timeout(timeout);
-        var cts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, _sceneCts.Token);
-
-        EmMod.DebugPopup<EmScheduler>("em_ui_scene_requesting".Loc());
 
         SetScenePlayDelay(timeout);
 
+        var lockedCharas = PointScan.LastNearby
+            .Where(c => !c.Profile.LockedInRequest)
+            .ToArray();
+
+        FreezeCharas(true);
+
         try {
-            var response = await provider.HandleRequest(kernel, context, cts.Token);
+            var response = await provider.HandleRequest(kernel, context, SceneCts.Token);
+
+            activity.SetStatus(EmActivity.StatusType.Completed);
 
             var director = kernel.GetRequiredService<SceneDirector>();
             director.Execute(response.Content!);
 
-            EmMod.Log("em_ui_scene_complete".Loc(response));
-
             pc.Profile.SetTalked();
 
-            activity.Status = EmActivity.StatusType.Completed;
+            EmMod.Debug("em_ui_scene_complete".Loc(response));
+        } catch (SchedulerDryRunException) {
+            // noexcept
         } catch (OperationCanceledException) {
-            MarkUnavailable("em_ui_scene_timeout".Loc(EmConfig.Policy.Timeout.Value));
+            MarkUnavailable("em_ui_scene_timeout".Loc(timeout));
+            // noexcept
         } catch (HttpOperationException httpEx) when (httpEx.StatusCode != HttpStatusCode.BadRequest) {
             MarkUnavailable("em_ui_scene_failed".Loc(httpEx.StatusCode!.TagColor(0xff0000), httpEx.Message));
 
-            if (retries == 0) {
+            if (retries > 0) {
+                await ScenePlayAsyncInternal(context, --retries);
+            } else {
                 EmMod.Debug<EmScheduler>("em_ui_scene_retry_end".Loc());
-                return;
             }
-
-            ScenePlayAsync(context, --retries).Forget(ExceptionProfile.DefaultExceptionHandler);
+            // noexcept
         } catch (Exception ex) {
             MarkUnavailable("em_ui_scene_failed".Loc(ex.GetType().Name, ex.Message));
 
             throw;
         } finally {
-            CoroutineHelper.Deferred(Cleanup, () => cts.IsCancellationRequested);
+            FreezeCharas(false);
         }
 
         return;
 
-        void Cleanup()
+        void FreezeCharas(bool block)
         {
-            timeoutCts.Dispose();
-            _sceneCts?.Dispose();
-            cts.Dispose();
+            foreach (var chara in lockedCharas) {
+                chara.Profile.LockedInRequest = block;
+            }
         }
 
         void MarkUnavailable(string message)
         {
             EmMod.Warn<EmScheduler>(message);
             provider.MarkUnavailable(message);
-            activity.Status = EmActivity.StatusType.Failed;
+            activity.SetStatus(EmActivity.StatusType.Failed);
         }
     }
 
     [CwlSceneInitEvent(Scene.Mode.Title)]
     private static void OnSceneExit()
     {
-        _sceneCts?.Cancel();
-        _sceneCts?.Dispose();
+        SceneCts.Cancel();
+        SceneCts.Dispose();
+        SceneCts = null!;
     }
 }

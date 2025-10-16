@@ -26,34 +26,26 @@ public class RecentActionContext : ContextProviderBase
                     .ToList();
             }
         } else {
-            var fullLog = EClass.game.log;
-            var lastId = fullLog.currentLogIndex - 1;
-            var dict = fullLog.dict;
-
-            IEnumerable<string> logs;
-            lock (dict) {
-                logs = Enumerable
-                    .Range(1, lastId)
-                    .Skip(Math.Max(_indexSinceStart, lastId - depth))
-                    .Select(i => dict[i].text);
-            }
-
             actions = [];
-            var sanitizedSession = session.ToArray();
 
-            foreach (var log in logs) {
+            var sanitizedSession = session.ToArray();
+            var forwardPos = 0;
+
+            foreach (var log in ExtractUniqueLog(depth)) {
                 var sanitized = log;
 
                 if (sanitized.StartsWith('"') && sanitized.EndsWith('"') && sanitized.Length > 2) {
                     sanitized = sanitized[1..^1];
                 }
 
-                foreach (var (actor, talk) in sanitizedSession) {
+                for (var i = forwardPos; i < sanitizedSession.Length; ++i) {
+                    var (actor, talk) = sanitizedSession[i];
                     if (sanitized != talk) {
                         continue;
                     }
 
                     sanitized = $"{actor}: {talk}";
+                    forwardPos++;
                     break;
                 }
 
@@ -83,6 +75,32 @@ public class RecentActionContext : ContextProviderBase
         var trim = Math.Max(BufSize, EmConfig.Context.RecentLogDepth.Value * 2);
         if (RecentActions.Count >= trim) {
             TrimExcess(trim);
+        }
+    }
+
+    public static List<string> ExtractUniqueLog(int depth)
+    {
+        var fullLog = EClass.game.log;
+        var lastIndex = fullLog.currentLogIndex - 1;
+        var dict = fullLog.dict;
+
+        lock (dict) {
+            HashSet<string> seen = [];
+            List<string> logs = [];
+
+            while (lastIndex >= _indexSinceStart) {
+                var log = dict[lastIndex].text;
+                if (seen.Add(log)) {
+                    logs.Add(log);
+                    if (logs.Count >= depth) {
+                        break;
+                    }
+                }
+
+                lastIndex--;
+            }
+
+            return logs;
         }
     }
 

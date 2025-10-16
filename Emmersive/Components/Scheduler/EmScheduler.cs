@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using System.Threading;
 using Cwl.LangMod;
-using Emmersive.API.Plugins.SceneScheduler;
 using ReflexCLI.Attributes;
 using UnityEngine;
 
@@ -19,7 +17,6 @@ public partial class EmScheduler : EMono
     }
 
     private static readonly List<SceneTriggerEvent> _buffer = [];
-    private static CancellationTokenSource? _sceneCts;
 
     private static float _bufferStartTime = -1f;
     private static bool _isBuffering;

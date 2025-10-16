@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Cwl.Helper.Exceptions;
+using Emmersive.API.Exceptions;
 using Emmersive.Components;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -60,7 +61,7 @@ public class ExtensionDataHandler()
 
         if (EmScheduler.Mode == EmScheduler.ScheduleMode.DryRun) {
             EmMod.Log<EmScheduler>(finalized);
-            throw new OperationCanceledException();
+            throw new SchedulerDryRunException();
         }
 
         return await base.SendAsync(request, cancellationToken);

@@ -13,6 +13,7 @@ public record EmActivity : IDisposable
         InProgress,
         Completed,
         Failed,
+        Timeout,
     }
 
     public static readonly List<EmActivity> Session = [];
@@ -33,14 +34,10 @@ public record EmActivity : IDisposable
     public int OutputToken { get; set; }
     public TimeSpan Latency { get; set; } = TimeSpan.Zero;
     public required string ServiceName { get; init; }
-    public StatusType Status { get; set; } = StatusType.Unknown;
+    public StatusType Status { get; private set; } = StatusType.Unknown;
 
     public void Dispose()
     {
-        if (Current != this) {
-            Current?.Dispose();
-        }
-
         EndTime = DateTime.Now;
 
         if (Latency == TimeSpan.Zero) {
@@ -53,6 +50,22 @@ public record EmActivity : IDisposable
 
         EmMod.Log<EmActivity>(
             $"[{ServiceName}] {RequestTime:HH:mm:ss} {Latency.TotalMilliseconds}ms {InputToken + OutputToken}");
+    }
+
+    public void SetStatus(StatusType status)
+    {
+        if (status is not (StatusType.Failed or StatusType.Timeout)) {
+            ThrowIfTimeout();
+        }
+
+        Status = status;
+    }
+
+    public void ThrowIfTimeout()
+    {
+        if (Status == StatusType.Timeout) {
+            throw new OperationCanceledException();
+        }
     }
 
     public static EmActivity StartNew(string serviceId)

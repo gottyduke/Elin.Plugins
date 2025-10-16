@@ -1,3 +1,3 @@
-## 系统提示
+## System Prompt
 
-您可以随意编辑系统提示，看看效果如何。
+System prompt is prepended at the beginning and will always be sent with every request.

@@ -2,14 +2,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Cwl.LangMod;
-using Emmersive.API.Plugins;
 using Emmersive.Components;
 using Newtonsoft.Json;
 
 // ReSharper disable InconsistentNaming
 
-namespace Emmersive.API.Services.SceneDirector;
+namespace Emmersive.API.Plugins;
 
 [Description("Core plugin that orchestrates scene play.")]
 [EmPlugin]
@@ -29,7 +29,7 @@ public partial class SceneDirector : EClass
             return;
         }
 
-        var maxDelay = 1f;
+        var maxDelay = 0f;
         foreach (var reaction in reactions) {
             maxDelay += reaction.delay;
             DoPopText(reaction.uid, reaction.text, reaction.duration, reaction.delay);
@@ -40,6 +40,8 @@ public partial class SceneDirector : EClass
 
     private SceneReaction[]? TryParseReactions(string content)
     {
+        content = StripMarkdownFence(content);
+
         if (content.IsEmpty()) {
             return null;
         }
@@ -85,5 +87,17 @@ public partial class SceneDirector : EClass
         }
 
         return null;
+    }
+
+    private string StripMarkdownFence(string content)
+    {
+        content = content.Trim();
+
+        const string pattern = @"^```(?:json)?\s*([\s\S]*?)\s*```$";
+        var match = Regex.Match(content, pattern, RegexOptions.IgnoreCase);
+
+        return match.Success
+            ? match.Groups[1].Value.Trim()
+            : content;
     }
 }

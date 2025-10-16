@@ -14,7 +14,7 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.emmersive";
     internal const string Name = "Elin with AI (Beta)";
-    internal const string Version = "0.9.2";
+    internal const string Version = "0.9.3";
 }
 
 [ConsoleCommandClassCustomizer("em")]
@@ -29,7 +29,8 @@ internal sealed partial class EmMod : BaseUnityPlugin
     {
         Instance = this;
 
-        EmConfig.Bind(Config);
+        EmConfig.Bind();
+
         CommandRegistry.assemblies.Add(Assembly);
         Harmony.CreateAndPatchAll(Assembly, ModInfo.Guid);
 
@@ -41,6 +42,9 @@ internal sealed partial class EmMod : BaseUnityPlugin
         MonoFrame.AddVendorExclusion("Azure.");
         MonoFrame.AddVendorExclusion("Microsoft.");
         MonoFrame.AddVendorExclusion("OpenAI");
+
+        EmConfig.InvalidateConfigs();
+        EmConfig.EnableReloadWatcher();
 
 #if EM_TEST_SERVICE
         ApiPoolSelector.MockTestServices();
@@ -57,11 +61,5 @@ internal sealed partial class EmMod : BaseUnityPlugin
         ApiPoolSelector.Instance.CleanServiceParams();
         Localizer.DumpUnlocalized();
         ExecutionAnalysis.DumpSessionActivities();
-    }
-
-    [ConsoleCommand("reload_cfg")]
-    private static void LoadConfig()
-    {
-        EmConfig.Bind(Instance.Config);
     }
 }

@@ -9,6 +9,7 @@ using Emmersive.Helper;
 using UnityEngine;
 using UnityEngine.UI;
 using YKF;
+using OpenFileOrPath = Emmersive.Helper.OpenFileOrPath;
 
 namespace Emmersive.Components;
 
@@ -89,14 +90,20 @@ internal class TabAiService : TabEmmersiveBase
 
         btnGroup.Button("em_ui_test_generation".lang(), () => {
             LayerEmmersivePanel.Instance!.OnLayoutConfirm();
-            EmScheduler.TestCurrentZone();
+            EmScheduler.TestCurrent();
             ELayer.ui.RemoveLayer<LayerEmmersivePanel>();
         });
 
         btnGroup.Button("em_ui_open_debug".lang(), () => {
             EmConfig.Policy.Verbose.Value = true;
             var path = PackageIterator.GetRelocatedDirFromPackage("Emmersive", ModInfo.Guid);
-            Util.Run(path!.FullName);
+            // TODO: use CWL version after updating
+            OpenFileOrPath.Run(path!.FullName);
+        });
+
+        btnGroup.Button("em_ui_config_open".lang(), () => {
+            // TODO: use CWL version after updating
+            OpenFileOrPath.Run(EmMod.Instance.Config.ConfigFilePath);
         });
     }
 

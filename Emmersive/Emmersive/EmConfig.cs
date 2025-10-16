@@ -1,11 +1,15 @@
 using BepInEx.Configuration;
+using ReflexCLI.Attributes;
 
 namespace Emmersive;
 
-internal class EmConfig
+[ConsoleCommandClassCustomizer("em")]
+internal partial class EmConfig
 {
-    internal static void Bind(ConfigFile config)
+    internal static void Bind()
     {
+        var config = EmMod.Instance.Config;
+
         Policy.Verbose = config.Bind(
             "RuntimePolicy",
             "Verbose",
@@ -21,13 +25,13 @@ internal class EmConfig
         Policy.Timeout = config.Bind(
             "RuntimePolicy",
             "Timeout",
-            5f,
+            20f,
             new ConfigDescription(
                 "Timeout in seconds for a generation request\n" +
                 "When timeout, there'll be no retry attempt\n" +
                 "一次生成请求的最大超时\n" +
                 "超时后，将不会重新请求",
-                new AcceptableValueRange<float>(1f, 20f)));
+                new AcceptableValueRange<float>(1f, 25f)));
 
         Policy.Retries = config.Bind(
             "RuntimePolicy",
@@ -37,6 +41,17 @@ internal class EmConfig
                 "Retries attempts after a failed request\n" +
                 "生成请求失败后的重试次数",
                 new AcceptableValueRange<int>(0, 5)));
+
+        Policy.ServiceCooldown = config.Bind(
+            "RuntimePolicy",
+            "ServiceCooldown",
+            10f,
+            new ConfigDescription(
+                "Minimum seconds in realtime required to auto reset a service after it failed\n" +
+                "This is used for API service pooling\n" +
+                "生成请求失败后的服务自动禁用时间\n" +
+                "用于服务池管理自动使用下一可用服务",
+                new AcceptableValueRange<float>(0f, 60f)));
 
         Context.DisabledProviders = config.Bind(
             "Context",
@@ -90,23 +105,23 @@ internal class EmConfig
             "TurnsCooldown",
             12,
             new ConfigDescription(
-                "Minimum turns required before next scene request\n" +
+                "Minimum in game turns required before next scene request\n" +
                 "两次请求之间的最低间隔回合数",
-                new AcceptableValueRange<int>(0, 100)));
+                new AcceptableValueRange<int>(0, 30)));
 
         Scene.SecondsCooldown = config.Bind(
             "Scene",
             "SecondsCooldown",
-            6f,
+            3f,
             new ConfigDescription(
                 "Minimum seconds in realtime required before next scene request\n" +
                 "两次请求之间的最低间隔秒数",
-                new AcceptableValueRange<float>(0f, 100)));
+                new AcceptableValueRange<float>(0f, 20)));
 
         Scene.SceneTriggerWindow = config.Bind(
             "Scene",
             "SceneTriggerWindow",
-            0.05f,
+            0.1f,
             new ConfigDescription(
                 "Small window to buffer all scene trigger talks\n" +
                 "This can prevent everyone talk at once such as after loading a save\n" +
@@ -148,5 +163,6 @@ internal class EmConfig
         internal static ConfigEntry<float> Timeout { get; set; } = null!;
         internal static ConfigEntry<int> Retries { get; set; } = null!;
         internal static ConfigEntry<bool> Verbose { get; set; } = null!;
+        internal static ConfigEntry<float> ServiceCooldown { get; set; } = null!;
     }
 }

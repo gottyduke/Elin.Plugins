@@ -7,7 +7,7 @@ using Emmersive.Helper;
 using Microsoft.SemanticKernel;
 using UnityEngine;
 
-namespace Emmersive.API.Services.SceneDirector;
+namespace Emmersive.API.Plugins;
 
 public partial class SceneDirector
 {
@@ -53,6 +53,11 @@ public partial class SceneDirector
                     return;
                 }
 
+                var profile = chara.Profile;
+                if (!pc.CanSee(chara) || profile.TalkOnCooldown) {
+                    return;
+                }
+
                 Color color;
                 if (gesture) {
                     color = Msg.colors.Ono;
@@ -66,11 +71,9 @@ public partial class SceneDirector
                 Msg.SetColor(color);
                 chara.Say(text);
 
-                if (pc.CanSee(chara)) {
-                    chara.HostRenderer.Say(text.Wrap(7), duration: duration);
-                }
+                chara.HostRenderer.Say(text.Wrap(7), duration: duration);
 
-                chara.Profile.SetTalked();
+                profile.SetTalked();
             }
         }
 

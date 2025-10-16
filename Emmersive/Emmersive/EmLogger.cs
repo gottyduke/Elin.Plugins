@@ -111,20 +111,15 @@ internal sealed partial class EmMod
     }
 
     [Conditional("DEBUG")]
-    internal static void DebugPopup<T>(string message)
+    internal static void DebugPopup<T>(string message, float seconds = 2.5f)
     {
-        if (!EmConfig.Policy.Verbose.Value) {
-            return;
-        }
-
-        Log<T>(message);
-        using var progress = ProgressIndicator.CreateProgressScoped(() => new(message), 2.5f);
+        Popup<T>(message, seconds);
     }
 
-    internal static void Popup<T>(string message)
+    internal static void Popup<T>(string message, float seconds = 2.5f)
     {
         Log<T>(message);
-        using var progress = ProgressIndicator.CreateProgressScoped(() => new(message));
+        using var progress = ProgressIndicator.CreateProgressScoped(() => new(message), seconds);
     }
 
     private static void LogInternal(object log)
