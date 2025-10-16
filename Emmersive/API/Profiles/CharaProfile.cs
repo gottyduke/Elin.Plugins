@@ -4,8 +4,8 @@ namespace Emmersive.API.Profiles;
 
 public class CharaProfile(Chara chara)
 {
-    public float LastReactionTime { get; set; } = -1f;
-    public int LastReactionTurn { get; set; } = -1;
+    public float LastReactionTime { get; set; } = -1919.810f;
+    public int LastReactionTurn { get; set; } = -114514;
     public string? ExtraData { get; set; } = null;
 
     public bool TalkOnCooldown =>
