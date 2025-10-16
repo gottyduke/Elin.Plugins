@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 jobs:
@@ -72,11 +72,16 @@ jobs:
           name: ${{ steps.build.outputs.file_name }}
           path: ${{ github.workspace }}\out\${{ matrix.version }}
 
-      - name: Replace Path
+      - name: Prepare Release
         id: artifact
         shell: pwsh
         run: |
-          $path = "${{ github.workspace }}\out\${{ matrix.version }}/*" -Replace '\\', '/'
+          $source = "${{ github.workspace }}\out\${{ matrix.version }}"
+          $destination = "${{ github.workspace }}\out\${{ matrix.version }}\cwl-ci-builds-${{ matrix.version }}.zip"
+
+          Compress-Archive -Path "$source\*" -DestinationPath $destination -Force
+          $path = $destination -Replace '\\', '/'
+
           echo "artifact_path=$path" >> $env:GITHUB_OUTPUT
 
       - name: Create or Update Release
