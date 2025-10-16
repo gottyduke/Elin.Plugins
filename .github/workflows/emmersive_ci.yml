@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 jobs:
@@ -73,3 +73,21 @@ jobs:
         with:
           name: emmersive-ci-builds-${{ steps.build.outputs.file_version }}-${{ matrix.version }}
           path: ${{ github.workspace }}\out\${{ matrix.version }}
+
+      - name: Inspect Artifact
+        id: artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: emmersive-ci-builds-${{ steps.build.outputs.file_version }}-${{ matrix.version }}
+
+      - name: Create or Update Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: EM-${{ steps.build.outputs.file_version }}
+          name: Emmersive - Elin with AI ${{ steps.build.outputs.file_version }}
+          draft: false
+          prerelease: true
+          generate_release_notes: true
+          files: ${{ steps.artifact.outputs.download-path }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
