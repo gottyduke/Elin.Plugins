@@ -2,7 +2,10 @@
 using System.IO;
 using System.Linq;
 using Cwl.API;
+using Cwl.API.Attributes;
 using Cwl.API.Migration;
+using Cwl.Helper;
+using Cwl.Helper.Exceptions;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
@@ -20,12 +23,22 @@ internal class SourceInitPatch
     [HarmonyPatch(typeof(SourceManager), nameof(SourceManager.Init))]
     internal static void ImportAllSheets()
     {
-        if (!_patched) {
+        if (_patched) {
+            foreach (var (sr, _) in AttributeQuery.MethodsWith<CwlSourceReloadEvent>()) {
+                try {
+                    sr.FastInvokeStatic();
+                } catch (Exception ex) {
+                    DebugThrow.Void(ex);
+                    // noexcept
+                }
+            }
+        } else {
             try {
                 Harmony.CreateAndPatchAll(typeof(NamedImportPatch), ModInfo.Guid);
             } catch (Exception ex) {
-                CwlMod.WarnWithPopup<SourceManager>($"failed to patch Source.NamedImport, disabled\n" +
-                                                    $"{ex.Message.SplitLines()[0]}", ex);
+                CwlMod.Warn<SourceManager>($"failed to patch Source.NamedImport, disabled\n" +
+                                           $"{ex.Message.SplitLines()[0]}");
+                DebugThrow.Void(ex);
                 // noexcept
             }
 

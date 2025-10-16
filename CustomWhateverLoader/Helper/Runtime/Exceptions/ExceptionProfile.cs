@@ -147,64 +147,67 @@ public class ExceptionProfile(string message)
         return $"<color=black><b>({text})</b></color> ";
     }
 
-    private async UniTask DeferredAnalyzer()
+    private async UniTaskVoid DeferredAnalyzer()
     {
         await UniTask.SwitchToThreadPool();
 
-        Frames.Clear();
+        try {
+            Frames.Clear();
 
-        using var sb = StringBuilderPool.Get();
-        sb.AppendLine("cwl_ui_callstack".Loc());
+            using var sb = StringBuilderPool.Get();
+            sb.AppendLine("cwl_ui_callstack".Loc());
 
-        foreach (var frame in StackTrace.SplitLines().Distinct()) {
-            if (frame.IsEmpty()) {
-                continue;
-            }
+            foreach (var frame in StackTrace.SplitLines().Distinct()) {
+                if (frame.IsEmpty()) {
+                    continue;
+                }
 
-            var mono = MonoFrame.GetFrame(frame).Parse();
-            if (Frames.Find(f => f.DetailedMethodCall == mono.DetailedMethodCall) is not null) {
-                continue;
-            }
+                var mono = MonoFrame.GetFrame(frame).Parse();
+                if (Frames.Find(f => f.DetailedMethodCall == mono.DetailedMethodCall) is not null) {
+                    continue;
+                }
 
-            Frames.Add(mono);
+                Frames.Add(mono);
 
-            switch (mono.frameType) {
-                case MonoFrame.StackFrameType.Rethrow:
-                    sb.AppendLine("---");
-                    break;
-                case MonoFrame.StackFrameType.Unknown:
-                    sb.AppendLine(mono.SanitizedMethodCall.ToTruncateString(150));
-                    break;
-                case MonoFrame.StackFrameType.Method or MonoFrame.StackFrameType.DynamicMethod:
-                    try {
-                        if (IsMissingMethod && !mono.IsVendorMethod) {
-                            mono.Method!.TestIncompatibleIl();
-                        }
-
-                        sb.AppendLine(mono.DetailedMethodCall);
-
-                        var info = mono.Method.GetPatchInfo();
-                        if (info is not null) {
-                            if (IsMissingMethod) {
-                                info.TestIncompatiblePatch();
+                switch (mono.frameType) {
+                    case MonoFrame.StackFrameType.Rethrow:
+                        sb.AppendLine("---");
+                        break;
+                    case MonoFrame.StackFrameType.Unknown:
+                        sb.AppendLine(mono.SanitizedMethodCall.ToTruncateString(150));
+                        break;
+                    case MonoFrame.StackFrameType.Method or MonoFrame.StackFrameType.DynamicMethod:
+                        try {
+                            if (IsMissingMethod && !mono.IsVendorMethod) {
+                                mono.Method!.TestIncompatibleIl();
                             }
 
-                            info.DumpPatchDetails(sb.StringBuilder);
+                            sb.AppendLine(mono.DetailedMethodCall);
+
+                            var info = mono.Method.GetPatchInfo();
+                            if (info is not null) {
+                                if (IsMissingMethod) {
+                                    info.TestIncompatiblePatch();
+                                }
+
+                                info.DumpPatchDetails(sb.StringBuilder);
+                            }
+                        } catch {
+                            // noexcept
                         }
-                    } catch {
-                        // noexcept
-                    }
 
-                    break;
+                        break;
+                }
             }
+
+            Result = sb.ToString();
+            CwlMod.Log<ExceptionProfile>(Result);
+
+            Result = Result.TruncateAllLines(150);
+
+            State = AnalyzeState.Completed;
+        } finally {
+            await UniTask.Yield();
         }
-
-        Result = sb.ToString();
-        CwlMod.Log<ExceptionProfile>(Result);
-        Result = Result.TruncateAllLines(150);
-
-        await UniTask.SwitchToMainThread();
-
-        State = AnalyzeState.Completed;
     }
 }

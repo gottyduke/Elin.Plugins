@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cwl.API.Attributes;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
 using Cwl.LangMod;
@@ -120,5 +121,11 @@ public class CustomMerchant : TraitMerchant
         if (traitName.StartsWith(nameof(TraitMerchant)) && GetStockItems(traitOwner.id).Any()) {
             traitName = nameof(CustomMerchant);
         }
+    }
+
+    [CwlSourceReloadEvent]
+    private static void ClearAllLoadedData()
+    {
+        Managed.Clear();
     }
 }

@@ -7,6 +7,8 @@ namespace Cwl.Helper.Unity;
 
 public static class UniTasklet
 {
+    public static CancellationToken GameToken = CwlMod.Instance.GetCancellationTokenOnDestroy();
+
     public static CancellationTokenSource Timeout(float timeout)
     {
         var cts = new CancellationTokenSource();
@@ -14,11 +16,13 @@ public static class UniTasklet
         return cts;
     }
 
-    extension(UniTask tasklet)
+    extension(UniTask task)
     {
-        public void RunOnPool(CancellationToken token = default)
+        public void ForgetEx()
         {
-            UniTask.RunOnThreadPool(() => tasklet, false, token).Forget(ExceptionProfile.DefaultExceptionHandler);
+            task.AttachExternalCancellation(GameToken)
+                .SuppressCancellationThrow()
+                .Forget(ExceptionProfile.DefaultExceptionHandler);
         }
     }
 }
