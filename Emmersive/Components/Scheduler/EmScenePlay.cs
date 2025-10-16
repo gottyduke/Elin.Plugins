@@ -29,7 +29,7 @@ public partial class EmScheduler
     }
 
     [ConsoleCommand("test_current")]
-    internal static void TestCurrent()
+    public static void TestCurrent()
     {
         var builder = ContextBuilder
             .CreateStandardPrefix()
@@ -38,7 +38,7 @@ public partial class EmScheduler
         RequestScenePlay(builder);
     }
 
-    internal static void RequestScenePlayWithTrigger()
+    public static void RequestScenePlayWithTrigger()
     {
         var builder = ContextBuilder
             .CreateStandardPrefix()
