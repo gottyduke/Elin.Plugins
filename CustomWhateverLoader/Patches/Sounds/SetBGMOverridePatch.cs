@@ -7,7 +7,7 @@ namespace Cwl.Patches.Sounds;
 internal class SetBGMOverridePatch
 {
     [HarmonyPostfix]
-    [HarmonyPatch(typeof(Zone), nameof(Zone.SetBGM), typeof(List<int>), typeof(bool))]
+    [HarmonyPatch(typeof(Zone), nameof(Zone.SetBGM), typeof(List<int>), typeof(bool), typeof(float))]
     internal static void OnSetBGMOverride(List<int> ids, bool refresh)
     {
         if (refresh && ids is [-1]) {

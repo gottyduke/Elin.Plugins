@@ -9,13 +9,6 @@ public static class UniTasklet
 {
     public static CancellationToken GameToken = CwlMod.Instance.GetCancellationTokenOnDestroy();
 
-    public static CancellationTokenSource Timeout(float timeout)
-    {
-        var cts = new CancellationTokenSource();
-        cts.CancelAfterSlim(TimeSpan.FromSeconds(timeout));
-        return cts;
-    }
-
     extension(UniTask task)
     {
         public void ForgetEx()
