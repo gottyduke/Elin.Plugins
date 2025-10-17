@@ -7,7 +7,7 @@ public class CharaProfile(Chara chara)
     public float LastReactionTime { get; set; } = -1919.810f;
     public int LastReactionTurn { get; set; } = -114514;
 
-    public bool TalkOnCooldown =>
+    public bool OnTalkCooldown =>
         Time.unscaledTime - LastReactionTime <= EmConfig.Scene.SecondsCooldown.Value ||
         chara.turn - LastReactionTurn <= EmConfig.Scene.TurnsCooldown.Value;
 

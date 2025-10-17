@@ -18,6 +18,7 @@ public record EmActivity : IDisposable
 
     public static readonly List<EmActivity> Session = [];
     private static readonly HashSet<string> _services = [];
+    private static readonly List<EmActivity> _unhandled = [];
 
     private readonly Stopwatch _sw;
 
@@ -30,6 +31,15 @@ public record EmActivity : IDisposable
     private static int InternalCount => ++field;
 
     public static EmActivity? Current { get; private set; }
+
+    public static int Unhandled
+    {
+        get {
+            lock (_unhandled) {
+                return _unhandled.Count;
+            }
+        }
+    }
 
     public DateTime RequestTime { get; private init; }
     public DateTime EndTime { get; private set; }
@@ -46,6 +56,10 @@ public record EmActivity : IDisposable
         EndTime = DateTime.Now;
 
         Latency = _sw.Elapsed;
+
+        lock (_unhandled) {
+            _unhandled.RemoveAll(a => a == this);
+        }
 
         EmMod.Log<EmActivity>(
             $"<{ActivityId}> [{ServiceName}] " +
@@ -78,6 +92,10 @@ public record EmActivity : IDisposable
             ServiceName = serviceId,
             RequestTime = DateTime.Now,
         };
+
+        lock (_unhandled) {
+            _unhandled.Add(activity);
+        }
 
         Session.Add(activity);
 

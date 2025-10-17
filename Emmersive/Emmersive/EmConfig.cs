@@ -1,4 +1,5 @@
 using BepInEx.Configuration;
+using Emmersive.Components;
 using ReflexCLI.Attributes;
 
 namespace Emmersive;
@@ -28,7 +29,7 @@ internal partial class EmConfig
         Policy.Timeout = config.Bind(
             "RuntimePolicy",
             "Timeout",
-            20f,
+            15f,
             new ConfigDescription(
                 "Timeout in seconds for a generation request\n" +
                 "Retry attempts will not be made after timeout\n" +
@@ -45,6 +46,16 @@ internal partial class EmConfig
                 "生成请求失败后的重试次数",
                 new AcceptableValueRange<int>(0, 5)));
 
+        Policy.ConcurrentRequests = config.Bind(
+            "RuntimePolicy",
+            "ConcurrentRequests",
+            1,
+            new ConfigDescription("Enable concurrent requests, which will make more scene reactions\n" +
+                                  "Note that this will likely triple the token usage\n" +
+                                  "启用并发请求，这将产生更多的场景反应。\n" +
+                                  "请注意，这会使你的令牌消耗增加",
+                new AcceptableValueRange<int>(1, 5)));
+
         Policy.ServiceCooldown = config.Bind(
             "RuntimePolicy",
             "ServiceCooldown",
@@ -53,7 +64,7 @@ internal partial class EmConfig
                 "Minimum seconds in realtime required to auto reset an unavailable service\n" +
                 "This is used for API service pooling\n" +
                 "生成请求失败后的服务自动禁用时间\n" +
-                "用于服务池管理自动使用下一可用服务",
+                "用于服务池自动管理下一可用服务",
                 new AcceptableValueRange<float>(0f, 60f)));
 
         Context.DisabledProviders = config.Bind(
@@ -79,6 +90,17 @@ internal partial class EmConfig
             "Only fetch talk logs, do not include combat or gameplay info\n" +
             "仅拉取对话日志，不使用战斗或其他游戏信息");
 
+        Context.NearbyRadius = config.Bind(
+            "Context",
+            "NearbyRadius",
+            4,
+            new ConfigDescription(
+                "Radius in tiles to scan for nearby characters\n" +
+                "Bigger radius may involve more characters and lengthy token input\n" +
+                "以玩家为中心检测附近角色的半径块数\n" +
+                "更大的半径会包含更多的角色，但会增加token消耗",
+                new AcceptableValueRange<int>(0, 12)));
+
         Scene.MaxReactions = config.Bind(
             "Scene",
             "MaxReactions",
@@ -92,26 +114,14 @@ internal partial class EmConfig
                 "但场景可能耗时较长或偏离主题",
                 new AcceptableValueRange<int>(1, 8)));
 
-        Scene.NearbyRadius = config.Bind(
-            "Scene",
-            "NearbyRadius",
-            4,
-            new ConfigDescription(
-                "Radius in tiles to scan for nearby characters\n" +
-                "Bigger radius may involve more characters and lengthy token input\n" +
-                "以玩家为中心检测附近角色的半径块数\n" +
-                "更大的半径会包含更多的角色，但会增加token消耗",
-                new AcceptableValueRange<int>(0, 12)));
-
         Scene.TurnsCooldown = config.Bind(
             "Scene",
             "TurnsCooldown",
             12,
-            new ConfigDescription(
-                "Minimum in game turns required before next scene request\n" +
-                "Each character is tracked individually\n" +
-                "两次请求之间的最低间隔回合数\n" +
-                "每个角色单独计算"));
+            "Minimum in game turns required before next scene request\n" +
+            "Each character is tracked individually\n" +
+            "两次请求之间的最低间隔回合数\n" +
+            "每个角色单独计算");
 
         Scene.SecondsCooldown = config.Bind(
             "Scene",
@@ -127,16 +137,15 @@ internal partial class EmConfig
         Scene.TurnsIdleTrigger = config.Bind(
             "Scene",
             "IdleTriggerTurn",
-            70,
-            new ConfigDescription(
-                "Minimum in game turns required to auto trigger scene request\n" +
-                "This is reset whenever a scene triggers\n" +
-                "Set to -1 to disable this auto trigger" +
-                "自动生成场景请求的回合数\n" +
-                "生成任意请求时，该值会重置\n" +
-                "设为-1禁用此功能"));
+            24,
+            "Minimum in game turns required to auto trigger scene request\n" +
+            "This is reset whenever a scene triggers\n" +
+            "Set to -1 to disable this auto trigger" +
+            "自动生成场景请求的回合数\n" +
+            "生成任意请求时，该值会重置\n" +
+            "设为-1禁用此功能");
 
-        Scene.SceneTriggerBuffer = config.Bind(
+        Scene.SceneBufferWindow = config.Bind(
             "Scene",
             "SceneTriggerBuffer",
             0.1f,
@@ -149,25 +158,36 @@ internal partial class EmConfig
                 "除非知道在做什么，不建议更改",
                 new AcceptableValueRange<float>(0f, 1f)));
 
+        Scene.SceneBufferMode = config.Bind(
+            "Scene",
+            "SceneBufferMode",
+            EmScheduler.ScheduleBufferMode.Incremental,
+            "Buffering mode when using Scheduler.Buffer\n" +
+            "Incremental: adds to the buffer\n" +
+            "UniqueFrame: adds to the buffer, only once per frame\n" +
+            "抓取场景激活对话的缓冲模式\n" +
+            "Incremental: 增加值\n" +
+            "UniqueFrame: 仅每帧增加一次值");
+
         Scene.BlockCharaTalk = config.Bind(
             "Scene",
             "BlockCharaTalk",
             true,
-            "Block character's talks and use them as context for scene play when possible\n" +
-            "May skip non-generic talks if character is on scene play cooldown or API is unavailable\n" +
-            "禁用全局角色的原版喊叫，并将它们用于上下文\n" +
-            "如果该角色在冷却中或请求失败，可能会跳过该喊叫");
+            "Block character talks when they are scheduled for a scene request\n" +
+            "If timeout is set too long, the original barks may be skipped\n" +
+            "如果角色已经计划于一次场景生成请求，则禁用该角色的原版气泡\n" +
+            "如果生成请求超时设置的很长，可能会跳过该气泡");
     }
 
     internal static class Scene
     {
         internal static ConfigEntry<int> MaxReactions { get; set; } = null!;
-        internal static ConfigEntry<int> NearbyRadius { get; set; } = null!;
+        internal static ConfigEntry<int> TurnsIdleTrigger { get; set; } = null!;
+        internal static ConfigEntry<float> SceneBufferWindow { get; set; } = null!;
+        internal static ConfigEntry<EmScheduler.ScheduleBufferMode> SceneBufferMode { get; set; } = null!;
+        internal static ConfigEntry<bool> BlockCharaTalk { get; set; } = null!;
         internal static ConfigEntry<int> TurnsCooldown { get; set; } = null!;
         internal static ConfigEntry<float> SecondsCooldown { get; set; } = null!;
-        internal static ConfigEntry<int> TurnsIdleTrigger { get; set; } = null!;
-        internal static ConfigEntry<float> SceneTriggerBuffer { get; set; } = null!;
-        internal static ConfigEntry<bool> BlockCharaTalk { get; set; } = null!;
     }
 
     internal static class Context
@@ -175,12 +195,14 @@ internal partial class EmConfig
         internal static ConfigEntry<string> DisabledProviders { get; set; } = null!;
         internal static ConfigEntry<int> RecentLogDepth { get; set; } = null!;
         internal static ConfigEntry<bool> RecentTalkOnly { get; set; } = null!;
+        internal static ConfigEntry<int> NearbyRadius { get; set; } = null!;
     }
 
     internal static class Policy
     {
         internal static ConfigEntry<float> Timeout { get; set; } = null!;
         internal static ConfigEntry<int> Retries { get; set; } = null!;
+        internal static ConfigEntry<int> ConcurrentRequests { get; set; } = null!;
         internal static ConfigEntry<bool> Verbose { get; set; } = null!;
         internal static ConfigEntry<float> ServiceCooldown { get; set; } = null!;
     }

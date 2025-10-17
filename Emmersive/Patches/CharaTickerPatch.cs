@@ -20,16 +20,18 @@ internal class CharaTickerPatch
             return;
         }
 
-        if (__instance.Profile is not { TalkOnCooldown: false, LockedInRequest: false } profile) {
+        if (__instance.Profile is not { OnTalkCooldown: false, LockedInRequest: false } pc) {
             return;
         }
 
-        var diff = __instance.turn - profile.LastReactionTurn;
+        var diff = __instance.turn - pc.LastReactionTurn;
         if (diff < idle) {
             return;
         }
 
-        profile.ResetTalkCooldown();
+        // start global cooldown
+        pc.ResetTalkCooldown();
+
         EmScheduler.RequestScenePlayWithTrigger();
     }
 }

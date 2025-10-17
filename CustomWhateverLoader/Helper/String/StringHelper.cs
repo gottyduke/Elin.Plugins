@@ -109,7 +109,29 @@ public static class StringHelper
                 lastCjk = isCjk || isCjkPunc;
             }
 
-            return sb.ToString().TrimEnd();
+            var result = sb.ToString().TrimEnd();
+
+            var lines = result.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+            if (lines.Length <= 1) {
+                return result;
+            }
+
+            var lastLine = lines[^1].Trim();
+            var lastSegments = Cjk.Char.Replace(lastLine, " ")
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Length;
+
+            if (lastSegments > 1) {
+                return result;
+            }
+
+            var firstChar = lastLine.Length > 0 ? lastLine[0] : '\0';
+            var startsWithPunc = firstChar is '!' or '?' or '.' or ',' or '…' or ':' or ';';
+
+            lines[^2] = lines[^2].TrimEnd() + (startsWithPunc ? "" : " ") + lastLine;
+            result = string.Join('\n', lines[..^1]);
+
+            return result;
         }
     }
 

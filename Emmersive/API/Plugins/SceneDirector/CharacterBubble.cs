@@ -54,7 +54,7 @@ public partial class SceneDirector
                 }
 
                 var profile = chara.Profile;
-                if (!pc.CanSee(chara) || profile.TalkOnCooldown) {
+                if (!pc.CanSee(chara) || profile.OnTalkCooldown) {
                     return;
                 }
 

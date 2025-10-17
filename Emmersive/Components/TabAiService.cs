@@ -85,6 +85,7 @@ internal class TabAiService : TabEmmersiveBase
 
         btnGroup.Button("em_ui_reload_prompts".lang(), () => {
             ResourceFetch.ClearActiveResources();
+            RecentActionContext.ClearSession();
             RelationContext.Clear();
         });
 

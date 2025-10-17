@@ -113,6 +113,7 @@ public partial class EmScheduler
             var director = kernel.GetRequiredService<SceneDirector>();
             director.Execute(response.Content!);
 
+            // start global cooldown
             pc.Profile.ResetTalkCooldown();
 
             EmMod.Debug("em_ui_scene_complete".Loc(response));
