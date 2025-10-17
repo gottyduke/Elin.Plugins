@@ -15,13 +15,21 @@ internal class CharaTickerPatch
             return;
         }
 
-        if (__instance.Profile.TalkOnCooldown || __instance.Profile.LockedInRequest) {
+        var idle = EmConfig.Scene.TurnsIdleTrigger.Value;
+        if (idle < 0) {
             return;
         }
 
-        var diff = __instance.turn - __instance.Profile.LastReactionTurn;
-        if (diff >= EmConfig.Scene.TurnsCooldown.Value * 3) {
-            EmScheduler.RequestScenePlayWithTrigger();
+        if (__instance.Profile is not { TalkOnCooldown: false, LockedInRequest: false } profile) {
+            return;
         }
+
+        var diff = __instance.turn - profile.LastReactionTurn;
+        if (diff < idle) {
+            return;
+        }
+
+        profile.ResetTalkCooldown();
+        EmScheduler.RequestScenePlayWithTrigger();
     }
 }

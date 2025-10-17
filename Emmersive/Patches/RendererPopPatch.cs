@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using Cwl.Helper.Extensions;
+using Emmersive.API.Services;
 using Emmersive.Components;
 using Emmersive.Contexts;
 using Emmersive.Helper;
@@ -50,7 +51,7 @@ internal class RendererPopPatch
 
     internal static string OnBlockedTalk(string text, Card card, string topic)
     {
-        if (card is not Chara chara || topic == "dead") {
+        if (card is not Chara chara || topic == "dead" || !ApiPoolSelector.Instance.HasAnyAvailableServices()) {
             Msg.Say(text);
             return "";
         }
@@ -76,29 +77,38 @@ internal class RendererPopPatch
     {
         text = card.ApplyNewLine(text).StripBrackets();
 
-        if (card is not Chara chara) {
+        if (card is not Chara chara || !ApiPoolSelector.Instance.HasAnyAvailableServices()) {
             renderer.Say(text, color, duration);
+            RecentActionContext.Add(card.NameSimple, text);
             return;
         }
 
         var profile = chara.Profile;
+        var pc = EClass.pc.Profile;
+        var canRequest = !profile.TalkOnCooldown && !pc.TalkOnCooldown;
+
+        // block if chara is locked in scheduler
         if (EmScheduler.IsInProgress && profile.LockedInRequest) {
-            // block all talks during scene request
             EmMod.DebugPopup<EmScheduler>($"blocked {chara.NameSimple}");
             return;
         }
 
-        if (!profile.TalkOnCooldown && !EClass.pc.Profile.TalkOnCooldown) {
-            EmScheduler.OnTalkTrigger(new() {
-                Chara = chara,
-                Trigger = text,
-            });
-        } else {
-            // can't trigger yet
-            if (!EmConfig.Scene.BlockCharaTalk.Value) {
-                // let non-blocked gc talk
-                renderer.Say(text, color, duration);
-            }
+        // chara already talked
+        if (!canRequest && !EmConfig.Scene.BlockCharaTalk.Value) {
+            // let non blocked chara talk
+            renderer.Say(text, color, duration);
+            RecentActionContext.Add(chara.NameSimple, text);
+            return;
+        }
+
+        // ready to talk
+        EmScheduler.OnTalkTrigger(new() {
+            Chara = chara,
+            Trigger = text,
+        });
+
+        if (!chara.IsGlobal) {
+            EmScheduler.AddBufferDelay(EmConfig.Scene.SceneTriggerBuffer.Value * 2f);
         }
 
         RecentActionContext.Add(chara.NameSimple, text);
