@@ -227,6 +227,11 @@ public class WorkbookImporter
                             continue;
                     }
 
+                    if (rowsCached is null) {
+                        CwlMod.Warn<WorkbookImporter>($"empty cached rows - {fileName} - {type}");
+                        continue;
+                    }
+
                     sourceData.ImportRows(rowsCached);
 
                     if (cache.MigrateDetail.Mod is ModPackage mod) {

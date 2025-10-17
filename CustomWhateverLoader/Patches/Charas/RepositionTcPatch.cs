@@ -72,6 +72,10 @@ internal class RepositionTcPatch
             var actor = __instance.render.actor;
             var sprite = actor.sr.sprite;
 
+            if (sprite == null) {
+                return;
+            }
+
             var yOffset = CacheRaycastDistTwoWay(sprite) / 100f;
 
             var data = __instance.render.data;
