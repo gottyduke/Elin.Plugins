@@ -7,17 +7,18 @@ using System.Threading.Tasks;
 using Cwl.Helper.Exceptions;
 using Emmersive.API.Exceptions;
 using Emmersive.Components;
+using Emmersive.Helper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Emmersive.API.Services;
 
-public class ExtensionDataHandler()
+public class ExtensionRequestHandler()
     : DelegatingHandler(new HttpClientHandler {
         CheckCertificateRevocationList = true,
     })
 {
-    public static readonly ExtensionDataHandler Instance = new();
+    public static readonly ExtensionRequestHandler Instance = new();
 
     protected override void Dispose(bool disposing)
     {
@@ -26,6 +27,8 @@ public class ExtensionDataHandler()
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
+        EmMod.Debug<ExtensionRequestHandler>($"requesting {request.RequestUri}");
+
         if (ApiPoolSelector.Instance.CurrentProvider is not IExtensionMerger provider) {
             return await base.SendAsync(request, cancellationToken);
         }
@@ -51,19 +54,38 @@ public class ExtensionDataHandler()
             finalized = JsonConvert.SerializeObject(dict, Formatting.None);
             request.Content = new StringContent(finalized, Encoding.UTF8, "application/json");
         } catch (Exception ex) {
-            EmMod.Warn<ExtensionDataHandler>($"failed to merge ExtensionData into request\n{ex}");
+            EmMod.Warn<ExtensionRequestHandler>($"failed to merge ExtensionData into request\n{ex}");
             DebugThrow.Void(ex);
             // noexcept
         }
 
-        request.Headers.Remove("Semantic-Kernel");
-        request.Headers.Remove("User-Agent");
+        ResetHeaders(request);
 
-        if (EmScheduler.Mode == EmScheduler.ScheduleMode.DryRun) {
-            EmMod.Log<EmScheduler>(finalized);
-            throw new SchedulerDryRunException();
-        }
+        ThrowIfDryRun(finalized);
 
         return await base.SendAsync(request, cancellationToken);
+    }
+
+    private static void ResetHeaders(HttpRequestMessage request)
+    {
+        request.Headers.Remove("Semantic-Kernel-Version");
+        request.Headers.Remove("User-Agent");
+        request.Headers.Remove("Accept");
+
+        request.Headers.Add("Emmersive-Version", ModInfo.BuildVersion);
+    }
+
+    private static void ThrowIfDryRun(string requestBody)
+    {
+        if (EmScheduler.Mode != EmScheduler.ScheduleMode.DryRun) {
+            return;
+        }
+
+        EmMod.Log<EmScheduler>(requestBody);
+
+        ResourceFetch.SetCustomResource("dry_run.json", requestBody);
+        ResourceFetch.OpenCustomResource("dry_run.json");
+
+        throw new SchedulerDryRunException();
     }
 }
