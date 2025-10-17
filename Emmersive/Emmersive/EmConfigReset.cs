@@ -7,7 +7,7 @@ namespace Emmersive;
 
 internal partial class EmConfig
 {
-    private const EmConfigVersion CurrentVersion = EmConfigVersion.V1;
+    private const EmConfigVersion CurrentVersion = EmConfigVersion.V2;
     private static FileSystemWatcher? _watcher;
 
     [ConsoleCommand("reload_cfg")]
@@ -67,5 +67,6 @@ internal partial class EmConfig
     private enum EmConfigVersion
     {
         V1, // 0.9.3 beta
+        V2, // 0.9.4 beta
     }
 }

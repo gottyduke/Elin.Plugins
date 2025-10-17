@@ -24,7 +24,10 @@ public record EmActivity : IDisposable
     private EmActivity()
     {
         _sw = Stopwatch.StartNew();
+        ActivityId = InternalCount;
     }
+
+    private static int InternalCount => ++field;
 
     public static EmActivity? Current { get; private set; }
 
@@ -33,23 +36,22 @@ public record EmActivity : IDisposable
     public int InputToken { get; set; }
     public int OutputToken { get; set; }
     public TimeSpan Latency { get; set; } = TimeSpan.Zero;
-    public required string ServiceName { get; init; }
     public StatusType Status { get; private set; } = StatusType.Unknown;
+
+    public required string ServiceName { get; init; }
+    public int ActivityId { get; }
 
     public void Dispose()
     {
         EndTime = DateTime.Now;
 
-        if (Latency == TimeSpan.Zero) {
-            Latency = _sw.Elapsed;
-        }
-
-        Session.Add(this);
-
-        Current = null;
+        Latency = _sw.Elapsed;
 
         EmMod.Log<EmActivity>(
-            $"[{ServiceName}] {RequestTime:HH:mm:ss} {Latency.TotalMilliseconds}ms {InputToken + OutputToken}");
+            $"<{ActivityId}> [{ServiceName}] " +
+            $"{RequestTime:HH:mm:ss} stopped " +
+            $"{Latency.TotalMilliseconds}ms " +
+            $"{InputToken}+{OutputToken}");
     }
 
     public void SetStatus(StatusType status)
@@ -70,19 +72,30 @@ public record EmActivity : IDisposable
 
     public static EmActivity StartNew(string serviceId)
     {
-        Current = new() {
+        _services.Add(serviceId);
+
+        var activity = new EmActivity {
             ServiceName = serviceId,
             RequestTime = DateTime.Now,
         };
 
-        _services.Add(serviceId);
+        Session.Add(activity);
 
-        return Current;
+        EmMod.Log<EmActivity>(
+            $"<{activity.ActivityId}> [{activity.ServiceName}] " +
+            $"{activity.RequestTime:HH:mm:ss} started");
+
+        return Current = activity;
     }
 
     public static IEnumerable<EmActivity> FromProvider(string serviceName)
     {
         return Session.Where(a => a.ServiceName == serviceName);
+    }
+
+    public static EmActivity? FromProviderLatest(string serviceName)
+    {
+        return Session.LastOrDefault(a => a.ServiceName == serviceName);
     }
 
     public static IEnumerable<EmActivitySummary> GetAllSummaries()
@@ -114,6 +127,10 @@ public record EmActivity : IDisposable
 
             tokensInput += a.InputToken;
             tokensOutput += a.OutputToken;
+
+            if (a.Status == StatusType.Timeout) {
+                continue;
+            }
 
             if (a.Latency > TimeSpan.Zero) {
                 totalLatencySec += a.Latency.TotalSeconds;

@@ -6,7 +6,6 @@ public class CharaProfile(Chara chara)
 {
     public float LastReactionTime { get; set; } = -1919.810f;
     public int LastReactionTurn { get; set; } = -114514;
-    public string? ExtraData { get; set; } = null;
 
     public bool TalkOnCooldown =>
         Time.unscaledTime - LastReactionTime <= EmConfig.Scene.SecondsCooldown.Value ||
@@ -14,7 +13,7 @@ public class CharaProfile(Chara chara)
 
     public bool LockedInRequest { get; set; }
 
-    public void SetTalked()
+    public void ResetTalkCooldown()
     {
         LastReactionTime = Time.unscaledTime;
         LastReactionTurn = chara.turn;

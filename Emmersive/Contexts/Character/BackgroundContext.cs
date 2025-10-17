@@ -1,3 +1,5 @@
+using System;
+using Cwl.Helper.Exceptions;
 using Cwl.Patches.Charas;
 using Emmersive.Helper;
 
@@ -9,20 +11,25 @@ public class BackgroundContext(Chara chara) : ContextProviderBase
 
     public override object? Build()
     {
-        var resourceKey = $"Emmersive/Characters/{chara.UnifiedId}.txt";
-        string background;
+        try {
+            var resourceKey = $"Emmersive/Characters/{chara.UnifiedId}.txt";
+            string background;
 
-        if (!ResourceFetch.HasActiveResource(resourceKey)) {
-            background = chara.IsPC
-                ? EClass.player.GetBackgroundText()
-                : BioOverridePatch.GetNpcBackground("", chara);
-            ResourceFetch.SetActiveResource(resourceKey, background);
-        } else {
-            background = ResourceFetch.GetActiveResource(resourceKey);
+            if (!ResourceFetch.HasActiveResource(resourceKey)) {
+                background = chara.IsPC
+                    ? EClass.player.GetBackgroundText()
+                    : BioOverridePatch.GetNpcBackground("", chara);
+                ResourceFetch.SetActiveResource(resourceKey, background);
+            } else {
+                background = ResourceFetch.GetActiveResource(resourceKey);
+            }
+
+            return background.IsEmpty()
+                ? null
+                : background;
+        } catch (Exception ex) {
+            DebugThrow.Void(ex);
+            throw;
         }
-
-        return background.IsEmpty()
-            ? null
-            : background;
     }
 }

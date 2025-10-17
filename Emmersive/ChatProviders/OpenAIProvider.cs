@@ -57,13 +57,18 @@ internal class OpenAIProvider(string apiKey) : ChatProviderBase(apiKey)
         base.OnLayoutConfirm();
     }
 
+    protected override void Register(IKernelBuilder builder, string model)
+    {
+        builder.AddOpenAIChatCompletion(CurrentModel, new Uri(EndPoint), ApiKey, serviceId: Id);
+    }
+
     protected override void OnLayoutInternal(YKLayout card)
     {
         _endpointInput = card.AddPair("em_ui_endpoint".lang(), EndPoint);
         _aliasInput = card.AddPair("em_ui_alias".lang(), Alias);
     }
 
-    protected override void HandleRequestInternal(ChatMessageContent response, EmActivity activity)
+    protected override void HandleRequestActivity(ChatMessageContent response, EmActivity activity)
     {
         if (response is not OpenAIChatMessageContent message) {
             return;
@@ -77,8 +82,7 @@ internal class OpenAIProvider(string apiKey) : ChatProviderBase(apiKey)
         activity.OutputToken = usage.OutputTokenCount;
     }
 
-    protected override void Register(IKernelBuilder builder, string model)
+    protected override void HandleRequestInternal()
     {
-        builder.AddOpenAIChatCompletion(CurrentModel, new Uri(EndPoint), ApiKey, serviceId: Id);
     }
 }

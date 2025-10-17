@@ -17,13 +17,14 @@ public partial class EmScheduler : EMono
     }
 
     private static readonly List<SceneTriggerEvent> _buffer = [];
+    private static int _frameCount;
 
-    private static float _bufferStartTime = -1f;
-    private static bool _isBuffering;
-    private static float _sceneDelay;
+    public static bool IsBuffering { get; private set; }
+    public static float ScenePlayDelay { get; private set; }
     public static bool IsInProgress { get; private set; }
     public static ScheduleMode Mode { get; private set; } = ScheduleMode.Buffer;
-    public static bool BufferReady => _isBuffering && Time.time - _bufferStartTime >= EmConfig.Scene.SceneTriggerWindow.Value;
+    public static float NextBufferFlush { get; private set; }
+    public static bool BufferReady => IsBuffering && Time.unscaledTime >= NextBufferFlush;
 
     private void Update()
     {
@@ -31,8 +32,8 @@ public partial class EmScheduler : EMono
             FlushBuffer();
         }
 
-        if (_sceneDelay > 0f) {
-            _sceneDelay -= Time.deltaTime;
+        if (ScenePlayDelay > 0f) {
+            ScenePlayDelay -= Time.deltaTime;
             IsInProgress = true;
         } else {
             IsInProgress = false;
@@ -52,7 +53,7 @@ public partial class EmScheduler : EMono
 
     public static void SetScenePlayDelay(float seconds)
     {
-        _sceneDelay = seconds;
+        ScenePlayDelay = seconds;
     }
 
     public static void OnTalkTrigger(SceneTriggerEvent trigger)
@@ -60,28 +61,49 @@ public partial class EmScheduler : EMono
         AddToBuffer(trigger);
     }
 
+#region Buffer
+
+    public static void AddBufferDelay(float seconds)
+    {
+        NextBufferFlush += seconds;
+        _frameCount = core.frame;
+    }
+
+    public static void AddBufferDelaySameFrame(float seconds)
+    {
+        if (_frameCount != core.frame) {
+            AddBufferDelay(seconds);
+        }
+    }
+
     private static void AddToBuffer(SceneTriggerEvent trigger)
     {
         _buffer.Add(trigger);
 
-        if (_isBuffering) {
+        if (IsBuffering) {
             return;
         }
 
-        _isBuffering = true;
-        _bufferStartTime = Time.time;
+        IsBuffering = true;
+
+        NextBufferFlush = Mathf.Max(NextBufferFlush, Time.unscaledTime);
+        AddBufferDelay(EmConfig.Scene.SceneTriggerBuffer.Value);
     }
 
     private static void FlushBuffer()
     {
-        _isBuffering = false;
+        IsBuffering = false;
 
         if (_buffer.Count == 0) {
             return;
         }
 
-        RequestScenePlayWithTrigger();
+        if (Mode != ScheduleMode.Stop) {
+            RequestScenePlayWithTrigger();
+        }
 
         _buffer.Clear();
     }
+
+#endregion
 }

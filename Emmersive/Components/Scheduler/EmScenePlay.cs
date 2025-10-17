@@ -29,13 +29,13 @@ public partial class EmScheduler
     }
 
     [ConsoleCommand("test_current")]
-    public static void TestCurrent()
+    public static void RequestScenePlayImmediate()
     {
         var builder = ContextBuilder
             .CreateStandardPrefix()
             .Add(new NearbyCharaContext(EClass.pc));
 
-        RequestScenePlay(builder);
+        RequestScenePlayWithContext(builder);
     }
 
     public static void RequestScenePlayWithTrigger()
@@ -43,12 +43,12 @@ public partial class EmScheduler
         var builder = ContextBuilder
             .CreateStandardPrefix()
             .Add(new NearbyCharaContext(EClass.pc))
-            .Add(new SceneTriggerContext(_buffer));
+            .Add(new SceneTriggerContext(_buffer.Copy()));
 
-        RequestScenePlay(builder);
+        RequestScenePlayWithContext(builder);
     }
 
-    public static void RequestScenePlay(ContextBuilder contextBuilder)
+    public static void RequestScenePlayWithContext(ContextBuilder contextBuilder)
     {
         ScenePlayAsync(contextBuilder).Forget(ExceptionProfile.DefaultExceptionHandler);
     }
@@ -67,12 +67,8 @@ public partial class EmScheduler
 
     internal static async UniTask ScenePlayAsync(ChatHistory context, int retries = -1)
     {
-        if (Mode == ScheduleMode.Stop) {
-            return;
-        }
-
         if (retries < 0) {
-            retries = EmConfig.Policy.Retries.Value;
+            retries = Math.Max(0, EmConfig.Policy.Retries.Value);
         }
 
         EmMod.Log<EmScheduler>("em_ui_scene_scheduled".Loc(retries));
@@ -80,7 +76,7 @@ public partial class EmScheduler
         await ScenePlayAsyncInternal(context, retries);
     }
 
-    internal static async UniTask ScenePlayAsyncInternal(ChatHistory context, int retries)
+    private static async UniTask ScenePlayAsyncInternal(ChatHistory context, int retries)
     {
         if (retries < 0) {
             return;
@@ -102,7 +98,9 @@ public partial class EmScheduler
         SetScenePlayDelay(timeout);
 
         var lockedCharas = PointScan.LastNearby
+            .Copy()
             .Where(c => !c.Profile.LockedInRequest)
+            .Concat([EClass.pc])
             .ToArray();
 
         FreezeCharas(true);
@@ -115,7 +113,7 @@ public partial class EmScheduler
             var director = kernel.GetRequiredService<SceneDirector>();
             director.Execute(response.Content!);
 
-            pc.Profile.SetTalked();
+            pc.Profile.ResetTalkCooldown();
 
             EmMod.Debug("em_ui_scene_complete".Loc(response));
         } catch (SchedulerDryRunException) {
@@ -127,6 +125,7 @@ public partial class EmScheduler
             MarkUnavailable("em_ui_scene_failed".Loc(httpEx.StatusCode!.TagColor(0xff0000), httpEx.Message));
 
             if (retries > 0) {
+                EmMod.Debug<EmScheduler>("em_ui_scene_retry".Loc());
                 await ScenePlayAsyncInternal(context, --retries);
             } else {
                 EmMod.Debug<EmScheduler>("em_ui_scene_retry_end".Loc());
@@ -134,8 +133,8 @@ public partial class EmScheduler
             // noexcept
         } catch (Exception ex) {
             MarkUnavailable("em_ui_scene_failed".Loc(ex.GetType().Name, ex.Message));
-
-            throw;
+            DebugThrow.Void(ex);
+            // noexcept
         } finally {
             FreezeCharas(false);
         }

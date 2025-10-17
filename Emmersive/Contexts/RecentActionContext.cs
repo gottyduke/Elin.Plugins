@@ -29,8 +29,6 @@ public class RecentActionContext : ContextProviderBase
             actions = [];
 
             var sanitizedSession = session.ToArray();
-            var forwardPos = 0;
-
             foreach (var log in ExtractUniqueLog(depth)) {
                 var sanitized = log;
 
@@ -38,14 +36,12 @@ public class RecentActionContext : ContextProviderBase
                     sanitized = sanitized[1..^1];
                 }
 
-                for (var i = forwardPos; i < sanitizedSession.Length; ++i) {
-                    var (actor, talk) = sanitizedSession[i];
+                foreach (var (actor, talk) in sanitizedSession) {
                     if (sanitized != talk) {
                         continue;
                     }
 
                     sanitized = $"{actor}: {talk}";
-                    forwardPos++;
                     break;
                 }
 
@@ -60,6 +56,8 @@ public class RecentActionContext : ContextProviderBase
 
     public static void Add(string actor, string entry)
     {
+        entry = entry.Trim();
+
         if (actor == EClass.pc.NameSimple) {
             actor = "you".lang().ToTitleCase();
         }
@@ -88,10 +86,28 @@ public class RecentActionContext : ContextProviderBase
             HashSet<string> seen = [];
             List<string> logs = [];
 
+            var appendNext = false;
+            var suffix = "";
             while (lastIndex >= _indexSinceStart) {
-                var log = dict[lastIndex].text;
+                if (!dict.TryGetValue(lastIndex, out var msg)) {
+                    break;
+                }
+
+                var log = msg.text;
+                if (log.StartsWith(" ")) {
+                    appendNext = true;
+                    suffix = log;
+                    continue;
+                }
+
                 if (seen.Add(log)) {
+                    if (appendNext) {
+                        log += suffix;
+                        appendNext = false;
+                    }
+
                     logs.Add(log);
+
                     if (logs.Count >= depth) {
                         break;
                     }
@@ -99,6 +115,8 @@ public class RecentActionContext : ContextProviderBase
 
                 lastIndex--;
             }
+
+            logs.Reverse();
 
             return logs;
         }

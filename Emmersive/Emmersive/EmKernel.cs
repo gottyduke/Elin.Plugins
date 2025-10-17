@@ -33,7 +33,7 @@ public static class EmKernel
 
         private IKernelBuilder AddExtensionHandler()
         {
-            builder.Services.AddSingleton(new HttpClient(ExtensionDataHandler.Instance, false));
+            builder.Services.AddSingleton(new HttpClient(ExtensionRequestHandler.Instance, false));
             return builder;
         }
 

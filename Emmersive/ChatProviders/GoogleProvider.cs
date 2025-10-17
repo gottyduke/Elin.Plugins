@@ -52,16 +52,19 @@ public sealed class GoogleProvider(string apiKey) : ChatProviderBase(apiKey)
         builder.AddGoogleAIGeminiChatCompletion(model, ApiKey, serviceId: Id);
     }
 
-    protected override void HandleRequestInternal(ChatMessageContent response, EmActivity activity)
+    protected override void HandleRequestActivity(ChatMessageContent response, EmActivity activity)
     {
-        (ExecutionSettings as GeminiPromptExecutionSettings)?.ThinkingConfig?.ThinkingBudget =
-            CurrentModel.EndsWith("pro") ? 128 : 0;
-
         if (response is not GeminiChatMessageContent { Metadata: { } metadata }) {
             return;
         }
 
         activity.InputToken = metadata.PromptTokenCount;
         activity.OutputToken = metadata.CandidatesTokenCount;
+    }
+
+    protected override void HandleRequestInternal()
+    {
+        (ExecutionSettings as GeminiPromptExecutionSettings)?.ThinkingConfig?.ThinkingBudget =
+            CurrentModel.EndsWith("pro") ? 128 : 0;
     }
 }

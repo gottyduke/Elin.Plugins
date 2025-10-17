@@ -143,6 +143,12 @@ public sealed class ApiPoolSelector : IAIServiceSelector
 
 #region AI Selector
 
+    public bool HasAnyAvailableServices()
+    {
+        return CurrentProvider?.IsAvailable is true ||
+               (_providers.Count > 0 && _providers.Any(p => p.IsAvailable));
+    }
+
     public bool TrySelectAIService<T>(Kernel kernel,
                                       KernelFunction function,
                                       KernelArguments arguments,

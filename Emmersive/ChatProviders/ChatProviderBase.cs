@@ -66,8 +66,10 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionMerger
 
     public virtual async UniTask<ChatMessageContent> HandleRequest(Kernel kernel, ChatHistory context, CancellationToken token)
     {
-        var activity = EmActivity.Current!;
-        activity.SetStatus(EmActivity.StatusType.InProgress);
+        var activity = EmActivity.FromProviderLatest(Id);
+        activity?.SetStatus(EmActivity.StatusType.InProgress);
+
+        HandleRequestInternal();
 
         var timeout = EmConfig.Policy.Timeout.Value;
 
@@ -78,12 +80,14 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionMerger
 
         var tasklet = await UniTask.WhenAny(task, UniTask.Delay(TimeSpan.FromSeconds(timeout), cancellationToken: token));
         if (!tasklet.hasResultLeft) {
-            activity.SetStatus(EmActivity.StatusType.Timeout);
+            activity?.SetStatus(EmActivity.StatusType.Timeout);
         }
 
         var response = await task;
 
-        HandleRequestInternal(response, activity);
+        if (activity is not null) {
+            HandleRequestActivity(response, activity);
+        }
 
         return response;
     }
@@ -103,5 +107,7 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionMerger
 
     protected abstract void Register(IKernelBuilder builder, string model);
 
-    protected abstract void HandleRequestInternal(ChatMessageContent response, EmActivity activity);
+    protected abstract void HandleRequestActivity(ChatMessageContent response, EmActivity activity);
+
+    protected abstract void HandleRequestInternal();
 }

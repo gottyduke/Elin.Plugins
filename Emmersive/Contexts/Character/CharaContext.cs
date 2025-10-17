@@ -13,6 +13,7 @@ public class CharaContext(Chara chara) : ContextProviderBase
         Dictionary<string, object> data = new() {
             ["name"] = chara.NameSimple,
             ["uid"] = chara.uid,
+            ["can_talk"] = !chara.Profile.LockedInRequest,
             ["title"] = chara.Aka,
             ["level"] = chara.LV,
             ["hp"] = $"{chara.hp}/{chara.MaxHP}",
@@ -36,6 +37,7 @@ public class CharaContext(Chara chara) : ContextProviderBase
             if (hostility is not Hostility.Enemy) {
                 data["affinity"] = $"{chara.affinity.Name}";
                 data["in_party"] = chara.IsPCParty;
+
                 if (chara.faith is not ReligionEyth) {
                     data["faith"] = chara.faith.Name;
                 }
@@ -50,10 +52,6 @@ public class CharaContext(Chara chara) : ContextProviderBase
         var background = new BackgroundContext(chara).Build();
         if (background is not null) {
             data["background"] = background;
-        }
-
-        if (chara.Profile.ExtraData is { } extra) {
-            data["important_info"] = extra;
         }
 
         return data;

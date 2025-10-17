@@ -90,7 +90,7 @@ internal class TabAiService : TabEmmersiveBase
 
         btnGroup.Button("em_ui_test_generation".lang(), () => {
             LayerEmmersivePanel.Instance!.OnLayoutConfirm();
-            EmScheduler.TestCurrent();
+            EmScheduler.RequestScenePlayImmediate();
             ELayer.ui.RemoveLayer<LayerEmmersivePanel>();
         });
 

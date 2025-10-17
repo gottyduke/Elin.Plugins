@@ -15,10 +15,13 @@ internal partial class EmConfig
             "Verbose",
             false,
             "Verbose information that may be helpful(spamming) for debugging\n" +
+            "Enabled for beta testing by default\n" +
             "Debug用的信息输出\n" +
+            "Beta测试版默认启用\n" +
             "デバッグ用の詳細情報を出力(大量ログ発生の可能性あり)");
 
-#if DEBUG
+#if DEBUG || true
+        // enabled for beta builds
         Policy.Verbose.Value = true;
 #endif
 
@@ -28,10 +31,10 @@ internal partial class EmConfig
             20f,
             new ConfigDescription(
                 "Timeout in seconds for a generation request\n" +
-                "When timeout, there'll be no retry attempt\n" +
+                "Retry attempts will not be made after timeout\n" +
                 "一次生成请求的最大超时\n" +
                 "超时后，将不会重新请求",
-                new AcceptableValueRange<float>(1f, 25f)));
+                new AcceptableValueRange<float>(1f, 60f)));
 
         Policy.Retries = config.Bind(
             "RuntimePolicy",
@@ -47,7 +50,7 @@ internal partial class EmConfig
             "ServiceCooldown",
             10f,
             new ConfigDescription(
-                "Minimum seconds in realtime required to auto reset a service after it failed\n" +
+                "Minimum seconds in realtime required to auto reset an unavailable service\n" +
                 "This is used for API service pooling\n" +
                 "生成请求失败后的服务自动禁用时间\n" +
                 "用于服务池管理自动使用下一可用服务",
@@ -98,7 +101,7 @@ internal partial class EmConfig
                 "Bigger radius may involve more characters and lengthy token input\n" +
                 "以玩家为中心检测附近角色的半径块数\n" +
                 "更大的半径会包含更多的角色，但会增加token消耗",
-                new AcceptableValueRange<int>(2, 8)));
+                new AcceptableValueRange<int>(0, 12)));
 
         Scene.TurnsCooldown = config.Bind(
             "Scene",
@@ -106,27 +109,42 @@ internal partial class EmConfig
             12,
             new ConfigDescription(
                 "Minimum in game turns required before next scene request\n" +
-                "两次请求之间的最低间隔回合数",
-                new AcceptableValueRange<int>(0, 30)));
+                "Each character is tracked individually\n" +
+                "两次请求之间的最低间隔回合数\n" +
+                "每个角色单独计算"));
 
         Scene.SecondsCooldown = config.Bind(
             "Scene",
             "SecondsCooldown",
-            3f,
+            6f,
             new ConfigDescription(
                 "Minimum seconds in realtime required before next scene request\n" +
-                "两次请求之间的最低间隔秒数",
-                new AcceptableValueRange<float>(0f, 20)));
+                "Each character is tracked individually\n" +
+                "两次请求之间的最低间隔秒数\n" +
+                "每个角色单独计算",
+                new AcceptableValueRange<float>(0f, 60)));
 
-        Scene.SceneTriggerWindow = config.Bind(
+        Scene.TurnsIdleTrigger = config.Bind(
             "Scene",
-            "SceneTriggerWindow",
+            "IdleTriggerTurn",
+            70,
+            new ConfigDescription(
+                "Minimum in game turns required to auto trigger scene request\n" +
+                "This is reset whenever a scene triggers\n" +
+                "Set to -1 to disable this auto trigger" +
+                "自动生成场景请求的回合数\n" +
+                "生成任意请求时，该值会重置\n" +
+                "设为-1禁用此功能"));
+
+        Scene.SceneTriggerBuffer = config.Bind(
+            "Scene",
+            "SceneTriggerBuffer",
             0.1f,
             new ConfigDescription(
                 "Small window to buffer all scene trigger talks\n" +
                 "This can prevent everyone talk at once such as after loading a save\n" +
                 "Probably do not change this unless you are instructed to\n" +
-                "抓取场景激活对话的简短缓冲时间\n" +
+                "抓取场景激活对话的缓冲时间\n" +
                 "可以防止例如刚加载存档时所有人都同时说话的状况\n" +
                 "除非知道在做什么，不建议更改",
                 new AcceptableValueRange<float>(0f, 1f)));
@@ -147,7 +165,8 @@ internal partial class EmConfig
         internal static ConfigEntry<int> NearbyRadius { get; set; } = null!;
         internal static ConfigEntry<int> TurnsCooldown { get; set; } = null!;
         internal static ConfigEntry<float> SecondsCooldown { get; set; } = null!;
-        internal static ConfigEntry<float> SceneTriggerWindow { get; set; } = null!;
+        internal static ConfigEntry<int> TurnsIdleTrigger { get; set; } = null!;
+        internal static ConfigEntry<float> SceneTriggerBuffer { get; set; } = null!;
         internal static ConfigEntry<bool> BlockCharaTalk { get; set; } = null!;
     }
 

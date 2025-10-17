@@ -24,7 +24,7 @@ public partial class SceneDirector
                           [Description("Delay, in seconds, before executing this action. Use it to chain actions naturally.")]
                           float delay = 0f)
     {
-        if (!FindSameMapChara(uid, out var chara)) {
+        if (!FindSameMapChara(uid, out var chara) || chara.IsPC) {
             return;
         }
 
@@ -73,7 +73,7 @@ public partial class SceneDirector
 
                 chara.HostRenderer.Say(text.Wrap(7), duration: duration);
 
-                profile.SetTalked();
+                profile.ResetTalkCooldown();
             }
         }
 

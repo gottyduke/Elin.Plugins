@@ -9,7 +9,7 @@ using HarmonyLib;
 
 namespace Emmersive.Contexts;
 
-public class RelationContext(IReadOnlyList<Chara> charas) : ContextProviderBase
+public class RelationContext(IList<Chara> charas) : ContextProviderBase
 {
     public const char KeySeparator = '+';
 

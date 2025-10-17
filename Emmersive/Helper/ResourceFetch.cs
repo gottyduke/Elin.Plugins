@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Cwl.API.Attributes;
 using Cwl.API.Processors;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
@@ -51,8 +50,7 @@ public class ResourceFetch
         }
     }
 
-    [CwlPostSave]
-    internal static void SaveActiveResources()
+    public static void SaveActiveResources()
     {
         Context.Save(_activeResources, "active_resources");
     }
@@ -133,6 +131,14 @@ public class ResourceFetch
         Directory.CreateDirectory(CustomFolder);
 
         EmMod.Log<ResourceFetch>("cleared custom resources");
+    }
+
+    public static void OpenCustomResource(string path)
+    {
+        var file = new FileInfo(Path.Combine(CustomFolder, path));
+        if (file.Exists) {
+            OpenFileOrPath.Run(file.FullName);
+        }
     }
 
 #endregion
