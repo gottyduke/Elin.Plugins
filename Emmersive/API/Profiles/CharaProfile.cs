@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Emmersive.API.Profiles;
@@ -13,11 +14,21 @@ public class CharaProfile(Chara chara)
 
     public bool LockedInRequest { get; set; }
 
-    public string LastTalk { get; set; } = "";
+    public List<string> LastTalks { get; set; } = [];
 
-    public void ResetTalkCooldown()
+    public void ResetTalkCooldown(string? talk = null)
     {
         LastReactionTime = Time.unscaledTime;
         LastReactionTurn = chara.turn;
+
+        if (talk is null) {
+            return;
+        }
+
+        LastTalks.Add(talk);
+
+        if (LastTalks.Count > EmConfig.Context.RecentLogDepth.Value + 1) {
+            LastTalks.RemoveAt(0);
+        }
     }
 }

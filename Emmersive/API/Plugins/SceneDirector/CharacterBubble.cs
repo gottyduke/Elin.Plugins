@@ -66,7 +66,7 @@ public partial class SceneDirector
                     text = text.Replace("&", "");
                 }
 
-                if (profile.LastTalk == text) {
+                if (profile.LastTalks.Contains(text)) {
                     // reduce repetition
                     return;
                 }
@@ -78,8 +78,7 @@ public partial class SceneDirector
 
                 chara.HostRenderer.Say(text.Wrap(7), duration: duration);
 
-                profile.ResetTalkCooldown();
-                profile.LastTalk = text;
+                profile.ResetTalkCooldown(text);
             }
         }
 

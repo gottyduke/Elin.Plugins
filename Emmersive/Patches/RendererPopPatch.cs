@@ -63,11 +63,11 @@ internal class RendererPopPatch
         }
 
         var profile = chara.Profile;
-        if (profile.LockedInRequest) {
-            if (!EmConfig.Scene.BlockCharaTalk.Value && !profile.OnTalkCooldown) {
-                // let non-blocked gc talk
-                AllowOriginalText();
-            }
+        if ((profile.LockedInRequest && !EmConfig.Scene.BlockCharaTalk.Value && !profile.OnTalkCooldown) ||
+            (!EmScheduler.CanMakeRequest && !profile.OnTalkCooldown)) {
+            // let non-blocked gc talk
+            AllowOriginalText();
+            return "";
         }
 
         Msg.SetColor();
@@ -121,8 +121,7 @@ internal class RendererPopPatch
         void AllowOriginalPop()
         {
             renderer.Say(text, color, duration);
-            profile.ResetTalkCooldown();
-            profile.LastTalk = text;
+            profile.ResetTalkCooldown(text);
             RecentActionContext.Add(chara.NameSimple, text);
         }
     }
