@@ -18,6 +18,12 @@ $Changelogs
 
 
 
+{topic|1.20.53}
+Updated for 23.222 Stable NYA
+Added modded Work invalidator
+Added FileWatcherHelper
+Made logging thread safe
+
 {topic|1.20.52}
 Updated for 23.221 Nightly
 Updated PackageIterator with a new extension API

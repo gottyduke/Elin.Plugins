@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using BepInEx;
+using Cwl.Helper.FileUtil;
 using HarmonyLib;
 using ReflexCLI;
 
@@ -19,7 +20,7 @@ public static class ModInfo
     public const string Guid = "dk.elinplugins.customdialogloader";
     public const string Name = "Custom Whatever Loader";
 
-    public const string Version = "1.20.52";
+    public const string Version = "1.20.53";
 
     // for runtime versions
     [field: AllowNull]
@@ -44,8 +45,10 @@ internal sealed partial class CwlMod : BaseUnityPlugin
         BuildPatches();
     }
 
-    private void OnDisable()
+    private void OnApplicationQuit()
     {
         ExecutionAnalysis.DispatchAnalysis();
+
+        OpenFileOrPath.ForceCloseAllReferences();
     }
 }
