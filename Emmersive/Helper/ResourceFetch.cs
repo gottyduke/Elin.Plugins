@@ -23,8 +23,10 @@ public class ResourceFetch
     public static IEnumerable<ResourceDescriptor> GetAvailableResources(string path)
     {
         using var _ = PackageIterator.AddTempLookupPathsEx(ModInfo.Guid, CustomFolder);
-        return PackageIterator.GetRelocatedFilesFromPackageEx(path)
-            .Select(fm => new ResourceDescriptor(fm.Item1, fm.Item2?.title ?? "Custom"));
+        return PackageIterator
+            .GetRelocatedFilesFromPackageEx(path.NormalizePath())
+            .Select(fm => new ResourceDescriptor(fm.Item1, fm.Item2?.title ?? "Custom"))
+            .ToArray();
     }
 
     public static string GetDefaultResource(string manifest)
@@ -50,22 +52,19 @@ public class ResourceFetch
         }
     }
 
-    public static void SaveActiveResources()
-    {
-        Context.Save(_activeResources, "active_resources");
-    }
-
     public sealed record ResourceDescriptor(FileInfo Provider, string PackageName = "");
 
 #region Active Resource
 
     public static bool HasActiveResource(string path)
     {
-        return _activeResources.ContainsKey(path);
+        return _activeResources.ContainsKey(path.NormalizePath());
     }
 
     public static string GetActiveResource(string path, bool autoSet = true)
     {
+        path = path.NormalizePath();
+
         if (_activeResources.TryGetValue(path, out var resource)) {
             return resource;
         }
@@ -86,8 +85,16 @@ public class ResourceFetch
 
     public static void SetActiveResource(string path, string content)
     {
+        path = path.NormalizePath();
         _activeResources[path] = content;
         EmMod.Log<ResourceFetch>($"set active resource {path}");
+    }
+
+    public static void RemoveActiveResource(string path)
+    {
+        path = path.NormalizePath();
+        _activeResources.Remove(path);
+        EmMod.Log<ResourceFetch>($"removed active resource {path}");
     }
 
     public static void ClearActiveResources()
@@ -100,24 +107,54 @@ public class ResourceFetch
 
 #region Custom Resource
 
-    public static void SetCustomPath(string path)
+    public static void SetCustomFolderPath(string path)
     {
         CustomFolder = path;
         Directory.CreateDirectory(CustomFolder);
     }
 
-    public static string GetCustomResource(string path)
+    public static string? GetCustomResource(string path)
     {
         var file = Path.Combine(CustomFolder, path);
-        return !File.Exists(file) ? "" : File.ReadAllText(file);
+        return !File.Exists(file) ? null : File.ReadAllText(file);
     }
 
     public static void SetCustomResource(string path, string content)
     {
         var file = new FileInfo(Path.Combine(CustomFolder, path));
+
         Directory.CreateDirectory(Path.GetDirectoryName(file.FullName)!);
         File.WriteAllText(file.FullName, content);
+
+        RemoveActiveResource(path);
+
         EmMod.Log<ResourceFetch>($"set custom resource {path}");
+    }
+
+    public static void RemoveCustomResource(string path)
+    {
+        var file = Path.Combine(CustomFolder, path);
+
+        try {
+            File.Delete(file);
+        } catch {
+            // noexcept
+        }
+    }
+
+    public static void OpenOrCreateCustomResource(string path)
+    {
+        var file = Path.Combine(CustomFolder, path);
+        if (!File.Exists(file)) {
+            SetCustomResource(path, GetActiveResource(path));
+        }
+
+        OpenFileOrPath.Run(file);
+    }
+
+    public static void OpenCustomFolder(string subFolder = "")
+    {
+        OpenFileOrPath.Run(Path.Combine(CustomFolder, subFolder));
     }
 
     public static void ClearCustomResources()
@@ -131,14 +168,6 @@ public class ResourceFetch
         Directory.CreateDirectory(CustomFolder);
 
         EmMod.Log<ResourceFetch>("cleared custom resources");
-    }
-
-    public static void OpenCustomResource(string path)
-    {
-        var file = new FileInfo(Path.Combine(CustomFolder, path));
-        if (file.Exists) {
-            OpenFileOrPath.Run(file.FullName);
-        }
     }
 
 #endregion

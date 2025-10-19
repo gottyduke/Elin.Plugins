@@ -13,8 +13,8 @@ public class CharaContext(Chara chara) : ContextProviderBase
         Dictionary<string, object> data = new() {
             ["name"] = chara.NameSimple,
             ["uid"] = chara.uid,
-            ["can_talk"] = !chara.Profile.LockedInRequest,
-            ["title"] = chara.Aka,
+            ["can_talk"] = !chara.Profile.OnTalkCooldown,
+            ["title"] = chara.Aka.ToTitleCase(),
             ["level"] = chara.LV,
             ["hp"] = $"{chara.hp}/{chara.MaxHP}",
             ["mana"] = $"{chara.mana.value}/{chara.mana.max}",
@@ -46,7 +46,7 @@ public class CharaContext(Chara chara) : ContextProviderBase
 
         var conditions = chara.conditions;
         if (conditions.Count > 0) {
-            data["statuses"] = string.Join(',', conditions.Select(c => c.Name));
+            data["conditions"] = string.Join(',', conditions.Select(c => c.Name));
         }
 
         var background = new BackgroundContext(chara).Build();

@@ -20,43 +20,44 @@ public class RecentActionContext : ContextProviderBase
         var session = RecentActions.TakeLast(depth);
 
         if (EmConfig.Context.RecentTalkOnly.Value) {
-            lock (RecentActions) {
-                actions = session
-                    .Select(tl => $"{tl.actor}: {tl.text}")
-                    .ToList();
-            }
+            actions = session
+                .Select(tl => $"{tl.actor}: {tl.text}")
+                .ToList();
         } else {
             actions = [];
 
-            var sanitizedSession = session.ToArray();
-            foreach (var log in ExtractUniqueLog(depth)) {
-                var sanitized = log;
+            var recentDict = RecentActions
+                .TakeLast(depth)
+                .ToLookup(a => a.text);
 
-                if (sanitized.StartsWith('"') && sanitized.EndsWith('"') && sanitized.Length > 2) {
+            var logs = ExtractUniqueLog(depth);
+
+            foreach (var raw in logs) {
+                var sanitized = raw;
+
+                if (sanitized.Length > 2 && sanitized.StartsWith('"') && sanitized.EndsWith('"')) {
                     sanitized = sanitized[1..^1];
                 }
 
-                foreach (var (actor, talk) in sanitizedSession) {
-                    if (sanitized != talk) {
-                        continue;
-                    }
-
-                    sanitized = $"{actor}: {talk}";
-                    break;
+                var entry = recentDict[sanitized].LastOrDefault();
+                if (entry.actor is { } actor) {
+                    sanitized = $"{actor}: {sanitized}";
                 }
 
                 actions.Add(sanitized);
             }
         }
 
-        return actions.Count == 0
-            ? null
-            : actions;
+        return actions.Count == 0 ? null : actions;
     }
 
     public static void Add(string actor, string entry)
     {
-        entry = entry.Trim();
+        if (entry.Contains("em_push".lang())) {
+            return;
+        }
+
+        entry = entry.Trim().Trim('"');
 
         if (actor == EClass.pc.NameSimple) {
             actor = "you".lang().ToTitleCase();
@@ -79,47 +80,41 @@ public class RecentActionContext : ContextProviderBase
     public static List<string> ExtractUniqueLog(int depth)
     {
         var fullLog = EClass.game.log;
-        var lastIndex = fullLog.currentLogIndex - 1;
         var dict = fullLog.dict;
+        var lastIndex = fullLog.currentLogIndex - 1;
 
-        lock (dict) {
-            HashSet<string> seen = [];
-            List<string> logs = [];
+        List<string> logs = new(depth);
+        HashSet<string> seen = [];
+        string? current = null;
 
-            var appendNext = false;
-            var suffix = "";
-            while (lastIndex >= _indexSinceStart) {
-                if (!dict.TryGetValue(lastIndex, out var msg)) {
-                    break;
-                }
-
-                var log = msg.text;
-                if (log.StartsWith(" ")) {
-                    appendNext = true;
-                    suffix = log;
-                    continue;
-                }
-
-                if (seen.Add(log)) {
-                    if (appendNext) {
-                        log += suffix;
-                        appendNext = false;
-                    }
-
-                    logs.Add(log);
-
-                    if (logs.Count >= depth) {
-                        break;
-                    }
-                }
-
-                lastIndex--;
+        while (lastIndex >= _indexSinceStart && logs.Count < depth) {
+            if (!dict.TryGetValue(lastIndex, out var msg)) {
+                break;
             }
 
-            logs.Reverse();
+            var text = msg.text;
+            if (text.IsEmpty() || text.Contains("em_push".lang())) {
+                lastIndex--;
+                continue;
+            }
 
-            return logs;
+            if (text.StartsWith(" ")) {
+                current = text + (current ?? "");
+            } else {
+                current = text + (current ?? "");
+
+                if (seen.Add(current)) {
+                    logs.Add(current);
+                }
+
+                current = null;
+            }
+
+            lastIndex--;
         }
+
+        logs.Reverse();
+        return logs;
     }
 
     public static void TrimExcess(int bufSize)
@@ -131,8 +126,6 @@ public class RecentActionContext : ContextProviderBase
     public static void ClearSession()
     {
         RecentActions.Clear();
-        lock (EClass.game.log) {
-            _indexSinceStart = EClass.game.log.currentLogIndex - 1;
-        }
+        _indexSinceStart = EClass.game.log.currentLogIndex - 1;
     }
 }

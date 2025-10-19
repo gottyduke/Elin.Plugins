@@ -6,6 +6,7 @@ using System.Threading;
 using Cwl.API.Attributes;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
+using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using Cysharp.Threading.Tasks;
 using Emmersive.API.Exceptions;
@@ -50,7 +51,8 @@ public partial class EmScheduler
 
     public static void RequestScenePlayWithContext(ContextBuilder contextBuilder)
     {
-        ScenePlayAsync(contextBuilder).Forget(ExceptionProfile.DefaultExceptionHandler);
+        _iteration++;
+        ScenePlayAsync(contextBuilder).ForgetEx();
     }
 
     internal static async UniTask ScenePlayAsync(ContextBuilder contextBuilder, int retries = -1)
@@ -68,7 +70,7 @@ public partial class EmScheduler
     internal static async UniTask ScenePlayAsync(ChatHistory context, int retries = -1)
     {
         if (retries < 0) {
-            retries = Math.Max(0, EmConfig.Policy.Retries.Value);
+            retries = Math.Max(0, Math.Min(EmConfig.Policy.Retries.Value, ApiPoolSelector.Instance.Providers.Count));
         }
 
         EmMod.Log<EmScheduler>("em_ui_scene_scheduled".Loc(retries));
@@ -91,7 +93,7 @@ public partial class EmScheduler
 
         using var activity = EmActivity.StartNew(provider.Id);
 
-        EmMod.DebugPopup<EmScheduler>("em_ui_scene_requesting".Loc());
+        EmMod.DebugPopup<EmScheduler>("em_ui_scene_requesting".lang());
 
         var timeout = EmConfig.Policy.Timeout.Value;
 
@@ -123,14 +125,11 @@ public partial class EmScheduler
             MarkUnavailable("em_ui_scene_timeout".Loc(timeout));
             // noexcept
         } catch (HttpOperationException httpEx) when (httpEx.StatusCode != HttpStatusCode.BadRequest) {
-            MarkUnavailable("em_ui_scene_failed".Loc(httpEx.StatusCode!.TagColor(0xff0000), httpEx.Message));
-
-            if (retries > 0) {
-                EmMod.Debug<EmScheduler>("em_ui_scene_retry".Loc());
-                await ScenePlayAsyncInternal(context, --retries);
-            } else {
-                EmMod.Debug<EmScheduler>("em_ui_scene_retry_end".Loc());
-            }
+            ScheduleRetry(httpEx);
+            // noexcept
+        } catch (Exception ex)
+            when (ex.InnerException is HttpOperationException { StatusCode: not HttpStatusCode.BadRequest } httpEx) {
+            ScheduleRetry(httpEx);
             // noexcept
         } catch (Exception ex) {
             MarkUnavailable("em_ui_scene_failed".Loc(ex.GetType().Name, ex.Message));
@@ -138,14 +137,15 @@ public partial class EmScheduler
             // noexcept
         } finally {
             FreezeCharas(false);
+            _iteration--;
         }
 
         return;
 
-        void FreezeCharas(bool block)
+        void FreezeCharas(bool freeze)
         {
             foreach (var chara in lockedCharas) {
-                chara.Profile.LockedInRequest = block;
+                chara.Profile.LockedInRequest = freeze;
             }
         }
 
@@ -154,6 +154,19 @@ public partial class EmScheduler
             EmMod.Warn<EmScheduler>(message);
             provider.MarkUnavailable(message);
             activity.SetStatus(EmActivity.StatusType.Failed);
+        }
+
+        void ScheduleRetry(HttpOperationException httpEx)
+        {
+            MarkUnavailable("em_ui_scene_failed".Loc(httpEx.StatusCode!.TagColor(0xff0000), httpEx.Message));
+
+            if (retries > 0) {
+                EmMod.Debug<EmScheduler>("em_ui_scene_retry".lang());
+                ScenePlayAsyncInternal(context, --retries).ForgetEx();
+                EmMod.DebugPopup<EmScheduler>("scene retry");
+            } else {
+                EmMod.Debug<EmScheduler>("em_ui_scene_retry_end".lang());
+            }
         }
     }
 

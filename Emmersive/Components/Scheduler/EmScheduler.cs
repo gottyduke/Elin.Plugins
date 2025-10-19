@@ -17,14 +17,12 @@ public partial class EmScheduler : EMono
     }
 
     private static readonly List<SceneTriggerEvent> _buffer = [];
+    private static int _iteration;
 
-    public static bool IsBuffering { get; private set; }
     public static float ScenePlayDelay { get; private set; }
     public static bool IsInProgress { get; private set; }
     public static ScheduleMode Mode { get; private set; } = ScheduleMode.Buffer;
-    public static float NextBufferFlush { get; private set; }
-    public static bool BufferReady => IsBuffering && Time.unscaledTime >= NextBufferFlush;
-    public static bool CanMakeRequest => !IsInProgress || EmActivity.Unhandled < EmConfig.Policy.ConcurrentRequests.Value;
+    public static bool CanMakeRequest => !IsInProgress || _iteration < EmConfig.Policy.ConcurrentRequests.Value;
 
     private void Update()
     {

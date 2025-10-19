@@ -32,6 +32,6 @@ internal class CharaTickerPatch
         // start global cooldown
         pc.ResetTalkCooldown();
 
-        EmScheduler.RequestScenePlayWithTrigger();
+        EmScheduler.RequestScenePlayImmediate();
     }
 }

@@ -46,8 +46,8 @@ public sealed class ContextBuilder
         return new ContextBuilder()
             .Add(EnvironmentContext)
             .Add(CurrentZoneContext)
-            .Add(RecentActionContext)
-            .Add(PlayerContext);
+            .Add(PlayerContext)
+            .Add(RecentActionContext);
     }
 
     public static ContextBuilder CreateDefault()
@@ -79,15 +79,20 @@ public sealed class ContextBuilder
 
         foreach (var provider in _providers.Where(provider => provider.IsAvailable)) {
             try {
+                var swp = Stopwatch.StartNew();
+
+                EmMod.Debug<ContextBuilder>(provider.Name);
+
+                sb.AppendLine($"[{provider.Name}]");
+
                 var context = provider.Build();
                 if (context is null) {
                     continue;
                 }
 
-                sb.AppendLine($"[{provider.Name}]");
                 sb.AppendLine(context.ToCompactJson());
 
-                EmMod.Debug<ContextBuilder>($"{provider.Name}\n{context.ToIndentedJson()}");
+                EmMod.Debug<ContextBuilder>($"{swp.Elapsed.Milliseconds}ms\n{context.ToIndentedJson()}");
             } catch (Exception ex) {
                 EmMod.Warn<ContextBuilder>($"provider {provider.Name} failed\n{ex}");
                 DebugThrow.Void(ex);

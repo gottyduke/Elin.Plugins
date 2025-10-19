@@ -13,6 +13,8 @@ public class CharaProfile(Chara chara)
 
     public bool LockedInRequest { get; set; }
 
+    public string LastTalk { get; set; } = "";
+
     public void ResetTalkCooldown()
     {
         LastReactionTime = Time.unscaledTime;

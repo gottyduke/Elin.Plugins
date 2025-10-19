@@ -13,18 +13,16 @@ public class BackgroundContext(Chara chara) : ContextProviderBase
     {
         try {
             var resourceKey = $"Emmersive/Characters/{chara.UnifiedId}.txt";
-            string background;
+            var background = ResourceFetch.GetActiveResource(resourceKey);
 
-            if (!ResourceFetch.HasActiveResource(resourceKey)) {
+            if (background.IsEmpty()) {
                 background = chara.IsPC
                     ? EClass.player.GetBackgroundText()
-                    : BioOverridePatch.GetNpcBackground("", chara);
+                    : BioOverridePatch.GetNpcBackground("em_ui_non_provided", chara);
                 ResourceFetch.SetActiveResource(resourceKey, background);
-            } else {
-                background = ResourceFetch.GetActiveResource(resourceKey);
             }
 
-            return background.IsEmpty()
+            return background is null or "em_ui_non_provided"
                 ? null
                 : background;
         } catch (Exception ex) {

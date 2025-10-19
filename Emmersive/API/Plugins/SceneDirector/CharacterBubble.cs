@@ -54,7 +54,7 @@ public partial class SceneDirector
                 }
 
                 var profile = chara.Profile;
-                if (!pc.CanSee(chara) || profile.OnTalkCooldown) {
+                if (!pc.CanSee(chara)) {
                     return;
                 }
 
@@ -66,6 +66,11 @@ public partial class SceneDirector
                     text = text.Replace("&", "");
                 }
 
+                if (profile.LastTalk == text) {
+                    // reduce repetition
+                    return;
+                }
+
                 RecentActionContext.Add(chara.Name, text);
 
                 Msg.SetColor(color);
@@ -74,6 +79,7 @@ public partial class SceneDirector
                 chara.HostRenderer.Say(text.Wrap(7), duration: duration);
 
                 profile.ResetTalkCooldown();
+                profile.LastTalk = text;
             }
         }
 

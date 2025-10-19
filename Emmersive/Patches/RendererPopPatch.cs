@@ -52,8 +52,7 @@ internal class RendererPopPatch
     internal static string OnBlockedTalk(string text, Card card, string topic)
     {
         if (card is not Chara chara || topic == "dead" || !ApiPoolSelector.Instance.HasAnyAvailableServices()) {
-            Msg.Say(text);
-            RecentActionContext.Add(card.NameSimple, text);
+            AllowOriginalText();
             return "";
         }
 
@@ -63,32 +62,39 @@ internal class RendererPopPatch
             return "";
         }
 
-        if (!chara.Profile.OnTalkCooldown) {
-            if (!EmConfig.Scene.BlockCharaTalk.Value) {
+        var profile = chara.Profile;
+        if (profile.LockedInRequest) {
+            if (!EmConfig.Scene.BlockCharaTalk.Value && !profile.OnTalkCooldown) {
                 // let non-blocked gc talk
-                Msg.Say(text);
-                RecentActionContext.Add(card.NameSimple, text);
+                AllowOriginalText();
             }
         }
 
         Msg.SetColor();
         return "";
+
+        void AllowOriginalText()
+        {
+            Msg.Say(text);
+            RecentActionContext.Add(card.NameSimple, text);
+        }
     }
 
-    internal static void SetSceneTrigger(CardRenderer renderer, string text, Color color, float duration, Card card)
+    internal static void SetSceneTrigger(CardRenderer renderer, string text, Color color, float duration, Chara chara)
     {
-        text = card.ApplyNewLine(text).StripBrackets();
+        var profile = chara.Profile;
 
-        if (card is not Chara chara || !ApiPoolSelector.Instance.HasAnyAvailableServices()) {
+        text = chara.ApplyNewLine(text).StripBrackets();
+
+        if (!ApiPoolSelector.Instance.HasAnyAvailableServices() ||
+            chara.Dist(EClass.pc) > EmConfig.Context.NearbyRadius.Value) {
             AllowOriginalPop();
             return;
         }
 
-        var profile = chara.Profile;
-
         // block if chara is locked in scheduler
         if (profile.LockedInRequest) {
-            if (!EmConfig.Scene.BlockCharaTalk.Value) {
+            if (!EmConfig.Scene.BlockCharaTalk.Value && !profile.OnTalkCooldown) {
                 AllowOriginalPop();
             } else {
                 EmMod.DebugPopup<EmScheduler>($"blocked {chara.NameSimple}");
@@ -97,8 +103,8 @@ internal class RendererPopPatch
             return;
         }
 
-        // chara isn't locked
-        if (profile.OnTalkCooldown || !EmScheduler.CanMakeRequest) {
+        if (!EmScheduler.CanMakeRequest && !profile.OnTalkCooldown) {
+            AllowOriginalPop();
             return;
         }
 
@@ -115,7 +121,9 @@ internal class RendererPopPatch
         void AllowOriginalPop()
         {
             renderer.Say(text, color, duration);
-            RecentActionContext.Add(card.NameSimple, text);
+            profile.ResetTalkCooldown();
+            profile.LastTalk = text;
+            RecentActionContext.Add(chara.NameSimple, text);
         }
     }
 }

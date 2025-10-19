@@ -17,7 +17,9 @@ public abstract class ContextProviderBase : IContextProvider
             return null;
         }
 
-        Localize(data);
+        if (EmConfig.Context.EnableLocalizer.Value) {
+            Localize(data);
+        }
 
         return data;
     }

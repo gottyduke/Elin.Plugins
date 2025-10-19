@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -16,7 +17,7 @@ public class RelationContext(IList<Chara> charas) : ContextProviderBase
     [field: AllowNull]
     public static ILookup<string, RelationPrompt> Lookup
     {
-        get => field ??= BuildLookup();
+        get => field ??= BuildLookup().ToLookup(rp => rp.Key);
         private set;
     }
 
@@ -41,17 +42,17 @@ public class RelationContext(IList<Chara> charas) : ContextProviderBase
 
         Dictionary<string, object> data = [];
         foreach (var relationKey in relationKeys) {
+            var relation = Lookup[relationKey].LastOrDefault();
+            // kinda unnecessary check
+            if (relation is null || relation.Prompt.IsEmpty()) {
+                continue;
+            }
+
             var resourceKey = $"Emmersive/Relations/{relationKey}.txt";
 
             var active = ResourceFetch.GetActiveResource(resourceKey, false);
             if (active.IsEmpty()) {
-                var relation = Lookup[relationKey].LastOrDefault();
-                if (relation is null || relation.Prompt.IsEmpty()) {
-                    continue;
-                }
-
                 active = relation.Prompt;
-
                 ResourceFetch.SetActiveResource(resourceKey, active);
             }
 
@@ -72,9 +73,9 @@ public class RelationContext(IList<Chara> charas) : ContextProviderBase
 
     public static IEnumerable<Chara> SplitByRelationKey(string relationKey, IEnumerable<Chara> charas)
     {
-        var charaIds = relationKey.Split(KeySeparator);
-        return charas
-            .Where(c => charaIds.Contains(c.id));
+        var ids = relationKey.Split(KeySeparator)
+            .ToHashSet(StringComparer.Ordinal);
+        return charas.Where(c => ids.Contains(c.id));
     }
 
     /// <summary>
@@ -89,48 +90,32 @@ public class RelationContext(IList<Chara> charas) : ContextProviderBase
             .OrderBy(id => id));
     }
 
-    // O(2^N)
-    private static IEnumerable<string> BuildAllRelationKeys(IEnumerable<string> charaIds)
+    public static IEnumerable<string> BuildAllRelationKeys(IEnumerable<string> charaIds)
     {
-        var charaList = charaIds.ToList();
-        var count = charaList.Count;
-        HashSet<string> keys = [];
+        var charas = charaIds
+            .Select(id => id.Trim())
+            .ToHashSet(StringComparer.Ordinal);
 
-        for (var i = 2; i <= count; ++i) {
-            var subsets = 1 << count;
-            for (var j = 0; j < subsets; ++j) {
-                if (BitOperations.PopCount(j) != i) {
-                    continue;
-                }
-
-                List<string> relations = [];
-                for (var chara = 0; chara < count; ++chara) {
-                    var bit = j & (1 << chara);
-                    if (bit != 0) {
-                        relations.Add(charaList[chara]);
-                    }
-                }
-
-                keys.Add(GetRelationKey(relations));
+        foreach (var relationKey in Lookup.Select(g => g.Key)) {
+            var ids = relationKey.Split(KeySeparator);
+            if (ids.All(charas.Contains)) {
+                yield return relationKey;
             }
         }
-
-        return keys;
     }
 
 #endregion
 
 #region RelationPrompt
 
-    public static ILookup<string, RelationPrompt> BuildLookup()
+    public static IEnumerable<RelationPrompt> BuildLookup()
     {
         using var _ = PackageIterator.AddTempLookupPaths(ResourceFetch.CustomFolder);
         return PackageIterator
             .GetRelocatedDirsFromPackage("Emmersive/Relations")
             .SelectMany(d => d.GetFiles("*.txt", SearchOption.TopDirectoryOnly))
             .Select(LoadFromFile)
-            .OfType<RelationPrompt>()
-            .ToLookup(rp => rp.Key);
+            .OfType<RelationPrompt>();
     }
 
     public static void Clear()
@@ -141,19 +126,13 @@ public class RelationContext(IList<Chara> charas) : ContextProviderBase
 
     private static RelationPrompt? LoadFromFile(FileInfo file)
     {
-        var lines = File.ReadAllLines(file.FullName);
-        if (lines.Length < 2) {
-            EmMod.Warn<RelationPrompt>("relation prompt must contain at least 2 lines");
-            return null;
-        }
-
-        var charaIds = lines[0].Split(KeySeparator);
+        var charaIds = Path.ChangeExtension(file.Name, null).Split(KeySeparator);
         var sources = EMono.sources.charas.map;
         List<SourceChara.Row> rows = [];
 
         foreach (var id in charaIds) {
             if (!sources.TryGetValue(id, out var row)) {
-                EmMod.Warn<RelationPrompt>($"relation prompt uses invalid chara id: {id}");
+                EmMod.Warn<RelationPrompt>($"invalid chara id: {id}");
                 return null;
             }
 
@@ -161,11 +140,11 @@ public class RelationContext(IList<Chara> charas) : ContextProviderBase
         }
 
         var relationKey = GetRelationKey(charaIds);
-        var prompt = string.Join(' ', lines.Skip(1));
+        var prompt = File.ReadAllText(file.FullName);
 
         var length = prompt.Length;
         if (length < 10) {
-            EmMod.Warn<RelationPrompt>("relation prompt must be longer than 10 characters");
+            EmMod.Warn<RelationPrompt>("must be longer than 10 characters");
             return null;
         }
 

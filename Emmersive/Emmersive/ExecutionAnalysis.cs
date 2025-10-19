@@ -8,7 +8,7 @@ namespace Emmersive;
 
 internal class ExecutionAnalysis
 {
-    internal static void CleanupActivities()
+    internal static void CleanupActivityLogs()
     {
         var logs = Path.Combine(ResourceFetch.CustomFolder, "Activity");
         if (!Directory.Exists(logs)) {
@@ -31,27 +31,25 @@ internal class ExecutionAnalysis
 
     internal static void DumpSessionActivities()
     {
-        CleanupActivities();
+        CleanupActivityLogs();
 
-        var activities = EmActivity.GetAllSummaries().ToArray();
-        if (activities.Length == 0) {
+        var activities = EmActivity.Session;
+        if (activities.Count == 0) {
             return;
         }
 
         var file = $"Activity\\{DateTime.Now:MM_dd_hh_mm_ss}.csv";
 
         using var sb = StringBuilderPool.Get();
-        sb.AppendLine("Service,RequestTotal,RequestSuccess,RequestFailure,TokensTotal,PromptUsage,StructuredOutput,Duration");
+        sb.AppendLine("Activity,Service,Status,Latency,Input,Output");
 
-        foreach (var summary in activities) {
-            sb.Append($"{summary.ServiceName},");
-            sb.Append($"{summary.RequestTotal},");
-            sb.Append($"{summary.RequestSuccess},");
-            sb.Append($"{summary.RequestFailure},");
-            sb.Append($"{summary.TokensTotal},");
-            sb.Append($"{summary.TokensInput},");
-            sb.Append($"{summary.TokensOutput},");
-            sb.AppendLine($"{summary.TotalLatencySec}");
+        foreach (var activity in activities) {
+            sb.Append($"{activity.ActivityId},");
+            sb.Append($"{activity.ServiceName},");
+            sb.Append($"{activity.Status},");
+            sb.Append($"{activity.Latency.TotalMilliseconds},");
+            sb.Append($"{activity.TokensInput},");
+            sb.AppendLine($"{activity.TokensOutput}");
         }
 
         ResourceFetch.SetCustomResource(file, sb.ToString());

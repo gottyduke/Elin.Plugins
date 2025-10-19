@@ -27,9 +27,8 @@ public class ExtensionRequestHandler()
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        EmMod.Debug<ExtensionRequestHandler>($"requesting {request.RequestUri}");
-
-        if (ApiPoolSelector.Instance.CurrentProvider is not IExtensionMerger provider) {
+        if (ApiPoolSelector.Instance.CurrentProvider is not IExtensionRequestMerger provider) {
+            EmMod.Debug<ExtensionRequestHandler>($"requesting {request.RequestUri}");
             return await base.SendAsync(request, cancellationToken);
         }
 
@@ -49,7 +48,7 @@ public class ExtensionRequestHandler()
                 };
             }
 
-            provider.MergeExtensionData(dict);
+            provider.MergeExtensionRequest(dict, request);
 
             finalized = JsonConvert.SerializeObject(dict, Formatting.None);
             request.Content = new StringContent(finalized, Encoding.UTF8, "application/json");
@@ -62,6 +61,8 @@ public class ExtensionRequestHandler()
         ResetHeaders(request);
 
         ThrowIfDryRun(finalized);
+
+        EmMod.Debug<ExtensionRequestHandler>($"requesting {request.RequestUri}");
 
         return await base.SendAsync(request, cancellationToken);
     }
@@ -84,7 +85,7 @@ public class ExtensionRequestHandler()
         EmMod.Log<EmScheduler>(requestBody);
 
         ResourceFetch.SetCustomResource("dry_run.json", requestBody);
-        ResourceFetch.OpenCustomResource("dry_run.json");
+        ResourceFetch.OpenOrCreateCustomResource("dry_run.json");
 
         throw new SchedulerDryRunException();
     }

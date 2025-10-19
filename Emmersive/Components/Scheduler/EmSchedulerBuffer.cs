@@ -1,4 +1,5 @@
 using System;
+using Emmersive.Helper;
 using UnityEngine;
 
 namespace Emmersive.Components;
@@ -14,6 +15,9 @@ public partial class EmScheduler
     private static int _frameCount;
 
     public static ScheduleBufferMode BufferMode { get; set; } = ScheduleBufferMode.Incremental;
+    public static bool IsBuffering { get; private set; }
+    public static float NextBufferFlush { get; private set; }
+    public static bool BufferReady => IsBuffering && Time.unscaledTime >= NextBufferFlush;
 
     public static void AddBufferDelay(float seconds)
     {
@@ -37,6 +41,8 @@ public partial class EmScheduler
     private static void AddToBuffer(SceneTriggerEvent trigger)
     {
         _buffer.Add(trigger);
+
+        trigger.Chara.Profile.LockedInRequest = true;
 
         if (IsBuffering) {
             return;

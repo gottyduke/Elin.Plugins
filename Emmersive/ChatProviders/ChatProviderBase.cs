@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Net.Http;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Emmersive.API;
@@ -10,10 +12,10 @@ using Newtonsoft.Json;
 
 namespace Emmersive.ChatProviders;
 
-public abstract partial class ChatProviderBase : IChatProvider, IExtensionMerger
+public abstract partial class ChatProviderBase : IChatProvider, IExtensionRequestMerger
 {
     private DateTime _cooldownUntil = DateTime.MinValue;
-    private UIInputText? _modelInput;
+    private float _timeoutIncremental;
 
     protected string? UnavailableReason;
 
@@ -22,6 +24,9 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionMerger
         ServiceCount++;
         ApiKey = apiKey;
     }
+
+    public abstract string EndPoint { get; set; }
+    public abstract string Alias { get; set; }
 
     public static int ServiceCount { get; internal set; }
 
@@ -37,7 +42,13 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionMerger
         set => ApiKey = value.DecryptAes();
     }
 
-    public abstract string Id { get; set; }
+    [field: AllowNull]
+    public virtual string Id
+    {
+        get => field ??= $"{Alias}#{ServiceCount}";
+        set;
+    }
+
     public abstract string CurrentModel { get; set; }
 
     [JsonIgnore]
@@ -53,7 +64,8 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionMerger
     public virtual void MarkUnavailable(string? message = null)
     {
         UnavailableReason = message;
-        _cooldownUntil = DateTime.Now + TimeSpan.FromSeconds(EmConfig.Policy.ServiceCooldown.Value);
+        _cooldownUntil = DateTime.Now + TimeSpan.FromSeconds(EmConfig.Policy.ServiceCooldown.Value + _timeoutIncremental);
+        _timeoutIncremental += 1f;
         EmMod.DebugPopup<IChatProvider>($"[{Id}] temporarily unavailable: {message}");
     }
 
@@ -89,10 +101,12 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionMerger
             HandleRequestActivity(response, activity);
         }
 
+        _timeoutIncremental = 0f;
+
         return response;
     }
 
-    public virtual void MergeExtensionData(IDictionary<string, object> data)
+    public virtual void MergeExtensionRequest(IDictionary<string, object> data, HttpRequestMessage request)
     {
         if (RequestParams.Count == 0) {
             return;

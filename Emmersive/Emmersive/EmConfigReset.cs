@@ -1,4 +1,5 @@
 using System.IO;
+using Cwl.Helper.FileUtil;
 using Cwl.LangMod;
 using Emmersive.Helper;
 using ReflexCLI.Attributes;
@@ -7,8 +8,7 @@ namespace Emmersive;
 
 internal partial class EmConfig
 {
-    private const EmConfigVersion CurrentVersion = EmConfigVersion.V2;
-    private static FileSystemWatcher? _watcher;
+    private const EmConfigVersion CurrentVersion = EmConfigVersion.V3;
 
     [ConsoleCommand("reload_cfg")]
     internal static void Reload()
@@ -47,26 +47,27 @@ internal partial class EmConfig
     {
         var config = EmMod.Instance.Config;
 
-        _watcher = new(Path.GetDirectoryName(config.ConfigFilePath)!, $"{ModInfo.Guid}.cfg") {
-            NotifyFilter = NotifyFilters.LastWrite,
-            EnableRaisingEvents = true,
-        };
+        FileWatcherHelper.Register(
+            "em_config",
+            Path.GetDirectoryName(config.ConfigFilePath)!,
+            $"{ModInfo.Guid}.cfg",
+            args => {
+                if (args.ChangeType != WatcherChangeTypes.Changed) {
+                    return;
+                }
 
-        _watcher.Changed += (_, args) => {
-            if (args.ChangeType != WatcherChangeTypes.Changed) {
-                return;
-            }
+                EmMod.Popup<EmConfig>("em_ui_config_changed".lang());
 
-            EmMod.Popup<EmConfig>("em_ui_config_changed".Loc());
-            config.SaveOnConfigSet = false;
-            config.Reload();
-            config.SaveOnConfigSet = true;
-        };
+                config.SaveOnConfigSet = false;
+                config.Reload();
+                config.SaveOnConfigSet = true;
+            });
     }
 
     private enum EmConfigVersion
     {
         V1, // 0.9.3 beta
         V2, // 0.9.4 beta
+        V3, // 0.9.5 beta
     }
 }

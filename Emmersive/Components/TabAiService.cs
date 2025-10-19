@@ -4,22 +4,23 @@ using Cwl.Helper.FileUtil;
 using Emmersive.API;
 using Emmersive.API.Services;
 using Emmersive.ChatProviders;
-using Emmersive.Contexts;
-using Emmersive.Helper;
 using UnityEngine;
 using UnityEngine.UI;
 using YKF;
-using OpenFileOrPath = Emmersive.Helper.OpenFileOrPath;
 
 namespace Emmersive.Components;
 
 internal class TabAiService : TabEmmersiveBase
 {
-    private static Vector2 _browsedPosition;
+    private static Vector2 _browsedPosition = new(0f, 1f);
+
+    private bool _repaint;
 
     private void Update()
     {
-        _browsedPosition = GetComponentInParent<UIScrollView>().normalizedPosition;
+        if (_repaint) {
+            _browsedPosition = GetComponentInParent<UIScrollView>().normalizedPosition;
+        }
     }
 
     public override void OnLayout()
@@ -37,13 +38,6 @@ internal class TabAiService : TabEmmersiveBase
             provider.OnLayout(card);
 
             if (provider is IChatProvider chatProvider) {
-                AddReorderButton();
-            }
-
-            continue;
-
-            void AddReorderButton()
-            {
                 var move = card.Vertical();
                 move.LayoutElement().flexibleWidth = 0f;
                 move.Fitter.horizontalFit = ContentSizeFitter.FitMode.MinSize;
@@ -52,6 +46,8 @@ internal class TabAiService : TabEmmersiveBase
                 move.Button("↑", () => Reorder(-1));
                 move.Button("↓", () => Reorder(1));
             }
+
+            continue;
 
             void Reorder(int a)
             {
@@ -66,11 +62,13 @@ internal class TabAiService : TabEmmersiveBase
         }
 
         GetComponentInParent<UIScrollView>().normalizedPosition = _browsedPosition;
+        _repaint = true;
     }
 
     public override void OnLayoutConfirm()
     {
-        var layouts = ApiPoolSelector.Instance.Providers
+        var layouts = ApiPoolSelector.Instance
+            .Providers
             .OfType<ILayoutProvider>();
         foreach (var provider in layouts) {
             provider.OnLayoutConfirm();
@@ -83,23 +81,10 @@ internal class TabAiService : TabEmmersiveBase
             .WithSpace(10);
         btnGroup.Layout.childForceExpandWidth = true;
 
-        btnGroup.Button("em_ui_reload_prompts".lang(), () => {
-            ResourceFetch.ClearActiveResources();
-            RecentActionContext.ClearSession();
-            RelationContext.Clear();
-        });
-
         btnGroup.Button("em_ui_test_generation".lang(), () => {
             LayerEmmersivePanel.Instance!.OnLayoutConfirm();
             EmScheduler.RequestScenePlayImmediate();
             ELayer.ui.RemoveLayer<LayerEmmersivePanel>();
-        });
-
-        btnGroup.Button("em_ui_open_debug".lang(), () => {
-            EmConfig.Policy.Verbose.Value = true;
-            var path = PackageIterator.GetRelocatedDirFromPackage("Emmersive", ModInfo.Guid);
-            // TODO: use CWL version after updating
-            OpenFileOrPath.Run(path!.FullName);
         });
 
         btnGroup.Button("em_ui_config_open".lang(), () => {
@@ -114,14 +99,20 @@ internal class TabAiService : TabEmmersiveBase
             .WithSpace(10);
         btnGroup.Layout.childForceExpandWidth = true;
 
-        AddServiceButton("em_ui_add_service_google".lang(), apiKey => new GoogleProvider(apiKey));
-        AddServiceButton("em_ui_add_service_openai".lang(), apiKey => new OpenAIProvider(apiKey));
+        AddServiceButton("em_ui_add_service_google", apiKey => new GoogleProvider(apiKey));
+        AddServiceButton("em_ui_add_service_openai", apiKey => new OpenAIProvider(apiKey));
+
+        // CN treat: piexian free API
+        if (Lang.langCode == "CN") {
+            btnGroup.Button("em_ui_add_service_piexian".lang(),
+                () => Dialog.YesNo("em_ui_px_desc", () => AddService(new PiexianProvider())));
+        }
 
         return;
 
         void AddServiceButton(string btnName, Func<string, IChatProvider> serviceFactory)
         {
-            btnGroup.Button(btnName, () => {
+            btnGroup.Button(btnName.lang(), () => {
                 var d = Dialog.InputName(
                     "em_ui_paste_api_key".lang(),
                     "em_ui_api_key".lang(),
@@ -132,14 +123,15 @@ internal class TabAiService : TabEmmersiveBase
                     });
                 d.input.field.characterLimit = 200;
                 d.input.field.contentType = InputField.ContentType.Password;
+                d.input.field.text = "";
             });
         }
     }
 
-    private static void AddService(IChatProvider provider)
+    private void AddService(IChatProvider provider)
     {
         ApiPoolSelector.Instance.AddService(provider);
         EmKernel.RebuildKernel();
-        LayerEmmersivePanel.Instance?.Reopen();
+        LayerEmmersivePanel.Instance?.Reopen(name);
     }
 }

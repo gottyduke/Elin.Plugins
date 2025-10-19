@@ -20,13 +20,18 @@ public static class RequestParamHelper
     {
         public void SaveProviderParam()
         {
-            var path = Path.Combine(ResourceFetch.CustomFolder, $"params/{provider.Id}.json");
+            var path = Path.Combine(ResourceFetch.CustomFolder, $"Params/{provider.Id}.txt");
             ConfigCereal.WriteConfig(provider.RequestParams, path, Settings);
         }
 
         public void RemoveProviderParam()
         {
-            var path = Path.Combine(ResourceFetch.CustomFolder, $"params/{provider.Id}.json");
+            var path = Path.Combine(ResourceFetch.CustomFolder, $"Params/{provider.Id}.txt");
+            if (File.Exists(path)) {
+                File.Delete(path);
+            }
+
+            path = Path.Combine(ResourceFetch.CustomFolder, $"Params/{provider.Id}.json");
             if (File.Exists(path)) {
                 File.Delete(path);
             }
@@ -34,7 +39,11 @@ public static class RequestParamHelper
 
         public Dictionary<string, object>? GetProviderParam()
         {
-            var path = Path.Combine(ResourceFetch.CustomFolder, $"params/{provider.Id}.json");
+            var path = Path.Combine(ResourceFetch.CustomFolder, $"Params/{provider.Id}.txt");
+            if (File.Exists(path)) {
+                path = Path.Combine(ResourceFetch.CustomFolder, $"Params/{provider.Id}.json");
+            }
+
             ConfigCereal.ReadConfig<Dictionary<string, object>>(path, out var requestParams);
             return requestParams;
         }
@@ -52,7 +61,7 @@ public static class RequestParamHelper
 
         public void OpenProviderParam()
         {
-            var path = Path.Combine(ResourceFetch.CustomFolder, $"params/{provider.Id}.json");
+            var path = Path.Combine(ResourceFetch.CustomFolder, $"Params/{provider.Id}.txt");
             if (!File.Exists(path)) {
                 provider.SaveProviderParam();
             }

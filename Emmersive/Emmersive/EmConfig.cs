@@ -14,17 +14,18 @@ internal partial class EmConfig
         Policy.Verbose = config.Bind(
             "RuntimePolicy",
             "Verbose",
+#if DEBUG || true
+            // enabled for beta builds
+            true,
+#else
             false,
+#endif
             "Verbose information that may be helpful(spamming) for debugging\n" +
             "Enabled for beta testing by default\n" +
             "Debug用的信息输出\n" +
             "Beta测试版默认启用\n" +
             "デバッグ用の詳細情報を出力(大量ログ発生の可能性あり)");
 
-#if DEBUG || true
-        // enabled for beta builds
-        Policy.Verbose.Value = true;
-#endif
 
         Policy.Timeout = config.Bind(
             "RuntimePolicy",
@@ -50,16 +51,17 @@ internal partial class EmConfig
             "RuntimePolicy",
             "ConcurrentRequests",
             1,
-            new ConfigDescription("Enable concurrent requests, which will make more scene reactions\n" +
-                                  "Note that this will likely triple the token usage\n" +
-                                  "启用并发请求，这将产生更多的场景反应。\n" +
-                                  "请注意，这会使你的令牌消耗增加",
+            new ConfigDescription(
+                "Enable concurrent requests, which will make more scene reactions\n" +
+                "Note that this will increase the token usage\n" +
+                "启用并发请求，这将产生更多的场景反应\n" +
+                "请注意，这会使你的令牌消耗增加",
                 new AcceptableValueRange<int>(1, 5)));
 
         Policy.ServiceCooldown = config.Bind(
             "RuntimePolicy",
             "ServiceCooldown",
-            10f,
+            15f,
             new ConfigDescription(
                 "Minimum seconds in realtime required to auto reset an unavailable service\n" +
                 "This is used for API service pooling\n" +
@@ -101,6 +103,13 @@ internal partial class EmConfig
                 "更大的半径会包含更多的角色，但会增加token消耗",
                 new AcceptableValueRange<int>(0, 12)));
 
+        Context.EnableLocalizer = config.Bind(
+            "Context",
+            "EnableLocalizer",
+            false,
+            "Localize the context entries, may increase prompt length\n" +
+            "尝试本地化上下文条目，可能会增加提示词长度");
+
         Scene.MaxReactions = config.Bind(
             "Scene",
             "MaxReactions",
@@ -126,28 +135,28 @@ internal partial class EmConfig
         Scene.SecondsCooldown = config.Bind(
             "Scene",
             "SecondsCooldown",
-            6f,
+            5f,
             new ConfigDescription(
                 "Minimum seconds in realtime required before next scene request\n" +
                 "Each character is tracked individually\n" +
                 "两次请求之间的最低间隔秒数\n" +
                 "每个角色单独计算",
-                new AcceptableValueRange<float>(0f, 60)));
+                new AcceptableValueRange<float>(0f, 60f)));
 
         Scene.TurnsIdleTrigger = config.Bind(
             "Scene",
-            "IdleTriggerTurn",
-            24,
+            "TurnsIdleTrigger",
+            12,
             "Minimum in game turns required to auto trigger scene request\n" +
             "This is reset whenever a scene triggers\n" +
-            "Set to -1 to disable this auto trigger" +
+            "Set to -1 to disable this auto trigger\n" +
             "自动生成场景请求的回合数\n" +
             "生成任意请求时，该值会重置\n" +
             "设为-1禁用此功能");
 
         Scene.SceneBufferWindow = config.Bind(
             "Scene",
-            "SceneTriggerBuffer",
+            "SceneBufferWindow",
             0.1f,
             new ConfigDescription(
                 "Small window to buffer all scene trigger talks\n" +
@@ -166,8 +175,8 @@ internal partial class EmConfig
             "Incremental: adds to the buffer\n" +
             "UniqueFrame: adds to the buffer, only once per frame\n" +
             "抓取场景激活对话的缓冲模式\n" +
-            "Incremental: 增加值\n" +
-            "UniqueFrame: 仅每帧增加一次值");
+            "Incremental: 连续增加缓冲时间\n" +
+            "UniqueFrame: 每帧仅增加一次缓冲时间");
 
         Scene.BlockCharaTalk = config.Bind(
             "Scene",
@@ -196,6 +205,7 @@ internal partial class EmConfig
         internal static ConfigEntry<int> RecentLogDepth { get; set; } = null!;
         internal static ConfigEntry<bool> RecentTalkOnly { get; set; } = null!;
         internal static ConfigEntry<int> NearbyRadius { get; set; } = null!;
+        internal static ConfigEntry<bool> EnableLocalizer { get; set; } = null!;
     }
 
     internal static class Policy

@@ -1,5 +1,6 @@
+using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+using System.Net.Http;
 using Emmersive.API.Plugins;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Connectors.Google;
@@ -8,20 +9,18 @@ using YKF;
 
 namespace Emmersive.ChatProviders;
 
-public sealed class GoogleProvider(string apiKey) : ChatProviderBase(apiKey)
+public class GoogleProvider(string apiKey) : ChatProviderBase(apiKey)
 {
-    [field: AllowNull]
-    public override string Id
-    {
-        get => field ??= $"GoogleGemini#{ServiceCount}";
-        set;
-    }
+    private const string DefaultGoogleV1Beta = "https://generativelanguage.googleapis.com/v1beta";
 
+    public override string Alias { get; set; } = "GoogleGemini";
     public override string CurrentModel { get; set; } = "gemini-2.5-flash";
+    public override string EndPoint { get; set; } = DefaultGoogleV1Beta;
 
     [JsonIgnore]
     public override IDictionary<string, object> RequestParams { get; set; } = new Dictionary<string, object> {
-        //
+        ["topP"] = 0.9f,
+        ["temperature"] = 0.9f,
     };
 
     [JsonIgnore]
@@ -33,14 +32,20 @@ public sealed class GoogleProvider(string apiKey) : ChatProviderBase(apiKey)
         },
     };
 
-    public override void MergeExtensionData(IDictionary<string, object> data)
+    public override void MergeExtensionRequest(IDictionary<string, object> data, HttpRequestMessage request)
     {
         if (!data.TryGetValue("generationConfig", out var geminiRequest) ||
             geminiRequest is not IDictionary<string, object> generationConfig) {
             return;
         }
 
-        base.MergeExtensionData(generationConfig);
+        var uri = request.RequestUri.ToString();
+        if (uri.StartsWith(DefaultGoogleV1Beta, StringComparison.InvariantCultureIgnoreCase) &&
+            !DefaultGoogleV1Beta.Equals(EndPoint, StringComparison.InvariantCultureIgnoreCase)) {
+            request.RequestUri = new(EndPoint + uri[DefaultGoogleV1Beta.Length..]);
+        }
+
+        base.MergeExtensionRequest(generationConfig, request);
     }
 
     protected override void OnLayoutInternal(YKLayout card)
@@ -55,11 +60,12 @@ public sealed class GoogleProvider(string apiKey) : ChatProviderBase(apiKey)
     protected override void HandleRequestActivity(ChatMessageContent response, EmActivity activity)
     {
         if (response is not GeminiChatMessageContent { Metadata: { } metadata }) {
+            activity.SetStatus(EmActivity.StatusType.Failed);
             return;
         }
 
-        activity.InputToken = metadata.PromptTokenCount;
-        activity.OutputToken = metadata.CandidatesTokenCount;
+        activity.TokensInput = metadata.PromptTokenCount;
+        activity.TokensOutput = metadata.CandidatesTokenCount;
     }
 
     protected override void HandleRequestInternal()

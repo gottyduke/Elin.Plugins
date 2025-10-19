@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Cwl.API.Attributes;
-using Emmersive.API.Services;
 using ReflexCLI.Attributes;
 using UnityEngine;
 using YKF;
@@ -13,6 +12,7 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
     private static Vector2 _browsedPosition = Vector2.zero;
 
     private readonly List<TabEmmersiveBase> _tabs = [];
+    private bool _resetHyp;
     public override string Title => "Elin Immersive Talks";
     public override Rect Bound => FitWindow();
 
@@ -22,8 +22,20 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
     {
         Instance = this;
 
+        if (Lang.setting.hyphenation) {
+            Lang.setting.hyphenation = false;
+            _resetHyp = true;
+        }
+
         _tabs.Add(CreateTab<TabAiService>("em_ui_tab_ai_service", "em_tab_ai_service"));
-        _tabs.Add(CreateTab<TabPromptSetting>("em_ui_tab_prompts", "em_tab_prompt_setting"));
+
+        if (!EClass.core.IsGameStarted) {
+            return;
+        }
+
+        _tabs.Add(CreateTab<TabSystemPrompt>("em_ui_tab_prompts", "em_tab_prompt_setting"));
+        _tabs.Add(CreateTab<TabCharaPrompt>("em_ui_tab_characters", "em_tab_chara_prompts"));
+        _tabs.Add(CreateTab<TabCharaRelations>("em_ui_tab_relations", "em_tab_chara_relations"));
     }
 
     public override void OnAfterAddLayer()
@@ -36,13 +48,24 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
     public override void OnKill()
     {
         OnLayoutConfirm();
+
+        if (_resetHyp) {
+            Lang.setting.hyphenation = true;
+        }
+
         Instance = null;
     }
 
-    public void Reopen()
+    public void Reopen(string tabName = "")
     {
+        if (tabName == "" && Window != null && Window.CurrentContent != null) {
+            tabName = Window.CurrentContent.name;
+        }
+
         ui.RemoveLayer(this);
         OpenPanelSesame();
+
+        Instance?.Window.SwitchContent(tabName);
     }
 
     public void OnLayoutConfirm()
@@ -52,8 +75,6 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
         }
 
         _browsedPosition = Window.transform.localPosition;
-
-        ApiPoolSelector.Instance.SaveServices();
     }
 
     [ConsoleCommand("open")]

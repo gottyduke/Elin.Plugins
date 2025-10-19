@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 using UnityEngine.UI;
 using YKF;
 
@@ -5,6 +8,20 @@ namespace Emmersive.Helper;
 
 public static class UIHelper
 {
+    private static readonly Dictionary<string, Sprite> _lookup = [];
+
+    public static Sprite FindSprite(string name)
+    {
+        if (_lookup.TryGetValue(name, out var sprite)) {
+            return sprite;
+        }
+
+        sprite = Resources.FindObjectsOfTypeAll<Sprite>()
+            .LastOrDefault(s => s.name == name);
+
+        return _lookup[name] = sprite!;
+    }
+
     extension(YKLayout layout)
     {
         public UIInputText AddPair(string idLang, string text)
@@ -24,6 +41,20 @@ public static class UIHelper
             input.Text = text;
 
             return input;
+        }
+
+        public YKVertical MakeCard()
+        {
+            var card = layout.Vertical();
+            card.LayoutElement().flexibleWidth = 1f;
+            card.Fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            card.Layout.padding = new(20, 20, 20, 20);
+
+            var cardBg = card.Layout.gameObject.AddComponent<Image>();
+            cardBg.sprite = FindSprite("buttonBig");
+            cardBg.type = Image.Type.Sliced;
+
+            return card;
         }
     }
 }

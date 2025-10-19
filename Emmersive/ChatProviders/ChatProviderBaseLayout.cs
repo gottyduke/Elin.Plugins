@@ -12,12 +12,14 @@ namespace Emmersive.ChatProviders;
 
 public abstract partial class ChatProviderBase : ILayoutProvider
 {
+    private UIInputText? _aliasInput;
+    private UIInputText? _endpointInput;
+    private UIInputText? _modelInput;
+
     public void OnLayout(YKLayout layout)
     {
-        var card = layout.Vertical();
-        card.LayoutElement().flexibleWidth = 1f;
-        card.Fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-        card.Layout.padding = new(20, 20, 20, 20);
+        var card = layout.MakeCard();
+        card.Layout.GetOrCreate<Image>().color = IsAvailable ? Color.cyan : Color.red;
 
         var header = card.Horizontal();
         header.Layout.childForceExpandWidth = true;
@@ -33,19 +35,16 @@ public abstract partial class ChatProviderBase : ILayoutProvider
 
         card.Spacer(5);
 
-        var cardBg = card.Layout.gameObject.AddComponent<Image>();
-        cardBg.sprite = btn.sprite;
-        cardBg.type = Image.Type.Sliced;
-        cardBg.color = IsAvailable ? Color.cyan : Color.red;
-
         if (!IsAvailable && !UnavailableReason.IsEmpty()) {
             card.TextLong(UnavailableReason!);
-            card.Spacer(5);
+            card.Spacer(15);
         }
 
         ShowActivityInfo(card);
 
-        _modelInput = card.AddPair("em_ui_model".lang(), CurrentModel);
+        _modelInput = card.AddPair("em_ui_model", CurrentModel);
+        _endpointInput = card.AddPair("em_ui_endpoint", EndPoint);
+        _aliasInput = card.AddPair("em_ui_alias", Alias);
 
         OnLayoutInternal(card);
 
@@ -65,6 +64,15 @@ public abstract partial class ChatProviderBase : ILayoutProvider
     {
         if (_modelInput is not null) {
             CurrentModel = _modelInput.Text;
+        }
+
+        if (_endpointInput != null) {
+            EndPoint = _endpointInput.Text;
+        }
+
+        if (_aliasInput != null) {
+            Id = Id.Replace(Alias, _aliasInput.Text);
+            Alias = _aliasInput.Text;
         }
 
         _cooldownUntil = DateTime.MinValue;
@@ -88,8 +96,8 @@ public abstract partial class ChatProviderBase : ILayoutProvider
         left.TopicDomain("em_ui_requests_total", $"{summary.RequestTotal:N0}");
         left.TopicDomain("em_ui_requests_success", $"{summary.RequestSuccess:N0}");
         left.TopicDomain("em_ui_requests_failed", $"{summary.RequestFailure:N0}");
-        left.TopicDomain("em_ui_requests_rpm", $"{summary.RequestSuccessPerMin:N0}");
-        left.TopicDomain("em_ui_avg_latency", $"{summary.AverageLatency:N1}s");
+        left.TopicDomain("em_ui_requests_rpm", $"{summary.RequestPerMin:N0}");
+        left.TopicDomain("em_ui_avg_latency", $"{summary.LatencyAverage:N1}s");
 
         var right = card.Vertical();
         right.TopicDomain("em_ui_tokens_total", $"{summary.TokensTotal:N0}");

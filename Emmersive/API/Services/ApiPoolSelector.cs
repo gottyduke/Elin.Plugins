@@ -14,6 +14,8 @@ public sealed class ApiPoolSelector : IAIServiceSelector
 {
     private readonly List<IChatProvider> _providers = [];
 
+    private bool _dirty;
+
     public IReadOnlyList<IChatProvider> Providers => _providers;
     public IChatProvider? CurrentProvider { get; private set; }
 
@@ -23,6 +25,7 @@ public sealed class ApiPoolSelector : IAIServiceSelector
     public void AddService(IChatProvider provider)
     {
         _providers.Add(provider);
+        _dirty = true;
 
         provider.LoadProviderParam();
 
@@ -32,11 +35,13 @@ public sealed class ApiPoolSelector : IAIServiceSelector
     public void ReorderService(IChatProvider provider, int mod)
     {
         _providers.Move(provider, mod);
+        _dirty = true;
     }
 
     public void RemoveService(IChatProvider provider)
     {
         _providers.Remove(provider);
+        _dirty = true;
 
         if (CurrentProvider == provider) {
             CurrentProvider = null;
@@ -56,6 +61,10 @@ public sealed class ApiPoolSelector : IAIServiceSelector
 
     public void SaveServices()
     {
+        if (!_dirty) {
+            return;
+        }
+
         var context = ResourceFetch.Context;
 
         context.Save(_providers, "active_providers");

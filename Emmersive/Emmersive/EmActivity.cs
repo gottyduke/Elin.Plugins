@@ -18,7 +18,6 @@ public record EmActivity : IDisposable
 
     public static readonly List<EmActivity> Session = [];
     private static readonly HashSet<string> _services = [];
-    private static readonly List<EmActivity> _unhandled = [];
 
     private readonly Stopwatch _sw;
 
@@ -32,19 +31,10 @@ public record EmActivity : IDisposable
 
     public static EmActivity? Current { get; private set; }
 
-    public static int Unhandled
-    {
-        get {
-            lock (_unhandled) {
-                return _unhandled.Count;
-            }
-        }
-    }
-
     public DateTime RequestTime { get; private init; }
     public DateTime EndTime { get; private set; }
-    public int InputToken { get; set; }
-    public int OutputToken { get; set; }
+    public int TokensInput { get; set; }
+    public int TokensOutput { get; set; }
     public TimeSpan Latency { get; set; } = TimeSpan.Zero;
     public StatusType Status { get; private set; } = StatusType.Unknown;
 
@@ -57,15 +47,11 @@ public record EmActivity : IDisposable
 
         Latency = _sw.Elapsed;
 
-        lock (_unhandled) {
-            _unhandled.RemoveAll(a => a == this);
-        }
-
         EmMod.Log<EmActivity>(
             $"<{ActivityId}> [{ServiceName}] " +
             $"{RequestTime:HH:mm:ss} stopped " +
             $"{Latency.TotalMilliseconds}ms " +
-            $"{InputToken}+{OutputToken}");
+            $"{TokensInput}+{TokensOutput}");
     }
 
     public void SetStatus(StatusType status)
@@ -92,10 +78,6 @@ public record EmActivity : IDisposable
             ServiceName = serviceId,
             RequestTime = DateTime.Now,
         };
-
-        lock (_unhandled) {
-            _unhandled.Add(activity);
-        }
 
         Session.Add(activity);
 
@@ -135,18 +117,22 @@ public record EmActivity : IDisposable
         var tokensLastHour = 0;
         var requestsLastHour = 0;
 
-        var now = DateTime.Now;
-        var oneHourAgo = now - TimeSpan.FromHours(1);
+        var begin = DateTime.Now;
+        var oneHourAgo = DateTime.Now - TimeSpan.FromHours(1);
 
         foreach (var a in activities) {
             if (a.Status == StatusType.Completed) {
                 success++;
             }
 
-            tokensInput += a.InputToken;
-            tokensOutput += a.OutputToken;
+            if (begin >= a.RequestTime) {
+                begin = a.RequestTime;
+            }
 
-            if (a.Status == StatusType.Timeout) {
+            tokensInput += a.TokensInput;
+            tokensOutput += a.TokensOutput;
+
+            if (a.Status is not StatusType.Completed) {
                 continue;
             }
 
@@ -157,7 +143,7 @@ public record EmActivity : IDisposable
             }
 
             if (a.EndTime > oneHourAgo) {
-                tokensLastHour += a.InputToken + a.OutputToken;
+                tokensLastHour += a.TokensInput + a.TokensOutput;
                 requestsLastHour++;
             }
         }
@@ -166,10 +152,11 @@ public record EmActivity : IDisposable
             ServiceName = serviceName,
             RequestTotal = total,
             RequestSuccess = success,
+            RequestInitialTime = begin,
             TokensInput = tokensInput,
             TokensOutput = tokensOutput,
-            TotalLatencyMin = totalLatencyMin,
-            TotalLatencySec = totalLatencySec,
+            LatencyTotalMin = totalLatencyMin,
+            LatencyTotalSec = totalLatencySec,
             LatencyCount = latencyCount,
             TokensLastHour = tokensLastHour,
             RequestLastHour = requestsLastHour,
@@ -183,20 +170,22 @@ public record EmActivity : IDisposable
         public int RequestTotal { get; init; }
         public int RequestSuccess { get; init; }
         public int RequestLastHour { get; init; }
+        public DateTime RequestInitialTime { get; init; }
         public int RequestFailure => RequestTotal - RequestSuccess;
-        public int RequestPerMin => (int)(TotalLatencyMin > 0 ? RequestTotal / TotalLatencyMin : 0);
-        public int RequestSuccessPerMin => (int)(TotalLatencyMin > 0 ? RequestSuccess / TotalLatencyMin : 0);
+        public int RequestPerMin => RequestDuration.Minutes > 0 ? RequestTotal / RequestDuration.Minutes : 0;
+        public int RequestSuccessPerMin => RequestDuration.Minutes > 0 ? RequestSuccess / RequestDuration.Minutes : 0;
+        public TimeSpan RequestDuration => DateTime.Now - RequestInitialTime;
 
         public long TokensInput { get; init; }
         public long TokensOutput { get; init; }
         public int TokensLastHour { get; init; }
         public long TokensTotal => TokensInput + TokensOutput;
-        public double TokensPerMin => TotalLatencyMin > 0 ? TokensTotal / TotalLatencyMin : 0;
-        public double TokensPerRequest => RequestTotal > 0 ? (double)TokensTotal / RequestTotal : 0;
+        public double TokensPerMin => LatencyTotalMin > 0 ? TokensTotal / LatencyTotalMin : 0;
+        public double TokensPerRequest => RequestSuccess > 0 ? (double)TokensTotal / RequestSuccess : 0;
 
-        public double TotalLatencySec { get; init; }
-        public double TotalLatencyMin { get; init; }
+        public double LatencyTotalSec { get; init; }
+        public double LatencyTotalMin { get; init; }
         public int LatencyCount { get; init; }
-        public double AverageLatency => LatencyCount > 0 ? TotalLatencySec / LatencyCount : 0;
+        public double LatencyAverage => LatencyCount > 0 ? LatencyTotalSec / LatencyCount : 0;
     }
 }
