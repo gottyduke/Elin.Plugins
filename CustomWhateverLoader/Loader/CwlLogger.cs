@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
@@ -10,6 +11,15 @@ namespace Cwl;
 internal sealed partial class CwlMod
 {
     private static readonly Color _warningColor = new(237f / 255, 96f / 255, 71f / 255);
+    private static readonly ConcurrentQueue<string> _logs = [];
+
+    private void Update()
+    {
+        while (_logs.TryDequeue(out var log)) {
+            UnityEngine.Debug.Log(log);
+        }
+    }
+
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Log(object payload)
@@ -114,6 +124,6 @@ internal sealed partial class CwlMod
 
     private static void LogInternal(object log)
     {
-        UnityEngine.Debug.Log(log.RemoveTagColor());
+        _logs.Enqueue(log.RemoveTagColor());
     }
 }
