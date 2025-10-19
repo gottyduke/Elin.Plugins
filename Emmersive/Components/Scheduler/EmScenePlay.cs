@@ -110,15 +110,19 @@ public partial class EmScheduler
         try {
             var response = await provider.HandleRequest(kernel, context, SceneCts.Token);
 
-            activity.SetStatus(EmActivity.StatusType.Completed);
+            if (response.Content.IsEmpty()) {
+                activity.SetStatus(EmActivity.StatusType.Failed);
+            } else {
+                activity.SetStatus(EmActivity.StatusType.Completed);
 
-            var director = kernel.GetRequiredService<SceneDirector>();
-            director.Execute(response.Content!);
+                var director = kernel.GetRequiredService<SceneDirector>();
+                director.Execute(response.Content!);
 
-            // start global cooldown
-            pc.Profile.ResetTalkCooldown();
+                // start global cooldown
+                pc.Profile.ResetTalkCooldown();
 
-            EmMod.Debug("em_ui_scene_complete".Loc(response));
+                EmMod.Debug("em_ui_scene_complete".Loc(response));
+            }
         } catch (SchedulerDryRunException) {
             // noexcept
         } catch (OperationCanceledException) {

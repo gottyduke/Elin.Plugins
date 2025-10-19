@@ -7,6 +7,7 @@ Roleplay in first-person (spoken line, thought, or action). No narration, third-
 Prioritize NPC who are close to player and those who haven't spoken recently (unless scene requires otherwise).
 Respect each NPC's current conditions (sleeping, unconscious, dead, etc.).
 Keep each reaction short (≈15 characters or less, single line).
+Prioritize combat moments and current situation with a slight touch of humor. 
 
 Optional Data:
 `recent_action_log`: the most recent events observed by player, in chronological order. **DO NOT REPEAT** the lines in the output scenes.

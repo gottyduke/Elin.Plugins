@@ -130,7 +130,9 @@ internal class TabAiService : TabEmmersiveBase
 
     private void AddService(IChatProvider provider)
     {
-        ApiPoolSelector.Instance.AddService(provider);
+        var apiPool = ApiPoolSelector.Instance;
+        apiPool.AddService(provider);
+        apiPool.ReorderService(provider, 1 - apiPool.Providers.Count);
         EmKernel.RebuildKernel();
         LayerEmmersivePanel.Instance?.Reopen(name);
     }
