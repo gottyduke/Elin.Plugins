@@ -34,14 +34,24 @@ internal class SafeGetHobbyPatch
             .Where(hobbies.ContainsKey)
             .ToArray();
 
-        if (filtered.Length == __instance.source.hobbies.Length) {
-            return;
+        if (filtered.Length != __instance.source.hobbies.Length) {
+            foreach (var invalid in __instance.source.hobbies.Except(filtered)) {
+                CwlMod.WarnWithPopup<SourceHobby>("cwl_warn_invalid_hobby".Loc("hobby".lang(), invalid, __instance.Name));
+            }
+
+            __instance.source.hobbies = filtered;
         }
 
-        foreach (var invalid in __instance.source.hobbies.Except(filtered)) {
-            CwlMod.WarnWithPopup<SourceHobby>("cwl_warn_invalid_hobby".Loc(invalid, __instance.Name));
-        }
+        var works = __instance.source.works
+            .Where(hobbies.ContainsKey)
+            .ToArray();
 
-        __instance.source.hobbies = filtered;
+        if (works.Length != __instance.source.works.Length) {
+            foreach (var invalid in __instance.source.works.Except(works)) {
+                CwlMod.WarnWithPopup<SourceHobby>("cwl_warn_invalid_hobby".Loc("work".lang(), invalid, __instance.Name));
+            }
+
+            __instance.source.works = works;
+        }
     }
 }
