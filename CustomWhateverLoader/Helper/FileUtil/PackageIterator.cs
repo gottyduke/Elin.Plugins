@@ -262,6 +262,10 @@ public class PackageIterator
         return scope;
     }
 
+    /// <summary>
+    ///     Add temporary paths to the end of package list
+    /// </summary>
+    /// <remarks>Must materialize the lookup after the temp lookup</remarks>
     public static ScopeExit AddTempLookupPathsEx(string modId, params string[] paths)
     {
         _mappings["cwl_temp_lookup"] = GetPackageMapping(modId)!;

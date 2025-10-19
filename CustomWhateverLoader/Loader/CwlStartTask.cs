@@ -78,7 +78,7 @@ internal sealed partial class CwlMod
         }
     }
 
-    private IEnumerator LoadTask()
+    private static IEnumerator LoadTask()
     {
         PrebuildDispatchers();
         DramaExpansion.BuildActionList();
@@ -99,7 +99,7 @@ internal sealed partial class CwlMod
         DataLoader.MergeFactionElements();
         DataLoader.MergeOfferingMultiplier();
 
-        CurrentLoading = $"cwl_log_finished_loading_{ModInfo.TargetVersion}".Loc();
+        CurrentLoading = $"cwl_log_finished_loading_{ModInfo.TargetVersion}".lang();
 
         yield return null;
 
@@ -230,7 +230,7 @@ internal sealed partial class CwlMod
     {
         yield return null;
         yield return null;
-        WarnWithPopup<CwlMod>("cwl_warn_duplicate_cwl".Loc().TagColor(Color.red));
+        WarnWithPopup<CwlMod>("cwl_warn_duplicate_cwl".lang().TagColor(Color.red));
     }
 
     private static void ReportLoadingComplete()

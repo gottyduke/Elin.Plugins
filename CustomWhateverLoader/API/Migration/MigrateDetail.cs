@@ -97,7 +97,7 @@ public sealed class MigrateDetail
                 break;
             }
             case Strategy.Missing: {
-                CwlMod.Warn("cwl_warn_missing_header".Loc());
+                CwlMod.Warn("cwl_warn_missing_header".lang());
                 //DumpHeaders();
                 break;
             }
@@ -165,7 +165,7 @@ public sealed class MigrateDetail
         var defaults = sheet.GetRow(2)?.Cells?
             .Where(c => c?.ToString() is not (null or ""));
         if (defaults?.Count() is not > 0) {
-            CwlMod.Log<MigrateDetail>("cwl_warn_empty_default".Loc());
+            CwlMod.Log<MigrateDetail>("cwl_warn_empty_default".lang());
         }
     }
 
@@ -192,11 +192,11 @@ public sealed class MigrateDetail
                 ? "cwl_cell_guess".Loc(guessCell, name)
                 : "";
             if (!present) {
-                guessName = "cwl_cell_missing".Loc();
+                guessName = "cwl_cell_missing".lang();
             }
 
             var givenCell = CurrentSheet.Given.FirstOrDefault(c => c.Value == index);
-            var givenName = givenCell.Key ?? "cwl_cell_missing".Loc();
+            var givenName = givenCell.Key ?? "cwl_cell_missing".lang();
             givenName = givenName.PadRight(maxNameWidth + 3);
             var expectedName = name.PadRight(maxNameWidth);
 

@@ -22,8 +22,8 @@ internal class SafeCreateCardPatch
             return null;
         }
 
-        CwlMod.WarnWithPopup<SourceCard>(
-            "cwl_warn_card_create".Loc(row.GetType().FullName, row.id, row.name, __exception.Message), __exception);
+        CwlMod.Warn<SourceCard>(
+            "cwl_warn_card_create".Loc(row.GetType().FullName, row.id, row.name, __exception.Message));
 
         // noexcept
         return null;

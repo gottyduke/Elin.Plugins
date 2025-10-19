@@ -170,7 +170,7 @@ public partial class DramaExpansion
         }
 
         var isParchment = category == "Scroll";
-        var bookUi = EClass.ui.AddLayer<LayerHelp>(isParchment ? "LayerParchment" : "LayerBook").book;
+        var bookUi = ui.AddLayer<LayerHelp>(isParchment ? "LayerParchment" : "LayerBook").book;
         bookUi.Show((isParchment ? "Scroll/" : "Book/") + item.id, null, item.title, item);
 
         return true;

@@ -23,7 +23,7 @@ internal class ExecutionAnalysis
         }
 
         using var sb = StringBuilderPool.Get()
-            .AppendLine("cwl_log_execution_analysis".Loc());
+            .AppendLine("cwl_log_execution_analysis".lang());
 
         var methodNameWidth = _cached.Keys.Max(mi => (mi.DeclaringType?.Name.Length ?? 0) + mi.Name.Length + 7);
         var total = 0d;

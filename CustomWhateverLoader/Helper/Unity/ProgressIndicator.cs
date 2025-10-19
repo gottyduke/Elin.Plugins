@@ -5,7 +5,6 @@ using System.Threading;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
-using Cwl.LangMod;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -16,10 +15,9 @@ public class ProgressIndicator
     private const float UpdateInterval = 0.2f;
 
     private static readonly List<ProgressIndicator> _active = [];
-    private static ProgressIndicatorUpdater? _updater;
 
-    private readonly string _hoverClosePrompt = "cwl_ui_hover_close".Loc();
-    private readonly string _hoverDetailPrompt = "cwl_ui_hover_detail".Loc();
+    private readonly string _hoverClosePrompt = "cwl_ui_hover_close".lang();
+    private readonly string _hoverDetailPrompt = "cwl_ui_hover_detail".lang();
 
     private UpdateInfo? _info;
     private Action<ProgressIndicator>? _onAfterGUI;
@@ -29,6 +27,9 @@ public class ProgressIndicator
     private Action? _onKill;
     public required Func<UpdateInfo> OnUpdate;
     public required Func<ProgressIndicator, bool> ShouldKill;
+
+    [field: AllowNull]
+    private static ProgressIndicatorUpdater Updater => field ??= CwlMod.Instance.GetOrCreate<ProgressIndicatorUpdater>();
 
     [field: AllowNull]
     public GUIStyle GUIStyle => field ??= GetLabelSkin();
@@ -163,7 +164,7 @@ public class ProgressIndicator
             progress.Kill();
         }
 
-        _updater?.StopOnNextUpdate = true;
+        Updater.StopOnNextUpdate = true;
     }
 
     public record UpdateInfo(string Text, Texture2D? Texture = null, Color? Color = null);
@@ -292,7 +293,8 @@ public class ProgressIndicator
         progress.SetDuration(duration, duration);
 
         _active.Add(progress);
-        _updater ??= CwlMod.Instance!.transform.GetOrCreate<ProgressIndicatorUpdater>();
+
+        _ = Updater;
 
         return progress;
     }

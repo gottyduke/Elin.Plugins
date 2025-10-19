@@ -7,7 +7,6 @@ using System.Reflection;
 using Cwl.Helper.String;
 using Cwl.Helper.Stubs;
 using Cwl.Helper.Unity;
-using Cwl.LangMod;
 using ReflexCLI.Attributes;
 
 namespace Cwl.Helper;
@@ -182,8 +181,8 @@ public class DebugSampler : MethodStub
     private static string BuildSamplerInfo()
     {
         using var sb = StringBuilderPool.Get()
-            .AppendLine("cwl_ui_stub_info".Loc())
-            .AppendLine("cwl_ui_stub_header".Loc())
+            .AppendLine("cwl_ui_stub_info".lang())
+            .AppendLine("cwl_ui_stub_header".lang())
             .AppendLine()
             .AppendLine(_lastAttached!.GetAssemblyDetailColor(false));
 

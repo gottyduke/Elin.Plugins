@@ -30,7 +30,7 @@ public class ExceptionProfile(string message)
     public AnalyzeState State { get; private set; } = AnalyzeState.NotStarted;
 
     public int Occurrences { get; private set; } = 1;
-    public string Result { get; private set; } = "cwl_ui_exception_analyzing".Loc();
+    public string Result { get; private set; } = "cwl_ui_exception_analyzing".lang();
     public int Key { get; private init; }
     public bool Hidden { get; private set; }
     public bool IsMissingMethod { get; private set; }
@@ -101,12 +101,12 @@ public class ExceptionProfile(string message)
             .OnHover(p => {
                 Analyze();
 
-                GUILayout.Label($"{"cwl_ui_exception_copy".Loc()}\n{Result.SplitLines()
+                GUILayout.Label($"{"cwl_ui_exception_copy".lang()}\n{Result.SplitLines()
                     .Take(20)
                     .Join(r => r, Environment.NewLine)}", p.GUIStyle);
 
                 if (State is AnalyzeState.InProgress) {
-                    GUILayout.Label("cwl_ui_exception_analyzing".Loc(), p.GUIStyle);
+                    GUILayout.Label("cwl_ui_exception_analyzing".lang(), p.GUIStyle);
                 }
             })
             .OnEvent(ClickHandler);
@@ -127,7 +127,7 @@ public class ExceptionProfile(string message)
     {
         switch (eventData.button) {
             case 0 when State is AnalyzeState.Completed:
-                GUIUtility.systemCopyBuffer = $"{message}\n```ts\n{Result}\n```".RemoveTagColor();
+                GUIUtility.systemCopyBuffer = $"{message}\n```\n{Result}\n```".RemoveTagColor();
                 break;
             case 2:
                 Hidden = true;
@@ -155,7 +155,7 @@ public class ExceptionProfile(string message)
             Frames.Clear();
 
             using var sb = StringBuilderPool.Get();
-            sb.AppendLine("cwl_ui_callstack".Loc());
+            sb.AppendLine("cwl_ui_callstack".lang());
 
             foreach (var frame in StackTrace.SplitLines().Distinct()) {
                 if (frame.IsEmpty()) {

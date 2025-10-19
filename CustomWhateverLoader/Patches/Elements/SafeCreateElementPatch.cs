@@ -72,7 +72,7 @@ internal class SafeCreateElementPatch
 
             if (_prompted[id] <= LogSpamMax) {
                 CwlMod.WarnWithPopup<CustomElement>(_prompted[id] == LogSpamMax
-                    ? "cwl_warn_deserialize_final".Loc()
+                    ? "cwl_warn_deserialize_final".lang()
                     : "cwl_warn_deserialize".Loc(nameof(Element), id, unqualified,
                         CwlConfig.Patches.SafeCreateClass!.Definition.Key));
             }
@@ -81,7 +81,7 @@ internal class SafeCreateElementPatch
 
         var row = EMono.sources.elements.map.TryGetValue(id)!;
         row.name = "cwl_type_safety_cone".Loc(nameof(Element), id, row.alias, unqualified);
-        row.detail = "cwl_type_safety_desc".Loc();
+        row.detail = "cwl_type_safety_desc".lang();
 
         return new CustomElement();
     }

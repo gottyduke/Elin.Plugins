@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Cwl.Helper;
 
-public struct SourceRowComparer : IEqualityComparer<SourceData.BaseRow>
+public class SourceRowComparer : IEqualityComparer<SourceData.BaseRow>
 {
-    public static SourceRowComparer Default { get; } = new();
+    [field: AllowNull]
+    public static SourceRowComparer Default => field ??= new();
 
     public bool Equals(SourceData.BaseRow? lhs, SourceData.BaseRow? rhs)
     {

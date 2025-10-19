@@ -86,7 +86,7 @@ internal class SafeCreateConditionPatch
 
         var row = EMono.sources.stats.alias.TryGetValue(alias)!;
         row.name = "cwl_type_safety_cone".Loc(nameof(Condition), row.id, alias, unqualified);
-        row.detail = "cwl_type_safety_desc".Loc();
+        row.detail = "cwl_type_safety_desc".lang();
 
         return new CustomCondition();
     }

@@ -26,12 +26,9 @@ public class SafeSceneInitEvent
         _preLut ??= _preCallbacks
             .OrderBy(x => x.Item2.Order)
             .ToLookup(x => x.Item1, x => x.Item2);
-        foreach (var (callback, defer, _) in _preLut[newMode]) {
-            if (defer) {
-                CoroutineHelper.Deferred(() => SafeInvoke(callback, "pre_scene_init", newMode));
-            } else {
-                SafeInvoke(callback, "pre_scene_init", newMode);
-            }
+        foreach (var (callback, _, _) in _preLut[newMode]) {
+            // defer a pre-init event makes no sense
+            SafeInvoke(callback, "pre_scene_init", newMode);
         }
     }
 

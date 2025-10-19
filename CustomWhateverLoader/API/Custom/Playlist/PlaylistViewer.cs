@@ -4,7 +4,6 @@ using System.Linq;
 using Cwl.API.Attributes;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
-using Cwl.LangMod;
 using ReflexCLI.Attributes;
 using UnityEngine;
 
@@ -19,11 +18,11 @@ public class PlaylistViewer
     private ProgressIndicator? _bgmProgress;
     private bool _detailedView;
 
-    private string? DetailString => field ??= "cwl_ui_bgm_detail".Loc();
-    private string? NextString => field ??= "cwl_ui_bgm_next".Loc();
-    private string? PreviousString => field ??= "cwl_ui_bgm_last".Loc();
-    private string? RebuildString => field ??= "cwl_ui_bgm_rebuild".Loc();
-    private string? ShuffleString => field ??= "cwl_ui_bgm_shuffle".Loc();
+    private string? DetailString => field ??= "cwl_ui_bgm_detail".lang();
+    private string? NextString => field ??= "cwl_ui_bgm_next".lang();
+    private string? PreviousString => field ??= "cwl_ui_bgm_last".lang();
+    private string? RebuildString => field ??= "cwl_ui_bgm_rebuild".lang();
+    private string? ShuffleString => field ??= "cwl_ui_bgm_shuffle".lang();
 
     private GUIStyle? ButtonStyle =>
         field ??= new(_bgmProgress?.GUIStyle ?? GUI.skin.label) {

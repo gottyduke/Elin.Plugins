@@ -41,14 +41,19 @@ internal class SetMaterialRowPatch
 
         try {
             foreach (var tag in tags) {
+                var value = tag.ExtractInBetween('(', ')');
+                if (value.IsEmpty()) {
+                    continue;
+                }
+
                 if (tag.StartsWith("addCol_Main")) {
-                    main = tag[11..].ExtractInBetween('(', ')').ToColorEx();
-                } else if (tag.StartsWith("_Alt")) {
-                    alt = tag[10..].ExtractInBetween('(', ')').ToColorEx();
+                    main = value.ToColorEx();
+                } else if (tag.StartsWith("addCol_Alt")) {
+                    alt = value.ToColorEx();
                 }
             }
         } catch (Exception ex) {
-            CwlMod.WarnWithPopup<SourceMaterial>("cwl_warn_mat_color".Loc(r.alias, tags.Join(), ex.Message), ex);
+            CwlMod.WarnWithPopup<SourceMaterial>("cwl_warn_mat_color".Loc(r.alias, string.Join(", ", tags), ex.Message), ex);
             return;
         }
 

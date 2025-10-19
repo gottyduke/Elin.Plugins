@@ -8,7 +8,6 @@ using Cwl.Helper;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
-using Cwl.LangMod;
 using HarmonyLib;
 
 namespace Cwl.Patches.Sources;
@@ -62,7 +61,7 @@ internal class SourceInitPatch
             CacheDetail.ClearDetail();
         } finally {
             SafeToCreate = false;
-            CwlMod.Log<SourceManager>("cwl_log_workbook_complete".Loc());
+            CwlMod.Log<SourceManager>("cwl_log_workbook_complete".lang());
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
-using Cwl.LangMod;
 using HarmonyLib;
 
 namespace Cwl.Helper.String;
@@ -13,7 +13,8 @@ public static class MethodInfoDetail
 
     private static IEnumerable<CodeInstruction> StubILPatch(IEnumerable<CodeInstruction> instructions)
     {
-        return instructions;
+        return instructions
+            .Where(i => i.operand is MethodInfo);
     }
 
     extension(MethodInfo methodInfo)
@@ -44,7 +45,7 @@ public static class MethodInfoDetail
             var decl = methodInfo.DeclaringType!;
             var detail = $"{(full ? decl.FullName : decl.Name)}.{methodInfo.Name}";
             return InvalidCalls.Contains(methodInfo)
-                ? "cwl_ui_invalid_patch".Loc() + detail
+                ? "cwl_ui_invalid_patch".lang() + detail
                 : detail;
         }
 
