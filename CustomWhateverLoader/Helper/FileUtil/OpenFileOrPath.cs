@@ -11,10 +11,6 @@ public class OpenFileOrPath
 
     public static void Run(string path)
     {
-        if (!File.Exists(path)) {
-            return;
-        }
-
         path = path.NormalizePath();
 
         try {
@@ -24,36 +20,37 @@ public class OpenFileOrPath
             // noexcept
         }
 
-        // open with notepad
         var proton = !"PROTON_VERSION".EnvVar.IsEmpty() ||
                      !"STEAM_COMPAT_DATA_PATH".EnvVar.IsEmpty();
-        try {
-            if (proton) {
-                Process.Start("xdg-open", $"\"{path}\"");
-            } else {
-                _unclosed.Add(Process.Start("notepad.exe", path));
-            }
 
-            return;
-        } catch {
-            // noexcept
+        if (File.Exists(path)) {
+            // open with notepad
+            try {
+                if (proton) {
+                    Process.Start("xdg-open", $"\"{path}\"");
+                } else {
+                    _unclosed.Add(Process.Start("notepad.exe", path));
+                }
+
+                return;
+            } catch {
+                // noexcept
+            }
         }
 
-        // open folder
-        try {
-            path = Path.GetDirectoryName(path)!.NormalizePath();
+        if (Directory.Exists(path)) {
+            // open folder
+            try {
+                path = Path.GetDirectoryName(path)!.NormalizePath();
 
-            if (!Directory.Exists(path)) {
-                return;
+                if (proton) {
+                    Process.Start("xdg-open", $"\"{path}\"");
+                } else {
+                    Process.Start("explorer.exe", path);
+                }
+            } catch {
+                // noexcept
             }
-
-            if (proton) {
-                Process.Start("xdg-open", $"\"{path}\"");
-            } else {
-                Process.Start("explorer.exe", path);
-            }
-        } catch {
-            // noexcept
         }
     }
 
