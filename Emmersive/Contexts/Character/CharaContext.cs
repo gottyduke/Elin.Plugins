@@ -58,12 +58,14 @@ public class CharaContext(Chara chara) : ContextProviderBase
                         data["hobbies"] = chara.GetTextHobby(true);
                         data["fav_food"] = chara.GetFavFood().GetName();
 
-                        if (chara.faith is not ReligionEyth) {
-                            data["faith"] = chara.faith.Name;
-                        }
+                    }
+
+                    if (chara.faith is not ReligionEyth) {
+                        data["faith"] = chara.faith.Name;
                     }
 
                     data["affinity"] = $"{chara.affinity.Name}";
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

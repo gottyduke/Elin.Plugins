@@ -37,7 +37,7 @@ public class NearbyCharaContext(Chara focus) : ContextProviderBase
         }
 
         var religions = charas
-            .Where(c => c.IsPCParty && c.faith is not ReligionEyth)
+            .Where(c => c is { hostility: >= Hostility.Friend, faith: not ReligionEyth })
             .Select(c => c.faith)
             .ToHashSet();
         if (religions.Count > 0) {
