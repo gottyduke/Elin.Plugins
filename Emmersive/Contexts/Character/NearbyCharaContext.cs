@@ -17,8 +17,8 @@ public class NearbyCharaContext(Chara focus) : ContextProviderBase
             return null;
         }
 
-        List<object> charaContexts = [];
-        Dictionary<string, object> data = new() {
+        var charaContexts = new List<object>();
+        var data = new Dictionary<string, object> {
             ["characters"] = charaContexts,
         };
 
@@ -34,6 +34,25 @@ public class NearbyCharaContext(Chara focus) : ContextProviderBase
         var relationships = new RelationContext(charas).Build();
         if (relationships is not null) {
             data["relationships"] = relationships;
+        }
+
+        var religions = charas
+            .Where(c => c.IsPCParty && c.faith is not ReligionEyth)
+            .Select(c => c.faith)
+            .ToHashSet();
+        if (religions.Count > 0) {
+            var religionData = new Dictionary<string, object>(StringComparer.Ordinal);
+
+            foreach (var religion in religions) {
+                var context = new ReligionContext(religion).Build();
+                if (context is not null) {
+                    religionData[religion.Name] = context;
+                }
+            }
+
+            if (religions.Count > 0) {
+                data["religions"] = religionData;
+            }
         }
 
         return data;
