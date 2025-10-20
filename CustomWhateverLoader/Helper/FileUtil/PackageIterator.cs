@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Cwl.API.Attributes;
@@ -15,7 +16,7 @@ public class PackageIterator
 {
     private static readonly Dictionary<string, string> _cachedPaths = [];
     private static readonly Dictionary<string, FileMapping> _mappings = [];
-    private static readonly HashSet<string> _tempAdditionalLookup = [];
+    private static readonly HashSet<string> _tempAdditionalLookup = new(StringComparer.Ordinal);
 
 #region LangMod
 

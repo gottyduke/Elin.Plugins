@@ -13,7 +13,7 @@ namespace Cwl.Patches.Traits;
 [HarmonyPatch]
 internal class SafeCreateTraitPatch
 {
-    private static readonly HashSet<string> _qualifiedTraits = [];
+    private static readonly HashSet<string> _qualifiedTraits = new(StringComparer.Ordinal);
 
     internal static bool Prepare()
     {

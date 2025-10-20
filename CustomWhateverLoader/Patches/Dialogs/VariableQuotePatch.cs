@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
 using Cwl.Helper.Extensions;
@@ -32,13 +33,13 @@ internal class VariableQuotePatch
     private static bool VariantStartsWith(string lhs, string rhs)
     {
         var row = EMono.sources.langGeneral.map["_bracketTalk"];
-        HashSet<string> quotes = [
+        var quotes = new HashSet<string>(StringComparer.Ordinal) {
             "\"",
             "「",
             "“",
             rhs,
             row.text_L?.IsEmpty(rhs) ?? rhs,
-        ];
+        };
 
         return quotes.Any(lhs.StartsWith);
     }

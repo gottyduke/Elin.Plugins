@@ -7,8 +7,8 @@ namespace Cwl.Helper;
 
 public static class MethodDispatcher
 {
-    private static readonly HashSet<string> _queried = [];
-    private static readonly Dictionary<string, MethodInfo> _cached = [];
+    private static readonly HashSet<string> _queried = new(StringComparer.Ordinal);
+    private static readonly Dictionary<string, MethodInfo> _cached = new(StringComparer.Ordinal);
 
     public static DispatchResult InstanceDispatch<T>(this T instance, string methodName, params object[] args)
     {

@@ -19,7 +19,7 @@ public class MonoFrame(string stackFrame)
 
     private static readonly Dictionary<string, MonoFrame> _cached = [];
 
-    private static readonly HashSet<string> _vendorExclusion = [
+    private static readonly HashSet<string> _vendorExclusion = new(StringComparer.Ordinal) {
         "Elin.",
         "UnityEngine.",
         "Plugins.",
@@ -27,7 +27,7 @@ public class MonoFrame(string stackFrame)
         "mscorlib",
         "MonoMod.",
         "0Harmony",
-    ];
+    };
 
     public StackFrameType frameType = StackFrameType.Unknown;
 

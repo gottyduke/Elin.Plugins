@@ -139,11 +139,11 @@ public partial class DramaExpansion
         } else {
             var portrait = portraitId.Value;
             var actorId = owner.id.IsEmpty(owner.chara?.id);
-            HashSet<string> ids = [
+            var ids = new HashSet<string>(StringComparer.Ordinal) {
                 $"UN_{actorId}_{portrait}.png",
                 $"{portrait}.png",
                 $"{actorId}_{portrait}.png",
-            ];
+            };
 
             if (ids.FirstOrDefault(Portrait.allIds.Contains) is { } matchId) {
                 id = matchId[..^4];

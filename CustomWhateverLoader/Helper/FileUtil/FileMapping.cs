@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Cwl.Helper.String;
@@ -48,7 +49,9 @@ public class FileMapping
         var resources = Directory.GetDirectories(langMod);
         if (resources.Length != 0) {
             // use FallbackLut to get an ordered list of language codes to check
-            HashSet<string> ordering = [langCode, ..FallbackLut![langCode], ..FallbackLut["*"]];
+            var ordering = new HashSet<string>(StringComparer.Ordinal);
+            ordering.UnionWith([langCode, ..FallbackLut![langCode], ..FallbackLut["*"]]);
+
             var resourceSet = resources.ToHashSet(PathTruncation.PathComparer);
 
             // 1. explicit ordered/fallback language folders that exist

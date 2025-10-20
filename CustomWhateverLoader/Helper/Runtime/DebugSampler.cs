@@ -160,7 +160,7 @@ public class DebugSampler : MethodStub
                 $"{helper.Name},{sampler.FrameCount},{sampler.Average:F4},{sampler.MaxFrame},{sampler.MinFrame},{sampler.Total}");
         }
 
-        var dump = $"{CorePath.rootExe}/stub_perf_{DateTime.Now:MM_dd_hh_mm_ss}.csv";
+        var dump = $"{CorePath.rootExe}/stub_perf_{DateTime.UtcNow:MM_dd_hh_mm_ss}.csv";
         File.WriteAllText(dump, sb.ToString());
 
         return $"output has been dumped to {dump.NormalizePath()}";
