@@ -14,7 +14,7 @@ public class CharaProfile(Chara chara)
 
     public bool LockedInRequest { get; set; }
 
-    public List<string> LastTalks { get; set; } = [];
+    public Queue<string> LastTalks { get; set; } = [];
 
     public void ResetTalkCooldown(string? talk = null)
     {
@@ -25,10 +25,10 @@ public class CharaProfile(Chara chara)
             return;
         }
 
-        LastTalks.Add(talk);
+        LastTalks.Enqueue(talk);
 
-        if (LastTalks.Count > EmConfig.Context.RecentLogDepth.Value + 1) {
-            LastTalks.RemoveAt(0);
+        if (LastTalks.Count > EmConfig.Context.RecentLogDepth.Value) {
+            LastTalks.Dequeue();
         }
     }
 }

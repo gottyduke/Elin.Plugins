@@ -11,7 +11,6 @@ namespace Emmersive.API.Plugins;
 
 public partial class SceneDirector
 {
-    [SwallowExceptions]
     [KernelFunction("character_bubble")]
     [Description("Displays a dialogue, gesture, or thought above character's head. Use multiple if needed, DO NOT mix contents.")]
     public void DoPopText([Description("The unique identifier (uid) of the character who will speak or act.")] int uid,
@@ -46,7 +45,6 @@ public partial class SceneDirector
             CoroutineHelper.Deferred(PopText, delay);
             continue;
 
-            [SwallowExceptions]
             void PopText()
             {
                 if (chara is not { isDestroyed: false, ExistsOnMap: true }) {
@@ -66,7 +64,8 @@ public partial class SceneDirector
                     text = text.Replace("&", "");
                 }
 
-                if (profile.LastTalks.Contains(text)) {
+                if (profile.LastTalks.Contains(text) ||
+                    RecentActionContext.HasDuplicate(chara.Name, text)) {
                     // reduce repetition
                     return;
                 }
