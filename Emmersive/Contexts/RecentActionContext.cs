@@ -10,7 +10,11 @@ public class RecentActionContext : ContextProviderBase
     private const int BufSize = 1024;
 
     internal static readonly List<(string actor, string text)> RecentActions = [];
+
     private static int _indexSinceStart;
+    private static readonly string _comma = "_comma".lang();
+    private static readonly string _push = "em_push".lang();
+
     public override string Name => "recent_action_log";
 
     public override object? Build()
@@ -53,7 +57,7 @@ public class RecentActionContext : ContextProviderBase
 
     public static void Add(string actor, string entry)
     {
-        if (entry.Contains("em_push".lang())) {
+        if (entry.Contains(_push)) {
             return;
         }
 
@@ -63,10 +67,8 @@ public class RecentActionContext : ContextProviderBase
             actor = "you".lang().ToTitleCase();
         }
 
-        if (RecentActions.Count > 0) {
-            if (RecentActions[^1].actor == entry && RecentActions[^1].text == entry) {
-                return;
-            }
+        if (HasDuplicate(actor, entry, 1)) {
+            return;
         }
 
         RecentActions.Add((actor, entry));
@@ -77,14 +79,29 @@ public class RecentActionContext : ContextProviderBase
         }
     }
 
+    public static bool HasDuplicate(string actor, string entry, int depth = -1)
+    {
+        if (RecentActions.Count == 0) {
+            return false;
+        }
+
+        if (depth == -1) {
+            depth = EmConfig.Context.RecentLogDepth.Value;
+        }
+
+        return RecentActions
+            .TakeLast(depth)
+            .Any(a => a.actor == actor && a.text == entry);
+    }
+
     public static List<string> ExtractUniqueLog(int depth)
     {
         var fullLog = EClass.game.log;
         var dict = fullLog.dict;
         var lastIndex = fullLog.currentLogIndex - 1;
 
-        List<string> logs = new(depth);
-        HashSet<string> seen = [];
+        var logs = new List<string>(depth);
+        var seen = new HashSet<string>(StringComparer.Ordinal);
         string? current = null;
 
         while (lastIndex >= _indexSinceStart && logs.Count < depth) {
@@ -93,12 +110,12 @@ public class RecentActionContext : ContextProviderBase
             }
 
             var text = msg.text;
-            if (text.IsEmpty() || text.Contains("em_push".lang())) {
+            if (text.IsEmpty() || text.Contains(_push)) {
                 lastIndex--;
                 continue;
             }
 
-            if (text.StartsWith(" ")) {
+            if (text.StartsWith(" ") || text.StartsWith(_comma)) {
                 current = text + (current ?? "");
             } else {
                 current = text + (current ?? "");
