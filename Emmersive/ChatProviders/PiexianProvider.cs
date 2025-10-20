@@ -14,7 +14,7 @@ internal sealed class PiexianProvider : GoogleProvider
     }
 
     public override string Alias { get; set; } = "氕氙";
-    public override string CurrentModel { get; set; } = "假流式/gemini-2.5-flash-nothinking";
+    public override string CurrentModel { get; set; } = "gemini-2.5-flash-nothinking";
     public override string EndPoint { get; set; } = "https://proxy.pieixan.icu/v1beta";
 
     protected override void OnLayoutInternal(YKLayout card)
@@ -30,5 +30,10 @@ internal sealed class PiexianProvider : GoogleProvider
         }
 
         base.OnLayoutConfirm();
+    }
+
+    protected override void HandleRequestInternal()
+    {
+        // piexian says no touching
     }
 }
