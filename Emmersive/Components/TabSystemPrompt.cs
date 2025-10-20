@@ -33,7 +33,7 @@ internal class TabSystemPrompt : TabEmmersiveBase
         btnGroup.Button("em_ui_hard_reset_prompts".lang(), () => {
             ResourceFetch.ClearActiveResources();
             RelationContext.Clear();
-            LayerEmmersivePanel.Instance?.Reopen(name);
+            LayerEmmersivePanel.Instance?.Reopen();
         }).GetComponent<Image>().color = Color.red;
 
         btnGroup.Button("em_ui_open_folder".lang(), () => OpenFileOrPath.Run(ResourceFetch.CustomFolder));

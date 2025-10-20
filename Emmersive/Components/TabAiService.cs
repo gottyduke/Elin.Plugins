@@ -101,6 +101,6 @@ internal class TabAiService : TabEmmersiveBase
         apiPool.AddService(provider);
         apiPool.ReorderService(provider, 1 - apiPool.Providers.Count);
         EmKernel.RebuildKernel();
-        LayerEmmersivePanel.Instance?.Reopen(name);
+        LayerEmmersivePanel.Instance?.Reopen();
     }
 }

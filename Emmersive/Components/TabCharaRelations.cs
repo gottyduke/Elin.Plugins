@@ -24,18 +24,17 @@ internal class TabCharaRelations : TabCharaPrompt
         BuildRelationGenerator();
 
         foreach (var relations in RelationContext.Lookup) {
-            foreach (var relation in relations) {
-                if (relation is null) {
-                    continue;
-                }
-
-                var tempCharas = relation.Rows
-                    .Select(r => r.id == "player" ? EClass.pc : CharaGen.Create(r.id));
-                var names = RelationContext
-                    .SplitByRelationKey(relation.Key, tempCharas)
-                    .Join(c => c.NameSimple);
-                BuildPromptCard(names, $"Emmersive/Relations/{relation.Provider.Name}");
+            var relation = relations.LastOrDefault();
+            if (relation is null) {
+                continue;
             }
+
+            var tempCharas = relation.Rows
+                .Select(r => r.id == "player" ? EClass.pc : CharaGen.Create(r.id));
+            var names = RelationContext
+                .SplitByRelationKey(relation.Key, tempCharas)
+                .Join(c => c.NameSimple);
+            BuildPromptCard(names, $"Emmersive/Relations/{relation.Provider.Name}");
         }
 
         ResetPositions();

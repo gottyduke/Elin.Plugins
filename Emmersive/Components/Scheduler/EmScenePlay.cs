@@ -131,6 +131,7 @@ public partial class EmScheduler
                 EmMod.Debug("em_ui_scene_complete".Loc(response));
             }
         } catch (SchedulerDryRunException) {
+            SwitchMode(ScheduleMode.Buffer);
             // noexcept
         } catch (OperationCanceledException) {
             MarkUnavailable("em_ui_scene_timeout".Loc(timeout));

@@ -10,6 +10,7 @@ namespace Emmersive.Components;
 internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
 {
     private static Vector2 _browsedPosition = Vector2.zero;
+    private static string _lastOpenedTab = "";
 
     private readonly List<TabEmmersiveBase> _tabs = [];
     private bool _resetHyp;
@@ -42,12 +43,18 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
     {
         base.OnAfterAddLayer();
 
+        Window.SwitchContent(_lastOpenedTab);
+
         Window.transform.localPosition = _browsedPosition;
     }
 
     public override void OnKill()
     {
         OnLayoutConfirm();
+
+        if (Window != null && Window.CurrentContent != null) {
+            _lastOpenedTab = Window.CurrentContent.name;
+        }
 
         if (_resetHyp) {
             Lang.setting.hyphenation = true;
@@ -56,16 +63,10 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
         Instance = null;
     }
 
-    public void Reopen(string tabName = "")
+    public void Reopen()
     {
-        if (tabName == "" && Window != null && Window.CurrentContent != null) {
-            tabName = Window.CurrentContent.name;
-        }
-
         ui.RemoveLayer(this);
         OpenPanelSesame();
-
-        Instance?.Window.SwitchContent(tabName);
     }
 
     public void OnLayoutConfirm()
