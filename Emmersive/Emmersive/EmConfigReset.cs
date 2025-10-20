@@ -1,6 +1,7 @@
 using System.IO;
 using Cwl.Helper.FileUtil;
 using Cwl.LangMod;
+using Emmersive.Components;
 using Emmersive.Helper;
 using ReflexCLI.Attributes;
 
@@ -14,6 +15,7 @@ internal partial class EmConfig
     internal static void Reload()
     {
         EmMod.Instance.Config.Reload();
+        EmScheduler.Semaphore = new(1, Policy.ConcurrentRequests.Value);
     }
 
     [ConsoleCommand("reset_cfg")]

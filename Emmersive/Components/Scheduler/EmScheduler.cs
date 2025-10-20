@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using Cwl.LangMod;
 using ReflexCLI.Attributes;
 using UnityEngine;
@@ -16,13 +17,13 @@ public partial class EmScheduler : EMono
         DryRun,
     }
 
+    internal static SemaphoreSlim Semaphore = null!;
     private static readonly List<SceneTriggerEvent> _buffer = [];
-    private static int _iteration;
 
     public static float ScenePlayDelay { get; private set; }
     public static bool IsInProgress { get; private set; }
     public static ScheduleMode Mode { get; private set; } = ScheduleMode.Buffer;
-    public static bool CanMakeRequest => !IsInProgress || _iteration < EmConfig.Policy.ConcurrentRequests.Value;
+    public static bool CanMakeRequest => !IsInProgress || Semaphore.CurrentCount > 0;
 
     private void Update()
     {

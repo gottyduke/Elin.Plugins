@@ -30,20 +30,24 @@ public partial class EmScheduler
     }
 
     [ConsoleCommand("test_current")]
-    public static void RequestScenePlayImmediate()
+    public static void RequestScenePlayImmediate(Chara? focus = null)
     {
+        focus ??= EClass.pc;
         var builder = ContextBuilder
             .CreateStandardPrefix()
-            .Add(new NearbyCharaContext(EClass.pc));
+            .Add(new NearbyCharaContext(focus))
+            .Add(new NearbyThingContext(focus));
 
         RequestScenePlayWithContext(builder);
     }
 
-    public static void RequestScenePlayWithTrigger()
+    public static void RequestScenePlayWithTrigger(Chara? focus = null)
     {
+        focus ??= EClass.pc;
         var builder = ContextBuilder
             .CreateStandardPrefix()
-            .Add(new NearbyCharaContext(EClass.pc))
+            .Add(new NearbyCharaContext(focus))
+            .Add(new NearbyThingContext(focus))
             .Add(new SceneTriggerContext(_buffer.Copy()));
 
         RequestScenePlayWithContext(builder);
@@ -51,7 +55,6 @@ public partial class EmScheduler
 
     public static void RequestScenePlayWithContext(ContextBuilder contextBuilder)
     {
-        _iteration++;
         ScenePlayAsync(contextBuilder).ForgetEx();
     }
 
@@ -60,10 +63,14 @@ public partial class EmScheduler
         await UniTask.SwitchToThreadPool();
 
         try {
+            await Semaphore.WaitAsync(SceneCts.Token);
+
             var context = contextBuilder.Build().ToHistory();
             await ScenePlayAsync(context, retries);
         } finally {
             await UniTask.Yield();
+
+            Semaphore.Release();
         }
     }
 
@@ -141,7 +148,6 @@ public partial class EmScheduler
             // noexcept
         } finally {
             FreezeCharas(false);
-            _iteration--;
         }
 
         return;
