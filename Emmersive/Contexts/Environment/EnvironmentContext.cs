@@ -10,7 +10,7 @@ public class EnvironmentContext : ContextProviderBase
     {
         var world = EClass.world;
 
-        Dictionary<string, object> data = new() {
+        var data = new Dictionary<string, object> {
             ["date"] = $"{world.date.GetText(Date.TextFormat.Widget)} {world.date.NameTime}",
             ["season"] = world.date.month switch {
                 >= 3 and <= 5 => "Spring",

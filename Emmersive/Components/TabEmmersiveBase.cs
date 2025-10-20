@@ -1,12 +1,40 @@
+using System.Collections.Generic;
 using Cwl.Helper.String;
 using Emmersive.Helper;
+using UnityEngine;
 using YKF;
 
 namespace Emmersive.Components;
 
 internal abstract class TabEmmersiveBase : YKLayout<LayerCreationData>
 {
-    public abstract void OnLayoutConfirm();
+    private static readonly Dictionary<string, Vector2> _positions = [];
+    private bool _repaint;
+
+    private void Update()
+    {
+        if (_repaint) {
+            _positions[name] = GetComponentInParent<UIScrollView>().normalizedPosition;
+        }
+    }
+
+    public override void OnLayout()
+    {
+        ResetPositions();
+    }
+
+    protected void ResetPositions()
+    {
+        if (_positions.TryGetValue(name, out var position)) {
+            GetComponentInParent<UIScrollView>().normalizedPosition = position;
+        }
+
+        _repaint = true;
+    }
+
+    public virtual void OnLayoutConfirm()
+    {
+    }
 
     internal YKLayout BuildPromptCard(string idLang, string path)
     {

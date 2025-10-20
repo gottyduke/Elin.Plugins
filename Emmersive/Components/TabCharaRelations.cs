@@ -10,17 +10,6 @@ namespace Emmersive.Components;
 
 internal class TabCharaRelations : TabCharaPrompt
 {
-    private static Vector2 _browsedPosition = new(0f, 1f);
-
-    private bool _repaint;
-
-    private void Update()
-    {
-        if (_repaint) {
-            _browsedPosition = GetComponentInParent<UIScrollView>().normalizedPosition;
-        }
-    }
-
     public override void OnLayout()
     {
         var header = Horizontal();
@@ -40,25 +29,29 @@ internal class TabCharaRelations : TabCharaPrompt
                     continue;
                 }
 
-                var names = relation.Rows.Join(r => r.GetText());
+                var tempCharas = relation.Rows
+                    .Select(r => r.id == "player" ? EClass.pc : CharaGen.Create(r.id));
+                var names = RelationContext
+                    .SplitByRelationKey(relation.Key, tempCharas)
+                    .Join(c => c.NameSimple);
                 BuildPromptCard(names, $"Emmersive/Relations/{relation.Provider.Name}");
             }
         }
 
-        GetComponentInParent<UIScrollView>().normalizedPosition = _browsedPosition;
-        _repaint = true;
+        ResetPositions();
 
         return;
 
         void BuildRelationGenerator()
         {
             var generator = this.MakeCard();
+
             generator.TextFlavor("em_ui_edit_relations");
 
             generator.Button("em_ui_generate_relation".lang(), () => {
                 var ids = charas
                     .Where(kv => kv.Value)
-                    .Select(kv => kv.Key.id)
+                    .Select(kv => kv.Key.UnifiedId)
                     .ToArray();
 
                 if (ids.Length < 2) {
@@ -81,9 +74,9 @@ internal class TabCharaRelations : TabCharaPrompt
         }
     }
 
-    private static Vector2 FitCell(int cellSize)
+    private static Vector2 FitCell(int constraint)
     {
         var scaler = EMono.ui.canvasScaler.scaleFactor;
-        return new Vector2(Screen.width / 1.7f / cellSize, 45f) / scaler;
+        return new Vector2(Screen.width / 1.7f / constraint, 45f) / scaler;
     }
 }

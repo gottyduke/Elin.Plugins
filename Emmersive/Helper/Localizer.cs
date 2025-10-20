@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Cwl.Helper.String;
 using Cwl.LangMod;
@@ -6,7 +7,7 @@ namespace Emmersive.Helper;
 
 public static class Localizer
 {
-    private static readonly HashSet<string> _unlocalized = [];
+    private static readonly HashSet<string> _unlocalized = new(StringComparer.Ordinal);
 
     internal static void DumpUnlocalized()
     {

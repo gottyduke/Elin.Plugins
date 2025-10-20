@@ -11,17 +11,6 @@ namespace Emmersive.Components;
 
 internal class TabSystemPrompt : TabEmmersiveBase
 {
-    private static Vector2 _browsedPosition = new(0f, 1f);
-
-    private bool _repaint;
-
-    private void Update()
-    {
-        if (_repaint) {
-            _browsedPosition = GetComponentInParent<UIScrollView>().normalizedPosition;
-        }
-    }
-
     public override void OnLayout()
     {
         BuildPromptButtons();
@@ -32,12 +21,7 @@ internal class TabSystemPrompt : TabEmmersiveBase
             BuildPromptCard("em_ui_zone".Loc(EClass._zone.Name), $"Emmersive/Zones/{EClass._zone.ZoneFullName}.txt");
         }
 
-        GetComponentInParent<UIScrollView>().normalizedPosition = _browsedPosition;
-        _repaint = true;
-    }
-
-    public override void OnLayoutConfirm()
-    {
+        base.OnLayout();
     }
 
     internal void BuildPromptButtons()

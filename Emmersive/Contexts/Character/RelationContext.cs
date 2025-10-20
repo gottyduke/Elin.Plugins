@@ -40,7 +40,7 @@ public class RelationContext(IList<Chara> charas) : ContextProviderBase
             return null;
         }
 
-        Dictionary<string, object> data = [];
+        var data = new Dictionary<string, object>();
         foreach (var relationKey in relationKeys) {
             var relation = Lookup[relationKey].LastOrDefault();
             // kinda unnecessary check
@@ -75,7 +75,7 @@ public class RelationContext(IList<Chara> charas) : ContextProviderBase
     {
         var ids = relationKey.Split(KeySeparator)
             .ToHashSet(StringComparer.Ordinal);
-        return charas.Where(c => ids.Contains(c.id));
+        return charas.Where(c => ids.Contains(c.UnifiedId));
     }
 
     /// <summary>
@@ -108,14 +108,15 @@ public class RelationContext(IList<Chara> charas) : ContextProviderBase
 
 #region RelationPrompt
 
-    public static IEnumerable<RelationPrompt> BuildLookup()
+    public static List<RelationPrompt> BuildLookup()
     {
         using var _ = PackageIterator.AddTempLookupPaths(ResourceFetch.CustomFolder);
         return PackageIterator
             .GetRelocatedDirsFromPackage("Emmersive/Relations")
             .SelectMany(d => d.GetFiles("*.txt", SearchOption.TopDirectoryOnly))
             .Select(LoadFromFile)
-            .OfType<RelationPrompt>();
+            .OfType<RelationPrompt>()
+            .ToList();
     }
 
     public static void Clear()
@@ -143,11 +144,6 @@ public class RelationContext(IList<Chara> charas) : ContextProviderBase
         var prompt = File.ReadAllText(file.FullName);
 
         var length = prompt.Length;
-        if (length < 10) {
-            EmMod.Warn<RelationPrompt>("must be longer than 10 characters");
-            return null;
-        }
-
         EmMod.Debug<RelationPrompt>($"{relationKey} - {length} - {file.ShortPath()}");
 
         return new(relationKey, rows, prompt, file);

@@ -9,6 +9,6 @@ public static class PointScan
     extension(Chara focus)
     {
         public List<Chara> Nearby =>
-            LastNearby = focus.pos.ListCharasInRadius(focus, EmConfig.Context.NearbyRadius.Value, c => !c.IsPC && !c.IsAnimal);
+            LastNearby = focus.pos.ListCharasInRadius(focus, EmConfig.Context.NearbyRadius.Value, c => !c.IsPC);
     }
 }

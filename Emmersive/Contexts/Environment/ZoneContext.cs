@@ -10,7 +10,7 @@ public class ZoneContext(Zone zone) : ContextProviderBase
 
     protected override IDictionary<string, object>? BuildInternal()
     {
-        Dictionary<string, object> data = new() {
+        var data = new Dictionary<string, object> {
             ["name"] = zone.NameWithDangerLevel,
         };
 

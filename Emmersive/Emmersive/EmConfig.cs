@@ -186,6 +186,8 @@ internal partial class EmConfig
             "If timeout is set too long, the original barks may be skipped\n" +
             "如果角色已经计划于一次场景生成请求，则禁用该角色的原版气泡\n" +
             "如果生成请求超时设置的很长，可能会跳过该气泡");
+
+        Reload();
     }
 
     internal static class Scene

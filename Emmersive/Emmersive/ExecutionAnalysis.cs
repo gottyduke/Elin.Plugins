@@ -38,7 +38,7 @@ internal class ExecutionAnalysis
             return;
         }
 
-        var file = $"Activity\\{DateTime.Now:MM_dd_hh_mm_ss}.csv";
+        var file = $"Activity\\{DateTime.UtcNow:MM_dd_hh_mm_ss}.csv";
 
         using var sb = StringBuilderPool.Get();
         sb.AppendLine("Activity,Service,Status,Latency,Input,Output");

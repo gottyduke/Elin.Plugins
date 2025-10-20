@@ -51,7 +51,9 @@ internal class RendererPopPatch
 
     internal static string OnBlockedTalk(string text, Card card, string topic)
     {
-        if (card is not Chara chara || topic == "dead" || !ApiPoolSelector.Instance.HasAnyAvailableServices()) {
+        if (card is not Chara chara || topic == "dead" ||
+            chara.IsAnimal ||
+            !ApiPoolSelector.Instance.HasAnyAvailableServices()) {
             AllowOriginalText();
             return "";
         }
@@ -87,7 +89,8 @@ internal class RendererPopPatch
         text = chara.ApplyNewLine(text).StripBrackets();
 
         if (!ApiPoolSelector.Instance.HasAnyAvailableServices() ||
-            chara.Dist(EClass.pc) > EmConfig.Context.NearbyRadius.Value) {
+            chara.Dist(EClass.pc) > EmConfig.Context.NearbyRadius.Value ||
+            chara.IsAnimal) {
             AllowOriginalPop();
             return;
         }

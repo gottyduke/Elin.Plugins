@@ -1,10 +1,8 @@
 using System;
 using System.Linq;
-using Cwl.Helper.FileUtil;
 using Emmersive.API;
 using Emmersive.API.Services;
 using Emmersive.ChatProviders;
-using UnityEngine;
 using UnityEngine.UI;
 using YKF;
 
@@ -12,20 +10,8 @@ namespace Emmersive.Components;
 
 internal class TabAiService : TabEmmersiveBase
 {
-    private static Vector2 _browsedPosition = new(0f, 1f);
-
-    private bool _repaint;
-
-    private void Update()
-    {
-        if (_repaint) {
-            _browsedPosition = GetComponentInParent<UIScrollView>().normalizedPosition;
-        }
-    }
-
     public override void OnLayout()
     {
-        BuildDebugButtons();
         BuildServiceButtons();
 
         var layouts = ApiPoolSelector.Instance.Providers
@@ -61,8 +47,7 @@ internal class TabAiService : TabEmmersiveBase
             }
         }
 
-        GetComponentInParent<UIScrollView>().normalizedPosition = _browsedPosition;
-        _repaint = true;
+        base.OnLayout();
     }
 
     public override void OnLayoutConfirm()
@@ -73,24 +58,6 @@ internal class TabAiService : TabEmmersiveBase
         foreach (var provider in layouts) {
             provider.OnLayoutConfirm();
         }
-    }
-
-    private void BuildDebugButtons()
-    {
-        var btnGroup = Horizontal()
-            .WithSpace(10);
-        btnGroup.Layout.childForceExpandWidth = true;
-
-        btnGroup.Button("em_ui_test_generation".lang(), () => {
-            LayerEmmersivePanel.Instance!.OnLayoutConfirm();
-            EmScheduler.RequestScenePlayImmediate();
-            ELayer.ui.RemoveLayer<LayerEmmersivePanel>();
-        });
-
-        btnGroup.Button("em_ui_config_open".lang(), () => {
-            // TODO: use CWL version after updating
-            OpenFileOrPath.Run(EmMod.Instance.Config.ConfigFilePath);
-        });
     }
 
     private void BuildServiceButtons()
@@ -114,7 +81,7 @@ internal class TabAiService : TabEmmersiveBase
         {
             btnGroup.Button(btnName.lang(), () => {
                 var d = Dialog.InputName(
-                    "em_ui_paste_api_key".lang(),
+                    "em_ui_paste_api_key",
                     "em_ui_api_key".lang(),
                     (cancel, apiKey) => {
                         if (!cancel) {

@@ -3,24 +3,12 @@ using System.Linq;
 using Cwl.Helper.Exceptions;
 using Emmersive.Contexts;
 using Emmersive.Helper;
-using UnityEngine;
 using YKF;
 
 namespace Emmersive.Components;
 
 internal class TabCharaPrompt : TabEmmersiveBase
 {
-    private static Vector2 _browsedPosition = new(0f, 1f);
-
-    private bool _repaint;
-
-    private void Update()
-    {
-        if (_repaint) {
-            _browsedPosition = GetComponentInParent<UIScrollView>().normalizedPosition;
-        }
-    }
-
     public override void OnLayout()
     {
         var header = Horizontal();
@@ -31,13 +19,7 @@ internal class TabCharaPrompt : TabEmmersiveBase
 
         BuildCharacterPromptCards();
 
-        GetComponentInParent<UIScrollView>().normalizedPosition = _browsedPosition;
-        _repaint = true;
-    }
-
-
-    public override void OnLayoutConfirm()
-    {
+        base.OnLayout();
     }
 
     internal static Chara[] GetMapCharas()

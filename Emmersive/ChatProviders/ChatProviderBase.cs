@@ -54,7 +54,7 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionReques
     [JsonIgnore]
     public abstract IDictionary<string, object> RequestParams { get; set; }
 
-    public virtual bool IsAvailable => DateTime.Now >= _cooldownUntil;
+    public virtual bool IsAvailable => DateTime.UtcNow >= _cooldownUntil;
 
     public void Register(IKernelBuilder builder)
     {
@@ -64,14 +64,14 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionReques
     public virtual void MarkUnavailable(string? message = null)
     {
         UnavailableReason = message;
-        _cooldownUntil = DateTime.Now + TimeSpan.FromSeconds(EmConfig.Policy.ServiceCooldown.Value + _timeoutIncremental);
+        _cooldownUntil = DateTime.UtcNow + TimeSpan.FromSeconds(EmConfig.Policy.ServiceCooldown.Value + _timeoutIncremental);
         _timeoutIncremental += 1f;
         EmMod.DebugPopup<IChatProvider>($"[{Id}] temporarily unavailable: {message}");
     }
 
     public virtual void UpdateAvailability()
     {
-        if (DateTime.Now >= _cooldownUntil) {
+        if (DateTime.UtcNow >= _cooldownUntil) {
             _cooldownUntil = DateTime.MinValue;
         }
     }

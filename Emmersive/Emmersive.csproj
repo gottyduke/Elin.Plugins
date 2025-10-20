@@ -42,10 +42,6 @@
         <PackageReference Include="Microsoft.SemanticKernel.Connectors.Google" Version="1.66.0-alpha"/>
         <PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.66.0"/>
         <PackageReference Include="Microsoft.SemanticKernel.Core" Version="1.66.0"/>
-        <PackageReference Include="Fody" Version="6.9.3">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
         <PackageReference Include="GitVersion.MsBuild" Version="6.4.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -53,10 +49,6 @@
         <PackageReference Include="PolySharp" Version="1.15.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="SwallowExceptions.Fody" Version="1.0.1">
-            <PrivateAssets>all</PrivateAssets>
-            <ExcludeAssets>runtime</ExcludeAssets>
         </PackageReference>
     </ItemGroup>
     <ItemGroup>
