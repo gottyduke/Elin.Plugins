@@ -1,5 +1,3 @@
 namespace Emmersive.Components;
 
-internal class LayerCreationData
-{
-}
+internal class LayerCreationData;

@@ -13,7 +13,7 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
 
     private readonly List<TabEmmersiveBase> _tabs = [];
     private bool _resetHyp;
-    public override string Title => "Elin Immersive Talks";
+    public override string Title => "Elin with AI";
     public override Rect Bound => FitWindow();
 
     public static LayerEmmersivePanel? Instance { get; private set; }
@@ -29,13 +29,13 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
 
         _tabs.Add(CreateTab<TabAiService>("em_ui_tab_ai_service", "em_tab_ai_service"));
 
-        if (!EClass.core.IsGameStarted) {
-            return;
+        if (EClass.core.IsGameStarted) {
+            _tabs.Add(CreateTab<TabSystemPrompt>("em_ui_tab_prompts", "em_tab_prompt_setting"));
+            _tabs.Add(CreateTab<TabCharaPrompt>("em_ui_tab_characters", "em_tab_chara_prompts"));
+            _tabs.Add(CreateTab<TabCharaRelations>("em_ui_tab_relations", "em_tab_chara_relations"));
         }
 
-        _tabs.Add(CreateTab<TabSystemPrompt>("em_ui_tab_prompts", "em_tab_prompt_setting"));
-        _tabs.Add(CreateTab<TabCharaPrompt>("em_ui_tab_characters", "em_tab_chara_prompts"));
-        _tabs.Add(CreateTab<TabCharaRelations>("em_ui_tab_relations", "em_tab_chara_relations"));
+        _tabs.Add(CreateTab<TabDebugPanel>("em_ui_tab_debug", "em_tab_debug_panel"));
     }
 
     public override void OnAfterAddLayer()

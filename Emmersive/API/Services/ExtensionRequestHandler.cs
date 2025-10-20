@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Cwl.Helper.Exceptions;
+using Cwl.Helper.String;
 using Emmersive.API.Exceptions;
 using Emmersive.Components;
 using Emmersive.Helper;
@@ -34,11 +35,10 @@ public class ExtensionRequestHandler()
 
         // merge into params
         var json = await request.Content.ReadAsStringAsync();
-        var finalized = "";
+        var dict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
         try {
             var root = JObject.Parse(json);
 
-            var dict = new Dictionary<string, object>();
             foreach (var prop in root.Properties()) {
                 dict[prop.Name] = prop.Value.Type switch {
                     JTokenType.Object => prop.Value.ToObject<Dictionary<string, object>>()!,
@@ -50,7 +50,7 @@ public class ExtensionRequestHandler()
 
             provider.MergeExtensionRequest(dict, request);
 
-            finalized = JsonConvert.SerializeObject(dict, Formatting.None);
+            var finalized = JsonConvert.SerializeObject(dict, Formatting.None);
             request.Content = new StringContent(finalized, Encoding.UTF8, "application/json");
         } catch (Exception ex) {
             EmMod.Warn<ExtensionRequestHandler>($"failed to merge ExtensionData into request\n{ex}");
@@ -60,11 +60,31 @@ public class ExtensionRequestHandler()
 
         ResetHeaders(request);
 
-        ThrowIfDryRun(finalized);
+        ThrowIfDryRun();
 
         EmMod.Debug<ExtensionRequestHandler>($"requesting {request.RequestUri}");
 
         return await base.SendAsync(request, cancellationToken);
+
+        void ThrowIfDryRun()
+        {
+            if (EmScheduler.Mode != EmScheduler.ScheduleMode.DryRun) {
+                return;
+            }
+
+            using var sb = StringBuilderPool.Get();
+
+            sb.AppendLine($"[{request.Method}]: {request.RequestUri}");
+            sb.Append("[Content]: ").Append(dict.ToIndentedJson());
+
+            var log = sb.ToString();
+            EmMod.Log<EmScheduler>(log);
+
+            ResourceFetch.SetCustomResource("dry_run.txt", log);
+            ResourceFetch.OpenOrCreateCustomResource("dry_run.txt");
+
+            throw new SchedulerDryRunException();
+        }
     }
 
     private static void ResetHeaders(HttpRequestMessage request)
@@ -74,19 +94,5 @@ public class ExtensionRequestHandler()
         request.Headers.Remove("Accept");
 
         request.Headers.Add("Emmersive-Version", ModInfo.BuildVersion);
-    }
-
-    private static void ThrowIfDryRun(string requestBody)
-    {
-        if (EmScheduler.Mode != EmScheduler.ScheduleMode.DryRun) {
-            return;
-        }
-
-        EmMod.Log<EmScheduler>(requestBody);
-
-        ResourceFetch.SetCustomResource("dry_run.json", requestBody);
-        ResourceFetch.OpenOrCreateCustomResource("dry_run.json");
-
-        throw new SchedulerDryRunException();
     }
 }
