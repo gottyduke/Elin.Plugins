@@ -20,7 +20,7 @@
         <None Remove="Directory.Build.props"/>
         <None Remove="LICENSE"/>
         <None Remove="README.md"/>
-        <None Remove="Emmersive.Test\**" />
+        <None Remove="Emmersive.Test\**"/>
     </ItemGroup>
     <ItemGroup>
         <Reference Include="CustomWhateverLoader">
@@ -55,10 +55,10 @@
     <ItemGroup>
         <None Remove="package\LangMod\EN\Emmersive\SystemPrompt.txt"/>
         <EmbeddedResource Include="package\LangMod\EN\Emmersive\SystemPrompt.txt"/>
-        <EmbeddedResource Remove="Emmersive.Test\**" />
+        <EmbeddedResource Remove="Emmersive.Test\**"/>
     </ItemGroup>
     <ItemGroup>
-      <Compile Remove="Emmersive.Test\**" />
+        <Compile Remove="Emmersive.Test\**"/>
     </ItemGroup>
     <Target Name="CopyAssets" AfterTargets="AfterBuild">
         <ItemGroup>

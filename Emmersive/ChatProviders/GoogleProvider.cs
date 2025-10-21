@@ -23,7 +23,7 @@ public class GoogleProvider(string apiKey) : ChatProviderBase(apiKey)
         ["topP"] = 0.9f,
         ["temperature"] = 0.9f,
         ["thinkingConfig"] = JObject.FromObject(new {
-           thinkingBudget = 0,
+            thinkingBudget = 0,
         }),
     };
 

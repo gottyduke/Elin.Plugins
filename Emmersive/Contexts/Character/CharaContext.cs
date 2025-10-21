@@ -57,7 +57,6 @@ public class CharaContext(Chara chara) : ContextProviderBase
                         data["in_party"] = chara.IsPCParty;
                         data["hobbies"] = chara.GetTextHobby(true);
                         data["fav_food"] = chara.GetFavFood().GetName();
-
                     }
 
                     if (chara.faith is not ReligionEyth) {
