@@ -24,7 +24,8 @@ internal class TabDebugPanel : TabEmmersiveBase
             var logPanel = this.MakeCard();
             logPanel.HeaderCard("em_ui_recent_action");
 
-            var max = logs.Max(a => a.actor.Length) * EMono.ui.canvasScaler.scaleFactor * 18f;
+            var langWidth = Lang.isEN ? 15f : 18f;
+            var max = logs.Max(a => a.actor.Length) / EMono.ui.canvasScaler.scaleFactor * langWidth;
 
             foreach (var (actor, text) in logs) {
                 var pair = logPanel.TopicPair(actor, text);
