@@ -88,7 +88,7 @@ internal sealed partial class EmMod
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Error(object? payload, [CallerMemberName] string caller = "")
     {
-        LogInternal($"[CWL][ERROR] [{caller}] {payload}");
+        LogInternal($"[EMME][ERROR] [{caller}] {payload}");
     }
 
     internal static void Error<T>(object? payload, [CallerMemberName] string caller = "")
