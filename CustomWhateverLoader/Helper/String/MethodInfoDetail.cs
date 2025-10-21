@@ -13,8 +13,10 @@ public static class MethodInfoDetail
 
     private static IEnumerable<CodeInstruction> StubILPatch(IEnumerable<CodeInstruction> instructions)
     {
-        return instructions
-            .Where(i => i.operand is MethodInfo);
+        foreach (var instruction in instructions) {
+            _ = instruction.operand as MethodInfo;
+            yield return instruction;
+        }
     }
 
     extension(MethodInfo methodInfo)

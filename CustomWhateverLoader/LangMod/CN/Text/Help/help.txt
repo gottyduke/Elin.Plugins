@@ -23,6 +23,7 @@ $更新日志
 添加了无效 Work 检查
 添加了 FileWatcherHelper
 使日志记录线程安全
+修复了不兼容方法检测代码
 
 {topic|1.20.52}
 更新至 23.221 Nightly 版本
