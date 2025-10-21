@@ -20,6 +20,7 @@
         <None Remove="Directory.Build.props"/>
         <None Remove="LICENSE"/>
         <None Remove="README.md"/>
+        <None Remove="Emmersive.Test\**" />
     </ItemGroup>
     <ItemGroup>
         <Reference Include="CustomWhateverLoader">
@@ -54,6 +55,10 @@
     <ItemGroup>
         <None Remove="package\LangMod\EN\Emmersive\SystemPrompt.txt"/>
         <EmbeddedResource Include="package\LangMod\EN\Emmersive\SystemPrompt.txt"/>
+        <EmbeddedResource Remove="Emmersive.Test\**" />
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Remove="Emmersive.Test\**" />
     </ItemGroup>
     <Target Name="CopyAssets" AfterTargets="AfterBuild">
         <ItemGroup>
@@ -67,5 +72,8 @@
     </Target>
     <Target Name="RemoveDebugKeys" AfterTargets="CopyAssets" Condition="'$(Configuration)' == 'Release' OR '$(Configuration)' == 'ReleaseNightly'">
         <Delete Files="$(OutDir)/LangMod/EN/Emmersive/DebugKeys.json"/>
+    </Target>
+    <Target Name="RemovePdbFromRelease" AfterTargets="Build" Condition="'$(Configuration)' == 'Release' OR '$(Configuration)' == 'ReleaseNightly'">
+        <Delete Files="$(TargetDir)$(TargetName).pdb"/>
     </Target>
 </Project>

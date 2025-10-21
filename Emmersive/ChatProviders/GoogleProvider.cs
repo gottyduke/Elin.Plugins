@@ -5,6 +5,7 @@ using Emmersive.API.Plugins;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Connectors.Google;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using YKF;
 
 namespace Emmersive.ChatProviders;
@@ -21,15 +22,15 @@ public class GoogleProvider(string apiKey) : ChatProviderBase(apiKey)
     public override IDictionary<string, object> RequestParams { get; set; } = new Dictionary<string, object> {
         ["topP"] = 0.9f,
         ["temperature"] = 0.9f,
+        ["thinkingConfig"] = JObject.FromObject(new {
+           thinkingBudget = 0,
+        }),
     };
 
     [JsonIgnore]
     public override PromptExecutionSettings ExecutionSettings { get; set; } = new GeminiPromptExecutionSettings {
         ResponseMimeType = "application/json",
         ResponseSchema = typeof(SceneReaction[]),
-        ThinkingConfig = new() {
-            ThinkingBudget = 0,
-        },
     };
 
     public override void MergeExtensionRequest(IDictionary<string, object> data, HttpRequestMessage request)

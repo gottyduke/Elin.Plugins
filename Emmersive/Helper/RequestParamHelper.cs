@@ -40,7 +40,7 @@ public static class RequestParamHelper
         public Dictionary<string, object>? GetProviderParam()
         {
             var path = Path.Combine(ResourceFetch.CustomFolder, $"Params/{provider.Id}.txt");
-            if (File.Exists(path)) {
+            if (!File.Exists(path)) {
                 path = Path.Combine(ResourceFetch.CustomFolder, $"Params/{provider.Id}.json");
             }
 
