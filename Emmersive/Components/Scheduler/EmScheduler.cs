@@ -23,7 +23,10 @@ public partial class EmScheduler : EMono
     public static float ScenePlayDelay { get; private set; }
     public static bool IsInProgress { get; private set; }
     public static ScheduleMode Mode { get; private set; } = ScheduleMode.Buffer;
-    public static bool CanMakeRequest => !IsInProgress || Semaphore.CurrentCount > 0;
+
+    public static bool CanMakeRequest =>
+        (!IsInProgress || Semaphore.CurrentCount > 0) &&
+        Mode is ScheduleMode.Buffer or ScheduleMode.Immediate;
 
     private void Update()
     {

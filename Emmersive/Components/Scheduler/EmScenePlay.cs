@@ -133,6 +133,7 @@ public partial class EmScheduler
         } catch (Exception ex)
             when (ex.InnerException is SchedulerDryRunException) {
             SwitchMode(ScheduleMode.Buffer);
+            activity.SetStatus(EmActivity.StatusType.Unknown);
             // noexcept
         } catch (OperationCanceledException) {
             MarkUnavailable("em_ui_scene_timeout".Loc(timeout));

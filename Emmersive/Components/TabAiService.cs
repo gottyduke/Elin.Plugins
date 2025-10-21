@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Cwl.LangMod;
 using Emmersive.API;
 using Emmersive.API.Services;
 using Emmersive.ChatProviders;
@@ -10,8 +11,12 @@ namespace Emmersive.Components;
 
 internal class TabAiService : TabEmmersiveBase
 {
+    private UIButton? _schedulerMode;
+
     public override void OnLayout()
     {
+        BuildSchedulerButton();
+
         BuildServiceButtons();
 
         var layouts = ApiPoolSelector.Instance.Providers
@@ -95,7 +100,29 @@ internal class TabAiService : TabEmmersiveBase
         }
     }
 
-    private void AddService(IChatProvider provider)
+    private void BuildSchedulerButton()
+    {
+        var btnGroup = Horizontal();
+        btnGroup.Layout.childForceExpandWidth = true;
+
+        _schedulerMode = btnGroup.Toggle(
+            GetCurrentSchedulerState(),
+            EmScheduler.Mode is EmScheduler.ScheduleMode.Buffer or EmScheduler.ScheduleMode.Immediate,
+            value => {
+                EmScheduler.SwitchMode(value ? EmScheduler.ScheduleMode.Buffer : EmScheduler.ScheduleMode.Stop);
+                _schedulerMode?.mainText.text = GetCurrentSchedulerState();
+            });
+
+        return;
+
+        string GetCurrentSchedulerState()
+        {
+            var isOn = EmScheduler.Mode is EmScheduler.ScheduleMode.Buffer or EmScheduler.ScheduleMode.Immediate;
+            return "em_ui_scheduler_toggle".Loc((isOn ? "on" : "off").lang());
+        }
+    }
+
+    private static void AddService(IChatProvider provider)
     {
         var apiPool = ApiPoolSelector.Instance;
         apiPool.AddService(provider);

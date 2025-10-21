@@ -11,6 +11,10 @@ internal class CharaTickerPatch
     [HarmonyPatch(typeof(Chara), nameof(Chara.Tick))]
     internal static void OnPlayerTick(Chara __instance)
     {
+        if (!EmScheduler.CanMakeRequest) {
+            return;
+        }
+
         if (!__instance.IsPC) {
             return;
         }

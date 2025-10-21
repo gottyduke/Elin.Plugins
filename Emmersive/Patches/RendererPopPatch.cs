@@ -106,8 +106,11 @@ internal class RendererPopPatch
             return;
         }
 
-        if (!EmScheduler.CanMakeRequest && !profile.OnTalkCooldown) {
-            AllowOriginalPop();
+        if (!EmScheduler.CanMakeRequest) {
+            if (!profile.OnTalkCooldown) {
+                AllowOriginalPop();
+            }
+
             return;
         }
 
