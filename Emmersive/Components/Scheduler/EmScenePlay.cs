@@ -130,7 +130,8 @@ public partial class EmScheduler
 
                 EmMod.Debug("em_ui_scene_complete".Loc(response));
             }
-        } catch (SchedulerDryRunException) {
+        } catch (Exception ex)
+            when (ex.InnerException is SchedulerDryRunException) {
             SwitchMode(ScheduleMode.Buffer);
             // noexcept
         } catch (OperationCanceledException) {
