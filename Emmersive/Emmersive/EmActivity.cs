@@ -47,7 +47,7 @@ public record EmActivity : IDisposable
 
         EmMod.Log<EmActivity>(
             $"<{ActivityId}> [{ServiceName}] " +
-            $"{RequestTime:HH:mm:ss} stopped " +
+            $"{EndTime.ToLocalTime().ToLongTimeString()} stopped " +
             $"{Latency.TotalMilliseconds}ms " +
             $"{TokensInput}+{TokensOutput}");
     }
@@ -81,7 +81,7 @@ public record EmActivity : IDisposable
 
         EmMod.Log<EmActivity>(
             $"<{activity.ActivityId}> [{activity.ServiceName}] " +
-            $"{activity.RequestTime:HH:mm:ss} started");
+            $"{activity.RequestTime.ToLocalTime().ToLongTimeString()} started");
 
         return Current = activity;
     }
@@ -101,10 +101,10 @@ public record EmActivity : IDisposable
         return _services.Select(GetSummary);
     }
 
-    public static EmActivitySummary GetSummary(string serviceName)
+    public static EmActivitySummary GetSummary(string serviceName = "")
     {
-        var activities = FromProvider(serviceName).ToArray();
-        var total = activities.Length;
+        var activities = serviceName.IsEmpty() ? Session : FromProvider(serviceName).ToList();
+        var total = activities.Count;
 
         var success = 0;
         var tokensInput = 0;

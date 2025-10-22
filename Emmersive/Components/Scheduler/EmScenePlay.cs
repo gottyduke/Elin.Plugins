@@ -127,6 +127,7 @@ public partial class EmScheduler
 
                 // start global cooldown
                 pc.Profile.ResetTalkCooldown();
+                GlobalCooldown = EmConfig.Policy.GlobalRequestCooldown.Value;
 
                 EmMod.Debug("em_ui_scene_complete".Loc(response));
             }

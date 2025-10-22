@@ -4,6 +4,7 @@ using Cwl.LangMod;
 using Emmersive.API;
 using Emmersive.API.Services;
 using Emmersive.ChatProviders;
+using Emmersive.Helper;
 using UnityEngine.UI;
 using YKF;
 
@@ -16,6 +17,8 @@ internal class TabAiService : TabEmmersiveBase
     public override void OnLayout()
     {
         BuildSchedulerButton();
+
+        this.MakeCard().ShowActivityInfo("");
 
         BuildServiceButtons();
 
