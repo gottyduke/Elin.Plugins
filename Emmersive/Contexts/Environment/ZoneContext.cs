@@ -10,8 +10,19 @@ public class ZoneContext(Zone zone) : ContextProviderBase
 
     protected override IDictionary<string, object>? BuildInternal()
     {
+        var world = EClass.world;
+        var season = world.date.month switch {
+            >= 3 and <= 5 => "Spring",
+            >= 6 and <= 8 => "Summer",
+            >= 9 and <= 11 => "Autumn",
+            12 or >= 1 and <= 2 => "Winter",
+            _ => "Unknown",
+        };
+
         var data = new Dictionary<string, object> {
             ["name"] = zone.NameWithDangerLevel,
+            ["date"] =
+                $"{world.date.GetText(Date.TextFormat.Widget)}, {world.date.NameTime}, {season}, {world.weather.GetName()}",
         };
 
         if (zone.IsRegion) {
@@ -24,13 +35,15 @@ public class ZoneContext(Zone zone) : ContextProviderBase
                 data["type"] = "Dungeon";
                 break;
             case Zone_Civilized:
-                data["allow_crime"] = zone.AllowCriminal;
-                data["has_law"] = zone.HasLaw;
-                data["is_town"] = zone.IsTown;
-                data["player_influence"] = zone.influence;
+                data["type"] = "Town";
+                if (zone.AllowCriminal) {
+                    data["crime"] = "Allowed";
+                }
+
+                data["influence"] = zone.influence;
 
                 if (zone.IsFestival) {
-                    data["is_festival"] = true;
+                    data["festival"] = true;
                 }
 
                 break;

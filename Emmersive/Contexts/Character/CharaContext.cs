@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Emmersive.Helper;
 
 namespace Emmersive.Contexts;
 
@@ -18,19 +17,18 @@ public class CharaContext(Chara chara) : ContextProviderBase
 
     protected override IDictionary<string, object> BuildInternal()
     {
+        var hostility = chara.hostility;
         var data = new Dictionary<string, object> {
-            ["name"] = chara.NameSimple,
             ["uid"] = chara.uid,
-            ["can_talk"] = !chara.Profile.OnTalkCooldown,
+            //["can_talk"] = !chara.Profile.OnTalkCooldown,
             ["title"] = chara.Aka.ToTitleCase().IsEmpty(null),
-            ["level"] = chara.LV,
             ["hp"] = $"{chara.hp}/{chara.MaxHP}",
-            ["mana"] = $"{chara.mana.value}/{chara.mana.max}",
-            ["class"] = chara.job.GetName(),
-            ["race"] = chara.race.GetText().ToTitleCase(),
-            ["age"] = chara.bio.TextAge(chara),
-            ["gender"] = Lang._gender(chara.bio.gender),
+            ["class"] = $"LV.{chara.LV} {chara.race.GetText().ToTitleCase()}",
         };
+
+        if (chara.job.id != "none") {
+            data["class"] += $" {chara.job.GetName().ToTitleCase()}";
+        }
 
         if (data["title"] is null) {
             data.Remove("title");
@@ -39,24 +37,26 @@ public class CharaContext(Chara chara) : ContextProviderBase
         if (chara.IsPC) {
             data["stamina"] = $"{chara.stamina.value}/{chara.stamina.max}";
         } else {
-            var hostility = chara.hostility;
-            data["hostility"] = _hostilities[hostility];
-
             switch (hostility) {
                 case Hostility.Enemy:
                 case Hostility.Neutral:
-                    data.Remove("mana");
                     break;
                 case Hostility.Friend or Hostility.Ally:
                     if (chara.IsPCFactionMinion) {
-                        data["is_minion"] = true;
+                        data["minion"] = true;
                         break;
                     }
 
+                    data["bio"] = $"{Lang._gender(chara.bio.gender)} {chara.bio.TextAge(chara)}";
+
                     if (chara.IsPCParty) {
-                        data["in_party"] = chara.IsPCParty;
-                        data["hobbies"] = chara.GetTextHobby(true);
-                        data["fav_food"] = chara.GetFavFood().GetName();
+                        data["party"] = chara.IsPCParty;
+                        data["fav"] = $"{chara.GetFavFood().GetName()}, {chara.GetTextHobby(true)}";
+                        data["mana"] = $"{chara.mana.value}/{chara.mana.max}";
+                    } else {
+                        if (chara.IsAdventurer) {
+                            data["adventurer"] = true;
+                        }
                     }
 
                     if (chara.faith is not ReligionEyth) {
@@ -74,19 +74,17 @@ public class CharaContext(Chara chara) : ContextProviderBase
                 data["animal"] = true;
             }
 
-            if (!chara.IsHumanSpeak) {
-                data["human_language"] = false;
-            }
+            data["class"] = $"{_hostilities[hostility]} {data["class"]}";
         }
 
         var conditions = chara.conditions;
         if (conditions.Count > 0) {
-            data["conditions"] = string.Join(',', conditions.Select(c => c.Name));
+            data["condition"] = string.Join(',', conditions.Select(c => c.Name));
         }
 
         var background = new BackgroundContext(chara).Build();
         if (background is not null) {
-            data["background"] = background;
+            data["persona"] = background;
         }
 
         return data;

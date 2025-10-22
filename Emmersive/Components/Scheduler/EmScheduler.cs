@@ -23,10 +23,12 @@ public partial class EmScheduler : EMono
     public static float ScenePlayDelay { get; private set; }
     public static bool IsInProgress { get; private set; }
     public static ScheduleMode Mode { get; private set; } = ScheduleMode.Buffer;
+    public static float GlobalCooldown { get; private set; }
 
     public static bool CanMakeRequest =>
         (!IsInProgress || Semaphore.CurrentCount > 0) &&
-        Mode is ScheduleMode.Buffer or ScheduleMode.Immediate;
+        Mode is ScheduleMode.Buffer or ScheduleMode.Immediate &&
+        GlobalCooldown <= 0f;
 
     private void Update()
     {
@@ -39,6 +41,10 @@ public partial class EmScheduler : EMono
             IsInProgress = true;
         } else {
             IsInProgress = false;
+        }
+
+        if (GlobalCooldown > 0f) {
+            GlobalCooldown -= Time.deltaTime;
         }
     }
 

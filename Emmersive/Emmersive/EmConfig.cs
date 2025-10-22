@@ -58,6 +58,16 @@ internal partial class EmConfig
                 "请注意，这会使你的令牌消耗增加",
                 new AcceptableValueRange<int>(1, 5)));
 
+        Policy.GlobalRequestCooldown = config.Bind(
+            "RuntimePolicy",
+            "GlobalRequestCooldown",
+            2f,
+            new ConfigDescription(
+                "Minimum seconds in realtime of request cooldown\n" +
+                "Starts throttling after a successful request is made\n" +
+                "全局请求冷却，仅在成功请求后开始计时",
+                new AcceptableValueRange<float>(0f, 20f)));
+
         Policy.ServiceCooldown = config.Bind(
             "RuntimePolicy",
             "ServiceCooldown",
@@ -102,6 +112,15 @@ internal partial class EmConfig
                 "以玩家为中心检测附近角色的半径块数\n" +
                 "更大的半径会包含更多的角色，但会增加token消耗",
                 new AcceptableValueRange<int>(0, 12)));
+
+        Context.NearbyMaxCount = config.Bind(
+            "Context",
+            "NearbyMaxCount",
+            8,
+            new ConfigDescription(
+                "Maximum number of nearby characters to include(sorted by importance)\n" +
+                "最多包含的附近角色信息(按重要度排序)",
+                new AcceptableValueRange<int>(0, 20)));
 
         Context.EnableLocalizer = config.Bind(
             "Context",
@@ -207,6 +226,7 @@ internal partial class EmConfig
         internal static ConfigEntry<int> RecentLogDepth { get; set; } = null!;
         internal static ConfigEntry<bool> RecentTalkOnly { get; set; } = null!;
         internal static ConfigEntry<int> NearbyRadius { get; set; } = null!;
+        internal static ConfigEntry<int> NearbyMaxCount { get; set; } = null!;
         internal static ConfigEntry<bool> EnableLocalizer { get; set; } = null!;
     }
 
@@ -217,5 +237,6 @@ internal partial class EmConfig
         internal static ConfigEntry<int> ConcurrentRequests { get; set; } = null!;
         internal static ConfigEntry<bool> Verbose { get; set; } = null!;
         internal static ConfigEntry<float> ServiceCooldown { get; set; } = null!;
+        internal static ConfigEntry<float> GlobalRequestCooldown { get; set; } = null!;
     }
 }

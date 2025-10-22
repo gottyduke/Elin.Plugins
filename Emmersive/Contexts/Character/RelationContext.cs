@@ -149,7 +149,7 @@ public class RelationContext(IList<Chara> charas) : ContextProviderBase
         return new(relationKey, rows, prompt, file);
     }
 
-    public record RelationPrompt(string Key, IEnumerable<SourceChara.Row> Rows, string Prompt, FileInfo Provider);
+    public record RelationPrompt(string Key, IReadOnlyList<SourceChara.Row> Rows, string Prompt, FileInfo Provider);
 
 #endregion
 }

@@ -1,7 +1,7 @@
+using System;
 using System.Linq;
 using Emmersive.Contexts;
 using Emmersive.Helper;
-using HarmonyLib;
 using UnityEngine;
 using UnityEngine.UI;
 using YKF;
@@ -29,11 +29,18 @@ internal class TabCharaRelations : TabCharaPrompt
                 continue;
             }
 
-            var tempCharas = relation.Rows
-                .Select(r => r.id == "player" ? EClass.pc : CharaGen.Create(r.id));
-            var names = RelationContext
-                .SplitByRelationKey(relation.Key, tempCharas)
-                .Join(c => c.NameSimple);
+            var relationOwners = relation.Key.Split(RelationContext.KeySeparator)
+                .ToHashSet(StringComparer.Ordinal);
+            var tempCharas = charas.Keys
+                .Where(c => relationOwners.Contains(c.UnifiedId))
+                .Select(c => c.NameSimple)
+                .ToArray();
+
+            if (tempCharas.Length != relation.Rows.Count) {
+                continue;
+            }
+
+            var names = string.Join(", ", tempCharas);
             BuildPromptCard(names, $"Emmersive/Relations/{relation.Provider.Name}");
         }
 

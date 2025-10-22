@@ -20,9 +20,6 @@ public sealed class ContextBuilder
     }
 
     [field: AllowNull]
-    public static IContextProvider EnvironmentContext => field ??= new EnvironmentContext();
-
-    [field: AllowNull]
     public static IContextProvider RecentActionContext => field ??= new RecentActionContext();
 
     public static IContextProvider CurrentZoneContext => new ZoneContext(EClass._zone);
@@ -36,18 +33,14 @@ public sealed class ContextBuilder
     }
 
     /// <summary>
-    ///     <see cref="EnvironmentContext" />
     ///     <see cref="CurrentZoneContext" />
     ///     <see cref="PlayerContext" />
-    ///     <see cref="RecentActionContext" />
     /// </summary>
     public static ContextBuilder CreateStandardPrefix()
     {
         return new ContextBuilder()
-            .Add(EnvironmentContext)
             .Add(CurrentZoneContext)
-            .Add(PlayerContext)
-            .Add(RecentActionContext);
+            .Add(PlayerContext);
     }
 
     public static ContextBuilder CreateDefault()

@@ -20,10 +20,10 @@ public class NearbyThingContext(Chara focus) : ContextProviderBase
 
         var installed = Summarize(things
             .Where(t => t.IsInstalled)
-            .Select(t => t.Name));
+            .Select(t => t.NameSimple));
         var grounded = Summarize(things
             .Where(t => !t.IsInstalled)
-            .Select(t => t.Name));
+            .Select(t => t.NameSimple));
 
         var data = new Dictionary<string, object>(StringComparer.Ordinal);
         if (installed.Count > 0) {
@@ -41,6 +41,7 @@ public class NearbyThingContext(Chara focus) : ContextProviderBase
             return names
                 .GroupBy(n => n)
                 .Select(g => g.Count() > 1 ? $"{g.Key} x{g.Count()}" : g.Key)
+                .Take(10)
                 .ToList();
         }
     }

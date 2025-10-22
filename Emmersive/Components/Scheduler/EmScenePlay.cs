@@ -36,6 +36,7 @@ public partial class EmScheduler
         var builder = ContextBuilder
             .CreateStandardPrefix()
             .Add(new NearbyCharaContext(focus))
+            .Add(ContextBuilder.RecentActionContext)
             .Add(new NearbyThingContext(focus));
 
         RequestScenePlayWithContext(builder);
@@ -47,6 +48,7 @@ public partial class EmScheduler
         var builder = ContextBuilder
             .CreateStandardPrefix()
             .Add(new NearbyCharaContext(focus))
+            .Add(ContextBuilder.RecentActionContext)
             .Add(new NearbyThingContext(focus))
             .Add(new SceneTriggerContext(_buffer.Copy()));
 
