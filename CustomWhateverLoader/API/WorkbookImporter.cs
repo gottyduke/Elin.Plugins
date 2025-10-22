@@ -100,6 +100,8 @@ public class WorkbookImporter
                 RowExt.Rows[mod].UnionWith(imported);
             }
 
+            CwlMod.Log<WorkbookImporter>($"{sheetName}/{imported.Length}");
+
             return (source, imported);
         } catch (Exception ex) {
             CwlMod.ErrorWithPopup<WorkbookImporter>("cwl_error_failure".Loc(ex.Message), ex);

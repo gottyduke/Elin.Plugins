@@ -90,66 +90,71 @@ internal class NamedImportPatch
                                       Type rowCreator,
                                       MethodInfo? extraParser)
     {
-        object? parsed = null;
-        if (!SourceInitPatch.SafeToCreate) {
-            parsed = extraParser is not null
-                ? extraParser.FastInvokeStatic(parser.FastInvokeStatic(id, false)!)
-                : parser.FastInvokeStatic(id);
+        try {
+            object? parsed = null;
+            if (!SourceInitPatch.SafeToCreate) {
+                parsed = extraParser is not null
+                    ? extraParser.FastInvokeStatic(parser.FastInvokeStatic(id, false)!)
+                    : parser.FastInvokeStatic(id);
+                field.SetValue(row, parsed);
+                return;
+            }
+
+            var sheet = SourceData.row.Sheet;
+            var migrate = MigrateDetail.GetFromWorkbook(sheet.Workbook);
+            var expected = _expected[rowCreator];
+
+            if (!_cached.TryGetValue(sheet, out var header)) {
+                var headerColumns = sheet.GetRow(sheet.FirstRowNum).Cells
+                    .Where(c => !c.StringCellValue.IsEmpty());
+
+                header = new();
+                foreach (var cell in headerColumns) {
+                    // to mimic the sort & components override behaviour(bug) in Elin code
+                    header[cell.StringCellValue.Trim()] = cell.ColumnIndex;
+                }
+
+                _cached[sheet] = header;
+                migrate?.StartNewSheet(sheet, expected);
+
+                var strategy = migrate?.CurrentSheet?.MigrateStrategy ?? MigrateDetail.Strategy.Unknown;
+                if (strategy == MigrateDetail.Strategy.Unknown) {
+                    strategy = expected.All(header.Contains) &&
+                               expected.Count <= header.Count
+                        ? MigrateDetail.Strategy.Correct
+                        : MigrateDetail.Strategy.Missing;
+                }
+
+                migrate?.SetStrategy(strategy).SetGiven(header);
+            }
+
+            var useFallback = false;
+            if (!header.TryGetValue(field.Name, out var existId)) {
+                useFallback = FallbackDetail.Fallbacks.TryGetValue(field.FieldType, out var fallback);
+                if (useFallback) {
+                    parsed = fallback;
+                } else {
+                    existId = id;
+                }
+            }
+
+            if (!useFallback) {
+                parsed = extraParser is not null
+                    ? extraParser.FastInvokeStatic(parser.FastInvokeStatic(existId, false)!)
+                    : parser.FastInvokeStatic(existId);
+            }
+
+            if (parsed is IList<string> array) {
+                for (var i = 0; i < array.Count; ++i) {
+                    array[i] = CellPostProcessPatch.OnGetCell(array[i]) ?? array[i];
+                }
+            }
+
             field.SetValue(row, parsed);
-            return;
+        } catch (Exception ex) {
+            RethrowParsePatch.RethrowParseInvoke(ex, extraParser ?? parser, id);
+            // noexcept
         }
-
-        var sheet = SourceData.row.Sheet;
-        var migrate = MigrateDetail.GetFromWorkbook(sheet.Workbook);
-        var expected = _expected[rowCreator];
-
-        if (!_cached.TryGetValue(sheet, out var header)) {
-            var headerColumns = sheet.GetRow(sheet.FirstRowNum).Cells
-                .Where(c => !c.StringCellValue.IsEmpty());
-
-            header = new();
-            foreach (var cell in headerColumns) {
-                // to mimic the sort & components override behaviour(bug) in Elin code
-                header[cell.StringCellValue.Trim()] = cell.ColumnIndex;
-            }
-
-            _cached[sheet] = header;
-            migrate?.StartNewSheet(sheet, expected);
-
-            var strategy = migrate?.CurrentSheet?.MigrateStrategy ?? MigrateDetail.Strategy.Unknown;
-            if (strategy == MigrateDetail.Strategy.Unknown) {
-                strategy = expected.All(header.Contains) &&
-                           expected.Count <= header.Count
-                    ? MigrateDetail.Strategy.Correct
-                    : MigrateDetail.Strategy.Missing;
-            }
-
-            migrate?.SetStrategy(strategy).SetGiven(header);
-        }
-
-        var useFallback = false;
-        if (!header.TryGetValue(field.Name, out var existId)) {
-            useFallback = FallbackDetail.Fallbacks.TryGetValue(field.FieldType, out var fallback);
-            if (useFallback) {
-                parsed = fallback;
-            } else {
-                existId = id;
-            }
-        }
-
-        if (!useFallback) {
-            parsed = extraParser is not null
-                ? extraParser.FastInvokeStatic(parser.FastInvokeStatic(existId, false)!)
-                : parser.FastInvokeStatic(existId);
-        }
-
-        if (parsed is IList<string> array) {
-            for (var i = 0; i < array.Count; ++i) {
-                array[i] = CellPostProcessPatch.OnGetCell(array[i]) ?? array[i];
-            }
-        }
-
-        field.SetValue(row, parsed);
 
         /*
         if (strategy == MigrateDetail.Strategy.Missing) {
