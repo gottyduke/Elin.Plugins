@@ -83,6 +83,8 @@ public class ExtensionRequestHandler()
             ResourceFetch.SetCustomResource("dry_run.txt", log);
             ResourceFetch.OpenOrCreateCustomResource("dry_run.txt");
 
+            EmScheduler.SwitchMode(EmScheduler.ScheduleMode.Buffer);
+
             throw new SchedulerDryRunException();
         }
     }
