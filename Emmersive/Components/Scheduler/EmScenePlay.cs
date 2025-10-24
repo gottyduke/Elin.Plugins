@@ -133,7 +133,7 @@ public partial class EmScheduler
 
                 EmMod.Debug("em_ui_scene_complete".Loc(response));
             }
-        } catch (Exception ex)
+        } catch (AggregateException ex)
             when (ex.InnerException is SchedulerDryRunException) {
             SwitchMode(ScheduleMode.Buffer);
             activity.SetStatus(EmActivity.StatusType.Unknown);
@@ -144,11 +144,15 @@ public partial class EmScheduler
         } catch (HttpOperationException httpEx) when (httpEx.StatusCode != HttpStatusCode.BadRequest) {
             ScheduleRetry(httpEx);
             // noexcept
-        } catch (Exception ex)
+        } catch (AggregateException ex)
             when (ex.InnerException is HttpOperationException { StatusCode: not HttpStatusCode.BadRequest } httpEx) {
             ScheduleRetry(httpEx);
             // noexcept
         } catch (Exception ex) {
+            if (ex is AggregateException { InnerException: { } inner }) {
+                ex = inner;
+            }
+
             MarkUnavailable("em_ui_scene_failed".Loc(ex.GetType().Name, ex.Message));
             DebugThrow.Void(ex);
             // noexcept
