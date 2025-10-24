@@ -40,7 +40,7 @@ public static class CharaExt
                 added.vSourcePotential += added.GetSourcePotential(power);
             }
 
-            added.vSource += added.GetSourceValue(power, chara.LV, SourceValueType.Chara);
+            added.vSource += (int)added.GetSourceValue(power, chara.LV, SourceValueType.Chara);
 
             return added;
         }
