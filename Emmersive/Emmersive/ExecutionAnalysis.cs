@@ -31,6 +31,8 @@ internal class ExecutionAnalysis
 
     internal static void DumpSessionActivities()
     {
+        using var _ = EmPromptReset.ScopedNotifyChanges(false);
+
         CleanupActivityLogs();
 
         var activities = EmActivity.Session;
