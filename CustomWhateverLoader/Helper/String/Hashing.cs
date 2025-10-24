@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -10,7 +12,8 @@ public static class Hashing
     private const uint FnvPrime32 = 0x1000193;
     private const uint FnvOffset32 = 0x811c9dc5;
 
-    private static SHA256? Sha256 => field ??= SHA256.Create();
+    [field: AllowNull]
+    private static SHA256 Sha256 => field ??= SHA256.Create();
 
     public static string UniqueString(this Playlist mold)
     {
@@ -28,7 +31,7 @@ public static class Hashing
 
         public string GetSha256Code()
         {
-            var hash = Sha256!.ComputeHash(Encoding.UTF8.GetBytes(input));
+            var hash = input.GetSha256Hash();
 
             using var sb = StringBuilderPool.Get();
             foreach (var @byte in hash) {
@@ -36,6 +39,11 @@ public static class Hashing
             }
 
             return sb.ToString();
+        }
+
+        public Span<byte> GetSha256Hash()
+        {
+            return Sha256.ComputeHash(Encoding.UTF8.GetBytes(input));
         }
     }
 
@@ -46,7 +54,7 @@ public static class Hashing
             var pos = fs.Position;
             fs.Seek(0, SeekOrigin.Begin);
 
-            var hash = Sha256!.ComputeHash(fs);
+            var hash = Sha256.ComputeHash(fs);
             fs.Position = pos;
 
             using var sb = StringBuilderPool.Get();

@@ -80,7 +80,7 @@ public class DebugSampler : MethodStub
     }
 
     [ConsoleCommand("spawn")]
-    public static void TestSpawn(int keepCount = 0)
+    public static void TestSpawn(int keepCount = 0, string id = "", int lv = -1)
     {
         _keepCount = keepCount;
 
@@ -90,7 +90,9 @@ public class DebugSampler : MethodStub
         }
 
         for (var i = 0; i < diff; ++i) {
-            var chara = CharaGen.Create(EMono.sources.charas.map.Keys.RandomItem(), EClass.rnd(100));
+            var charaId = id.IsEmpty(EMono.sources.charas.map.Keys.RandomItem());
+            var charaLv = lv == -1 ? EClass.rnd(100) : lv;
+            var chara = CharaGen.Create(charaId, charaLv);
             EClass._zone.AddCard(chara, EClass.pc.pos.GetNearestPoint(false, false, false, true));
         }
     }

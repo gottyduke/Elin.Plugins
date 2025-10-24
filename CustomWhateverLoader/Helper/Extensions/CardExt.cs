@@ -16,8 +16,10 @@ public static class CardExt
                 return value;
             }
 
-            if (EClass.core?.game?.player?.chara == owner) {
-                value = EClass.player.dialogFlags.GetValueOrDefault(flag, 0);
+            if (EClass.core.IsGameStarted) {
+                if (owner.IsPC) {
+                    value = EClass.player.dialogFlags.GetValueOrDefault(flag, 0);
+                }
             }
 
             return value;
@@ -28,8 +30,10 @@ public static class CardExt
             var key = flag.GetHashCode();
             owner.mapInt[key] = value;
 
-            if (EClass.core?.game?.player?.chara == owner) {
-                EClass.player.dialogFlags[flag] = value;
+            if (EClass.core.IsGameStarted) {
+                if (owner.IsPC) {
+                    EClass.player.dialogFlags[flag] = value;
+                }
             }
         }
 

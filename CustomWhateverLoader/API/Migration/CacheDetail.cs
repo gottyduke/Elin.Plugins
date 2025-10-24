@@ -5,9 +5,11 @@ using System.IO;
 using System.Linq;
 using Cwl.API.Processors;
 using Cwl.Helper.String;
+using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using MethodTimer;
 using ReflexCLI.Attributes;
+using UnityEngine;
 
 namespace Cwl.API.Migration;
 
@@ -133,14 +135,26 @@ public sealed class CacheDetail(string cacheKey)
     [Time]
     public static void FinalizeCache(bool dirtyOnly = true)
     {
-        var details = _details.Values.Where(c => !dirtyOnly || c.DirtyOrEmpty).ToArray();
+        var details = _details.Values
+            .Where(c => !dirtyOnly || c.DirtyOrEmpty)
+            .ToArray();
+        using var sb = StringBuilderPool.Get();
+
         foreach (var detail in details) {
             detail.GenerateCache();
             detail.DirtyOrEmpty = false;
+
+            sb.AppendLine(detail.MigrateDetail.Mod?.title);
         }
 
         if (details.Length > 0) {
-            CwlMod.Popup<CacheDetail>("cwl_ui_cache_gen".Loc(CacheVersionManifest.Get()?.NextGen(), GetDetailString(details)));
+            var list = sb.ToString();
+            using var progress = ProgressIndicator.CreateProgressScoped(() =>
+                new("cwl_ui_cache_gen".Loc(CacheVersionManifest.Get()?.NextGen(), GetDetailString(details))),
+                5f);
+            progress.Get<ProgressIndicator>().OnHover(p => {
+                GUILayout.Label(list, p.GUIStyle);
+            });
         }
     }
 

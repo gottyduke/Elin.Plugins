@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -39,7 +40,11 @@ public class TypeQualifier
         ["nuint"] = typeof(nuint),
     };
 
-    internal static List<BaseUnityPlugin>? Plugins => field ??= ModManager.ListPluginObject.OfType<BaseUnityPlugin>().ToList();
+    [field: AllowNull]
+    public static List<BaseUnityPlugin> Plugins =>
+        field ??= ModManager.ListPluginObject
+            .OfType<BaseUnityPlugin>()
+            .ToList();
 
     public static Type? TryQualify<T>(params string[] unqualified) where T : EClass
     {
@@ -224,7 +229,7 @@ public class TypeQualifier
     {
         Declared.Clear();
 
-        foreach (var plugin in Plugins!.ToArray()) {
+        foreach (var plugin in Plugins.ToArray()) {
             try {
                 var types = plugin.GetType().Assembly.DefinedTypes.ToArray();
                 // test cast for missing dependency
