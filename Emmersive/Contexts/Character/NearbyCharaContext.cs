@@ -12,9 +12,11 @@ public class NearbyCharaContext(Chara focus) : ContextProviderBase
 
     protected override IDictionary<string, object>? BuildInternal()
     {
+        var whitelistMode = EmConfig.Context.WhitelistMode.Value;
         var charas = focus.Nearby
             .Distinct(UniqueCardComparer.Default)
             .OfType<Chara>()
+            .Where(c => !whitelistMode || c.Profile.OnWhitelist)
             .OrderBy(CharaSorter)
             .TakeLast(EmConfig.Context.NearbyMaxCount.Value)
             .ToList();

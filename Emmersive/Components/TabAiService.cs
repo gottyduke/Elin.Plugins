@@ -18,7 +18,9 @@ internal class TabAiService : TabEmmersiveBase
     {
         BuildSchedulerButton();
 
-        this.MakeCard().ShowActivityInfo("");
+        if (EmActivity.Session.Count > 0) {
+            this.MakeCard().ShowActivityInfo("");
+        }
 
         BuildServiceButtons();
 
@@ -26,6 +28,7 @@ internal class TabAiService : TabEmmersiveBase
             .OfType<ILayoutProvider>()
             .ToArray();
 
+        var initialIndex = transform.childCount;
         foreach (var provider in layouts) {
             var card = Horizontal();
 
@@ -46,7 +49,7 @@ internal class TabAiService : TabEmmersiveBase
             void Reorder(int a)
             {
                 var index = card.transform.GetSiblingIndex() + a;
-                if (index < 2 || index >= layouts.Length + 2) {
+                if (index < initialIndex || index >= layouts.Length + initialIndex) {
                     return;
                 }
 

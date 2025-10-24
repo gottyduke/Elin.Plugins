@@ -31,6 +31,7 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
         _tabs.Add(CreateTab<TabAiService>("em_ui_tab_ai_service", "em_tab_ai_service"));
 
         if (EClass.core.IsGameStarted) {
+            _tabs.Add(CreateTab<TabWhitelist>("em_ui_tab_whitelist", "em_tab_whitelist"));
             _tabs.Add(CreateTab<TabSystemPrompt>("em_ui_tab_prompts", "em_tab_prompt_setting"));
             _tabs.Add(CreateTab<TabCharaPrompt>("em_ui_tab_characters", "em_tab_chara_prompts"));
             _tabs.Add(CreateTab<TabCharaRelations>("em_ui_tab_relations", "em_tab_chara_relations"));

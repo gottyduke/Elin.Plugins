@@ -51,9 +51,10 @@ internal class RendererPopPatch
 
     internal static string OnBlockedTalk(string text, Card card, string topic)
     {
-        if (card is not Chara chara || topic == "dead" ||
-            chara.IsAnimal ||
-            !ApiPoolSelector.Instance.HasAnyAvailableServices()) {
+        if (!ApiPoolSelector.Instance.HasAnyAvailableServices() ||
+            card is not Chara { Profile: { } profile } || topic == "dead" ||
+            (EmConfig.Context.NearbyImportantOnly.Value && !profile.IsImportant) ||
+            (EmConfig.Context.WhitelistMode.Value && !profile.OnWhitelist)) {
             AllowOriginalText();
             return "";
         }
@@ -64,7 +65,6 @@ internal class RendererPopPatch
             return "";
         }
 
-        var profile = chara.Profile;
         if ((profile.LockedInRequest && !EmConfig.Scene.BlockCharaTalk.Value && !profile.OnTalkCooldown) ||
             (!EmScheduler.CanMakeRequest && !profile.OnTalkCooldown)) {
             // let non-blocked gc talk
@@ -90,7 +90,8 @@ internal class RendererPopPatch
 
         if (!ApiPoolSelector.Instance.HasAnyAvailableServices() ||
             chara.Dist(EClass.pc) > EmConfig.Context.NearbyRadius.Value ||
-            chara.IsAnimal) {
+            (EmConfig.Context.NearbyImportantOnly.Value && !profile.IsImportant) ||
+            (EmConfig.Context.WhitelistMode.Value && !profile.OnWhitelist)) {
             AllowOriginalPop();
             return;
         }

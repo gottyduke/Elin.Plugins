@@ -61,7 +61,7 @@ internal partial class EmConfig
         Policy.GlobalRequestCooldown = config.Bind(
             "RuntimePolicy",
             "GlobalRequestCooldown",
-            2f,
+            1.5f,
             new ConfigDescription(
                 "Minimum seconds in realtime of request cooldown\n" +
                 "Starts throttling after a successful request is made\n" +
@@ -121,6 +121,20 @@ internal partial class EmConfig
                 "Maximum number of nearby characters to include(sorted by importance)\n" +
                 "最多包含的附近角色信息(按重要度排序)",
                 new AcceptableValueRange<int>(0, 20)));
+
+        Context.NearbyImportantOnly = config.Bind(
+            "Context",
+            "NearbyImportantOnly",
+            false,
+            "Only include important NPCs in the nearby characters as triggers\n" +
+            "仅包含重要角色作为对话激活器");
+
+        Context.WhitelistMode = config.Bind(
+            "Context",
+            "WhitelistMode",
+            false,
+            "Enable whitelist mode where only whitelisted characters can trigger request\n" +
+            "启用白名单模式，只有白名单上的角色才能生成请求");
 
         Context.EnableLocalizer = config.Bind(
             "Context",
@@ -227,6 +241,8 @@ internal partial class EmConfig
         internal static ConfigEntry<bool> RecentTalkOnly { get; set; } = null!;
         internal static ConfigEntry<int> NearbyRadius { get; set; } = null!;
         internal static ConfigEntry<int> NearbyMaxCount { get; set; } = null!;
+        internal static ConfigEntry<bool> NearbyImportantOnly { get; set; } = null!;
+        internal static ConfigEntry<bool> WhitelistMode { get; set; } = null!;
         internal static ConfigEntry<bool> EnableLocalizer { get; set; } = null!;
     }
 

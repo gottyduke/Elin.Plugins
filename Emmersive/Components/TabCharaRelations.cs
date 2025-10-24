@@ -80,7 +80,7 @@ internal class TabCharaRelations : TabCharaPrompt
         }
     }
 
-    private static Vector2 FitCell(int constraint)
+    internal static Vector2 FitCell(int constraint)
     {
         var scaler = EMono.ui.canvasScaler.scaleFactor;
         return new Vector2(Screen.width / 1.7f / constraint, 45f) / scaler;
