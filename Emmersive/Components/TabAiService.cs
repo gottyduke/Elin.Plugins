@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Cwl.Helper.FileUtil;
 using Cwl.LangMod;
 using Emmersive.API;
 using Emmersive.API.Services;
@@ -118,6 +119,8 @@ internal class TabAiService : TabEmmersiveBase
                 EmScheduler.SwitchMode(value ? EmScheduler.ScheduleMode.Buffer : EmScheduler.ScheduleMode.Stop);
                 _schedulerMode?.mainText.text = GetCurrentSchedulerState();
             });
+
+        btnGroup.Button("em_ui_config_open".lang(), () => OpenFileOrPath.Run(EmMod.Instance.Config.ConfigFilePath));
 
         return;
 

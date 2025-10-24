@@ -53,8 +53,7 @@ internal class RendererPopPatch
     {
         if (!ApiPoolSelector.Instance.HasAnyAvailableServices() ||
             card is not Chara { Profile: { } profile } || topic == "dead" ||
-            (EmConfig.Context.NearbyImportantOnly.Value && !profile.IsImportant) ||
-            (EmConfig.Context.WhitelistMode.Value && !profile.OnWhitelist)) {
+            !profile.CanTrigger) {
             AllowOriginalText();
             return "";
         }
@@ -89,9 +88,8 @@ internal class RendererPopPatch
         text = chara.ApplyNewLine(text).StripBrackets();
 
         if (!ApiPoolSelector.Instance.HasAnyAvailableServices() ||
-            chara.Dist(EClass.pc) > EmConfig.Context.NearbyRadius.Value ||
-            (EmConfig.Context.NearbyImportantOnly.Value && !profile.IsImportant) ||
-            (EmConfig.Context.WhitelistMode.Value && !profile.OnWhitelist)) {
+            !profile.CanTrigger ||
+            chara.Dist(EClass.pc) > EmConfig.Context.NearbyRadius.Value) {
             AllowOriginalPop();
             return;
         }

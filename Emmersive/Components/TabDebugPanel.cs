@@ -1,5 +1,4 @@
 using System.Linq;
-using Cwl.Helper.FileUtil;
 using Emmersive.Contexts;
 using Emmersive.Helper;
 using UnityEngine;
@@ -71,7 +70,5 @@ internal class TabDebugPanel : TabEmmersiveBase
             EmScheduler.SwitchMode(EmScheduler.ScheduleMode.DryRun);
             EmScheduler.RequestScenePlayImmediate();
         });
-
-        btnGroup.Button("em_ui_config_open".lang(), () => OpenFileOrPath.Run(EmMod.Instance.Config.ConfigFilePath));
     }
 }

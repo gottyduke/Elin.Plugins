@@ -1,4 +1,5 @@
-using System.Linq;
+using System;
+using System.Collections.Generic;
 using Cwl.Helper.Extensions;
 using Cwl.LangMod;
 using Emmersive.Helper;
@@ -17,34 +18,46 @@ internal class TabWhitelist : TabCharaRelations
         header.Layout.childForceExpandWidth = true;
 
         header.Header("em_ui_chara_map");
+
+        var isWhitelist = EmConfig.Context.WhitelistMode.Value;
+
         _whitelistMode = header.Toggle(
-            GetCurrentWhitelistMode(),
-            EmConfig.Context.WhitelistMode.Value,
+            GetModeText(),
+            isWhitelist,
             value => {
                 EmConfig.Context.WhitelistMode.Value = value;
-                _whitelistMode?.mainText.text = GetCurrentWhitelistMode();
+                _whitelistMode?.mainText.text = GetModeText();
+                LayerEmmersivePanel.Instance?.Reopen();
             });
 
-        var generator = this.MakeCard();
+        var mapCharas = GetMapCharas();
 
-        var charas = GetMapCharas()
-            .ToDictionary(c => c, c => c.Profile.OnWhitelist);
-
-        var list = generator.Grid()
-            .WithConstraintCount(2);
-        list.Fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-        list.Layout.cellSize = FitCell(2);
-
-        foreach (var chara in GetMapCharas()) {
-            list.Toggle(chara.Name, charas[chara], value => {
-                charas[chara] = value;
-                chara.SetFlagValue("em_wl", value ? 1 : 0);
-            });
-        }
+        BuildList(
+            isWhitelist ? "em_ui_active_whitelist" : "em_ui_active_blacklist",
+            mapCharas,
+            isWhitelist ? "em_wl" : "em_bl",
+            c => isWhitelist ? c.Profile.OnWhitelist : c.Profile.OnBlacklist);
 
         return;
 
-        string GetCurrentWhitelistMode()
+        void BuildList(string listName, IEnumerable<Chara> charas, string flagKey, Func<Chara, bool> getInitial)
+        {
+            var generator = this.MakeCard();
+
+            generator.TextFlavor(listName);
+
+            var grid = generator.Grid()
+                .WithConstraintCount(2);
+            grid.Fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            grid.Layout.cellSize = FitCell(2);
+
+            foreach (var chara in charas) {
+                var initial = getInitial(chara);
+                grid.Toggle(chara.Name, initial, value => chara.SetFlagValue(flagKey, value ? 1 : 0));
+            }
+        }
+
+        string GetModeText()
         {
             var isOn = EmConfig.Context.WhitelistMode.Value;
             return "em_ui_whitelist".Loc((isOn ? "on" : "off").lang());

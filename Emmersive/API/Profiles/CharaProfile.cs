@@ -14,9 +14,14 @@ public class CharaProfile(Chara chara)
         chara.turn - LastReactionTurn <= EmConfig.Scene.TurnsCooldown.Value;
 
     public bool LockedInRequest { get; set; }
-
     public bool OnWhitelist => chara.GetFlagValue("em_wl") > 0;
+    public bool OnBlacklist => chara.GetFlagValue("em_bl") > 0;
     public bool IsImportant => !chara.IsAnimal && (chara.IsUnique || chara.IsGlobal);
+
+    public bool CanTrigger =>
+        (!EmConfig.Context.NearbyImportantOnly.Value || IsImportant) &&
+        (!EmConfig.Context.WhitelistMode.Value || OnWhitelist) &&
+        !OnBlacklist;
 
     public Queue<string> LastTalks { get; set; } = [];
 
