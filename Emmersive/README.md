@@ -55,55 +55,7 @@ By adding multiple AI services, Emmersive(Elin with AI) will enable auto-retry o
 
 Start with loading up game, press Esc and go to Mods->Emmersive to view the config panel.
 
-### Google(Free!)
-
-Head to [Google AI Studio](https://aistudio.google.com/projects), create a project. If you are using free tier, I recommend making 3 projects (rate limit is per project, not per API key) and generate an API key for each project.
-
-You can modify the model as you wish, do note that free tier is likely to be slower, even so on heavier models like `gemini-2.5-pro`.
-
-After adding all the API keys to the game, close the panel and start walking around and see some talking.
-
-### OpenAI chatGPT
-
-Head to [OpenAI Platform](https://platform.openai.com/api-keys), and generate a new API key.
-
-You can modify the model as you wish, but note that thinking(reasoning) is disabled by default, to avoid noticeable latencies. You can however, edit the params yourself.
-
-### DeepSeek & Other OpenAI Compatible Providers
-
-Head to [DeepSeek Platform](https://platform.deepseek.com/api_keys), and generate a new API key.
-
-**Important!**
-
-Depending on your provider, you'll need to change the endpoint to the correct one. E.g. for DeepSeek it will be `http://api.deepseek.com/v1`.
-
-Modify the model to your provider, e.g. `deepseek-chat` (the thinking-disabled variant of DeepSeekV3.2-Exp).
-
-**Important!**
-
-Depending on your provider, you'll need to change the request parameters. E.g. for DeepSeek, open up the param file and change the entire block:
-```json
-"response_format": {
-  "type": "json_schema",
-  "json_schema": {
-    ...
-  }
-}
-```
-**to**
-```json
-"response_format": {
-  "type": "json_object"
-}
-```
-
-This is because DeepSeek doesn't support json schema output mode.
-
-## Paramaters & Configurations
-
-### Request Parameters
-
-You can change each AI service's parameters individually, such as `temperature`, `topP`, `presence_penalty`. After saving the params, click Reload button to load it immediately.
+[Detailed API setup page for popular providers](./API_Setup.md)
 
 ## Feedback
 

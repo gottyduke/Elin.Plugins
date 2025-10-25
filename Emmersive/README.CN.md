@@ -57,51 +57,7 @@ Emmersive（Elin with AI）要求使用的 AI 服务具备 **函数调用**（�
 
 启动游戏，载入存档，按 Esc → Mods → Emmersive 开始配置菜单。
 
-### Google（免费！）
-
-访问 [Google AI Studio](https://aistudio.google.com/projects)，创建一个项目。如果使用免费套餐，建议创建 3 个项目（速率限制按项目计算，而非
-API 密钥），并为每个项目生成一个 API 密钥。
-
-你可以根据需求修改模型，但免费套餐可能会较慢，尤其是像 `gemini-2.5-pro` 这样的思考模型。
-
-### OpenAI chatGPT
-
-访问 [OpenAI 平台](https://platform.openai.com/api-keys)，生成一个新的 API 密钥。
-
-你可以修改模型，但默认禁用“思考/推理”以避免明显延迟。如果需要，可以自行编辑参数。
-
-### DeepSeek 及其他 OpenAI 兼容模型
-
-访问 [DeepSeek 平台](https://platform.deepseek.com/api_keys)，生成新的 API 密钥。
-
-**注意事项：**
-
-* 根据模型提供商要求，需要将基址改为正确的地址。例如 DeepSeek 的基址是 `http://api.deepseek.com/v1`。
-* 修改模型名称为对应服务，例如 `deepseek-chat`（DeepSeekV3.2-Exp 的禁用思考版本）。
-* 根据模型提供商要求，需要修改请求参数。例如 DeepSeek 不支持 JSON Schema 输出模式，需要将参数块：
-
-```json
-"response_format": {
-  "type": "json_schema",
-  "json_schema": {
-    ...
-  }
-}
-```
-
-改为：
-
-```json
-"response_format": {
-  "type": "json_object"
-}
-```
-
-## 参数 & 配置项
-
-### 请求参数
-
-你可以单独修改每个 AI 服务的请求参数，如 `temperature`、`topP`、`presence_penalty` 等。保存参数后，点击“Reload”即可立即生效。
+[详细的主流API服务设置指南](./API_Setup.CN.md)
 
 ## 反馈
 
