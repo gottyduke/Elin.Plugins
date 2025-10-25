@@ -153,7 +153,12 @@ public partial class EmScheduler
                 ex = inner;
             }
 
-            MarkUnavailable("em_ui_scene_failed".Loc(ex.GetType().Name, ex.Message));
+            var message = ex.Message;
+            if (ex is HttpOperationException { ResponseContent: { } responseContent }) {
+                message = responseContent;
+            }
+
+            MarkUnavailable("em_ui_scene_failed".Loc(ex.GetType().Name, message));
             DebugThrow.Void(ex);
             // noexcept
         } finally {
