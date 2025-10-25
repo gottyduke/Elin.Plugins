@@ -6,6 +6,7 @@ using Emmersive.API;
 using Emmersive.API.Services;
 using Emmersive.ChatProviders;
 using Emmersive.Helper;
+using UnityEngine;
 using UnityEngine.UI;
 using YKF;
 
@@ -119,8 +120,19 @@ internal class TabAiService : TabEmmersiveBase
                 EmScheduler.SwitchMode(value ? EmScheduler.ScheduleMode.Buffer : EmScheduler.ScheduleMode.Stop);
                 _schedulerMode?.mainText.text = GetCurrentSchedulerState();
             });
+        _schedulerMode.GetOrCreate<LayoutElement>().minWidth = 80f;
 
         btnGroup.Button("em_ui_config_open".lang(), () => OpenFileOrPath.Run(EmMod.Instance.Config.ConfigFilePath));
+
+        var link = "https://elin-modding-resources.github.io/Elin.Docs/articles/100_Mod%20Documentation/Emmersive/API_Setup" +
+                   Lang.langCode switch {
+                       "CN" or "ZHTW" => ".CN",
+                       "JP" => ".JP",
+                       _ => "",
+                   };
+
+        btnGroup.Button("em_ui_api_guide".lang(), () => Application.OpenURL(link))
+            .mainText.supportRichText = true;
 
         return;
 

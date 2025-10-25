@@ -60,15 +60,20 @@ internal class TabDebugPanel : TabEmmersiveBase
             .WithSpace(10);
         btnGroup.Layout.childForceExpandWidth = true;
 
-        btnGroup.Button("em_ui_test_generation".lang(), () => {
-            LayerEmmersivePanel.Instance!.OnLayoutConfirm();
-            EmScheduler.RequestScenePlayImmediate();
-            ELayer.ui.RemoveLayer<LayerEmmersivePanel>();
-        });
+        btnGroup.Button("em_ui_test_generation".lang(), TestRun);
 
         btnGroup.Button("em_ui_scheduler_dry".lang(), () => {
             EmScheduler.SwitchMode(EmScheduler.ScheduleMode.DryRun);
-            EmScheduler.RequestScenePlayImmediate();
+            TestRun();
         });
+
+        return;
+
+        void TestRun()
+        {
+            LayerEmmersivePanel.Instance!.OnLayoutConfirm();
+            ELayer.ui.RemoveLayer<LayerEmmersivePanel>();
+            EmScheduler.RequestScenePlayImmediate();
+        }
     }
 }

@@ -72,7 +72,7 @@ public sealed class ContextBuilder
 
         foreach (var provider in _providers.Where(provider => provider.IsAvailable)) {
             try {
-                var swp = Stopwatch.StartNew();
+                var current = sw.Elapsed;
 
                 EmMod.Debug<ContextBuilder>(provider.Name);
 
@@ -85,7 +85,7 @@ public sealed class ContextBuilder
 
                 sb.AppendLine(context.ToCompactJson());
 
-                EmMod.Debug<ContextBuilder>($"{swp.Elapsed.Milliseconds}ms\n{context.ToIndentedJson()}");
+                EmMod.Debug<ContextBuilder>($"{(sw.Elapsed - current).Milliseconds}ms\n{context.ToIndentedJson()}");
             } catch (Exception ex) {
                 EmMod.Warn<ContextBuilder>($"provider {provider.Name} failed\n{ex}");
                 DebugThrow.Void(ex);

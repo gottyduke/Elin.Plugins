@@ -71,9 +71,6 @@
         />
     </Target>
     <Target Name="RemoveDebugKeys" AfterTargets="CopyAssets" Condition="'$(Configuration)' == 'Release' OR '$(Configuration)' == 'ReleaseNightly'">
-        <Delete Files="$(OutDir)/LangMod/EN/Emmersive/DebugKeys.json"/>
-    </Target>
-    <Target Name="RemovePdbFromRelease" AfterTargets="Build" Condition="'$(Configuration)' == 'Release' OR '$(Configuration)' == 'ReleaseNightly'">
-        <Delete Files="$(TargetDir)$(TargetName).pdb"/>
+        <Delete Files="$(OutDir)/LangMod/EN/Emmersive/DebugKeys.json;$(TargetDir)$(TargetName).pdb"/>
     </Target>
 </Project>
