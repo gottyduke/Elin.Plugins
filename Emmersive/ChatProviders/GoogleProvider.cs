@@ -10,15 +10,20 @@ using YKF;
 
 namespace Emmersive.ChatProviders;
 
+[JsonObject(MemberSerialization.OptIn)]
 public class GoogleProvider(string apiKey) : ChatProviderBase(apiKey)
 {
     private const string DefaultGoogleV1Beta = "https://generativelanguage.googleapis.com/v1beta";
 
+    [JsonProperty]
     public override string Alias { get; set; } = "GoogleGemini";
+
+    [JsonProperty]
     public override string CurrentModel { get; set; } = "gemini-2.5-flash";
+
+    [JsonProperty]
     public override string EndPoint { get; set; } = DefaultGoogleV1Beta;
 
-    [JsonIgnore]
     public override IDictionary<string, object> RequestParams { get; set; } = new Dictionary<string, object> {
         ["topP"] = 0.9f,
         ["temperature"] = 0.9f,
@@ -27,7 +32,6 @@ public class GoogleProvider(string apiKey) : ChatProviderBase(apiKey)
         }),
     };
 
-    [JsonIgnore]
     public override PromptExecutionSettings ExecutionSettings { get; set; } = new GeminiPromptExecutionSettings {
         ResponseMimeType = "application/json",
         ResponseSchema = typeof(SceneReaction[]),

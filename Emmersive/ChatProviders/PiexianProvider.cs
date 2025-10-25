@@ -1,9 +1,11 @@
 using Emmersive.Helper;
+using Newtonsoft.Json;
 using UnityEngine.UI;
 using YKF;
 
 namespace Emmersive.ChatProviders;
 
+[JsonObject(MemberSerialization.OptIn)]
 internal sealed class PiexianProvider : GoogleProvider
 {
     private UIInputText? _apiInput;
@@ -13,8 +15,13 @@ internal sealed class PiexianProvider : GoogleProvider
     {
     }
 
+    [JsonProperty]
     public override string Alias { get; set; } = "氕氙";
+
+    [JsonProperty]
     public override string CurrentModel { get; set; } = "gemini-2.5-flash";
+
+    [JsonProperty]
     public override string EndPoint { get; set; } = "https://proxy.pieixan.icu/v1beta";
 
     protected override void OnLayoutInternal(YKLayout card)

@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 
 namespace Emmersive.ChatProviders;
 
+[JsonObject(MemberSerialization.OptIn)]
 public abstract partial class ChatProviderBase : IChatProvider, IExtensionRequestMerger
 {
     private DateTime _cooldownUntil = DateTime.MinValue;
@@ -25,12 +26,14 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionReques
         ApiKey = apiKey;
     }
 
+    [JsonProperty]
     public abstract string EndPoint { get; set; }
+
+    [JsonProperty]
     public abstract string Alias { get; set; }
 
     public static int ServiceCount { get; internal set; }
 
-    [JsonIgnore]
     public abstract PromptExecutionSettings ExecutionSettings { get; set; }
 
     protected string ApiKey { get; set; }
@@ -42,6 +45,7 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionReques
         set => ApiKey = value.DecryptAes();
     }
 
+    [JsonProperty]
     [field: AllowNull]
     public virtual string Id
     {
@@ -49,9 +53,9 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionReques
         set;
     }
 
+    [JsonProperty]
     public abstract string CurrentModel { get; set; }
 
-    [JsonIgnore]
     public abstract IDictionary<string, object> RequestParams { get; set; }
 
     public virtual bool IsAvailable => DateTime.UtcNow >= _cooldownUntil;
