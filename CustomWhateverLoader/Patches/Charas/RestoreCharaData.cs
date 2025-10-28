@@ -2,6 +2,7 @@
 using System.Runtime.Serialization;
 using Cwl.API.Attributes;
 using Cwl.API.Custom;
+using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using HarmonyLib;
 
@@ -18,7 +19,7 @@ internal static class RestoreCharaData
         }
 
         chara.id = row.id;
-        chara.SetCardOnDeserialized();
+        CoroutineHelper.Deferred(() => chara.SetCardOnDeserialized());
         CwlMod.Log<CustomChara>("cwl_log_chara_restore".Loc(row.id));
     }
 
