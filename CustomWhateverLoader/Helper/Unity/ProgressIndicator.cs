@@ -173,9 +173,14 @@ public class ProgressIndicator
     {
         internal bool StopOnNextUpdate;
 
-        private GUIStyle? ScrollViewStyle => field ??= GetScrollViewSkin();
-        private GUIStyle? VerticalScrollbarStyle => field ??= GetVerticalScrollbarSkin();
-        private GUIStyle? VerticalScrollbarThumbStyle => field ??= GetVerticalScrollbarThumbSkin();
+        [field: AllowNull]
+        private GUIStyle ScrollViewStyle => field ??= GetScrollViewSkin();
+
+        [field: AllowNull]
+        private GUIStyle VerticalScrollbarStyle => field ??= GetVerticalScrollbarSkin();
+
+        [field: AllowNull]
+        private GUIStyle VerticalScrollbarThumbStyle => field ??= GetVerticalScrollbarThumbSkin();
 
         private void Start()
         {

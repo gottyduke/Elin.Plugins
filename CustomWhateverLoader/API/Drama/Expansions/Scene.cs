@@ -54,7 +54,7 @@ public partial class DramaExpansion
         dm.RequiresActor(out var actor);
 
         var zoneName = $"{zoneId.Value}/{lv.Get("0")}";
-        if (!zoneName.ValidateZone(out var targetZone) || targetZone is null) {
+        if (!zoneName.ValidateZone(out var targetZone)) {
             return false;
         }
 

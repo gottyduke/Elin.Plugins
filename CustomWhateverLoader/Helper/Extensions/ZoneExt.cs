@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Cwl.LangMod;
 
@@ -8,7 +9,7 @@ public static class ZoneExt
 {
     extension(string zoneFullName)
     {
-        public bool ValidateZone(out Zone? zone, bool randomFallback = false)
+        public bool ValidateZone([NotNullWhen(true)] out Zone? zone, bool randomFallback = false)
         {
             var zones = EClass.game.spatials.map.Values
                 .OfType<Zone>()
@@ -79,11 +80,11 @@ public static class ZoneExt
         public void DestroyZoneAt(int eloX, int eloY)
         {
             if (region.GetZoneAt(out var existZone, eloX, eloY)) {
-                existZone?.Destroy();
+                existZone.Destroy();
             }
         }
 
-        public bool GetZoneAt(out Zone? existZone, int eloX, int eloY)
+        public bool GetZoneAt([NotNullWhen(true)] out Zone? existZone, int eloX, int eloY)
         {
             existZone = EClass.game.spatials.Find((Zone z) => z.x == eloX && z.y == eloY);
             return existZone is not null;
@@ -93,9 +94,9 @@ public static class ZoneExt
         {
             if (region.GetZoneAt(out var existZone, eloX, eloY)) {
                 if (forceSpawn) {
-                    existZone?.Destroy();
+                    existZone.Destroy();
                 } else {
-                    CwlMod.WarnWithPopup<SpatialGen>("cwl_warn_exist_zone".Loc(zoneFullName, eloX, eloY, existZone?.Name));
+                    CwlMod.WarnWithPopup<SpatialGen>("cwl_warn_exist_zone".Loc(zoneFullName, eloX, eloY, existZone.Name));
                     return;
                 }
             }

@@ -20,7 +20,9 @@ namespace Cwl.API.Processors;
 public class GameIOProcessor
 {
     public static GameIOContext? LastUsedContext { get; private set; }
-    public static GameIOContext? PersistentContext => field ??= new(Application.persistentDataPath);
+
+    [field: AllowNull]
+    public static GameIOContext PersistentContext => field ??= new(Application.persistentDataPath);
 
     private static event Action<GameIOContext?>? OnGamePreSaveProcess;
     private static event Action<GameIOContext?>? OnGamePostSaveProcess;

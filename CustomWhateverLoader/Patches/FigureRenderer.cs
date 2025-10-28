@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Cwl.API.Attributes;
 using UnityEngine;
 
@@ -12,8 +13,7 @@ internal class FigureRenderer : CardRenderer
     public override void Draw(RenderParam p, ref Vector3 v, bool drawShadow)
     {
         if (owner.trait is not TraitFigure figure ||
-            !ShouldDrawFigure(out var renderer) ||
-            renderer is null) {
+            !ShouldDrawFigure(out var renderer)) {
             base.Draw(p, ref v, drawShadow);
             return;
         }
@@ -32,7 +32,7 @@ internal class FigureRenderer : CardRenderer
         renderer.Draw(p, ref v, figure.ShowShadow);
     }
 
-    private bool ShouldDrawFigure(out CharaRenderer? renderer)
+    private bool ShouldDrawFigure([NotNullWhen(true)] out CharaRenderer? renderer)
     {
         renderer = null;
 

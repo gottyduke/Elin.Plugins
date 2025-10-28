@@ -92,7 +92,7 @@ public sealed class CacheDetail(string cacheKey)
             SheetFile = file,
         };
 
-        if (!_context.Load(out SerializableSourceCache? cache, cacheKey)) {
+        if (!_context.Load<SerializableSourceCache>(out var cache, cacheKey)) {
             return detail;
         }
 
@@ -149,12 +149,10 @@ public sealed class CacheDetail(string cacheKey)
 
         if (details.Length > 0) {
             var list = sb.ToString();
-            using var progress = ProgressIndicator.CreateProgressScoped(() =>
-                new("cwl_ui_cache_gen".Loc(CacheVersionManifest.Get()?.NextGen(), GetDetailString(details))),
+            using var progress = ProgressIndicator.CreateProgressScoped(
+                () => new("cwl_ui_cache_gen".Loc(CacheVersionManifest.Get()?.NextGen(), GetDetailString(details))),
                 5f);
-            progress.Get<ProgressIndicator>().OnHover(p => {
-                GUILayout.Label(list, p.GUIStyle);
-            });
+            progress.Get<ProgressIndicator>().OnHover(p => GUILayout.Label(list, p.GUIStyle));
         }
     }
 

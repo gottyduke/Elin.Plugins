@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using Cwl.Helper.String;
@@ -32,7 +33,8 @@ public class FileMapping
 
     public DirectoryInfo ModBaseDir => Owner.dirInfo;
 
-    public static ILookup<string, string>? FallbackLut => field ??= _fallbacks.ToLookup(r => r.Item1, r => r.Item2);
+    [field: AllowNull]
+    public static ILookup<string, string> FallbackLut => field ??= _fallbacks.ToLookup(r => r.Item1, r => r.Item2);
 
     public void RebuildLangModMapping(string langCode = "EN")
     {
@@ -50,7 +52,7 @@ public class FileMapping
         if (resources.Length != 0) {
             // use FallbackLut to get an ordered list of language codes to check
             var ordering = new HashSet<string>(StringComparer.Ordinal);
-            ordering.UnionWith([langCode, ..FallbackLut![langCode], ..FallbackLut["*"]]);
+            ordering.UnionWith([langCode, ..FallbackLut[langCode], ..FallbackLut["*"]]);
 
             var resourceSet = resources.ToHashSet(PathTruncation.PathComparer);
 

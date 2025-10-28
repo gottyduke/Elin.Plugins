@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using Cwl.API.Attributes;
@@ -18,25 +19,37 @@ public class PlaylistViewer
     private ProgressIndicator? _bgmProgress;
     private bool _detailedView;
 
-    private string? DetailString => field ??= "cwl_ui_bgm_detail".lang();
-    private string? NextString => field ??= "cwl_ui_bgm_next".lang();
-    private string? PreviousString => field ??= "cwl_ui_bgm_last".lang();
-    private string? RebuildString => field ??= "cwl_ui_bgm_rebuild".lang();
-    private string? ShuffleString => field ??= "cwl_ui_bgm_shuffle".lang();
+    [field: AllowNull]
+    private string DetailString => field ??= "cwl_ui_bgm_detail".lang();
 
-    private GUIStyle? ButtonStyle =>
+    [field: AllowNull]
+    private string NextString => field ??= "cwl_ui_bgm_next".lang();
+
+    [field: AllowNull]
+    private string PreviousString => field ??= "cwl_ui_bgm_last".lang();
+
+    [field: AllowNull]
+    private string RebuildString => field ??= "cwl_ui_bgm_rebuild".lang();
+
+    [field: AllowNull]
+    private string ShuffleString => field ??= "cwl_ui_bgm_shuffle".lang();
+
+    [field: AllowNull]
+    private GUIStyle ButtonStyle =>
         field ??= new(_bgmProgress?.GUIStyle ?? GUI.skin.label) {
             alignment = TextAnchor.MiddleCenter,
         };
 
-    private GUIStyle? ProgressBarStyle =>
+    [field: AllowNull]
+    private GUIStyle ProgressBarStyle =>
         field ??= new(GUI.skin.box) {
             normal = {
                 background = SpriteCreator.GetSolidColorTexture(new(0.2f, 0.6f, 0.8f)),
             },
         };
 
-    private GUIStyle? ProgressBarBgStyle =>
+    [field: AllowNull]
+    private GUIStyle ProgressBarBgStyle =>
         field ??= new(GUI.skin.box) {
             normal = {
                 background = SpriteCreator.GetSolidColorTexture(new(0.5f, 0.5f, 0.5f)),
@@ -237,7 +250,7 @@ public class PlaylistViewer
     {
         GUILayout.BeginHorizontal(GUILayout.Height(20f));
         {
-            var detail = _detailedView ? DetailString!.TagStyle("b") : DetailString;
+            var detail = _detailedView ? DetailString.TagStyle("b") : DetailString;
             if (GUILayout.Button(detail, ButtonStyle)) {
                 _detailedView = !_detailedView;
             }

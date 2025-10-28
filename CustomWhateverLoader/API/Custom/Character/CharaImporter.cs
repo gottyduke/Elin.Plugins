@@ -13,7 +13,7 @@ public partial class CustomChara
 {
     public static void SpawnAtZone(Chara chara, string zoneFullName)
     {
-        if (!zoneFullName.ValidateZone(out var destZone, true) || destZone is null) {
+        if (!zoneFullName.ValidateZone(out var destZone, true)) {
             return;
         }
 
@@ -52,7 +52,7 @@ public partial class CustomChara
 
                 List<(Zone, string)> toAddZones = [];
                 foreach (var toImport in import.Zones) {
-                    if (toImport.ValidateZone(out var zone, true) && zone is not null) {
+                    if (toImport.ValidateZone(out var zone, true)) {
                         toAddZones.Add((zone, toImport));
                     } else {
                         CwlMod.WarnWithPopup<CustomChara>("cwl_error_zone_invalid".Loc(id, toImport));
