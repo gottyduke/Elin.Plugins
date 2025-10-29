@@ -3,7 +3,8 @@ using System.Runtime.CompilerServices;
 using BepInEx;
 using HarmonyLib;
 
-namespace MyMod;
+namespace ElinPluginTemplate;
+
 public static class ModInfo
 {
     public const string Guid = "your.mod.unique.id";

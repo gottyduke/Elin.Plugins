@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageType>Template</PackageType>
+    <PackageVersion>1.0.4</PackageVersion>
+    <Authors>DK</Authors>
+    <Title>Elin.PluginTemplate</Title>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/gottyduke/Elin.Plugins/tree/master/PluginTemplate</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/gottyduke/Elin.Plugins/tree/master/PluginTemplate</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Description>Elin BepInEx Plugin Template</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <NoDefaultExcludes>true</NoDefaultExcludes>
+    <NoWarn>$(NoWarn);NU5128;CS2008</NoWarn>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <RuntimeMetadataVersion>1</RuntimeMetadataVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <Content Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**" />
+    <Compile Remove="**\*" />
+  </ItemGroup>
+</Project>

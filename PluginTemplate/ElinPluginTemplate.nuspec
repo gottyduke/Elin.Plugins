@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>@project@</id>
+    <title>@project@@title@</title>
+    <description>@description@</description>
+    <version>@build.number@</version>
+    <authors>@authors@</authors>
+    <owners>@authors@</owners>
+    <language>en-US</language>
+    <projectUrl>https://github.com/gottyduke/Elin.Plugins/tree/master/PluginTemplate</projectUrl>
+    <licenseUrl>https://github.com/gottyduke/Elin.Plugins/blob/master/LICENSE</licenseUrl>
+    <copyright>@copyright@</copyright>
+    <tags>@tags@</tags>
+    <releaseNotes>@releaseNotes@</releaseNotes>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <packageTypes>
+      <packageType name="Template" />
+    </packageTypes>
+    <contentFiles>
+      <!-- Copy directory structure -->
+      <files include="templates\**\*" copyToOutput="true" flatten="false"/>
+    </contentFiles>
+  </metadata>
+</package>

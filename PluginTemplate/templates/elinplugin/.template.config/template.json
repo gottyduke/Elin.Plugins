@@ -1,0 +1,43 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "DK",
+    "classifications": [
+        "BepInEx",
+        "Unity",
+        "Mod",
+        "Elin"
+    ],
+    "identity": "dk.elinplugins.plugintemplate",
+    "name": "Elin BepInEx Plugin Template",
+    "shortName": "elinplugin",
+    "sourceName": "ElinPluginTemplate",
+    "defaultName": "My New Elin Mod",
+    "tags": {
+        "language": "C#",
+        "type": "project"
+    },
+    "placeholderFilename": ".keep",
+    "symbols": {
+        "Guid": {
+            "type": "parameter",
+            "datatype": "string",
+            "defaultValue": "your.mod.unique.id",
+            "replaces": "your.mod.unique.id",
+            "description": "The unique mod GUID"
+        },
+        "ModName": {
+            "type": "parameter",
+            "datatype": "string",
+            "defaultValue": "Your Mod Name",
+            "replaces": "Your Mod Name",
+            "description": "The display name of the mod"
+        },
+        "Version": {
+            "type": "parameter",
+            "datatype": "string",
+            "defaultValue": "1.0.0",
+            "replaces": "1.0.0",
+            "description": "Initial version"
+        }
+    }
+}

@@ -58,7 +58,7 @@ jobs:
           ElinGamePath: ${{ github.workspace }}\${{ matrix.version }}
         shell: pwsh
         run: |
-          $config = '${{ matrix.version }}' -eq 'stable' ? 'Debug' : 'DebugNightly'
+          $config = '${{ matrix.version }}' -eq 'stable' ? 'Release' : 'ReleaseNightly'
           dotnet build ${{ github.workspace }}\CustomWhateverLoader\CustomWhateverLoader.csproj -o ${{ github.workspace }}\out\${{ matrix.version }} -c $config --no-restore
 
           $dllPath = Join-Path -Path "${{ github.workspace }}\out\${{ matrix.version }}" -ChildPath "CustomWhateverLoader.dll"
