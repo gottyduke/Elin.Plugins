@@ -19,13 +19,6 @@ internal class SetReligionRowPatch
             return;
         }
 
-        // qualify external religion types
-        if (r.type != nameof(Religion)) {
-            var qualified = TypeQualifier.TryQualify<Religion>(r.type);
-            r.type = qualified?.FullName ?? r.type;
-            return;
-        }
-
         var @params = r.id.Parse("#", 3);
         r.id = @params[0]!;
 
@@ -33,7 +26,15 @@ internal class SetReligionRowPatch
             return;
         }
 
-        CustomReligion.GerOrAdd(r.id)
+        // qualify external religion types
+        if (r.type != nameof(Religion)) {
+            var qualified = TypeQualifier.TryQualify<Religion>(r.type);
+            r.type = qualified?.FullName ?? r.type;
+        } else {
+            r.type = typeof(CustomReligion).FullName;
+        }
+
+        CustomReligion.GerOrAdd(r.id, r.type)
             .SetMinor(@params.Contains("minor"))
             .SetCanJoin(!@params.Contains("cannot"));
     }

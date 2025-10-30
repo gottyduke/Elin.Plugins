@@ -1,13 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Cwl.API.Attributes;
 using Cwl.API.Processors;
+using Cwl.Helper.Exceptions;
+using Cwl.LangMod;
 using MethodTimer;
 using Newtonsoft.Json;
 
 namespace Cwl.API.Custom;
 
-public class CustomReligion(string religionId) : Religion, IChunkable
+public class CustomReligion : Religion, IChunkable
 {
     internal static readonly Dictionary<string, CustomReligion> Managed = [];
 
@@ -15,7 +18,7 @@ public class CustomReligion(string religionId) : Religion, IChunkable
     private string[] _elements = [];
 
     [JsonProperty]
-    private string _id = religionId;
+    private string _id = "";
 
     private bool _isMinor;
     private Dictionary<string, int> _offeringMtp = [];
@@ -26,12 +29,38 @@ public class CustomReligion(string religionId) : Religion, IChunkable
 
     public static IReadOnlyCollection<CustomReligion> All => Managed.Values;
     public string FeatGodAlias => $"featGod_{_id}1";
-
     public string ChunkName => $"{typeof(CustomReligion).FullName}.{_id}";
 
-    public static CustomReligion GerOrAdd(string id)
+    public static CustomReligion GerOrAdd(string id, string? type = null)
     {
-        return Managed.GetOrCreate(id, () => new(id));
+        return Managed.GetOrCreate(id, SafeCreate);
+
+        CustomReligion SafeCreate()
+        {
+            type ??= typeof(CustomReligion).FullName;
+
+            CustomReligion custom;
+            try {
+                custom = ClassCache.Create<CustomReligion>(type, CwlMod.Assembly.FullName);
+                if (custom is null) {
+                    throw new InvalidCastException(type);
+                }
+            } catch (Exception ex) {
+                DebugThrow.Void(ex);
+                CwlMod.Warn("cwl_error_failure".Loc(ex));
+                custom = new();
+                // noexcept
+            }
+
+            custom._id = id;
+            return custom;
+        }
+    }
+
+    public static void AddExternalManaged<T>(T religion) where T : CustomReligion
+    {
+        Managed[religion.id] = religion;
+        religion._id = religion.id;
     }
 
     public CustomReligion SetMinor(bool minorGod)
@@ -93,31 +122,18 @@ public class CustomReligion(string religionId) : Religion, IChunkable
     [CwlPostLoad]
     internal static void LoadCustomReligion(GameIOProcessor.GameIOContext context)
     {
-        if (context.Load<Dictionary<string, CustomReligion>>(out var religions, "custom_religions")) {
-            foreach (var custom in game.religions.list.OfType<CustomReligion>()) {
-                if (!religions.TryGetValue(custom.id, out var loaded)) {
-                    continue;
-                }
+        if (!context.Load<Dictionary<string, CustomReligion>>(out var religions, "custom_religions")) {
+            return;
+        }
 
-                custom.giftRank = loaded.giftRank;
-                custom.mood = loaded.mood;
-                custom.relation = loaded.relation;
-
-                // TODO: remove deprecated code after <5> versions
-                context.Remove(custom.ChunkName);
+        foreach (var custom in game.religions.list.OfType<CustomReligion>()) {
+            if (!religions.TryGetValue(custom.id, out var loaded)) {
+                continue;
             }
-        } else {
-            // TODO: remove deprecated code after <5> versions
-            foreach (var custom in game.religions.list.OfType<CustomReligion>()) {
-                if (!context.Load<CustomReligion>(out var loaded, custom.ChunkName) ||
-                    loaded._id != custom.id) {
-                    continue;
-                }
 
-                custom.giftRank = loaded.giftRank;
-                custom.mood = loaded.mood;
-                custom.relation = loaded.relation;
-            }
+            custom.giftRank = loaded.giftRank;
+            custom.mood = loaded.mood;
+            custom.relation = loaded.relation;
         }
     }
 
