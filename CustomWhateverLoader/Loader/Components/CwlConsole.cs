@@ -14,10 +14,6 @@ internal class CwlConsole : EMono
 {
     private void Update()
     {
-        if (scene.mode is not Scene.Mode.Title) {
-            return;
-        }
-
         if (!Input.GetKeyDown(KeyCode.BackQuote)) {
             return;
         }
@@ -52,8 +48,8 @@ internal class CwlConsole : EMono
     {
         var charagy = game.cards.globalCharas.Values
             .Concat(_map.charas)
-            .Distinct()
             .Where(chara => chara.id == id)
+            .Distinct()
             .ToArray();
 
         foreach (var chara in charagy) {

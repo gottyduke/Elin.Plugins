@@ -30,7 +30,7 @@ public static class ZoneExt
             return zone is not null;
         }
 
-        private (string zoneType, string zoneId, int zoneLv) ParseZoneFullName()
+        public (string zoneType, string zoneId, int zoneLv) ParseZoneFullName()
         {
             string zoneType;
             var zoneLv = 0;

@@ -11,15 +11,6 @@ namespace Cwl;
 internal sealed partial class CwlMod
 {
     private static readonly Color _warningColor = new(237f / 255, 96f / 255, 71f / 255);
-    private static readonly ConcurrentQueue<string> _logs = [];
-
-    private void Update()
-    {
-        while (_logs.TryDequeue(out var log)) {
-            UnityEngine.Debug.Log(log);
-        }
-    }
-
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Log(object payload)
@@ -68,9 +59,9 @@ internal sealed partial class CwlMod
                 exp.CreateAndPop(payload.ToString());
                 break;
             default: {
-                LogInternal(log ?? payload);
                 using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToTruncateString(150)));
                 if (log is not null) {
+                    LogInternal(log);
                     progress.Get<ProgressIndicator>()
                         .OnHover(p => GUILayout.Label(log.ToTruncateString(450).TruncateAllLines(150), p.GUIStyle));
                 }
@@ -102,10 +93,10 @@ internal sealed partial class CwlMod
                 exp.CreateAndPop(payload.ToString());
                 break;
             default: {
-                LogInternal(log ?? payload);
                 using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToTruncateString(150),
                     Color: _warningColor));
                 if (log is not null) {
+                    LogInternal(log);
                     progress.Get<ProgressIndicator>()
                         .OnHover(p => GUILayout.Label(log.ToTruncateString(450).TruncateAllLines(150), p.GUIStyle));
                 }
@@ -124,6 +115,6 @@ internal sealed partial class CwlMod
 
     private static void LogInternal(object log)
     {
-        _logs.Enqueue(log.RemoveTagColor());
+        UnityEngine.Debug.Log(log.RemoveTagColor());
     }
 }
