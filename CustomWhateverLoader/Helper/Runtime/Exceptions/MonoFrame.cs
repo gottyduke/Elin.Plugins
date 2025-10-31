@@ -7,7 +7,7 @@ using Cwl.Helper.String;
 
 namespace Cwl.Helper.Exceptions;
 
-public class MonoFrame(string stackFrame)
+public class MonoFrame
 {
     public enum StackFrameType
     {
@@ -24,27 +24,51 @@ public class MonoFrame(string stackFrame)
         "UnityEngine.",
         "Plugins.",
         "System.",
-        "mscorlib",
+        "mscorlib.",
         "MonoMod.",
-        "0Harmony",
+        "0Harmony.",
     };
 
-    public StackFrameType frameType = StackFrameType.Unknown;
+    private MonoFrame(string stackFrame)
+    {
+        StackFrame = stackFrame;
+    }
+
+    public StackFrameType FrameType { get; private set; } = StackFrameType.Unknown;
 
     public bool Parsed { get; private set; }
 
-    public MethodInfo? Method { get; private set; }
-    public string StackFrame => stackFrame;
+    public MethodBase? Method { get; private set; }
+    public string StackFrame { get; }
     public string SanitizedMethodCall { get; private set; } = "";
-    public string SanitizedParameters { get; private set; } = "";
-    public string DetailedMethodCall { get; private set; } = "";
-    public string? AssemblyName => field ??= Method?.DeclaringType?.Assembly.ManifestModule.ScopeName;
-    public bool IsVendorMethod => _vendorExclusion.Any(AssemblyName!.StartsWith);
+    public (string? type, string? name)[] SanitizedParameters { get; private set; } = [];
+
+    public string DetailedMethodCall =>
+        FrameType is StackFrameType.Method or StackFrameType.DynamicMethod
+            ? IsVendorMethod ? Method!.GetDetail(false) : Method!.GetAssemblyDetailColor(false)
+            : SanitizedMethodCall;
+
+    public string? AssemblyName => field ??= Method?.Module.ToString();
+    public bool IsVendorMethod => _vendorExclusion.Any(AssemblyName.IsEmpty("").StartsWith);
 
     public static MonoFrame GetFrame(string frame)
     {
         if (!_cached.TryGetValue(frame, out var profile)) {
             profile = _cached[frame] = new(frame);
+        }
+
+        return profile;
+    }
+
+    public static MonoFrame GetFrame(MethodBase method)
+    {
+        var frame = method.ToString();
+        if (!_cached.TryGetValue(frame, out var profile)) {
+            profile = _cached[frame] = new(frame) {
+                Parsed = true,
+                Method = method,
+                FrameType = StackFrameType.Method,
+            };
         }
 
         return profile;
@@ -67,42 +91,35 @@ public class MonoFrame(string stackFrame)
             return this;
         }
 
-        var raw = stackFrame.Trim();
+        var raw = StackFrame.Trim();
         SanitizeFrame();
 
         // explicit dmd, discard mono jit
         if (raw.StartsWith("Rethrow as")) {
-            frameType = StackFrameType.Rethrow;
+            FrameType = StackFrameType.Rethrow;
         } else {
-            Method = ExtractMethod();
-            frameType = Method is null
-                ? StackFrameType.Unknown
-                : raw.StartsWith("(wrapper dynamic-method)")
-                    ? StackFrameType.DynamicMethod
-                    : StackFrameType.Method;
-        }
+            FrameType = TryGetMethodCallParts(SanitizedMethodCall, out var typeName, out var methodName);
+            if (FrameType is StackFrameType.Method or StackFrameType.DynamicMethod) {
+                Method = CachedMethods.GetCachedMethod(typeName, methodName, SanitizedParameters);
 
-        DetailedMethodCall = frameType is StackFrameType.Method or StackFrameType.DynamicMethod
-            ? IsVendorMethod ? Method!.GetDetail(false) : Method!.GetAssemblyDetailColor(false)
-            : SanitizedMethodCall;
+                if (Method is null && FrameType == StackFrameType.DynamicMethod && SanitizedParameters.Length >= 1) {
+                    SanitizedParameters = SanitizedParameters[1..];
+                    Method = CachedMethods.GetCachedMethod(typeName, methodName, SanitizedParameters);
+                }
+
+                if (Method is null) {
+                    FrameType = StackFrameType.Unknown;
+                }
+            }
+        }
 
         Parsed = true;
         return this;
     }
 
-    [SwallowExceptions]
-    public MethodInfo? ExtractMethod()
-    {
-        var parameters = ParseParameters(SanitizedParameters);
-        return !TryParseDynamicMethod(SanitizedMethodCall, out var typeName, out var methodName)
-            ? ParseNormalMethod(SanitizedMethodCall, parameters)
-            : CachedMethods.GetCachedMethod(typeName, methodName, parameters) ??
-              CachedMethods.GetCachedMethod(typeName, methodName, parameters[1..]);
-    }
-
     public string[] SanitizeFrame()
     {
-        var raw = Regex.Replace(stackFrame, @"\(wrapper[^\)]*\)\s", "").Replace(" at ", "");
+        var raw = Regex.Replace(StackFrame.Trim(), @"\(wrapper[^\)]*\)\s|^at", "").Trim();
         var parts = raw.Split('(', 2, StringSplitOptions.RemoveEmptyEntries);
 
         SanitizedMethodCall = parts[0].Trim();
@@ -116,56 +133,76 @@ public class MonoFrame(string stackFrame)
             parts[1] = parts[1][..seg];
         }
 
-        SanitizedParameters = parts[1].Trim('(', ')', ' ');
+        SanitizedParameters = SplitParameters(parts[1].Trim('(', ')', ' '));
 
         return parts;
     }
 
-    [SwallowExceptions]
-    private static Type[] ParseParameters(string parameters)
-    {
-        if (parameters.IsEmpty()) {
-            return [];
-        }
-
-        List<Type> paramTypes = [];
-        paramTypes.AddRange(TypeQualifier.SplitParameters(parameters)
-            .Select(p => TypeQualifier.GlobalResolve(p.Trim()))
-            .OfType<Type>());
-
-        return paramTypes.ToArray();
-    }
-
-    public static bool TryParseDynamicMethod(string stackFrame, out string typeName, out string methodName)
+    public static StackFrameType TryGetMethodCallParts(string partialMethodCall, out string typeName, out string methodName)
     {
         typeName = methodName = "";
 
-        var match = Regex.Match(stackFrame, "DMD<([^>]+)>");
-        if (!match.Success) {
-            return false;
+        var match = Regex.Match(partialMethodCall, "DMD<([^>]+)>");
+        if (match.Success) {
+            var fullName = match.Groups[1].Value;
+            var nameParts = fullName.Split("::", 2);
+            if (nameParts.Length == 2) {
+                typeName = nameParts[0];
+                methodName = nameParts[1];
+                return StackFrameType.DynamicMethod;
+            }
         }
 
-        var fullName = match.Groups[1].Value;
-        var nameParts = fullName.Split("::", 2);
-        if (nameParts.Length != 2) {
-            return false;
+        var lastDotIndex = partialMethodCall.LastIndexOf('.');
+        if (lastDotIndex != -1) {
+            typeName = partialMethodCall[..lastDotIndex];
+            methodName = partialMethodCall[(lastDotIndex + 1)..];
+
+            return StackFrameType.Method;
         }
 
-        typeName = nameParts[0];
-        methodName = nameParts[1];
-        return true;
+        return StackFrameType.Unknown;
     }
 
-    public static MethodInfo? ParseNormalMethod(string partialMethodCall, Type[] parameters)
+    public static (string? type, string? name)[] SplitParameters(string input)
     {
-        var lastDotIndex = partialMethodCall.LastIndexOf('.');
-        if (lastDotIndex == -1) {
-            return null;
+        var segments = new List<(string?, string?)>();
+        using var sb = StringBuilderPool.Get();
+        var current = sb.StringBuilder;
+        var depth = 0;
+
+        foreach (var c in input) {
+            switch (c) {
+                case '<':
+                case '[':
+                    depth++;
+                    current.Append(c);
+                    break;
+                case '>':
+                case ']':
+                    depth--;
+                    current.Append(c);
+                    break;
+                case ',' when depth == 0:
+                    segments.Add(SplitParam());
+                    current.Clear();
+                    break;
+                default:
+                    current.Append(c);
+                    break;
+            }
         }
 
-        var typeName = partialMethodCall[..lastDotIndex];
-        var methodName = partialMethodCall[(lastDotIndex + 1)..];
+        if (current.Length > 0) {
+            segments.Add(SplitParam());
+        }
 
-        return CachedMethods.GetCachedMethod(typeName, methodName, parameters);
+        return segments.ToArray();
+
+        (string, string) SplitParam()
+        {
+            var param = current.ToString().Trim().Split(' ');
+            return (param[0], param.TryGet(1, true));
+        }
     }
 }

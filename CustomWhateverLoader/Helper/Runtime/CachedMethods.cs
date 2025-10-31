@@ -13,17 +13,28 @@ public static class CachedMethods
     private static readonly Dictionary<TypeInfo, FieldInfo[]> _cachedFields = [];
     private static readonly Dictionary<MethodBase, FastInvokeHandler> _cachedInvokers = [];
 
-    public static MethodInfo? GetCachedMethod(string typeName, string methodName, Type[] parameters)
+    public static MethodInfo? GetCachedMethod(string typeName, string methodName, Type[] types)
+    {
+        return GetCachedMethod(typeName, methodName, types.Select(t => (t.FullName, (string?)null)).ToArray());
+    }
+
+    public static MethodInfo? GetCachedMethod(string typeName, string methodName, IReadOnlyList<(string?, string?)> parameters)
     {
         try {
             var type = TypeQualifier.GlobalResolve(typeName);
-            if (type?.IsGenericType is not false) {
-                return null;
+            var cachedMethods = type.GetCachedMethods();
+
+            var parameterInfo = string.Join(", ", parameters.Select(p => p.Item1));
+            var runtimeInfo = $"{methodName}({parameterInfo})";
+
+            var method = Array.Find(cachedMethods, mi => mi.ToString().EndsWith(runtimeInfo));
+            if (method is not null) {
+                return method;
             }
 
-            return Array.Find(type.GetCachedMethods(),
-                mi => mi.Name == methodName &&
-                      mi.ValidateParameterTypes(false, parameters));
+            var nonGenericName = methodName.Split('[')[0];
+            return Array.Find(cachedMethods, mi => mi.Name == nonGenericName &&
+                                                   mi.ValidateParameterTypes(false, parameters));
         } catch {
             return null;
             // noexcept
@@ -104,34 +115,52 @@ public static class CachedMethods
 
         public bool ValidateParameterTypes(bool warn, params Type?[] types)
         {
+            return method.ValidateParameterTypes(warn, types.Select(t => (t?.FullName, (string?)null)).ToArray());
+        }
+
+        public bool ValidateParameterTypes(bool warn, IReadOnlyList<(string?, string?)> types)
+        {
             var parameters = method.GetParameters();
 
-            if (parameters.Length != types.Length) {
+            if (parameters.Length != types.Count) {
                 if (warn) {
-                    CwlMod.Warn($"parameter count mismatch for {method.Name}: expected {parameters.Length}, got {types.Length}");
+                    CwlMod.Warn($"{method.Name} parameter count mismatch: expected {parameters.Length}, got {types.Count}");
                 }
 
                 return false;
             }
 
             for (var i = 0; i < parameters.Length; ++i) {
-                var paramType = parameters[i].ParameterType;
-                var type = types[i];
+                var parameter = parameters[i];
+                var paramType = parameter.ParameterType;
+                var (type, name) = types[i];
 
-                if (type == null) {
+                if (type.IsEmpty()) {
                     if (!paramType.IsValueType || Nullable.GetUnderlyingType(paramType) != null) {
                         continue;
                     }
 
-                    CwlMod.Warn($"parameter {i} type mismatch: expected {paramType.Name}, got null (non-nullable value type)");
+                    CwlMod.Warn($"{method.Name} parameter {i} type mismatch: expected {paramType.Name}, got null !!(value type)");
                     return false;
                 }
 
-                if (paramType.IsAssignableFrom(type)) {
+                var concreteType = TypeQualifier.GlobalResolve(type) ?? TypeQualifier.AliasMapping.GetValueOrDefault(type);
+                if (paramType.IsAssignableFrom(concreteType)) {
                     continue;
                 }
 
-                CwlMod.Warn($"parameter {i} type mismatch: expected {paramType.Name}, got {type.Name}");
+                var paramInfo = paramType.ToString();
+                if (paramInfo == type) {
+                    continue;
+                }
+
+                var nonGenericName = $"{paramType.Namespace}.{paramType.Name}";
+                if ((name is null or "" or "null" || name == parameter.Name) &&
+                    type.StartsWith(nonGenericName)) {
+                    continue;
+                }
+
+                CwlMod.Warn($"{method.Name} parameter {i} type mismatch: expected {paramInfo}, got {type}:{name}");
                 return false;
             }
 

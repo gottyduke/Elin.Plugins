@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Cwl.Helper.Extensions;
@@ -57,7 +58,17 @@ public class ExceptionProfile(string message)
             exception = inner;
         }
 
-        return GetFromStackTrace(Regex.Replace(exception.StackTrace.IsEmpty(""), @"^(\s+at\s)", ""), exception.Message);
+        var exp = GetFromStackTrace(Regex.Replace(exception.StackTrace.IsEmpty(""), @"^(\s+at\s)", ""), exception.Message);
+
+        var stackTrace = new StackTrace(exception);
+        foreach (var frame in stackTrace.GetFrames() ?? []) {
+            var method = frame.GetMethod();
+            exp.Frames.Add(method is not null
+                ? MonoFrame.GetFrame(method)
+                : MonoFrame.GetFrame(frame.GetFieldValue("internalMethodName") as string));
+        }
+
+        return exp;
     }
 
     [Obsolete("use ref overload for inner exception swap")]
@@ -169,7 +180,7 @@ public class ExceptionProfile(string message)
 
                 Frames.Add(mono);
 
-                switch (mono.frameType) {
+                switch (mono.FrameType) {
                     case MonoFrame.StackFrameType.Rethrow:
                         sb.AppendLine("---");
                         break;

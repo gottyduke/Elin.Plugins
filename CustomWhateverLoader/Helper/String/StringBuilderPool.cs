@@ -1,23 +1,25 @@
 using System;
+using System.Collections.Concurrent;
 using System.Text;
-using IStringBuilderPool = UnityEngine.Pool.ObjectPool<System.Text.StringBuilder>;
 
 namespace Cwl.Helper.String;
 
 public class StringBuilderPool(StringBuilder sb) : IDisposable
 {
-    private static readonly IStringBuilderPool _stringBuilderPool = new(() => new(), actionOnRelease: sb => sb.Clear());
-
+    private static readonly ConcurrentStack<StringBuilderPool> _stringBuilderPool = [];
     public StringBuilder StringBuilder => sb;
 
     public void Dispose()
     {
-        _stringBuilderPool.Release(sb);
+        sb.Clear();
+        _stringBuilderPool.Push(this);
     }
 
     public static StringBuilderPool Get()
     {
-        return new(_stringBuilderPool.Get());
+        return _stringBuilderPool.TryPop(out var stringBuilderPool)
+            ? stringBuilderPool
+            : new(new());
     }
 
     public StringBuilderPool AppendLine(string? message = null)

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
