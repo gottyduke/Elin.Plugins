@@ -199,6 +199,7 @@ internal sealed partial class CwlMod
         TypeResolver.Add(SafeCreateConditionPatch.ResolveCondition);
         TypeResolver.Add(SafeCreateQuestPatch.ResolveQuest);
         TypeResolver.Add(SafeCreateZonePatch.ResolveZone);
+        TypeResolver.Add(CustomReligion.ResolveReligion);
 
         MigrateDetail.SetupProcessor();
     }

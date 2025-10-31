@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Cwl.API.Attributes;
 using Cwl.API.Processors;
-using Cwl.Helper.Exceptions;
 using Cwl.LangMod;
 using MethodTimer;
 using Newtonsoft.Json;
@@ -46,7 +45,6 @@ public class CustomReligion : Religion, IChunkable
                     throw new InvalidCastException(type);
                 }
             } catch (Exception ex) {
-                DebugThrow.Void(ex);
                 CwlMod.Warn("cwl_error_failure".Loc(ex));
                 custom = new();
                 // noexcept
@@ -135,6 +133,22 @@ public class CustomReligion : Religion, IChunkable
             custom.mood = loaded.mood;
             custom.relation = loaded.relation;
         }
+    }
+
+    internal static void ResolveReligion(ref bool resolved, Type objectType, ref Type readType, string qualified)
+    {
+        if (resolved) {
+            return;
+        }
+
+        if (objectType != typeof(CustomReligion)) {
+            return;
+        }
+
+        readType = typeof(CustomReligion);
+        resolved = true;
+        CwlMod.WarnWithPopup<CustomReligion>("cwl_warn_deserialize".Loc(nameof(CustomReligion), qualified, readType.MetadataToken,
+            CwlConfig.Patches.SafeCreateClass!.Definition.Key));
     }
 
     [CwlActPerformEvent]
