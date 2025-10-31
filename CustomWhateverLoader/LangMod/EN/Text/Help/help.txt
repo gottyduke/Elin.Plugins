@@ -18,8 +18,19 @@ $Changelogs
 
 
 
+{topic|1.20.54}
+Updated for 23.229 Stable
+Fixed file path checking
+Fixed incompatible method detection code
+Added extra comments for source table parsing errors
+Fixed deferred character restoration
+Allow custom religions to use custom types
+Added type resolver for custom religion types
+Optimized exception analysis parsing code
+Happy 1st Anniversary!
+
 {topic|1.20.53}
-Updated for 23.222 Stable NYA
+Updated for 23.224 Nightly
 Added modded Work invalidator
 Added FileWatcherHelper
 Made logging thread safe
