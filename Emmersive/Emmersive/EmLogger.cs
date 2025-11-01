@@ -73,9 +73,9 @@ internal sealed partial class EmMod
                 exp.CreateAndPop(payload.ToString());
                 break;
             default: {
-                LogInternal(log ?? payload);
                 using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToTruncateString(150)));
                 if (log is not null) {
+                    LogInternal(log);
                     progress.Get<ProgressIndicator>()
                         .OnHover(p => GUILayout.Label(log.ToTruncateString(450).TruncateAllLines(150), p.GUIStyle));
                 }
@@ -106,10 +106,10 @@ internal sealed partial class EmMod
                 exp.CreateAndPop(payload.ToString());
                 break;
             default: {
-                LogInternal(log ?? payload);
                 using var progress = ProgressIndicator
                     .CreateProgressScoped(() => new(payload.ToTruncateString(150), Color: _warningColor));
                 if (log is not null) {
+                    LogInternal(log);
                     progress.Get<ProgressIndicator>()
                         .OnHover(p => GUILayout.Label(log.ToTruncateString(450).TruncateAllLines(150), p.GUIStyle));
                 }

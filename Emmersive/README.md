@@ -55,7 +55,7 @@ By adding multiple AI services, Emmersive(Elin with AI) will enable auto-retry o
 
 Start with loading up game, press Esc and go to Mods->Emmersive to view the config panel.
 
-[Detailed API setup page for popular providers](./API_Setup.md)
+[Detailed API setup page for popular providers]([./API_Setup.md](https://elin-modding-resources.github.io/Elin.Docs/articles/100_Mod%20Documentation/Emmersive/API_Setup))
 
 ## Feedback
 

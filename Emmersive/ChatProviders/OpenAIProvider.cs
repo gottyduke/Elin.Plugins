@@ -32,7 +32,6 @@ public class OpenAIProvider(string apiKey) : ChatProviderBase(apiKey)
         // as of 1.66.0 openai ResponseFormat cannot be set to a type or schema
         // which will cause serializer failure on WriteCore
         // DeepSeek does not use json schema either
-        ResponseFormat = "minimal",
     };
 
     protected override void OnLayoutInternal(YKLayout card)

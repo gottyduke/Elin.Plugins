@@ -109,7 +109,7 @@ public class RecentActionContext : ContextProviderBase
                 break;
             }
 
-            var text = msg.text;
+            var text = msg.text.StripBrackets();
             if (text.IsEmpty() || text.Contains(_push)) {
                 lastIndex--;
                 continue;

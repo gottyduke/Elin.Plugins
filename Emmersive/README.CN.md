@@ -57,7 +57,7 @@ Emmersive（Elin with AI）要求使用的 AI 服务具备 **函数调用**（�
 
 启动游戏，载入存档，按 Esc → Mods → Emmersive 开始配置菜单。
 
-[详细的主流API服务设置指南](./API_Setup.CN.md)
+[详细的主流API服务设置指南](https://elin-modding-resources.github.io/Elin.Docs/articles/100_Mod%20Documentation/Emmersive/API_Setup.CN)
 
 ## 反馈
 

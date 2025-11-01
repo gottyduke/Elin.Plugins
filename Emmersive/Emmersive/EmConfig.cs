@@ -26,7 +26,6 @@ internal partial class EmConfig
             "Beta测试版默认启用\n" +
             "デバッグ用の詳細情報を出力(大量ログ発生の可能性あり)");
 
-
         Policy.Timeout = config.Bind(
             "RuntimePolicy",
             "Timeout",
