@@ -49,6 +49,8 @@ This is a **beta test** version, mainly for gathering reports and feedback.
 
 Emmersive(Elin with AI) requires the AI service with **function-calling**(or **tool-call**) and **structured output**(or **json mode**) capabilities.
 
+![](./assets/access_en.png)
+
 Your API keys will be encrypted locally your computer, not sent anywhere.
 
 By adding multiple AI services, Emmersive(Elin with AI) will enable auto-retry on request failure seamlessly.

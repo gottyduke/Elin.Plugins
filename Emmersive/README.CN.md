@@ -51,6 +51,8 @@
 
 Emmersive（Elin with AI）要求使用的 AI 服务具备 **函数调用**（或 **工具调用**）和 **结构化输出**（或 **JSON 模式**）能力。
 
+![](./assets/access_cn.png)
+
 你的 API 密钥会在本地加密存储，不会发送到任何地方。
 
 通过添加多个 AI 服务，Emmersive（Elin with AI）将在请求失败时将自动使用下一个可用服务进行重试。
