@@ -11,6 +11,13 @@ namespace Cwl.Patches.Dialogs;
 [HarmonyPatch]
 internal class VariableQuotePatch
 {
+    private static readonly HashSet<string> _quotes = new(StringComparer.Ordinal) {
+        "\"",
+        "「",
+        "“",
+        "_bracketTalk",
+    };
+
     internal static bool Prepare()
     {
         return CwlConfig.VariableQuote;
@@ -32,15 +39,7 @@ internal class VariableQuotePatch
     [Time]
     private static bool VariantStartsWith(string lhs, string rhs)
     {
-        var row = EMono.sources.langGeneral.map["_bracketTalk"];
-        var quotes = new HashSet<string>(StringComparer.Ordinal) {
-            "\"",
-            "「",
-            "“",
-            rhs,
-            row.text_L?.IsEmpty(rhs) ?? rhs,
-        };
-
-        return quotes.Any(lhs.StartsWith);
+        _quotes.Add(rhs);
+        return _quotes.Any(lhs.StartsWith);
     }
 }

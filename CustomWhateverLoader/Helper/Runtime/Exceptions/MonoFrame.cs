@@ -27,6 +27,8 @@ public class MonoFrame
         "mscorlib.",
         "MonoMod.",
         "0Harmony.",
+        "LZ4.",
+        "Newtonsoft.Json.",
     };
 
     private MonoFrame(string stackFrame)

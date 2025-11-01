@@ -123,7 +123,7 @@ public sealed class CacheDetail(string cacheKey)
         var manifest = new CacheVersionManifest(CacheVersionV1, DateTime.UtcNow);
 
         _context.Clear();
-        _context.Save(manifest, "cache_manifest");
+        _context.SaveUncompressed(manifest, "cache_manifest");
 
         return $"Source sheets cache cleared, next generation in {manifest.NextGen()} days";
     }

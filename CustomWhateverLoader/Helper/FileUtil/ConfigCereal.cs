@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
+using Cwl.Helper.Exceptions;
 using LZ4;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -98,7 +99,8 @@ public class ConfigCereal
             }
         } catch (Exception ex) {
             CwlMod.Error<ConfigCereal>($"failed to read config: {ex.Message}");
-            throw;
+            DebugThrow.Void(ex);
+            // noexcept
         }
 
         inferred = default;
