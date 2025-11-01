@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using BepInEx;
 using Cwl.Helper.Extensions;
+using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;
 
@@ -37,17 +39,31 @@ public class TypeQualifier
         ["nuint"] = typeof(nuint),
     };
 
+    public static readonly Dictionary<Assembly, string> MappedAssemblyNames = [];
+
     [field: AllowNull]
-    public static Dictionary<Assembly, BaseUnityPlugin> Plugins =>
+    public static List<BaseUnityPlugin> Plugins =>
         field ??= ModManager.ListPluginObject
             .OfType<BaseUnityPlugin>()
-            .ToDictionary(p => p.GetType().Assembly);
+            .ToList();
 
     public static string GetMappedAssemblyName(Assembly assembly)
     {
-        return Plugins.TryGetValue(assembly, out var plugin)
-            ? plugin.Info.Metadata.Name
-            : assembly.GetName().Name;
+        if (MappedAssemblyNames.TryGetValue(assembly, out var result)) {
+            return result;
+        }
+
+        var baseAsmName = assembly.GetName().Name;
+        var baseDir = Path.GetDirectoryName(assembly.Location)!.NormalizePath();
+        var packageAsm = BaseModManager.Instance.packages
+                             .FirstOrDefault(p => p.dirInfo.FullName.NormalizePath() == baseDir)?.title
+                         ?? Plugins.FirstOrDefault(p => p.GetType().Assembly == assembly)?.Info.Metadata.Name
+                         ?? baseAsmName;
+
+        packageAsm = packageAsm.Replace(" ", "").Replace(baseAsmName, "");
+        packageAsm = string.IsNullOrWhiteSpace(packageAsm) ? baseAsmName : $"{packageAsm} {baseAsmName}";
+
+        return MappedAssemblyNames[assembly] = packageAsm;
     }
 
     public static Type? TryQualify<T>(params string[] unqualified) where T : EClass
@@ -117,15 +133,15 @@ public class TypeQualifier
     {
         Declared.Clear();
 
-        foreach (var (asm, plugin) in Plugins.ToArray()) {
+        foreach (var plugin in Plugins.ToArray()) {
             try {
-                var types = asm.DefinedTypes.ToArray();
+                var types = plugin.GetType().Assembly.DefinedTypes.ToArray();
                 // test cast for missing dependency
                 _ = types.Select(ti => typeof(object).IsAssignableFrom(ti)).ToArray();
                 Declared.AddRange(types);
             } catch {
                 CwlMod.Log<TypeQualifier>("cwl_warn_decltype_missing".Loc(plugin.Info.Metadata.GUID));
-                Plugins.Remove(asm);
+                Plugins.Remove(plugin);
                 // noexcept
             }
         }

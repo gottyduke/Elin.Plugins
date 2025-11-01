@@ -41,7 +41,7 @@ public class MonoFrame
     public MethodBase? Method { get; private set; }
     public string StackFrame { get; }
     public string SanitizedMethodCall { get; private set; } = "";
-    public (string? type, string? name)[] SanitizedParameters { get; private set; } = [];
+    public List<(string? type, string? name)> SanitizedParameters { get; private set; } = [];
 
     public string DetailedMethodCall =>
         FrameType is StackFrameType.Method or StackFrameType.DynamicMethod
@@ -102,8 +102,8 @@ public class MonoFrame
             if (FrameType is StackFrameType.Method or StackFrameType.DynamicMethod) {
                 Method = CachedMethods.GetCachedMethod(typeName, methodName, SanitizedParameters);
 
-                if (Method is null && FrameType == StackFrameType.DynamicMethod && SanitizedParameters.Length >= 1) {
-                    SanitizedParameters = SanitizedParameters[1..];
+                if (Method is null && FrameType == StackFrameType.DynamicMethod && SanitizedParameters.Count >= 1) {
+                    SanitizedParameters.RemoveAt(0);
                     Method = CachedMethods.GetCachedMethod(typeName, methodName, SanitizedParameters);
                 }
 
@@ -128,7 +128,7 @@ public class MonoFrame
             return parts;
         }
 
-        var seg = parts[1].LastIndexOf(')');
+        var seg = parts[1].IndexOf(')');
         if (seg != -1) {
             parts[1] = parts[1][..seg];
         }
@@ -164,22 +164,19 @@ public class MonoFrame
         return StackFrameType.Unknown;
     }
 
-    public static (string? type, string? name)[] SplitParameters(string input)
+    public static List<(string? type, string? name)> SplitParameters(string input)
     {
-        var segments = new List<(string?, string?)>();
         using var sb = StringBuilderPool.Get();
+        var segments = new List<(string?, string?)>();
         var current = sb.StringBuilder;
         var depth = 0;
-
         foreach (var c in input) {
             switch (c) {
-                case '<':
-                case '[':
+                case '<' or '[':
                     depth++;
                     current.Append(c);
                     break;
-                case '>':
-                case ']':
+                case '>' or ']':
                     depth--;
                     current.Append(c);
                     break;
@@ -197,7 +194,7 @@ public class MonoFrame
             segments.Add(SplitParam());
         }
 
-        return segments.ToArray();
+        return segments;
 
         (string, string) SplitParam()
         {

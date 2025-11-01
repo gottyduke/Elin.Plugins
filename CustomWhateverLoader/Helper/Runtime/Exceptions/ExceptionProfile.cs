@@ -138,7 +138,7 @@ public class ExceptionProfile(string message)
     {
         switch (eventData.button) {
             case 0 when State is AnalyzeState.Completed:
-                GUIUtility.systemCopyBuffer = $"{message}\n```\n{Result}\n```".RemoveTagColor();
+                GUIUtility.systemCopyBuffer = $"{message}\n```ts\n{Result}\n```".RemoveTagColor();
                 break;
             case 2:
                 Hidden = true;

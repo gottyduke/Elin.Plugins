@@ -115,7 +115,6 @@ public static class ZoneExt
 
             zone.parent?.RemoveChild(zone);
             region.elomap.SetZone(eloX, eloY, zone, true);
-            region.AddChild(zone);
 
             CwlMod.Log<SpatialGen>($"created zone: {zoneFullName} at {eloX}, {eloY}");
         }

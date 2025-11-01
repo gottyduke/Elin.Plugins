@@ -27,6 +27,7 @@ Fixed deferred character restoration
 Allow custom religions to use custom types
 Added type resolver for custom religion types
 Optimized exception analysis parsing code
+Removed console shortcut key
 Happy 1st Anniversary!
 
 {topic|1.20.53}

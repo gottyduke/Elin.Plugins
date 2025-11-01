@@ -14,6 +14,10 @@ internal class CwlConsole : EMono
 {
     private void Update()
     {
+        if (scene.mode is not Scene.Mode.Title) {
+            return;
+        }
+
         if (!Input.GetKeyDown(KeyCode.BackQuote)) {
             return;
         }
