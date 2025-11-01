@@ -73,9 +73,13 @@ public partial class SceneDirector
                 RecentActionContext.Add(chara.Name, text);
 
                 Msg.SetColor(color);
-                chara.Say(text);
+                chara.Say(gesture ? text : text.Bracket());
 
-                chara.HostRenderer.Say(text.Wrap(7), duration: duration);
+                if (profile.UsePopFeed) {
+                    WidgetFeed.Instance.SayRaw(chara, text.Wrap(7));
+                } else {
+                    chara.HostRenderer.Say(text.Wrap(7), duration: duration);
+                }
 
                 profile.ResetTalkCooldown(text);
             }

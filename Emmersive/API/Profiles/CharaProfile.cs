@@ -16,6 +16,7 @@ public class CharaProfile(Chara chara)
     public bool LockedInRequest { get; set; }
     public bool OnWhitelist => chara.GetFlagValue("em_wl") > 0;
     public bool OnBlacklist => chara.GetFlagValue("em_bl") > 0;
+    public bool UsePopFeed => chara.GetFlagValue("em_pop") > 0;
     public bool IsImportant => !chara.IsAnimal && (chara.IsUnique || chara.IsGlobal);
 
     public bool CanTrigger =>
