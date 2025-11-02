@@ -44,8 +44,6 @@ internal class TabCharaRelations : TabCharaPrompt
             BuildPromptCard(names, $"Emmersive/Relations/{relation.Provider.Name}");
         }
 
-        ResetPositions();
-
         return;
 
         void BuildRelationGenerator()
