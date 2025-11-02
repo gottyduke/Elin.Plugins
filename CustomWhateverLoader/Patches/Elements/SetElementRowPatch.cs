@@ -16,18 +16,15 @@ internal class SetElementRowPatch
             return;
         }
 
-        var group = r.group;
-        if (group is not (nameof(FEAT) or nameof(ABILITY) or nameof(SPELL))) {
-            return;
-        }
-
         if (r.id is > 10000 or < 0) {
-            var size = group switch {
-                nameof(FEAT) => 32,
-                _ => 48,
-            };
+            if (r.group is nameof(FEAT) or nameof(ABILITY) or nameof(SPELL)) {
+                var size = r.group switch {
+                    nameof(FEAT) => 32,
+                    _ => 48,
+                };
 
-            SpriteReplacerHelper.AppendSpriteSheet(r.alias, size, size);
+                SpriteReplacerHelper.AppendSpriteSheet(r.alias, size, size);
+            }
         }
 
         var qualified = TypeQualifier.TryQualify<Element>(r.type, r.alias);

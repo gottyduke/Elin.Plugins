@@ -30,6 +30,18 @@ public static class StringHelper
         return $"{fmt:0.##} {suffixes[suffix]}";
     }
 
+    public static string MergeOverlap(string lhs, string rhs)
+    {
+        var maxOverlap = 0;
+        for (var i = 1; i <= Math.Min(lhs.Length, rhs.Length); ++i) {
+            if (lhs.EndsWith(rhs[..i], StringComparison.Ordinal)) {
+                maxOverlap = i;
+            }
+        }
+
+        return lhs + rhs[maxOverlap..];
+    }
+
     public static class Cjk
     {
         private const string CjkCharRange = @"\u4E00-\u9FFF\u3040-\u309F\u30A0-\u30FF\uAC00-\uD7AF";

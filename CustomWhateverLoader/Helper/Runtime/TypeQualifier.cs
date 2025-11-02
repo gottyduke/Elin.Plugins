@@ -16,9 +16,7 @@ public class TypeQualifier
 {
     private static readonly Dictionary<string, Type> _qualifiedResults = [];
 
-    internal static readonly List<TypeInfo> Declared = [];
-
-    internal static readonly Dictionary<string, Type> AliasMapping = new() {
+    public static readonly Dictionary<string, Type> AliasMapping = new() {
         ["byte"] = typeof(byte),
         ["sbyte"] = typeof(sbyte),
         ["short"] = typeof(short),
@@ -39,6 +37,8 @@ public class TypeQualifier
         ["nuint"] = typeof(nuint),
     };
 
+    public static readonly List<TypeInfo> Declared = [];
+
     public static readonly Dictionary<Assembly, string> MappedAssemblyNames = [];
 
     [field: AllowNull]
@@ -53,15 +53,18 @@ public class TypeQualifier
             return result;
         }
 
-        var baseAsmName = assembly.GetName().Name;
+        var baseAsm = assembly.GetName().Name;
         var baseDir = Path.GetDirectoryName(assembly.Location)!.NormalizePath();
+
         var packageAsm = BaseModManager.Instance.packages
                              .FirstOrDefault(p => p.dirInfo.FullName.NormalizePath() == baseDir)?.title
                          ?? Plugins.FirstOrDefault(p => p.GetType().Assembly == assembly)?.Info.Metadata.Name
-                         ?? baseAsmName;
+                         ?? baseAsm;
 
-        packageAsm = packageAsm.Replace(" ", "").Replace(baseAsmName, "");
-        packageAsm = string.IsNullOrWhiteSpace(packageAsm) ? baseAsmName : $"{packageAsm} {baseAsmName}";
+        packageAsm = packageAsm.Replace(" ", "").Replace(baseAsm, "");
+        packageAsm = string.IsNullOrWhiteSpace(packageAsm)
+            ? baseAsm
+            : StringHelper.MergeOverlap(packageAsm, baseAsm);
 
         return MappedAssemblyNames[assembly] = packageAsm;
     }
