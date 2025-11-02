@@ -1,7 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using BepInEx;
-using Cwl.Helper.Exceptions;
 using Emmersive.API.Services;
 using Emmersive.Components;
 using Emmersive.Helper;
@@ -14,7 +13,7 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.emmersive";
     internal const string Name = "Elin with AI (Beta)";
-    internal const string Version = "0.9.12";
+    internal const string Version = "0.9.13";
 
     [field: AllowNull]
     public static string BuildVersion => field ??= EmMod.Assembly.GetName().Version.ToString();
@@ -42,9 +41,9 @@ internal sealed partial class EmMod : BaseUnityPlugin
     private void Start()
     {
 #if !DEBUG
-        MonoFrame.AddVendorExclusion("Azure.");
-        MonoFrame.AddVendorExclusion("Microsoft.");
-        MonoFrame.AddVendorExclusion("OpenAI");
+        Cwl.Helper.Exceptions.MonoFrame.AddVendorExclusion("Azure.");
+        Cwl.Helper.Exceptions.MonoFrame.AddVendorExclusion("Microsoft.");
+        Cwl.Helper.Exceptions.MonoFrame.AddVendorExclusion("OpenAI");
 #endif
 
         EmConfig.InvalidateConfigs();

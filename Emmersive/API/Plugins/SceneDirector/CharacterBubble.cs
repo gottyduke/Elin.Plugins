@@ -70,7 +70,7 @@ public partial class SceneDirector
                     return;
                 }
 
-                RecentActionContext.Add(chara.Name, text);
+                RecentActionContext.Add(chara.NameSimple, text);
 
                 Msg.SetColor(color);
                 chara.Say(gesture ? text : text.Bracket());

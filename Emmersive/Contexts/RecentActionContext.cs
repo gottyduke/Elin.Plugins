@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cwl.API.Attributes;
+using Cwl.API.Processors;
 
 namespace Emmersive.Contexts;
 
@@ -14,6 +15,8 @@ public class RecentActionContext : ContextProviderBase
     private static int _indexSinceStart;
     private static readonly string _comma = "_comma".lang();
     private static readonly string _push = "em_push".lang();
+
+    internal static HashSet<string> Filters = [_push];
 
     public override string Name => "recent_action_log";
 
@@ -57,7 +60,9 @@ public class RecentActionContext : ContextProviderBase
 
     public static void Add(string actor, string entry)
     {
-        if (entry.Contains(_push)) {
+        Filters.Remove("");
+
+        if (Filters.Any(entry.Contains)) {
             return;
         }
 
@@ -104,13 +109,15 @@ public class RecentActionContext : ContextProviderBase
         var seen = new HashSet<string>(StringComparer.Ordinal);
         string? current = null;
 
+        Filters.Remove("");
+
         while (lastIndex >= _indexSinceStart && logs.Count < depth) {
             if (!dict.TryGetValue(lastIndex, out var msg)) {
                 break;
             }
 
             var text = msg.text.StripBrackets();
-            if (text.IsEmpty() || text.Contains(_push)) {
+            if (text.IsEmpty() || Filters.Any(text.Contains)) {
                 lastIndex--;
                 continue;
             }
@@ -140,9 +147,20 @@ public class RecentActionContext : ContextProviderBase
     }
 
     [CwlPostLoad]
-    public static void ClearSession()
+    public static void ClearSession(GameIOProcessor.GameIOContext context)
     {
         RecentActions.Clear();
         _indexSinceStart = EClass.game.log.currentLogIndex - 1;
+
+        if (context.Load<HashSet<string>>(out var filters, "action_filters")) {
+            Filters = filters;
+        }
+    }
+
+    [CwlPostSave]
+    public static void SaveFilters(GameIOProcessor.GameIOContext context)
+    {
+        Filters.Add(_push);
+        context.Save(Filters, "action_filters");
     }
 }
