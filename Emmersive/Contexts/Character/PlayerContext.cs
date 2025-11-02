@@ -10,6 +10,7 @@ public class PlayerContext() : CharaContext(EClass.pc)
     {
         var data = base.BuildInternal();
         data["fame"] = EClass.player.fame;
+        data.Remove("uid");
         return data;
     }
 }

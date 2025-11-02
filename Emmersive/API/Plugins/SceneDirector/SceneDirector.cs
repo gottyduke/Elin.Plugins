@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
@@ -25,8 +26,7 @@ public partial class SceneDirector : EClass
     {
         var reactions = TryParseReactions(content);
         if (reactions is not { Length: > 0 }) {
-            EmMod.Warn<SceneDirector>("em_ui_scene_parse_error".Loc(content));
-            return;
+            throw new FormatException("em_ui_scene_parse_error".Loc(content));
         }
 
         var maxDelay = 0f;
@@ -62,13 +62,15 @@ public partial class SceneDirector : EClass
             var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(content);
             if (dict is not null) {
                 if (dict.TryGetValue("items", out var items)) {
+                    var serialized = JsonConvert.SerializeObject(items);
                     EmMod.Debug<SceneReaction>("json_schema mode");
-                    return JsonConvert.DeserializeObject<SceneReaction[]>(JsonConvert.SerializeObject(items));
+                    return JsonConvert.DeserializeObject<SceneReaction[]>(serialized);
                 }
 
                 if (dict.FirstOrDefault() is var firstCollection) {
+                    var serialized = JsonConvert.SerializeObject(firstCollection);
                     EmMod.Debug<SceneReaction>("json_schema_forward mode");
-                    return JsonConvert.DeserializeObject<SceneReaction[]>(JsonConvert.SerializeObject(firstCollection));
+                    return JsonConvert.DeserializeObject<SceneReaction[]>(serialized);
                 }
             }
         } catch {

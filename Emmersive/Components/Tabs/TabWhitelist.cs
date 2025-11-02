@@ -28,7 +28,8 @@ internal class TabWhitelist : TabCharaRelations
                 EmConfig.Context.WhitelistMode.Value = value;
                 _whitelistMode?.mainText.text = GetModeText();
                 LayerEmmersivePanel.Instance?.Reopen();
-            });
+            })
+            .WithMinWidth(240);
 
         var mapCharas = GetMapCharas();
 
