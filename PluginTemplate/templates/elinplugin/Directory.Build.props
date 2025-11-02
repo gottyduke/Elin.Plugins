@@ -56,6 +56,12 @@
         <Reference Include="$(ElinGamePath)\Elin_Data\Managed\Elin.dll">
             <Private>False</Private>
         </Reference>
+        <Reference Include="$(ElinGamePath)\Elin_Data\Managed\Heathen*.dll">
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="$(ElinGamePath)\Elin_Data\Managed\com.rlabrecque.steamworks.net.dll">
+            <Private>False</Private>
+        </Reference>
         <Reference Include="$(ElinGamePath)\Elin_Data\Managed\LZ4.dll">
             <Private>False</Private>
         </Reference>
@@ -87,6 +93,9 @@
             <Private>False</Private>
         </Reference>
         <Reference Include="$(ElinGamePath)\Elin_Data\Managed\System.Core.dll">
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="$(ElinGamePath)\Elin_Data\Managed\System.Memory.dll">
             <Private>False</Private>
         </Reference>
     </ItemGroup>
