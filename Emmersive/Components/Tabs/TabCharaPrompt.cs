@@ -20,8 +20,6 @@ internal class TabCharaPrompt : TabEmmersiveBase
         header.Button("em_ui_open_folder".lang(), () => ResourceFetch.OpenCustomFolder("Emmersive/Characters"));
 
         BuildCharacterPromptCards();
-
-        base.OnLayout();
     }
 
     internal static Chara[] GetMapCharas()
@@ -64,7 +62,7 @@ internal class TabCharaPrompt : TabEmmersiveBase
                 .SetSiblingIndex(2);
         } catch (Exception ex) {
             if (card != null) {
-                DestroyImmediate(card);
+                DestroyImmediate(card.gameObject);
             }
 
             DebugThrow.Void(ex);

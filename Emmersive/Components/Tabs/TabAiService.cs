@@ -59,8 +59,6 @@ internal class TabAiService : TabEmmersiveBase
                 ApiPoolSelector.Instance.ReorderService(chatProvider, a);
             }
         }
-
-        base.OnLayout();
     }
 
     public override void OnLayoutConfirm()
@@ -71,6 +69,8 @@ internal class TabAiService : TabEmmersiveBase
         foreach (var provider in layouts) {
             provider.OnLayoutConfirm();
         }
+
+        base.OnLayoutConfirm();
     }
 
     private void BuildServiceButtons()

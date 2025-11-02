@@ -50,11 +50,9 @@ internal class TabDebugPanel : TabEmmersiveBase
                 entry.TopicPair(activity.Status.ToString(), $"{activity.TokensInput} + {activity.TokensOutput}");
             }
         }
-
-        base.OnLayout();
     }
 
-    private void BuildDebugButtons()
+    internal void BuildDebugButtons()
     {
         var btnGroup = Horizontal()
             .WithSpace(10);
