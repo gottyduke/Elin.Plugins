@@ -22,11 +22,10 @@ public static class ZoneExt
                 return true;
             }
 
-            if (zoneId != "*" && !randomFallback) {
-                return false;
+            if (zoneId == "*" || randomFallback) {
+                zone = Array.FindAll(zones, z => z.CanSpawnAdv).RandomItem();
             }
 
-            zone = Array.FindAll(zones, z => z.CanSpawnAdv).RandomItem();
             return zone is not null;
         }
 

@@ -12,14 +12,10 @@ public static class CardExt
         public int GetFlagValue(string flag)
         {
             var key = flag.GetHashCode();
-            if (owner.mapInt.TryGetValue(key, out var value)) {
-                return value;
-            }
+            var value = owner.mapInt.GetValueOrDefault(key);
 
-            if (EClass.core.IsGameStarted) {
-                if (owner.IsPC) {
-                    value = EClass.player.dialogFlags.GetValueOrDefault(flag, 0);
-                }
+            if (EClass.core.IsGameStarted && owner.IsPC) {
+                value = EClass.player.dialogFlags.GetValueOrDefault(flag, 0);
             }
 
             return value;
@@ -30,10 +26,8 @@ public static class CardExt
             var key = flag.GetHashCode();
             owner.mapInt[key] = value;
 
-            if (EClass.core.IsGameStarted) {
-                if (owner.IsPC) {
-                    EClass.player.dialogFlags[flag] = value;
-                }
+            if (EClass.core.IsGameStarted && owner.IsPC) {
+                EClass.player.dialogFlags[flag] = value;
             }
         }
 

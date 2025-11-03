@@ -126,6 +126,7 @@ public static class CharaExt
                 branch.BanishMember(chara, true);
             }
 
+            chara.SetFaction(EClass.Wilds);
             EClass.game.cards.listAdv.Remove(chara);
 
             chara.Destroy();
