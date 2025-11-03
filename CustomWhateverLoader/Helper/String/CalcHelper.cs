@@ -65,7 +65,8 @@ public static class CalcHelper
                 ['/', .. { } raw] when float.TryParse(raw, out var rhs) => lhs / rhs,
                 ['=', .. { } raw] when float.TryParse(raw, out var rhs) => rhs,
                 ['=', '=', .. { } raw] when float.TryParse(raw, out var rhs) => rhs,
-                { } raw when float.TryParse(raw, out var rhs) => lhs + rhs,
+                // no operator, default to assignment
+                { } raw when float.TryParse(raw, out var rhs) => rhs,
                 _ => lhs,
             };
         }
@@ -82,7 +83,8 @@ public static class CalcHelper
                 ['/', .. { } raw] when int.TryParse(raw, out var rhs) => lhs / rhs,
                 ['=', .. { } raw] when int.TryParse(raw, out var rhs) => rhs,
                 ['=', '=', .. { } raw] when int.TryParse(raw, out var rhs) => rhs,
-                { } raw when int.TryParse(raw, out var rhs) => lhs + rhs,
+                // no operator, default to assignment
+                { } raw when int.TryParse(raw, out var rhs) => rhs,
                 _ => lhs,
             };
         }
@@ -107,7 +109,8 @@ public static class CalcHelper
                 ['!', '=', .. { } raw] when float.TryParse(raw, out var rhs) => !Mathf.Approximately(lhs, rhs),
                 ['<', '=', .. { } raw] when float.TryParse(raw, out var rhs) => lhs <= rhs,
                 ['<', .. { } raw] when float.TryParse(raw, out var rhs) => lhs < rhs,
-                { } raw when float.TryParse(raw, out var rhs) => lhs > rhs,
+                // no operator, default to equality
+                { } raw when float.TryParse(raw, out var rhs) => Mathf.Approximately(lhs, rhs),
                 _ => false,
             };
         }
@@ -122,7 +125,8 @@ public static class CalcHelper
                 ['!', '=', .. { } raw] when int.TryParse(raw, out var rhs) => lhs != rhs,
                 ['<', '=', .. { } raw] when int.TryParse(raw, out var rhs) => lhs <= rhs,
                 ['<', .. { } raw] when int.TryParse(raw, out var rhs) => lhs < rhs,
-                { } raw when int.TryParse(raw, out var rhs) => lhs > rhs,
+                // no operator, default to equality
+                { } raw when int.TryParse(raw, out var rhs) => lhs == rhs,
                 _ => false,
             };
         }

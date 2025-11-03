@@ -80,12 +80,15 @@ public partial class DramaExpansion
         parameters.RequiresOpt(out var flag, out var optExpr);
         dm.RequiresActor(out var actor);
 
-        var flagVal = flag.Value;
+        var flagKey = flag.Value;
         var expr = optExpr.Get(">=1");
 
-        return actor.IsPC
-            ? player.dialogFlags.TryGetValue(flagVal, out var value) && Compare(value, expr)
-            : Compare(actor.GetFlagValue(flagVal), expr);
+        if (!actor.IsPC) {
+            return Compare(actor.GetFlagValue(flagKey), expr);
+        }
+
+        player.dialogFlags.TryAdd(flagKey, 0);
+        return player.dialogFlags.TryGetValue(flagKey, out var value) && Compare(value, expr);
     }
 
     [CwlNodiscard]
