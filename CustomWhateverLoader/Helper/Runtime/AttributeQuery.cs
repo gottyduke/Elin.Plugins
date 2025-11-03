@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using HarmonyLib;
 
 namespace Cwl.Helper;
 
@@ -21,6 +22,24 @@ public static class AttributeQuery
 
             if (attrs.Length > 0) {
                 yield return new(type, attrs);
+            }
+        }
+    }
+
+    [SwallowExceptions]
+    public static IEnumerable<(PropertyInfo, T[])> PropertiesWith<T>(bool inherit = true) where T : Attribute
+    {
+        foreach (var property in TypeQualifier.Declared.SelectMany(AccessTools.GetDeclaredProperties)) {
+            T[] attrs = [];
+
+            try {
+                attrs = property.GetCustomAttributes<T>(inherit).ToArray();
+            } catch {
+                // noexcept
+            }
+
+            if (attrs.Length > 0) {
+                yield return new(property, attrs);
             }
         }
     }

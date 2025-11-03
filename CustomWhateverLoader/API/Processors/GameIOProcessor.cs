@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -19,22 +20,23 @@ namespace Cwl.API.Processors;
 /// </summary>
 public class GameIOProcessor
 {
+    private static readonly Dictionary<string, PropertyInfo> _contextVars = new(StringComparer.Ordinal);
     public static GameIOContext? LastUsedContext { get; private set; }
 
     [field: AllowNull]
     public static GameIOContext PersistentContext => field ??= new(Application.persistentDataPath);
 
-    private static event Action<GameIOContext?>? OnGamePreSaveProcess;
-    private static event Action<GameIOContext?>? OnGamePostSaveProcess;
-    private static event Action<GameIOContext?>? OnGamePreLoadProcess;
-    private static event Action<GameIOContext?>? OnGamePostLoadProcess;
+    private static event Action<GameIOContext>? OnGamePreSaveProcess;
+    private static event Action<GameIOContext>? OnGamePostSaveProcess;
+    private static event Action<GameIOContext>? OnGamePreLoadProcess;
+    private static event Action<GameIOContext>? OnGamePostLoadProcess;
 
-    public static void AddSave(Action<GameIOContext?> saveProcess, bool post)
+    public static void AddSave(Action<GameIOContext> saveProcess, bool post)
     {
         Add(saveProcess, true, post);
     }
 
-    public static void AddLoad(Action<GameIOContext?> loadProcess, bool post)
+    public static void AddLoad(Action<GameIOContext> loadProcess, bool post)
     {
         Add(loadProcess, false, post);
     }
@@ -48,7 +50,7 @@ public class GameIOProcessor
         return new(Path.Combine(Application.persistentDataPath, dirName));
     }
 
-    private static void Add(Action<GameIOContext?> ioProcess, bool save, bool post)
+    private static void Add(Action<GameIOContext> ioProcess, bool save, bool post)
     {
         switch (save, post) {
             case (true, true):
@@ -65,7 +67,7 @@ public class GameIOProcessor
                 return;
         }
 
-        void Process(GameIOContext? context)
+        void Process(GameIOContext context)
         {
             try {
                 ioProcess(context);
@@ -112,12 +114,68 @@ public class GameIOProcessor
         if (method.GetParameters().Length == 0) {
             Add(_ => method.FastInvokeStatic(), save, post);
         } else {
-            Add(ctx => method.FastInvokeStatic(ctx!), save, post);
+            Add(ctx => method.FastInvokeStatic(ctx), save, post);
         }
 
         var state = post ? "post" : "pre";
         var type = save ? "save" : "load";
         CwlMod.Log<GameIOContext>("cwl_log_processor_add".Loc(state, type, method.GetAssemblyDetail(false)));
+    }
+
+    internal static void RegisterContextVars()
+    {
+        foreach (var (property, attr) in AttributeQuery.PropertiesWith<CwlContextVar>()) {
+            if (property.SetMethod is not { IsStatic: true }) {
+                CwlMod.WarnWithPopup<GameIOContext>("CwlContextVar must be used with static properties");
+                continue;
+            }
+
+            var decl = property.DeclaringType!;
+
+            _contextVars[$"{decl.FullName}:{attr[0].ChunkName}"] = property;
+
+            CwlMod.Log<GameIOContext>("cwl_log_processor_add".Loc("context_var", attr[0].ChunkName,
+                $"{decl.Name}::{property.Name}"));
+        }
+    }
+
+    [CwlPreLoad]
+    private static void SetContextVars(GameIOContext context)
+    {
+        if (!context.Load<Dictionary<string, object>>(out var loaded, "context_vars")) {
+            return;
+        }
+
+        foreach (var (chunk, property) in _contextVars.ToArray()) {
+            try {
+                if (loaded.TryGetValue($"{property.DeclaringType!.FullName}:{chunk}", out var value)) {
+                    property.SetMethod.FastInvokeStatic(value);
+                }
+            } catch (Exception ex) {
+                CwlMod.Error($"failed to populate context var {chunk}\n{ex}");
+                _contextVars.Remove(chunk);
+                // noexcept
+            }
+        }
+    }
+
+    [CwlPreSave]
+    private static void GetContextVars(GameIOContext context)
+    {
+        var data = new Dictionary<string, object?>(StringComparer.Ordinal);
+
+        foreach (var (chunk, property) in _contextVars.ToArray()) {
+            try {
+                var reference = property.GetMethod.FastInvokeStatic();
+                data[$"{property.DeclaringType!.FullName}:{chunk}"] = reference;
+            } catch (Exception ex) {
+                CwlMod.Error($"failed to save context var {chunk}\n{ex}");
+                _contextVars.Remove(chunk);
+                // noexcept
+            }
+        }
+
+        context.Save(data, "context_vars");
     }
 
     /// <summary>

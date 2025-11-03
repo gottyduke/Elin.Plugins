@@ -193,6 +193,8 @@ internal sealed partial class CwlMod
             }
         }
 
+        GameIOProcessor.RegisterContextVars();
+
         TraitTransformer.Add(CustomMerchant.TransformMerchant);
         TraitTransformer.Add(CustomConverter.TransformConverter);
 
