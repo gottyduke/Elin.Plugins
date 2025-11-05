@@ -11,8 +11,6 @@ internal class TabDebugPanel : TabEmmersiveBase
 {
     public override void OnLayout()
     {
-        BuildDebugButtons();
-
         var logs = RecentActionContext.RecentActions
             .TakeLast(EmConfig.Context.RecentLogDepth.Value * 2)
             .Reverse()
@@ -49,29 +47,6 @@ internal class TabDebugPanel : TabEmmersiveBase
                 entry.TopicPair(activity.RequestTime.ToLocalTime().ToLongTimeString(), activity.ServiceName);
                 entry.TopicPair(activity.Status.ToString(), $"{activity.TokensInput} + {activity.TokensOutput}");
             }
-        }
-    }
-
-    internal void BuildDebugButtons()
-    {
-        var btnGroup = Horizontal()
-            .WithSpace(10);
-        btnGroup.Layout.childForceExpandWidth = true;
-
-        btnGroup.Button("em_ui_test_generation".lang(), TestRun);
-
-        btnGroup.Button("em_ui_scheduler_dry".lang(), () => {
-            EmScheduler.SwitchMode(EmScheduler.ScheduleMode.DryRun);
-            TestRun();
-        });
-
-        return;
-
-        void TestRun()
-        {
-            LayerEmmersivePanel.Instance!.OnLayoutConfirm();
-            ELayer.ui.RemoveLayer<LayerEmmersivePanel>();
-            EmScheduler.RequestScenePlayImmediate();
         }
     }
 }

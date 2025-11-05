@@ -14,6 +14,7 @@ namespace Emmersive.Components;
 internal class TabSystemPrompt : TabEmmersiveBase
 {
     private readonly List<UIInputText> _filters = [];
+    private EInput.KeyMap _chatKey = null!;
 
     public override void OnLayout()
     {
@@ -52,6 +53,21 @@ internal class TabSystemPrompt : TabEmmersiveBase
         }).GetComponent<Image>().color = Color.red;
 
         btnGroup.Button("em_ui_open_folder".lang(), () => OpenFileOrPath.Run(ResourceFetch.CustomFolder));
+
+        _chatKey = new() {
+            action = EAction.Chat,
+            key = EmConfig.Policy.PlayerTalkKey.Value,
+            required = true,
+        };
+
+        var pair = Horizontal();
+        pair.Layout.childForceExpandWidth = true;
+
+        pair.Text("em_ui_chat_keymap");
+        pair.Button(_chatKey.key.ToString(), () => Dialog.Keymap(_chatKey).SetOnKill(() => {
+            EmConfig.Policy.PlayerTalkKey.Value = _chatKey.key;
+            LayerEmmersivePanel.Instance?.Reopen();
+        }));
     }
 
     internal void BuildContextFilter()

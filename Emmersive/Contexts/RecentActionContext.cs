@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cwl.API.Attributes;
-using Cwl.API.Processors;
 using Emmersive.Helper;
 
 namespace Emmersive.Contexts;
@@ -123,11 +122,8 @@ public class RecentActionContext : ContextProviderBase
                 continue;
             }
 
-            if (text.StartsWith(" ") || text.StartsWith(_comma)) {
-                current = text + (current ?? "");
-            } else {
-                current = text + (current ?? "");
-
+            current = text + (current ?? "");
+            if (!text.StartsWith(" ") && !text.StartsWith(_comma)) {
                 if (seen.Add(current)) {
                     logs.Add(current);
                 }

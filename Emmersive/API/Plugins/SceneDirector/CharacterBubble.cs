@@ -23,7 +23,7 @@ public partial class SceneDirector
                           [Description("Delay, in seconds, before executing this action. Use it to chain actions naturally.")]
                           float delay = 0f)
     {
-        if (!FindSameMapChara(uid, out var chara) || chara.IsPC) {
+        if (!FindSameMapChara(uid, out var chara)) {
             return;
         }
 
@@ -73,7 +73,13 @@ public partial class SceneDirector
                 RecentActionContext.Add(chara.NameSimple, text);
 
                 Msg.SetColor(color);
-                chara.Say(gesture ? text : text.Bracket());
+
+                var logText = gesture ? text : text.Bracket();
+                if (EmConfig.Scene.PrefixSpeakerName.Value) {
+                    logText = $"{chara.NameSimple}: {logText}";
+                }
+
+                chara.Say(logText);
 
                 if (profile.UsePopFeed) {
                     WidgetFeed.Instance.SayRaw(chara, text.Wrap(7));

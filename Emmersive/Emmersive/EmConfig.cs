@@ -1,6 +1,7 @@
 using BepInEx.Configuration;
 using Emmersive.Components;
 using ReflexCLI.Attributes;
+using UnityEngine;
 
 namespace Emmersive;
 
@@ -77,6 +78,26 @@ internal partial class EmConfig
                 "生成请求失败后的服务自动禁用时间\n" +
                 "用于服务池自动管理下一可用服务",
                 new AcceptableValueRange<float>(0f, 60f)));
+
+        Policy.PlayerTalkKey = config.Bind(
+            "RuntimePolicy",
+            "PlayerTalkKey",
+            KeyCode.Return,
+            new ConfigDescription(
+                "Button to trigger a player input dialog\n" +
+                "Press Escape to cancel\n" +
+                "玩家输入对话的快捷键\n" +
+                "按 Escape 取消对话"));
+
+        Policy.PlayerTalkTrigger = config.Bind(
+            "RuntimePolicy",
+            "PlayerTalkTrigger",
+            true,
+            new ConfigDescription(
+                "After a player talk, trigger a scene request immediately\n" +
+                "Disabling this will make it behave as a normal game talk\n" +
+                "玩家输入对话后，自动无视冷却请求一次生成\n" +
+                "禁用此项将表现为普通玩家对话"));
 
         Context.DisabledProviders = config.Bind(
             "Context",
@@ -219,6 +240,13 @@ internal partial class EmConfig
             "如果角色已经计划于一次场景生成请求，则禁用该角色的原版气泡\n" +
             "如果生成请求超时设置的很长，可能会跳过该气泡");
 
+        Scene.PrefixSpeakerName = config.Bind(
+            "Scene",
+            "PrefixSpeakerName",
+            true,
+            "Prefix speaker's name in front of the chat text to distinguish from others\n" +
+            "附加显示反应NPC的姓名");
+
         Reload();
     }
 
@@ -231,6 +259,7 @@ internal partial class EmConfig
         internal static ConfigEntry<bool> BlockCharaTalk { get; set; } = null!;
         internal static ConfigEntry<int> TurnsCooldown { get; set; } = null!;
         internal static ConfigEntry<float> SecondsCooldown { get; set; } = null!;
+        internal static ConfigEntry<bool> PrefixSpeakerName { get; set; } = null!;
     }
 
     internal static class Context
@@ -253,5 +282,7 @@ internal partial class EmConfig
         internal static ConfigEntry<bool> Verbose { get; set; } = null!;
         internal static ConfigEntry<float> ServiceCooldown { get; set; } = null!;
         internal static ConfigEntry<float> GlobalRequestCooldown { get; set; } = null!;
+        internal static ConfigEntry<KeyCode> PlayerTalkKey { get; set; } = null!;
+        internal static ConfigEntry<bool> PlayerTalkTrigger { get; set; } = null!;
     }
 }
