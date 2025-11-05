@@ -23,6 +23,10 @@ public static class ParamParser
 
         public string ExtractInBetween(string left, string right, string fallback = "")
         {
+            if (input.Length <= 2) {
+                return fallback;
+            }
+
             var leftIndex = input.IndexOf(left, StringComparison.InvariantCultureIgnoreCase);
             if (leftIndex == -1) {
                 return fallback;

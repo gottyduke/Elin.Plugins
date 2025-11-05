@@ -33,34 +33,33 @@ public static class SpriteCreator
                 return null;
             }
 
-            string path = new(spritePath);
-            if (!path.EndsWith(".png")) {
-                if (SpriteReplacer.dictModItems.TryGetValue(path, out var fileById)) {
-                    path = fileById;
+            if (!spritePath.EndsWith(".png")) {
+                if (SpriteReplacer.dictModItems.TryGetValue(spritePath, out var fileById)) {
+                    spritePath = fileById;
                 }
 
-                path += ".png";
+                spritePath += ".png";
             }
 
-            if (!File.Exists(path)) {
-                var candidates = PackageIterator.GetRelocatedFilesFromPackage(Path.Combine("Texture", path))
+            if (!File.Exists(spritePath)) {
+                var candidates = PackageIterator.GetRelocatedFilesFromPackage(Path.Combine("Texture", spritePath))
                     .ToArray();
                 if (candidates.Length == 0) {
                     return null;
                 }
 
-                path = candidates[^1].FullName;
+                spritePath = candidates[^1].FullName;
             }
 
             pivot ??= new(0.5f, 0.5f);
 
-            var cache = $"{path}/{pivot}/{resizeWidth}/{resizeHeight}";
+            var cache = $"{spritePath}/{pivot}/{resizeWidth}/{resizeHeight}";
             name ??= cache;
 
             try {
                 if (!_cached.TryGetValue(cache, out var tex) ||
                     !CwlConfig.CacheSprites) {
-                    tex = IO.LoadPNG(path);
+                    tex = IO.LoadPNG(spritePath);
                     if (tex == null) {
                         return null;
                     }
@@ -76,7 +75,7 @@ public static class SpriteCreator
 
                 _cached[cache] = tex;
             } catch (Exception ex) {
-                CwlMod.WarnWithPopup<Sprite>("cwl_warn_sprite_creator".Loc(path.ShortPath(), ex.Message), ex);
+                CwlMod.WarnWithPopup<Sprite>("cwl_warn_sprite_creator".Loc(spritePath.ShortPath(), ex.Message), ex);
                 return null;
                 // noexcept
             }
