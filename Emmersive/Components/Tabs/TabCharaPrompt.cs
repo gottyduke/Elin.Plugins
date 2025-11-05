@@ -48,10 +48,6 @@ internal class TabCharaPrompt : TabEmmersiveBase
             _ = new BackgroundContext(chara).Build();
             card = BuildPromptCard(chara.Name, $"Emmersive/Characters/{chara.UnifiedId}.txt");
 
-            if (chara.IsPC) {
-                return;
-            }
-
             card.Toggle("em_ui_use_pop",
                     chara.GetFlagValue("em_pop") > 0,
                     value => chara.SetFlagValue("em_pop", value ? 1 : 0))

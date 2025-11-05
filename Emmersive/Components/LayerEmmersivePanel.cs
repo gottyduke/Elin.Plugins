@@ -44,6 +44,10 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
     {
         base.OnAfterAddLayer();
 
+        if (!Data.StartingTab.IsEmpty()) {
+            _lastOpenedTab = Data.StartingTab;
+        }
+
         Window.SwitchContent(_lastOpenedTab);
 
         Window.transform.localPosition = _browsedPosition;
@@ -67,7 +71,7 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
     public void Reopen()
     {
         ui.RemoveLayer(this);
-        OpenPanelSesame();
+        OpenPanelSesame(_lastOpenedTab);
     }
 
     public void OnLayoutConfirm()
@@ -81,9 +85,9 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
 
     [ConsoleCommand("open")]
     [CwlContextMenu("em_ui_open_sesame")]
-    internal static void OpenPanelSesame()
+    internal static void OpenPanelSesame(string targetTab = "")
     {
-        YK.CreateLayer<LayerEmmersivePanel, LayerCreationData>(new());
+        YK.CreateLayer<LayerEmmersivePanel, LayerCreationData>(new(targetTab));
     }
 
     private static Rect FitWindow()

@@ -9,7 +9,7 @@ namespace Emmersive.Components;
 [ConsoleCommandClassCustomizer("em")]
 public partial class EmScheduler : EMono
 {
-    public enum ScheduleMode
+    public enum SchedulerMode
     {
         Immediate,
         Buffer,
@@ -22,17 +22,17 @@ public partial class EmScheduler : EMono
 
     public static float ScenePlayDelay { get; private set; }
     public static bool IsInProgress { get; private set; }
-    public static ScheduleMode Mode { get; private set; } = ScheduleMode.Buffer;
+    public static SchedulerMode Mode { get; private set; } = SchedulerMode.Buffer;
     public static float GlobalCooldown { get; private set; }
 
     public static bool CanMakeRequest =>
         (!IsInProgress || Semaphore.CurrentCount > 0) &&
-        Mode is ScheduleMode.Buffer or ScheduleMode.Immediate &&
+        Mode is SchedulerMode.Buffer or SchedulerMode.Immediate &&
         GlobalCooldown <= 0f;
 
     private void Update()
     {
-        if (Mode == ScheduleMode.Immediate || BufferReady) {
+        if (Mode == SchedulerMode.Immediate || BufferReady) {
             FlushBuffer();
         }
 
@@ -48,7 +48,7 @@ public partial class EmScheduler : EMono
         }
     }
 
-    public static void SwitchMode(ScheduleMode mode)
+    public static void SwitchMode(SchedulerMode mode)
     {
         if (Mode == mode) {
             return;

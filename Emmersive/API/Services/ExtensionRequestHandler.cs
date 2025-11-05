@@ -68,7 +68,7 @@ public class ExtensionRequestHandler()
 
         void ThrowIfDryRun()
         {
-            if (EmScheduler.Mode != EmScheduler.ScheduleMode.DryRun) {
+            if (EmScheduler.Mode != EmScheduler.SchedulerMode.DryRun) {
                 return;
             }
 
@@ -83,7 +83,7 @@ public class ExtensionRequestHandler()
             ResourceFetch.SetCustomResource("dry_run.txt", log);
             ResourceFetch.OpenOrCreateCustomResource("dry_run.txt");
 
-            EmScheduler.SwitchMode(EmScheduler.ScheduleMode.Buffer);
+            EmScheduler.SwitchMode(EmScheduler.SchedulerMode.Buffer);
 
             throw new SchedulerDryRunException();
         }

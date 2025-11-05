@@ -19,6 +19,7 @@ internal class TabAiService : TabEmmersiveBase
     public override void OnLayout()
     {
         BuildSchedulerButton();
+        BuildDebugButtons();
 
         if (EmActivity.Session.Count > 0) {
             this.MakeCard().ShowActivityInfo("");
@@ -115,9 +116,9 @@ internal class TabAiService : TabEmmersiveBase
 
         _schedulerMode = btnGroup.Toggle(
             GetCurrentSchedulerState(),
-            EmScheduler.Mode is EmScheduler.ScheduleMode.Buffer or EmScheduler.ScheduleMode.Immediate,
+            EmScheduler.Mode is EmScheduler.SchedulerMode.Buffer or EmScheduler.SchedulerMode.Immediate,
             value => {
-                EmScheduler.SwitchMode(value ? EmScheduler.ScheduleMode.Buffer : EmScheduler.ScheduleMode.Stop);
+                EmScheduler.SwitchMode(value ? EmScheduler.SchedulerMode.Buffer : EmScheduler.SchedulerMode.Stop);
                 _schedulerMode?.mainText.text = GetCurrentSchedulerState();
             });
         _schedulerMode.GetOrCreate<LayoutElement>().minWidth = 80f;
@@ -138,8 +139,31 @@ internal class TabAiService : TabEmmersiveBase
 
         string GetCurrentSchedulerState()
         {
-            var isOn = EmScheduler.Mode is EmScheduler.ScheduleMode.Buffer or EmScheduler.ScheduleMode.Immediate;
+            var isOn = EmScheduler.Mode is EmScheduler.SchedulerMode.Buffer or EmScheduler.SchedulerMode.Immediate;
             return "em_ui_scheduler_toggle".Loc((isOn ? "on" : "off").lang());
+        }
+    }
+
+    private void BuildDebugButtons()
+    {
+        var btnGroup = Horizontal()
+            .WithSpace(10);
+        btnGroup.Layout.childForceExpandWidth = true;
+
+        btnGroup.Button("em_ui_test_generation".lang(), TestRun);
+
+        btnGroup.Button("em_ui_scheduler_dry".lang(), () => {
+            EmScheduler.SwitchMode(EmScheduler.SchedulerMode.DryRun);
+            TestRun();
+        });
+
+        return;
+
+        void TestRun()
+        {
+            LayerEmmersivePanel.Instance!.OnLayoutConfirm();
+            ELayer.ui.RemoveLayer<LayerEmmersivePanel>();
+            EmScheduler.RequestScenePlayImmediate();
         }
     }
 

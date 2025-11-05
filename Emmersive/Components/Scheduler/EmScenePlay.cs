@@ -1,9 +1,6 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
-using System.Threading;
-using Cwl.API.Attributes;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
@@ -22,13 +19,6 @@ namespace Emmersive.Components;
 
 public partial class EmScheduler
 {
-    [field: AllowNull]
-    private static CancellationTokenSource SceneCts
-    {
-        get => field ??= new();
-        set;
-    }
-
     [ConsoleCommand("test_current")]
     public static void RequestScenePlayImmediate(Chara? focus = null)
     {
@@ -65,7 +55,7 @@ public partial class EmScheduler
         await UniTask.SwitchToThreadPool();
 
         try {
-            await Semaphore.WaitAsync(SceneCts.Token);
+            await Semaphore.WaitAsync(UniTasklet.SceneCts.Token);
 
             var context = contextBuilder.Build().ToHistory();
             await ScenePlayAsync(context, retries);
@@ -117,7 +107,7 @@ public partial class EmScheduler
         FreezeCharas(true);
 
         try {
-            var response = await provider.HandleRequest(kernel, context, SceneCts.Token);
+            var response = await provider.HandleRequest(kernel, context, UniTasklet.SceneCts.Token);
 
             if (response.Content.IsEmpty()) {
                 activity.SetStatus(EmActivity.StatusType.Failed);
@@ -135,7 +125,7 @@ public partial class EmScheduler
             }
         } catch (AggregateException ex)
             when (ex.InnerException is SchedulerDryRunException) {
-            SwitchMode(ScheduleMode.Buffer);
+            SwitchMode(SchedulerMode.Buffer);
             activity.SetStatus(EmActivity.StatusType.Unknown);
             // noexcept
         } catch (OperationCanceledException) {
@@ -193,13 +183,5 @@ public partial class EmScheduler
                 EmMod.Debug<EmScheduler>("em_ui_scene_retry_end".lang());
             }
         }
-    }
-
-    [CwlSceneInitEvent(Scene.Mode.Title)]
-    private static void OnSceneExit()
-    {
-        SceneCts.Cancel();
-        SceneCts.Dispose();
-        SceneCts = null!;
     }
 }

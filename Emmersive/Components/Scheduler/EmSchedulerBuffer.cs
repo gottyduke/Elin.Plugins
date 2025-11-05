@@ -61,7 +61,7 @@ public partial class EmScheduler
             return;
         }
 
-        if (Mode != ScheduleMode.Stop) {
+        if (Mode != SchedulerMode.Stop) {
             RequestScenePlayWithTrigger();
         }
 

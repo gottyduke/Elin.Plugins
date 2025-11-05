@@ -9,6 +9,7 @@ public class PlayerContext() : CharaContext(EClass.pc)
     protected override IDictionary<string, object> BuildInternal()
     {
         var data = base.BuildInternal();
+        data["title"] = EClass.pc.Name;
         data["fame"] = EClass.player.fame;
         data.Remove("uid");
         return data;

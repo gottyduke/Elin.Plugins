@@ -12,8 +12,8 @@ public class SceneTriggerEvent
     {
         Context ??= [];
 
-        Context["source_uid"] = Chara.uid;
-        Context["original_text"] = Trigger;
+        Context["uid"] = Chara.uid;
+        Context["original"] = Trigger;
 
         return Context;
     }

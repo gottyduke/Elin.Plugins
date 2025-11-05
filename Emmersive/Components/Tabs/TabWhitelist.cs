@@ -22,13 +22,13 @@ internal class TabWhitelist : TabCharaRelations
         var isWhitelist = EmConfig.Context.WhitelistMode.Value;
 
         _whitelistMode = header.Toggle(
-            GetModeText(),
-            isWhitelist,
-            value => {
-                EmConfig.Context.WhitelistMode.Value = value;
-                _whitelistMode?.mainText.text = GetModeText();
-                LayerEmmersivePanel.Instance?.Reopen();
-            })
+                GetModeText(),
+                isWhitelist,
+                value => {
+                    EmConfig.Context.WhitelistMode.Value = value;
+                    _whitelistMode?.mainText.text = GetModeText();
+                    LayerEmmersivePanel.Instance?.Reopen();
+                })
             .WithMinWidth(240);
 
         var mapCharas = GetMapCharas();
