@@ -85,7 +85,11 @@ jobs:
           Compress-Archive -Path "$source\*" -DestinationPath $destination -Force
           $path = $destination -Replace '\\', '/'
 
+          $log = git log "$(git describe --tags --abbrev=0 --match="CWL-*")..HEAD" --pretty=format:"%s" -- CustomWhateverLoader/ | ? { $_ -nomatch "cleanup" }
+          $log = $log -join "`n"
+
           echo "artifact_path=$path" >> $env:GITHUB_OUTPUT
+          echo "change_logs=$log" >> $env:GITHUB_OUTPUT
 
       - name: Create or Update Release
         uses: softprops/action-gh-release@v2
@@ -94,7 +98,8 @@ jobs:
           name: Custom Whatever Loader ${{ steps.build.outputs.file_version }}
           draft: false
           prerelease: false
-          generate_release_notes: true
+          generate_release_notes: false
+          body: ${{ steps.artifact.outputs.log }}
           files: ${{ steps.artifact.outputs.artifact_path }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -18,6 +18,13 @@ $Changelogs
 
 
 
+{topic|1.20.55}
+Fixed CWL popup background disappearing due to noa's manual GC.Collect
+Added `CwlContextVars` for save specific properties
+Default the no operator calc to assignment instead of addition
+Improved exception profile parsing with mod name
+Added custom religion type resolver
+
 {topic|1.20.54}
 Updated for 23.229 Stable
 Fixed file path checking
