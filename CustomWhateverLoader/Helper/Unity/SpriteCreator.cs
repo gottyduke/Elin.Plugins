@@ -16,7 +16,9 @@ public static class SpriteCreator
 
     public static Texture2D GetSolidColorTexture(Color color)
     {
-        var texture = new Texture2D(1, 1);
+        var texture = new Texture2D(1, 1) {
+            hideFlags = HideFlags.DontUnloadUnusedAsset,
+        };
         texture.SetPixel(0, 0, color);
         texture.Apply();
         return texture;
