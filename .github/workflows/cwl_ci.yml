@@ -85,7 +85,7 @@ jobs:
           Compress-Archive -Path "$source\*" -DestinationPath $destination -Force
           $path = $destination -Replace '\\', '/'
 
-          $log = git log "$(git describe --tags --abbrev=0 --match="CWL-*")..HEAD" --pretty=format:"%s" -- CustomWhateverLoader/ | ? { $_ -nomatch "cleanup" }
+          $log = git log "$(git describe --tags --abbrev=0 --match="CWL-*")..HEAD" --pretty=format:"%s" -- CustomWhateverLoader/ | ? { $_ -notmatch "cleanup" }
           $log = $log -join "`n"
 
           echo "artifact_path=$path" >> $env:GITHUB_OUTPUT
