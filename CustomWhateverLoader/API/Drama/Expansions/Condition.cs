@@ -98,7 +98,7 @@ public partial class DramaExpansion
         parameters.RequiresOpt(out var item, out var valueExpr);
         dm.RequiresActor(out var actor);
 
-        return Compare(actor.FindAllThings(item.Value).Count(), valueExpr.Get(">=1"));
+        return Compare(actor.FindAllThings(item.Value).Sum(t => t.Num), valueExpr.Get(">=1"));
     }
 
     [CwlNodiscard]

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Cwl.API.Attributes;
 using Cwl.Helper;
 using Cwl.Helper.Extensions;
@@ -74,6 +76,37 @@ public partial class DramaExpansion
 
         add_item(dm, line, parameters);
         actor.body.Equip(Pop<Thing>());
+
+        return true;
+    }
+
+    public static bool destroy_item(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.RequiresAtLeast(1);
+        parameters.RequiresOpt(out var item, out var valueExpr);
+        dm.RequiresActor(out var actor);
+
+        var items = actor.FindAllThings(item.Value).ToArray();
+
+        if (!valueExpr.Provided) {
+            foreach (var thing in items) {
+                thing.Destroy();
+            }
+        } else {
+            var count = Math.Max(valueExpr.AsInt(1), 0);
+            foreach (var thing in items) {
+                if (count <= 0) {
+                    break;
+                }
+
+                if (thing.Num >= count) {
+                    thing.ModNum(-count);
+                } else {
+                    count -= thing.Num;
+                    thing.Destroy();
+                }
+            }
+        }
 
         return true;
     }
