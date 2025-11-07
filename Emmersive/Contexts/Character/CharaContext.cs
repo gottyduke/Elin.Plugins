@@ -50,7 +50,7 @@ public class CharaContext(Chara chara) : ContextProviderBase
                     data["bio"] = $"{Lang._gender(chara.bio.gender)} {chara.bio.TextAge(chara)}";
 
                     if (chara.IsPCParty) {
-                        data["party"] = chara.IsPCParty;
+                        data["pc_party"] = chara.IsPCParty;
                         data["fav"] = $"{chara.GetFavFood().GetName()}, {chara.GetTextHobby(true)}";
                         data["mana"] = $"{chara.mana.value}/{chara.mana.max}";
                     } else {

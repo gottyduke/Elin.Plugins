@@ -83,8 +83,13 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
         _browsedPosition = Window.transform.localPosition;
     }
 
-    [ConsoleCommand("open")]
     [CwlContextMenu("em_ui_open_sesame")]
+    private static void OpenInternal()
+    {
+        OpenPanelSesame();
+    }
+
+    [ConsoleCommand("open")]
     internal static void OpenPanelSesame(string targetTab = "")
     {
         YK.CreateLayer<LayerEmmersivePanel, LayerCreationData>(new(targetTab));

@@ -13,7 +13,7 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.emmersive";
     internal const string Name = "Elin with AI (Beta)";
-    internal const string Version = "0.9.14";
+    internal const string Version = "0.9.15";
 
     [field: AllowNull]
     public static string BuildVersion => field ??= EmMod.Assembly.GetName().Version.ToString();
@@ -64,7 +64,6 @@ internal sealed partial class EmMod : BaseUnityPlugin
     private void OnApplicationQuit()
     {
         ApiPoolSelector.Instance.SaveServices();
-        ApiPoolSelector.Instance.CleanServiceParams();
 
         Localizer.DumpUnlocalized();
 

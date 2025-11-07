@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 using Cwl.Helper.FileUtil;
 using Emmersive.ChatProviders;
@@ -92,26 +91,10 @@ public sealed class ApiPoolSelector : IAIServiceSelector
 
         foreach (var provider in providers) {
             AddService(provider);
-            provider.LoadProviderParam();
         }
 
         if (context.Load<int>(out var serviceCount, "service_count")) {
             ChatProviderBase.ServiceCount = serviceCount;
-        }
-    }
-
-    public void CleanServiceParams()
-    {
-        var container = Path.Combine(ResourceFetch.CustomFolder, "params");
-        if (!Directory.Exists(container)) {
-            return;
-        }
-
-        foreach (var file in Directory.EnumerateFiles(container, "*", SearchOption.TopDirectoryOnly)) {
-            var name = Path.GetFileNameWithoutExtension(file);
-            if (_providers.All(p => p.Id != name)) {
-                File.Delete(file);
-            }
         }
     }
 

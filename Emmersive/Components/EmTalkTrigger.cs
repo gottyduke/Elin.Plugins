@@ -38,16 +38,17 @@ internal class EmTalkTrigger : EMono
             pc.Name,
             "",
             (cancel, text) => {
-                if (cancel) {
+                if (cancel || string.IsNullOrWhiteSpace(text)) {
                     return;
                 }
 
                 EmKernel.Kernel!.GetRequiredService<SceneDirector>()
                     .DoPopText(player.uidChara, text);
 
-                if (EmConfig.Policy.PlayerTalkTrigger.Value) {
+                if (EmConfig.Policy.PlayerTalkTrigger.Value &&
+                    EmScheduler.Mode != EmScheduler.SchedulerMode.Stop) {
                     // trigger immediately
-                    this.StartDeferredCoroutine(() => EmScheduler.RequestScenePlayImmediate());
+                    this.StartDeferredCoroutine(() => EmScheduler.RequestScenePlayImmediate(), 0.01f);
                 }
             },
             Dialog.InputType.None);

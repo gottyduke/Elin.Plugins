@@ -41,6 +41,7 @@ This is a **beta test** version, mainly for gathering reports and feedback.
 + [ ] Quest context
   + [ ] Random quest generation
 + [ ] Response choices from player
++ [x] Chat from player
 + [x] Customize context prompts
   + [x] With easy to use UI
   + [x] Builtin localization support (by CWL)

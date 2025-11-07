@@ -29,13 +29,21 @@ public partial class SceneDirector : EClass
             throw new FormatException("em_ui_scene_parse_error".Loc(content));
         }
 
-        var maxDelay = 0f;
+        var delayMax = 0f;
+        var delayReduced = 0f;
         foreach (var reaction in reactions) {
-            maxDelay += reaction.delay;
-            DoPopText(reaction.uid, reaction.text, reaction.duration, reaction.delay);
+            if (reaction.uid == player.uidChara) {
+                delayReduced += reaction.duration;
+                continue;
+            }
+
+            var delay = reaction.delay - delayReduced;
+
+            delayMax += delay;
+            DoPopText(reaction.uid, reaction.text, reaction.duration, delay);
         }
 
-        EmScheduler.SetScenePlayDelay(maxDelay);
+        EmScheduler.SetScenePlayDelay(delayMax);
     }
 
     private SceneReaction[]? TryParseReactions(string content)

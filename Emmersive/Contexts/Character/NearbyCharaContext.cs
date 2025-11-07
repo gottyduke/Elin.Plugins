@@ -75,11 +75,11 @@ public class NearbyCharaContext(Chara focus) : ContextProviderBase
             var priority = 0;
 
             if (owner.IsPCParty) {
-                priority += 6;
+                priority += 3;
             }
 
             if (owner.IsPCFaction) {
-                priority += 3;
+                priority += 2;
             }
 
             if (owner.IsUnique) {
