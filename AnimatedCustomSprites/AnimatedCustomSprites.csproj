@@ -14,18 +14,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="package\**" />
+        <Compile Remove="package\**"/>
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Remove="package\**" />
+        <EmbeddedResource Remove="package\**"/>
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="package\**" />
-      <None Remove="Directory.Build.props" />
-      <None Remove="LICENSE" />
-      <None Remove="README.md" />
+        <None Remove="package\**"/>
+        <None Remove="Directory.Build.props"/>
+        <None Remove="LICENSE"/>
+        <None Remove="README.md"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -36,7 +36,7 @@
 
     <Target Name="CopyAssets" AfterTargets="AfterBuild">
         <ItemGroup>
-            <Assets Include="package\**\*.*" />
+            <Assets Include="package\**\*.*"/>
         </ItemGroup>
 
         <Copy

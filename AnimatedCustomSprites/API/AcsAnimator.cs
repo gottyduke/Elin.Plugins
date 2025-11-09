@@ -23,7 +23,7 @@ public static class AcsAnimator
             return;
         }
 
-        owner.renderer.actor.GetComponent<AcsController>()?.StartClip(clip, true);
+        owner.GetAcsController()?.StartClip(clip, true);
     }
 
     /// <summary>
@@ -43,7 +43,7 @@ public static class AcsAnimator
             return;
         }
 
-        owner.renderer.actor.GetComponent<AcsController>()?.StartClip(clip, true);
+        owner.GetAcsController()?.StartClip(clip, true);
     }
 
     /// <summary>
@@ -56,7 +56,7 @@ public static class AcsAnimator
             return;
         }
 
-        owner.renderer.actor.GetComponent<AcsController>()?.StartClip(clip, true);
+        owner.GetAcsController()?.StartClip(clip, true);
     }
 
     /// <summary>
@@ -64,7 +64,7 @@ public static class AcsAnimator
     /// </summary>
     public static void StopAcsClip(this Card owner)
     {
-        owner.renderer.actor?.GetComponent<AcsController>()?.StopClip();
+        owner.GetAcsController()?.StopClip();
     }
 
     /// <summary>
@@ -114,6 +114,6 @@ public static class AcsAnimator
     /// </summary>
     public static AcsController? GetAcsController(this Card owner)
     {
-        return owner.renderer.actor?.GetComponent<AcsController>();
+        return owner.renderer.actor?.GetOrCreate<AcsController>();
     }
 }
