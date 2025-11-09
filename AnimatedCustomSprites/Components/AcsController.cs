@@ -24,7 +24,7 @@ public class AcsController : MonoBehaviour
 
     private void Update()
     {
-        if (CurrentClip?.sprites?.Length is not > 1) {
+        if (CurrentClip?.sprites?.Length is not > 0) {
             _playing = false;
             return;
         }
@@ -68,10 +68,6 @@ public class AcsController : MonoBehaviour
 
         _elapsed -= Interval;
         CurrentIndex = (CurrentIndex + 1) % CurrentClip.sprites.Length;
-
-        if (CurrentIndex == 0 && ExternalOverride) {
-            ExternalOverride = false;
-        }
     }
 
     private void OnEnable()

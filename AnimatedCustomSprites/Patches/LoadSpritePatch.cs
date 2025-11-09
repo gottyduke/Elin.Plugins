@@ -14,7 +14,7 @@ internal class LoadSpritePatch
     [HarmonyTranspiler]
     [HarmonyPatch(typeof(SpriteData), nameof(SpriteData.Load))]
     internal static IEnumerable<CodeInstruction> OnLoadSpritesIl(IEnumerable<CodeInstruction> instructions,
-        ILGenerator generator)
+                                                                 ILGenerator generator)
     {
         return new CodeMatcher(instructions, generator)
             .MatchEndForward(
@@ -72,7 +72,7 @@ internal class LoadSpritePatch
                     sprites.AddRange(SliceSheet(sprite, begin, end, frameName));
                 } else {
                     int.TryParse(index, out var frame);
-                    sprite.name = tex.name =  $"{frameName}{frame:D4}";
+                    sprite.name = tex.name = $"{frameName}{frame:D4}";
 
                     sprites.Add(sprite);
                 }

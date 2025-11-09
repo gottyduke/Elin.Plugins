@@ -11,10 +11,11 @@ public static class AcsClipBuilder
     /// <summary>
     ///     Create a single clip from sprites and cache the result.
     /// </summary>
-    public static AcsClip CreateAcsClip(this Card owner, Sprite[] sprites,
-        string clipName = "",
-        float interval = -1f,
-        AcsAnimationType type = AcsAnimationType.Auto)
+    public static AcsClip CreateAcsClip(this Card owner,
+                                        Sprite[] sprites,
+                                        string clipName = "",
+                                        float interval = -1f,
+                                        AcsAnimationType type = AcsAnimationType.Auto)
     {
         var regex = new Regex(@"_acs_(?<clipName>.*)#(?<interval>\d+)_(?<index>\d+)");
         var sprite = sprites[0];

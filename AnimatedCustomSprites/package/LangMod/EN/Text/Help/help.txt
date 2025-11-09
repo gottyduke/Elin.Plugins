@@ -1,0 +1,5 @@
+{topic|1.8}
+Fixed incorrect frame order for animations longer than 10 frames.
+
+{topic|1.7}
+Fixed abnormal sized sprites' horizontal pivot mismatch bug.
