@@ -1,0 +1,38 @@
+using System;
+using ElinTogether.Models.ElinDelta;
+using ElinTogether.Net;
+using HarmonyLib;
+
+namespace ElinTogether.Patches.DeltaEvents;
+
+[HarmonyPatch(typeof(Zone), nameof(Zone.AddCard), typeof(Card), typeof(int), typeof(int))]
+internal static class ZoneAddCardEvent
+{
+    [HarmonyPrefix]
+    internal static bool OnAddCardToZone(Zone __instance, Card t, int x, int z)
+    {
+        if (NetSession.Instance.Connection is not { IsConnected: true } connection) {
+            return true;
+        }
+
+        if (connection.IsHost || !t.IsPC) {
+            connection.Delta.AddRemote(new ZoneAddCardDelta {
+                Card = t,
+                ZoneUid = __instance.uid,
+                PosX = x,
+                PosZ = z,
+            });
+        }
+
+        return true;
+    }
+
+    extension(Zone zone)
+    {
+        [HarmonyReversePatch(HarmonyReversePatchType.Snapshot)]
+        internal Card Stub_AddCard(Card card, int x, int z)
+        {
+            throw new NotImplementedException("Zone.AddCard");
+        }
+    }
+}

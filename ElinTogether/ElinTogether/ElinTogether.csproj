@@ -1,0 +1,96 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <Platforms>AnyCPU</Platforms>
+        <LangVersion>preview</LangVersion>
+        <Nullable>enable</Nullable>
+        <RootNamespace>ElinTogether</RootNamespace>
+        <AssemblyName>ElinTogether</AssemblyName>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <GenerateDependencyFile>false</GenerateDependencyFile>
+        <OutputPath>$(ElinGamePath)\Package\Mod_$(AssemblyName)\</OutputPath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <Deterministic>false</Deterministic>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)'=='DebugNightly' OR '$(Configuration)'=='Debug'">
+        <DefineConstants>$(DefineConstants)</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Remove="package\**"/>
+        <Compile Remove="ElinTogether.Test\**"/>
+        <Compile Remove="ThirdParty\**"/>
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Remove="package\**"/>
+        <EmbeddedResource Remove="ElinTogether.Test\**"/>
+        <EmbeddedResource Remove="ThirdParty\**"/>
+    </ItemGroup>
+    <ItemGroup>
+        <None Remove="package\**"/>
+        <None Remove="Directory.Build.props"/>
+        <None Remove="LICENSE"/>
+        <None Remove="README.md"/>
+        <None Remove="ElinTogether.Test\**"/>
+        <None Remove="ThirdParty\**"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="CustomWhateverLoader">
+            <HintPath Condition="Exists('$(SteamContentPath)\2135150\3370512305')">$(SteamContentPath)\2135150\3370512305\CustomWhateverLoader.dll</HintPath>
+            <HintPath Condition="Exists('$(SteamContentPath)\2135150\3544010094')">$(SteamContentPath)\2135150\3544010094\CustomWhateverLoader.dll</HintPath>
+            <HintPath Condition="Exists('$(ElinGamePath)\Package\Mod_CustomWhateverLoader')">$(ElinGamePath)\Package\Mod_CustomWhateverLoader\CustomWhateverLoader.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="YKFramework">
+            <HintPath Condition="Exists('$(ElinGamePath)\2135150\3400020753')">$(ElinGamePath)\2135150\3400020753\YKFramework.dll</HintPath>
+            <HintPath Condition="Exists('$(SteamContentPath)\2135150\3400020753')">$(SteamContentPath)\2135150\3400020753\YKFramework.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="GitVersion.MsBuild" Version="6.4.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="MessagePack" Version="3.1.4"/>
+        <PackageReference Include="PolySharp" Version="1.15.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Serilog" Version="4.3.1-dev-02387"/>
+        <PackageReference Include="Serilog.Formatting.Compact" Version="3.0.0"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.1-dev-00953"/>
+        <PackageReference Include="Serilog.Sinks.File" Version="7.0.0"/>
+        <PackageReference Include="Serilog.Sinks.Http" Version="9.2.0"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Components\"/>
+        <Folder Include="Models\ElinDelta\Act\"/>
+        <Folder Include="Models\ElinDelta\Misc\"/>
+        <Folder Include="Models\ElinDelta\Thing\"/>
+    </ItemGroup>
+    <Target Name="CopyAssets" AfterTargets="AfterBuild">
+        <ItemGroup>
+            <Assets Include="..\package\**\*.*"/>
+        </ItemGroup>
+        <Copy
+                SourceFiles="@(Assets)"
+                DestinationFiles="@(Assets->'$(OutDir)%(RecursiveDir)%(Filename)%(Extension)')"
+                SkipUnchangedFiles="true"
+        />
+    </Target>
+    <Target Name="RemovePdbFromRelease" AfterTargets="Build" Condition="'$(Configuration)' == 'Release' OR '$(Configuration)' == 'ReleaseNightly'">
+        <Delete Files="$(TargetDir)$(TargetName).pdb"/>
+    </Target>
+    <Target Name="RemoveSdkMemoryReference" AfterTargets="Build">
+        <ItemGroup>
+            <ConflictingDlls Include="$(OutputPath)\System.Memory.dll;$(OutputPath)\System.Buffers.dll;$(OutputPath)\Newtonsoft.Json.dll"/>
+        </ItemGroup>
+        <Delete Files="@(ConflictingDlls)"/>
+    </Target>
+</Project>

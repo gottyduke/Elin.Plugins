@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Meta>
+    <title>Eternal League of Networking</title>
+    <id>dk.elinplugins.elintogether</id>
+    <author>DK</author>
+    <builtin>false</builtin>
+    <loadPriority>100</loadPriority>
+    <version>1.14.514</version>
+    <tag>Multiplayer,Co-op,Integration</tag>
+    <visibility>Unlisted</visibility>
+    <description/>
+</Meta>

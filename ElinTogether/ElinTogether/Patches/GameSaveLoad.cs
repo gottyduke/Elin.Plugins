@@ -1,0 +1,28 @@
+using Cwl.API.Attributes;
+using ElinTogether.Net;
+using HarmonyLib;
+
+namespace ElinTogether.Patches;
+
+[HarmonyPatch]
+internal class GameSaveLoad
+{
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(GameIO), nameof(GameIO.SaveGame))]
+    internal static bool OnSaveRemoteGame()
+    {
+        if (NetSession.Instance.IsHost) {
+            return true;
+        }
+
+        EmpLog.Debug("Blocked saving game with active client connection");
+        return false;
+    }
+
+    [CwlPreLoad]
+    [CwlSceneInitEvent(Scene.Mode.Title, preInit: true)]
+    internal static void TerminateConnectionOnLoad()
+    {
+        NetSession.Instance.RemoveComponent();
+    }
+}
