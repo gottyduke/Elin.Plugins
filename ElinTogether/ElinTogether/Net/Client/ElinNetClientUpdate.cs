@@ -7,44 +7,19 @@ internal partial class ElinNetClient
     private WorldStateSnapshot? _lastTick;
     private bool _pauseUpdate;
 
-    public void StartWorldStateUpdate()
-    {
-        // 25hz delta dispatch
-        Scheduler.Subscribe(WorldStateDeltaUpdate, 25);
-        // 50hz delta process
-        Scheduler.Subscribe(WorldStateDeltaProcess, 50);
-    }
-
-    public void StopWorldStateUpdate()
-    {
-        Scheduler.Unsubscribe(WorldStateDeltaUpdate);
-        Scheduler.Unsubscribe(WorldStateDeltaProcess);
-
-        _pauseUpdate = false;
-
-        EmpLog.Debug("Stopping client state update");
-    }
-
-    public void PauseWorldStateUpdate()
-    {
-        _pauseUpdate = true;
-
-        EmpLog.Debug("Pausing client state update");
-    }
-
-    public void ResumeWorldStateUpdate()
-    {
-        _pauseUpdate = false;
-
-        EmpLog.Debug("Resuming client state update");
-    }
-
+    /// <summary>
+    ///     Send out local deltas and self snapshot to remote host
+    /// </summary>
     private void WorldStateDeltaUpdate()
     {
         if (_pauseUpdate) {
             return;
         }
 
+        // send out self snapshot
+        Socket.FirstPeer.Send(RemoteCharaSnapshot.Create());
+
+        // send out delta
         if (!Delta.HasPendingOut) {
             return;
         }
@@ -54,6 +29,9 @@ internal partial class ElinNetClient
         });
     }
 
+    /// <summary>
+    ///     Process local or deferred deltas received from host
+    /// </summary>
     private void WorldStateDeltaProcess()
     {
         if (!Delta.HasPendingIn) {
@@ -63,12 +41,15 @@ internal partial class ElinNetClient
         Delta.ProcessLocalBatch(this, 16);
     }
 
+    /// <summary>
+    ///     Net event: Apply client-side reconciliation from host
+    /// </summary>
     private void OnWorldStateSnapshot(WorldStateSnapshot snapshot)
     {
         if (_lastTick is not null) {
             var dropped = snapshot.ServerTick - _lastTick.ServerTick;
             if (dropped > 1) {
-                EmpLog.Warning("Falling behind on server update with {DroppedTicks} dropped ticks",
+                EmpLog.Warning("Falling behind with {DroppedTicks} dropped ticks",
                     dropped);
             }
         }
@@ -80,20 +61,11 @@ internal partial class ElinNetClient
             return;
         }
 
-        // 1
-        world.date.raw = snapshot.GameDate;
-
-        // 2
-        foreach (var chara in snapshot.CharaSnapshots) {
-            chara.ApplyReconciliation();
-        }
-
-        // 3
-        game.cards.uidNext = snapshot.GlobalUidNext;
+        snapshot.ApplyReconciliation();
     }
 
     /// <summary>
-    ///     Apply delta changes from host
+    ///     Net event: Apply delta changes from host
     /// </summary>
     private void OnWorldStateDeltaResponse(WorldStateDeltaList response)
     {
@@ -101,4 +73,58 @@ internal partial class ElinNetClient
             Delta.AddLocal(delta);
         }
     }
+
+#region Scheduler Jobs
+
+    /// <summary>
+    ///     Subscribe all scheduler jobs and reset pause state
+    /// </summary>
+    public void StartWorldStateUpdate()
+    {
+        // 25hz delta dispatch
+        Scheduler.Subscribe(WorldStateDeltaUpdate, 25);
+        // 50hz delta process
+        Scheduler.Subscribe(WorldStateDeltaProcess, 50);
+
+        _pauseUpdate = false;
+    }
+
+    /// <summary>
+    ///     Unsubscribe all scheduler jobs and reset pause state
+    /// </summary>
+    public void StopWorldStateUpdate()
+    {
+        Scheduler.Unsubscribe(WorldStateDeltaUpdate);
+        Scheduler.Unsubscribe(WorldStateDeltaProcess);
+
+        _pauseUpdate = false;
+
+        EmpLog.Debug("Stopping client state update");
+    }
+
+    /// <summary>
+    ///     Pause sending out deltas, *but they still accumulate*
+    /// </summary>
+    public void PauseWorldStateUpdate()
+    {
+        _pauseUpdate = true;
+
+        EmpLog.Debug("Pausing client state update");
+    }
+
+    /// <summary>
+    ///     Resume sending out deltas
+    /// </summary>
+    public void ResumeWorldStateUpdate(bool clearDelta = false)
+    {
+        _pauseUpdate = false;
+
+        EmpLog.Debug("Resuming client state update");
+
+        if (clearDelta) {
+            Delta.ClearOut();
+        }
+    }
+
+#endregion
 }

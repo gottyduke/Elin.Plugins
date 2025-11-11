@@ -1,15 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Cwl.Helper;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
 using ElinTogether.Models;
+using HarmonyLib;
 
 namespace ElinTogether.Helper;
 
 public class SourceValidation
 {
+    private static readonly string[] _excludedPlugins = [
+        "com.sinai.unityexplorer",
+    ];
+
     private static readonly SourceListType[] _validationRequirements = [
         SourceListType.Assembly,
         SourceListType.Card,
@@ -20,8 +26,13 @@ public class SourceValidation
         SourceListType.Material,
         SourceListType.Religion,
         SourceListType.Quest,
-        SourceListType.Stats,
+        SourceListType.Stat,
+        SourceListType.AiAct,
     ];
+
+    // 255 should be more than enough
+    public static readonly Dictionary<byte, Type> ByteToAIActMapping = [];
+    public static readonly Dictionary<Type, byte> AIActToByteMapping = [];
 
     public static Dictionary<SourceListType, byte[]> GenerateAll()
     {
@@ -46,9 +57,15 @@ public class SourceValidation
 
     public static IEnumerable<string> GenerateSourceIdList(SourceListType type)
     {
+        if (AIActToByteMapping.Count == 0) {
+            BuildAiActMapping();
+        }
+
         var sources = EMono.sources;
         return type switch {
-            SourceListType.Assembly => TypeQualifier.Plugins.Select(p => p.Info.Metadata.GUID),
+            SourceListType.Assembly => TypeQualifier.Plugins
+                .Select(p => p.Info.Metadata.GUID)
+                .Except(_excludedPlugins),
             SourceListType.Card => sources.cards.rows.Select(r => r.id),
             SourceListType.Element => sources.elements.rows.Select(r => r.alias),
             SourceListType.Job => sources.jobs.rows.Select(r => r.id),
@@ -56,9 +73,10 @@ public class SourceValidation
             SourceListType.Material => sources.materials.rows.Select(r => r.alias),
             SourceListType.Religion => sources.religions.rows.Select(r => r.id),
             SourceListType.Quest => sources.quests.rows.Select(r => r.id),
-            SourceListType.Stats => sources.stats.rows.Select(r => r.alias),
+            SourceListType.Stat => sources.stats.rows.Select(r => r.alias),
             SourceListType.Zone => sources.zones.rows.Select(r => r.id),
-            _ => DebugThrow.Return(new ArgumentOutOfRangeException(nameof(type)), new List<string>()),
+            SourceListType.AiAct => AIActToByteMapping.Keys.Select(t => t.Name),
+            _ => DebugThrow.Return(new ArgumentOutOfRangeException(nameof(type)), Array.Empty<string>()),
         };
     }
 
@@ -67,6 +85,52 @@ public class SourceValidation
         if (sourceType is <= SourceListType.Reserved or > SourceListType.All) {
             ThrowHelper.Throw(new ArgumentOutOfRangeException(nameof(sourceType)),
                 "Invalid source validation {SourceListType} requested", sourceType);
+        }
+    }
+
+    public static void BuildAiActMapping()
+    {
+        AIActToByteMapping.Clear();
+        ByteToAIActMapping.Clear();
+
+        var actType = typeof(AIAct);
+        var allActs = AccessTools.AllAssemblies()
+            .SelectMany(a => {
+                try {
+                    return a.GetTypes();
+                } catch (ReflectionTypeLoadException ex) {
+                    return ex.Types.Where(t => t != null);
+                }
+            })
+            .Where(actType.IsAssignableFrom)
+            .OrderBy(GetInheritanceDepth)
+            .ThenBy(t => t.Name);
+
+        // keep NoGoal as 0 for bit checking
+        ByteToAIActMapping[0] = typeof(NoGoal);
+        AIActToByteMapping[typeof(NoGoal)] = 0;
+
+        byte actIndex = 1;
+        foreach (var act in allActs) {
+            if (!AIActToByteMapping.TryAdd(act, actIndex)) {
+                continue;
+            }
+
+            ByteToAIActMapping[actIndex] = act;
+            actIndex++;
+        }
+
+        return;
+
+        static int GetInheritanceDepth(Type t)
+        {
+            var depth = 0;
+            while (t.BaseType != null) {
+                depth++;
+                t = t.BaseType;
+            }
+
+            return depth;
         }
     }
 }

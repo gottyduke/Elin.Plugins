@@ -6,12 +6,23 @@ using Cwl.API.Attributes;
 using Cwl.Helper.Extensions;
 using ElinTogether.Models;
 using ElinTogether.Net.Steam;
+using ElinTogether.Patches;
 
 namespace ElinTogether.Net;
 
 internal partial class ElinNetHost
 {
-    public readonly HashSet<Chara> ActiveRemoteCharas = [];
+    public readonly Dictionary<uint, Chara> ActiveRemoteCharas = [];
+
+    /// <summary>
+    ///     A combination of all remote chara's act states
+    /// </summary>
+    public int SharedActState => States.Values.Sum(s => s.LastAct);
+
+    /// <summary>
+    ///     Shared speed of all players
+    /// </summary>
+    public int SharedSpeed => GetAverageSpeed();
 
     [CwlContextVar("remote_chara")]
     [field: AllowNull]
@@ -23,12 +34,13 @@ internal partial class ElinNetHost
                 EmpLog.Debug("Restoring {RemoteCharaCount} remote characters",
                     value.Count);
             }
+
             field = value;
         }
     }
 
     /// <summary>
-    ///     PeerConnect -> Prepare -> SaveProbe
+    ///     PeerConnect -> Prepare -> MoveZone -> SaveProbe
     /// </summary>
     public void PreparePlayerJoin(ISteamNetPeer peer)
     {
@@ -37,17 +49,34 @@ internal partial class ElinNetHost
         var chara = GetOrCreateRemoteChara(peer.Uid);
         chara.c_altName = peer.Name;
 
+        ActiveRemoteCharas[peer.Id] = chara;
+
+        if (!chara.ExistsOnMap) {
+            var pos = pc.pos.GetNearestPoint(allowChara: false, allowInstalled: false);
+            chara.MoveZone(_zone, new ZoneTransition {
+                state = ZoneTransition.EnterState.Exact,
+                x = pos.x,
+                z = pos.z,
+            });
+
+            EmpLog.Debug("Assigned zone sync position to player {@Peer}",
+                peer);
+        }
+
         States[peer.Id] = new() {
             Index = peer.Id,
             Uid = peer.Uid,
             Name = peer.Name,
             IsValidated = true,
-            Chara = chara,
+            CharaUid = chara.uid,
         };
 
         SendSaveProbe(peer);
     }
 
+    /// <summary>
+    ///     Send a save snapshot for replication
+    /// </summary>
     public void SendSaveProbe(ISteamNetPeer peer)
     {
         EmpLog.Information("Sending save probe to player {@Peer} for replication",
@@ -55,14 +84,7 @@ internal partial class ElinNetHost
 
         game.Save(false, true);
 
-        peer.Send(SaveDataProbe.Create(States[peer.Id].Chara));
-    }
-
-    public Chara? GetRemoteCharaFromPeer(ISteamNetPeer peer)
-    {
-        return States.TryGetValue(peer.Id, out var state)
-            ? state.Chara
-            : null;
+        peer.Send(SaveDataProbe.Create(ActiveRemoteCharas[peer.Id]));
     }
 
     public Chara GetOrCreateRemoteChara(ulong uid)
@@ -77,6 +99,16 @@ internal partial class ElinNetHost
         chara.SetFlagValue("remote_chara");
 
         return chara;
+    }
+
+    public int GetAverageSpeed()
+    {
+        var selfSpeed = pc.Stub_get_Speed();
+        if (States.Count == 0) {
+            return selfSpeed;
+        }
+
+        return (int)(selfSpeed + States.Values.Average(s => s.Speed) / 2);
     }
 
     public static void RemoveRemoteChara(Chara remoteChara)
@@ -95,7 +127,7 @@ internal partial class ElinNetHost
         var currentRemoteCharas = game.cards.globalCharas.Values
             .Where(c => c.GetFlagValue("remote_chara") > 0);
 
-        foreach (var chara in currentRemoteCharas.Except(active)) {
+        foreach (var chara in currentRemoteCharas.Except(active.Values)) {
             RemoveRemoteChara(chara);
         }
     }

@@ -5,8 +5,10 @@ public enum SourceListType : byte
     None = 0,
     Reserved = 1 << 7,
 
-    //
+    // mod assemblies
     Assembly,
+
+    // source data
     Card,
     Zone,
     Element,
@@ -15,7 +17,10 @@ public enum SourceListType : byte
     Material,
     Religion,
     Quest,
-    Stats,
+    Stat,
+
+    // runtime data
+    AiAct,
 
     //
     All,

@@ -2,8 +2,29 @@
 
 A WIP attempt of bringing networking feature to Elin.
 
+## Timeline
+
+```mermaid
+timeline
+    title Elin Net Development (Prototyping)
+    10/30/2025 : Initial concept, looked into LiteNetLib
+    10/31/2025 : First version of ElinNetBase components
+    : Setup NAT holepunch server on GCP
+    11/03/2025 : 1st session (Han), NAT holepunch is unreliable
+    : Considering SteamNetworkingSockets
+    11/07/2025 : Swapped to SteamNetworkingSockets + removed NAT code
+    : 2nd session (Han), couldn't beat Puppy Cave due to map loading issue
+    11/08/2025 : 3rd session (Omega, Ryozu), testing SteamNetworkingSockets
+    : 4th session (InuiDame), testing with high latency
+    11/09/2025 : Added delta packets + tick scheduler
+    : 5th session (Han), couldn't beat Puppy Cave due to map loading issue
+    : Publicized source code
+    11/11/2025 : Added shared speed + shared ticking
+    : 6th session (Han), couldn't beat Puppy Cave due to level loading issue
+```
+
 ## Build
-The projects require environment variable `ElinGamePath` set to the root folder of the Elin game installation.
+This project requires environment variable `ElinGamePath` set to the root folder of the Elin game installation.
 ```
 ElinGamePath/
 ├─ BepInEx/

@@ -7,11 +7,15 @@ namespace ElinTogether.Models;
 public class MapDataRequest
 {
     [field: AllowNull]
-    public static MapDataRequest CurrentRemoteZone => field ??= new();
+    public static MapDataRequest CurrentRemoteZone =>
+        field ??= new() {
+            ZoneFullName = "",
+            ZoneUid = -1,
+        };
 
     [Key(0)]
-    public string ZoneFullName { get; set; } = "";
+    public required string ZoneFullName { get; init; }
 
     [Key(1)]
-    public int ZoneUid { get; set; } = -1;
+    public required int ZoneUid { get; init; }
 }

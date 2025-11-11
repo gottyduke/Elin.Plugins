@@ -55,12 +55,6 @@ internal class SteamNetPeer : ISteamNetPeer, IDisposable
         _arena = _allocator(_arenaSize);
     }
 
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
     public uint Id { get; } = (uint)Interlocked.Increment(ref _nextId);
     public ulong Uid { get; }
     public string Name { get; private set; }
@@ -69,7 +63,7 @@ internal class SteamNetPeer : ISteamNetPeer, IDisposable
     public SteamNetPeerStat Stat => field ??= new();
 
     public bool IsConnected =>
-        Connection.m_HSteamNetConnection != 0 &&
+        Connection != HSteamNetConnection.Invalid &&
         SteamNetworkingSockets.GetConnectionInfo(Connection, out var info) &&
         info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected;
 
@@ -101,25 +95,6 @@ internal class SteamNetPeer : ISteamNetPeer, IDisposable
         return true;
     }
 
-    private void Dispose(bool disposing)
-    {
-        if (_disposed) {
-            return;
-        }
-
-        if (_arena != IntPtr.Zero) {
-            _deallocator(_arena);
-            _arena = IntPtr.Zero;
-        }
-
-        _disposed = true;
-    }
-
-    ~SteamNetPeer()
-    {
-        Dispose(false);
-    }
-
     private void PinArena(int size)
     {
         if (size <= _arenaSize) {
@@ -132,7 +107,7 @@ internal class SteamNetPeer : ISteamNetPeer, IDisposable
         _arenaSize = newSize;
     }
 
-    private void UpdateRealtime()
+    public void UpdateRealtime()
     {
         const float pingAlpha = 0.2f;
         const float bandwidthAlpha = 0.15f;
@@ -162,4 +137,33 @@ internal class SteamNetPeer : ISteamNetPeer, IDisposable
             ? status.m_flInBytesPerSec
             : Mathf.Lerp(Stat.AvgBpsIn, status.m_flInBytesPerSec, bandwidthAlpha);
     }
+
+#region Cleanups
+
+    ~SteamNetPeer()
+    {
+        Dispose(false);
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (_disposed) {
+            return;
+        }
+
+        if (_arena != IntPtr.Zero) {
+            _deallocator(_arena);
+            _arena = IntPtr.Zero;
+        }
+
+        _disposed = true;
+    }
+
+#endregion
 }

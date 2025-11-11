@@ -12,7 +12,7 @@ internal static class CharaMoveEvent
     internal static void OnCharaMove(Chara __instance, Point newPoint, ref Card.MoveType type)
     {
         var session = NetSession.Instance;
-        if (!session.HasActiveConnection) {
+        if (session.Connection is not { IsConnected: true } connection) {
             return;
         }
 
@@ -22,7 +22,7 @@ internal static class CharaMoveEvent
         // we are client, only ourselves should generate a delta
         // ignore all other relayed moves
 
-        if (!session.IsHost && !__instance.IsPC) {
+        if (!connection.IsHost && !__instance.IsPC) {
             return;
         }
 
@@ -35,7 +35,7 @@ internal static class CharaMoveEvent
             type = Card.MoveType.Force;
         }
 
-        session.Connection!.Delta.AddRemote(new CharaMoveDelta {
+        connection.Delta.AddRemote(new CharaMoveDelta {
             Owner = __instance,
             PosX = newPoint.x,
             PosZ = newPoint.z,

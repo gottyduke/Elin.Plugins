@@ -6,7 +6,7 @@ namespace ElinTogether.Net;
 internal partial class ElinNetClient
 {
     /// <summary>
-    ///     Save probe received after connection
+    ///     Net event: Save probe received after connection
     /// </summary>
     /// <param name="probe"></param>
     private void OnSaveDataProbe(SaveDataProbe probe)

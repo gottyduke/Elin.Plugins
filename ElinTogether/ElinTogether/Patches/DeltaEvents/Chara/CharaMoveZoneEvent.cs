@@ -1,5 +1,7 @@
 using System;
+using Cwl.Helper.Extensions;
 using Cwl.Helper.Unity;
+using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
 
@@ -9,21 +11,35 @@ namespace ElinTogether.Patches.DeltaEvents;
 internal static class CharaMoveZoneEvent
 {
     [HarmonyPostfix]
-    private static void OnHostMoveZone(Chara __instance, Zone z, ZoneTransition transition)
+    internal static void OnHostMoveZone(Chara __instance, Zone z)
     {
         // we are not host
         if (NetSession.Instance.Connection is not ElinNetHost { IsConnected: true } host) {
             return;
         }
 
-        // broadcast all map assets to clients early when host finishes map loading
-        if (__instance.IsPC) {
-            CoroutineHelper.Deferred(() => host.PropagateZoneChangeState(z));
-        }
+        // wait for actual zone activate
+        CoroutineHelper.Deferred(() => {
+            // broadcast all map assets to clients when host finishes map loading
+            if (__instance.IsPC) {
+                host.PropagateZoneChangeState(z);
+            }
+
+            // every move zone should be relayed to clients
+            // when client receives host move zone - which is party leader
+            // they will be brought together as party members
+            host.Delta.AddRemote(new CharaMoveZoneDelta {
+                Owner = __instance,
+                ZoneFullName = z.ZoneFullName,
+                ZoneUid = z.uid,
+                PosX = __instance.pos.x,
+                PosZ = __instance.pos.z,
+            });
+        });
     }
 
     [HarmonyPrefix]
-    private static bool OnClientMoveZone(Chara __instance, Zone z)
+    internal static bool OnClientMoveZone(Chara __instance, Zone z)
     {
         // we are not client
         if (NetSession.Instance.IsHost) {
@@ -31,26 +47,12 @@ internal static class CharaMoveZoneEvent
         }
 
         // remote characters do not trigger scene change
-        if (!__instance.IsPC) {
-            return true;
-        }
+        // clients do not post move zone delta
 
         // client side moving initiated from other characters
         // may duplicate client move zone again
         // this happens when we relay host character move zone
         // while clients are in the party - they should move together
-        if (__instance.currentZone == z) {
-            return false;
-        }
-
-        // only proceed if remote zone has been updated
-        if (NetSession.Instance.CurrentZone == z) {
-            EmpPop.Debug("Host initiated zone state change");
-            return true;
-        }
-
-        // clients do not post move zone delta
-        EmpPop.Debug("Client zone moving is disabled");
         return false;
     }
 

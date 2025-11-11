@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using ElinTogether.Helper;
 using Object = UnityEngine.Object;
@@ -29,10 +30,11 @@ public class NetSession
     public Mode SyncMode { get; private set; } = Mode.None;
     public ElinNetBase? Connection { get; private set; }
     public Chara? Player { get; internal set; }
-    public float SharedSpeed { get; internal set; }
+    public int SharedSpeed { get; internal set; }
     public Zone? CurrentZone { get; internal set; }
     public uint Tick { get; internal set; }
     public ulong SessionId { get; internal set; }
+    public List<NetPeerState> CurrentPlayers { get; } = [];
 
     public bool HasActiveConnection => Connection != null && Connection.IsConnected;
     public bool IsHost => Connection?.IsHost is not false;
@@ -53,6 +55,7 @@ public class NetSession
 
         Connection = null;
         Tick = 0U;
+        CurrentPlayers.Clear();
 
         ResourceFetch.InvalidateTemp();
 

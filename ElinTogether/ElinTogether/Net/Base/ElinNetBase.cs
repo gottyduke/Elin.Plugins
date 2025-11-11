@@ -22,6 +22,12 @@ public abstract partial class ElinNetBase : EMono
     private void Awake()
     {
         Initialize();
+
+#if !DEBUG
+        if (!Harmony.HasAnyPatches(ModInfo.Guid)) {
+            EmpMod.SharedHarmony.PatchAll(EmpMod.Assembly);
+        }
+#endif
     }
 
     private void FixedUpdate()
@@ -34,6 +40,10 @@ public abstract partial class ElinNetBase : EMono
     {
         Stop();
         Socket.Dispose();
+
+#if !DEBUG
+        EmpMod.SharedHarmony.UnpatchSelf();
+#endif
     }
 
     protected abstract void OnPeerConnected(ISteamNetPeer peer);
@@ -82,9 +92,9 @@ public abstract partial class ElinNetBase : EMono
         var peers = Socket.Peers;
         for (var i = 0; i < peers.Count; ++i) {
             var peer = peers[i];
-            sb.AppendLine(peer.Colorize(peer.Name));
 
-            sb.Append(peers[i].Stat.ToString());
+            sb.AppendLine(peer.Colorize(peer.Name));
+            sb.Append(peer.Stat.ToString());
 
             if (i < peers.Count - 1) {
                 sb.AppendLine();

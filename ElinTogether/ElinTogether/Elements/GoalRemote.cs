@@ -12,7 +12,7 @@ internal class GoalRemote : NoGoal
 
     public override bool IsNoGoal => true;
 
-    public override int MaxRestart => 114514 ^ 1919810;
+    public override int MaxRestart => 114_514 & 19_19_810;
 
     public override bool CancelWhenDamaged => false;
 

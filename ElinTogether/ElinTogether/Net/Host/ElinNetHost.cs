@@ -27,6 +27,7 @@ internal partial class ElinNetHost : ElinNetBase
 
         // TODO Assign SessionId
         NetSession.Instance.SessionId = 0UL;
+        NetSession.Instance.SharedSpeed = SharedSpeed;
 
         EmpPop.Debug("Started server via SDR\nSource validations enabled: {SourceValidations}",
             SourceValidationsEnabled.Count);
@@ -40,6 +41,7 @@ internal partial class ElinNetHost : ElinNetBase
         Router.RegisterHandler<MapDataRequest>(OnMapDataRequest);
         Router.RegisterHandler<WorldStateRequest>(OnWorldStateRequest);
         Router.RegisterHandler<WorldStateDeltaList>(OnWorldStateDeltaResponse);
+        Router.RegisterHandler<RemoteCharaSnapshot>(OnClientRemoteCharaSnapshot);
     }
 
     private void EnsureValidation(ISteamNetPeer peer)
@@ -52,9 +54,7 @@ internal partial class ElinNetHost : ElinNetBase
 
     private void Broadcast<T>(T packet)
     {
-        foreach (var peer in Socket.Peers) {
-            peer.Send(packet);
-        }
+        Socket.Broadcast.Send(packet);
     }
 
 #region Net Events
@@ -78,14 +78,15 @@ internal partial class ElinNetHost : ElinNetBase
             peer, disconnectInfo);
 
         // remove left over chara
-        if (States.Remove(peer.Id, out var state) && state.Chara is { } remoteChara) {
+        if (States.Remove(peer.Id, out var state) &&
+            ActiveRemoteCharas.Remove(peer.Id, out var remoteChara)) {
             RemoveRemoteChara(remoteChara);
-            ActiveRemoteCharas.Remove(remoteChara);
 
-            EmpLog.Debug("Removed remote chara {Chara}",
+            EmpLog.Debug("Removed remote chara {@Chara}",
                 new {
                     Uid = remoteChara.uid,
                     remoteChara.Name,
+                    Player = state.Name,
                 });
         }
 

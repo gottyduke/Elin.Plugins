@@ -21,11 +21,11 @@ public partial class SteamNetManager(ISteamNetSerializer? serializer = null) : I
     };
 
     private readonly IntPtr[] _batchedMessages = new IntPtr[EmpConstants.MaxBatchedMessages];
-
+    private readonly SteamNetPeerBroadcast _broadcast = new(serializer ?? new SteamNetSerializer());
     private readonly List<SteamNetPeer> _peers = [];
     private readonly ISteamNetSerializer _serializer = serializer ?? new SteamNetSerializer();
-    private bool _disposed;
 
+    private bool _disposed;
     private ISteamNetListener? _listener;
     private HSteamListenSocket _listenSocket;
     private HSteamNetPollGroup _pollGroup;
@@ -41,7 +41,7 @@ public partial class SteamNetManager(ISteamNetSerializer? serializer = null) : I
     /// <summary>
     ///     The optimized broadcast peer, mainly host->multiple clients
     /// </summary>
-    public ISteamNetPeer BroadcastPeer => FirstPeer;
+    public ISteamNetPeer Broadcast => _broadcast;
 
     /// <summary>
     ///     All connected peers
@@ -52,12 +52,6 @@ public partial class SteamNetManager(ISteamNetSerializer? serializer = null) : I
     ///     Any connected peers
     /// </summary>
     public bool IsConnected => _peers.Any(p => p.IsConnected);
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
 
     /// <summary>
     ///     Initialize poll group and optionally steam lobby
@@ -72,24 +66,6 @@ public partial class SteamNetManager(ISteamNetSerializer? serializer = null) : I
         _listener = listener;
 
         SteamCallback<SteamNetConnectionStatusChangedCallback_t>.Add(HandleStatusChange);
-    }
-
-    ~SteamNetManager()
-    {
-        Dispose(false);
-    }
-
-    private void Dispose(bool disposing)
-    {
-        if (_disposed) {
-            return;
-        }
-
-        DiscardListenSocket();
-
-        SteamCallback<SteamNetConnectionStatusChangedCallback_t>.Remove(HandleStatusChange);
-
-        _disposed = true;
     }
 
     /// <summary>
@@ -163,6 +139,11 @@ public partial class SteamNetManager(ISteamNetSerializer? serializer = null) : I
         SteamNetworkingSockets.CloseConnection(peer.Connection, 0, reason, false);
 
         _peers.Remove(peer);
+        _broadcast.RemoveTarget(peer);
+
+        // only call OnPeerDisconnect from steam callback
+        // so we can clean up on our side without self triggering peer disconnected
+
         peer.Dispose();
     }
 
@@ -178,7 +159,9 @@ public partial class SteamNetManager(ISteamNetSerializer? serializer = null) : I
         SteamNetworkingSockets.SetConnectionPollGroup(connection, _pollGroup);
 
         var peer = new SteamNetPeer(connection, _serializer);
+
         _peers.Add(peer);
+        _broadcast.AddTarget(peer);
 
         _listener?.OnPeerConnected(peer);
 
@@ -214,6 +197,34 @@ public partial class SteamNetManager(ISteamNetSerializer? serializer = null) : I
 
                 break;
         }
+    }
+
+#endregion
+
+#region Cleanups
+
+    ~SteamNetManager()
+    {
+        Dispose(false);
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (_disposed) {
+            return;
+        }
+
+        DiscardListenSocket();
+
+        SteamCallback<SteamNetConnectionStatusChangedCallback_t>.Remove(HandleStatusChange);
+
+        _disposed = true;
     }
 
 #endregion

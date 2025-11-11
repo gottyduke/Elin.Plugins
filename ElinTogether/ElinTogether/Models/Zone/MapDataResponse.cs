@@ -11,10 +11,10 @@ namespace ElinTogether.Models;
 public class MapDataResponse
 {
     [Key(0)]
-    public string ZoneFullName { get; set; } = "";
+    public required string ZoneFullName { get; init; }
 
     [Key(1)]
-    public int ZoneUid { get; set; } = -1;
+    public required int ZoneUid { get; init; }
 
     [Key(2)]
     public required Dictionary<string, LZ4Bytes> MapAssets { get; init; }

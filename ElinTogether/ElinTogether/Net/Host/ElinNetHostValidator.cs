@@ -11,17 +11,23 @@ internal partial class ElinNetHost
 {
     private readonly Dictionary<uint, Dictionary<SourceListType, bool>> _validationResults = [];
 
-    internal readonly HashSet<SourceListType> SourceValidationsEnabled = [];
+    internal readonly HashSet<SourceListType> SourceValidationsEnabled = [
+        // this is necessary to check so we can map remote acts
+        SourceListType.AiAct,
+    ];
 
     private void RequestSourceValidation(ISteamNetPeer peer)
     {
         _validationResults.Remove(peer.Id);
 
-        peer.Send(new SourceListRequest {
-            Type = SourceListType.All,
-        });
+        foreach (var type in SourceValidationsEnabled) {
+            peer.Send(new SourceListRequest {
+                Type = type,
+            });
+        }
 
-        EmpLog.Debug("Requesting source lists validation from player {@Peer}", peer);
+        EmpLog.Debug("Requesting source lists validation from player {@Peer}",
+            peer);
     }
 
     private void OnSourceListResponse(SourceListResponse response, ISteamNetPeer peer)
@@ -39,7 +45,7 @@ internal partial class ElinNetHost
             response.Type, peer);
 
         if (valid) {
-            if (validations.Count != SourceList.Count || !validations.Values.All(r => r)) {
+            if (validations.Count != SourceValidationsEnabled.Count || !validations.Values.All(r => r)) {
                 return;
             }
 

@@ -1,7 +1,6 @@
 using Cwl.Helper.Extensions;
 using Cwl.Helper.Unity;
 using ElinTogether.Models;
-using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net.Steam;
 using Serilog.Context;
 
@@ -16,50 +15,23 @@ internal partial class ElinNetHost
         EmpPop.Debug("Initiating zone state change");
 
         PauseWorldStateUpdate();
-        this.StartDeferredCoroutine(ResumeWorldStateUpdate);
-
-        var peers = peer is not null
-            ? [peer]
-            : Socket.Peers;
+        // try not to drop deltas during loading or something
+        this.StartDeferredCoroutine(() => ResumeWorldStateUpdate(false));
 
         var packet = new ZoneDataResponse {
             Map = MapDataResponse.Create(zone, true),
             Zone = LZ4Bytes.Create(zone),
         };
 
-        foreach (var remotePeer in peers) {
-            var remoteChara = GetRemoteCharaFromPeer(remotePeer);
-            if (remoteChara is null) {
-                EmpLog.Warning("Player {@Peer} has not been assigned a remote chara",
-                    remotePeer);
+        if (peer is not null) {
+            EmpLog.Debug("Dispatching zone to player {@Peer}",
+                peer);
 
-                Socket.Disconnect(remotePeer, "emp_invalid_remote_chara");
-                return;
-            }
+            peer.Send(packet);
+        } else {
+            EmpLog.Debug("Dispatching zone to all player");
 
-            if (!remoteChara.ExistsOnMap) {
-                var pos = pc.pos.GetNearestPoint(allowChara: false, allowInstalled: false);
-                _zone.AddCard(remoteChara, pos);
-                ActiveRemoteCharas.Add(remoteChara);
-
-                EmpLog.Debug("Assigned zone sync position to player {@Peer}",
-                    remotePeer);
-            }
-
-            EmpLog.Debug("Dispatching zone to peer {@Peer}",
-                remotePeer);
-
-            var moveZoneDelta = new CharaMoveZoneDelta {
-                Owner = remoteChara,
-                ZoneFullName = zone.ZoneFullName,
-                ZoneUid = zone.uid,
-                PosX = remoteChara.pos.x,
-                PosZ = remoteChara.pos.z,
-            };
-
-            Delta.AddRemote(moveZoneDelta);
-
-            remotePeer.Send(packet);
+            Broadcast(packet);
         }
     }
 

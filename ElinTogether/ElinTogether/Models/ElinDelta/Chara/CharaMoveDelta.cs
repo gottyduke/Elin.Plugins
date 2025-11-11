@@ -27,7 +27,8 @@ public class CharaMoveDelta : IElinDelta
 
     public void Apply(ElinNetBase net)
     {
-        if (EClass.game?.activeZone?.map is null) {
+        // this only happens on game load
+        if (EClass.core.game?.activeZone?.map is null) {
             net.Delta.DeferLocal(this);
             return;
         }
@@ -37,7 +38,8 @@ public class CharaMoveDelta : IElinDelta
             return;
         }
 
-        if (!chara.ExistsOnMap) {
+        // drop this
+        if (chara.currentZone != EClass.pc.currentZone) {
             return;
         }
 
@@ -46,6 +48,11 @@ public class CharaMoveDelta : IElinDelta
         }
 
         chara.Stub_Move(new(PosX, PosZ), (Card.MoveType)MoveType);
+
+        // relay this move again to other peers
+        if (net.IsHost) {
+            net.Delta.AddRemote(this);
+        }
     }
 
     public static implicit operator CharaMoveDelta(Chara chara)

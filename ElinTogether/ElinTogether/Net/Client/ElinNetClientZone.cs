@@ -68,6 +68,9 @@ internal partial class ElinNetClient
         EmpLog.Information("Received zone state");
 
         NetSession.Instance.CurrentZone = remoteZone;
+
+        // suppress client-side regeneration
         remoteZone.isGenerated = true;
+        remoteZone.dateExpire = int.MaxValue;
     }
 }

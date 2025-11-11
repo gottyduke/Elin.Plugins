@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using BepInEx;
-using Cwl.Helper.Exceptions;
+using Cwl.Helper.String;
 using ElinTogether.Helper;
 using ElinTogether.Net;
 using HarmonyLib;
@@ -14,7 +14,7 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.elintogether";
     internal const string Name = "Elin Together";
-    internal const string Version = "0.8.9";
+    internal const string Version = "0.8.17";
 
     [field: AllowNull]
     public static string BuildVersion => field ??= EmpMod.Assembly.GetName().Version.ToString();
@@ -24,6 +24,7 @@ internal static class ModInfo
 internal sealed class EmpMod : BaseUnityPlugin
 {
     internal static readonly Assembly Assembly = Assembly.GetExecutingAssembly();
+    internal static readonly Harmony SharedHarmony = new(ModInfo.Guid);
 
     internal static EmpMod Instance { get; private set; } = null!;
 
@@ -35,7 +36,10 @@ internal sealed class EmpMod : BaseUnityPlugin
         EmpConfig.Bind();
 
         CommandRegistry.assemblies.Add(Assembly);
-        Harmony.CreateAndPatchAll(Assembly, ModInfo.Guid);
+
+#if DEBUG
+        SharedHarmony.PatchAll(Assembly);
+#endif
     }
 
     private void Start()
@@ -47,11 +51,25 @@ internal sealed class EmpMod : BaseUnityPlugin
         ResourceFetch.InvalidateTemp();
 
         SteamNetworkingUtils.InitRelayNetworkAccess();
+
+        //var _ = ProgressIndicator.CreateProgress(() => new(Build()), _ => false, 1f);
     }
 
     private void OnApplicationQuit()
     {
         NetSession.Instance.RemoveComponent();
         StringAllocator.UnpinSharedStringHandles();
+    }
+
+    private string Build()
+    {
+        using var sb = StringBuilderPool.Get();
+
+        if (EClass.core.IsGameStarted) {
+            var ai = EClass.pc.ai;
+            sb.Append(ai.ToString());
+        }
+
+        return sb.ToString();
     }
 }

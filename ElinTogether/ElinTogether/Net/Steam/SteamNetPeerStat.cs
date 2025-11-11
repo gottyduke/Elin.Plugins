@@ -26,6 +26,11 @@ public sealed class SteamNetPeerStat
         return (SteamNetPeerStat)MemberwiseClone();
     }
 
+    public string ToStringSimplified()
+    {
+        return $"Ping={AvgPingMs:F1}ms\tOut={AvgBpsOut / 1024f:F1} KB/s\tIn={AvgBpsIn / 1024f:F1} KB/s";
+    }
+
     public override string ToString()
     {
         return $"Ping={AvgPingMs:F1}ms\tQoS L={ConnectionQualityLocal:P0}, R={ConnectionQualityRemote:P0}\n" +

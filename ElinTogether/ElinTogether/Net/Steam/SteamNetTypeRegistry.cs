@@ -39,7 +39,7 @@ internal class SteamNetTypeRegistry
         {
             var typeName = typeof(T).ToString();
             unchecked {
-                Hash = typeName.Aggregate(2166136261u, (current, c) => (current ^ c) * 16777619u);
+                Hash = typeName.Aggregate(2166136261U, (current, c) => (current ^ c) * 16777619U);
             }
 
             _hashToType[Hash] = typeof(T);

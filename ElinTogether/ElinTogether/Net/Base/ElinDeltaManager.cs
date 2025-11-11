@@ -65,7 +65,8 @@ public class ElinDeltaManager
 
     public void ProcessLocalBatch(ElinNetBase net, int batchSize = -1)
     {
-        foreach (var delta in FlushInBuffer(batchSize)) {
+        var batch = FlushInBuffer(batchSize);
+        foreach (var delta in batch) {
             try {
                 delta.Apply(net);
             } catch (Exception ex) {

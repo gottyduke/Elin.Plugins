@@ -5,6 +5,9 @@ using MessagePack;
 
 namespace ElinTogether.Models;
 
+/// <summary>
+///     Card surrogate
+/// </summary>
 [MessagePackObject]
 public class RemoteCard
 {
@@ -37,7 +40,7 @@ public class RemoteCard
             Uid = card.uid,
             Type = card is Thing ? CardType.Thing : CardType.Chara,
             // do not compress parent
-            Parent = card.parentCard is null ? null : Create(card.parentCard),
+            Parent = card.parentCard,
             Data = withData ? LZ4Bytes.Create(card) : null,
         };
     }
@@ -68,8 +71,10 @@ public class RemoteCard
         var map = EClass.game?.activeZone?.map;
         Card? card = Type switch {
             CardType.Thing => map?.FindThing(Uid),
-            CardType.Chara => map?.FindChara(Uid) ??
-                              EClass.game?.cards.globalCharas.GetValueOrDefault(Uid),
+            CardType.Chara => Uid == EClass.player.uidChara
+                ? EClass.pc
+                : map?.FindChara(Uid) ??
+                  EClass.game?.cards.globalCharas.GetValueOrDefault(Uid),
             _ => null,
         };
 

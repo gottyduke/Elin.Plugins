@@ -1,16 +1,14 @@
 using ElinTogether.Net;
+using ElinTogether.Patches.DeltaEvents;
 using MessagePack;
 
 namespace ElinTogether.Models.ElinDelta;
 
 [MessagePackObject]
-public class CharaPickThingDelta : IElinDelta
+public class CharaTickDelta : IElinDelta
 {
     [Key(0)]
     public required RemoteCard Owner { get; init; }
-
-    [Key(1)]
-    public required RemoteCard Thing { get; init; }
 
     public void Apply(ElinNetBase net)
     {
@@ -19,13 +17,11 @@ public class CharaPickThingDelta : IElinDelta
             return;
         }
 
-        if (Thing.Find() is not Thing thing) {
-            return;
+        // we are host, relay the client tick to other players
+        if (net.IsHost) {
+            net.Delta.AddRemote(this);
         }
 
-        chara.Pick(thing);
-
-        // the patch should handle the relay automatically
-        // albeit a bad code design to separate it
+        chara.Stub_Tick();
     }
 }

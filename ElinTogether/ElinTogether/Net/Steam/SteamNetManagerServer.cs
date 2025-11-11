@@ -1,9 +1,7 @@
 using System;
 using ElinTogether.Common;
-using ElinTogether.Helper;
 using Serilog.Events;
 using Steamworks;
-using UnityEngine;
 
 namespace ElinTogether.Net.Steam;
 

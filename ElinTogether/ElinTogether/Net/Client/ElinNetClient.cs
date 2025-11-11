@@ -35,19 +35,26 @@ internal partial class ElinNetClient : ElinNetBase
 
 #region Net Events
 
+    /// <summary>
+    ///     Net event: On connected to host
+    /// </summary>
     protected override void OnPeerConnected(ISteamNetPeer host)
     {
-        EmpPop.Information("Connected to host {@Peer}",
+        EmpPop.Information("Connecting to host {@Peer}",
             host);
 
-        StartWorldStateUpdate();
+        this.StartDeferredCoroutine(StartWorldStateUpdate, () => core.IsGameStarted);
 
         DebugProgress ??= ProgressIndicator.CreateProgress(() => new(BuildDebugInfo()), _ => false, 1f);
     }
 
+    /// <summary>
+    ///     Net event: On disconnected from host
+    /// </summary>
     protected override void OnPeerDisconnected(ISteamNetPeer host, string disconnectInfo)
     {
         StopWorldStateUpdate();
+        StopAllCoroutines();
 
         if (core.IsGameStarted) {
             game.Kill();

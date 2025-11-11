@@ -29,31 +29,40 @@ public class CharaMoveZoneDelta : IElinDelta
             return;
         }
 
-        if (EClass.game.activeZone?.map is null) {
-            // defer for map loading
+        if (EClass.game?.activeZone?.map is null) {
+            // defer for initial save probe replication
             net.Delta.DeferLocal(this);
             return;
         }
 
         if (Owner.Find() is not Chara chara) {
+            // well
             return;
         }
 
         var remoteZone = EClass.game.spatials.Find(ZoneUid);
-        if (remoteZone is null || (chara.IsPC && NetSession.Instance.CurrentZone != remoteZone)) {
+        if (remoteZone is null) {
             // defer to catch up
             net.Delta.DeferLocal(this);
             return;
         }
 
+        if (chara.IsPCParty && NetSession.Instance.CurrentZone != remoteZone) {
+            // defer again for map replication
+            net.Delta.DeferLocal(this);
+            return;
+        }
+
+        var initialMove = new CharaMoveDelta {
+            Owner = Owner,
+            PosX = PosX,
+            PosZ = PosZ,
+            MoveType = (CharaMoveDelta.CharaMoveType)Card.MoveType.Force,
+        };
+
         if (chara.currentZone == remoteZone) {
             // update position only
-            net.Delta.AddLocal(new CharaMoveDelta {
-                Owner = Owner,
-                PosX = PosX,
-                PosZ = PosZ,
-                MoveType = (CharaMoveDelta.CharaMoveType)Card.MoveType.Force,
-            });
+            net.Delta.AddLocal(initialMove);
             return;
         }
 
