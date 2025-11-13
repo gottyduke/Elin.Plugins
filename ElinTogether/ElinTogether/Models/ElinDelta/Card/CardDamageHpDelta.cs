@@ -1,11 +1,11 @@
 using ElinTogether.Net;
-using ElinTogether.Patches.DeltaEvents;
+using ElinTogether.Patches;
 using MessagePack;
 
 namespace ElinTogether.Models.ElinDelta;
 
 [MessagePackObject]
-public class CardDamageHpDelta : IElinDelta
+public class CardDamageHpDelta : ElinDeltaBase
 {
     [Key(0)]
     public required RemoteCard Owner { get; init; }
@@ -34,7 +34,7 @@ public class CardDamageHpDelta : IElinDelta
     [Key(8)]
     public RemoteCard? OriginalTarget { get; init; }
 
-    public void Apply(ElinNetBase net)
+    public override void Apply(ElinNetBase net)
     {
         if (Owner.Find() is not { } card) {
             return;

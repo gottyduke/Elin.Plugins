@@ -1,5 +1,6 @@
 using Cwl.Helper.Extensions;
 using ElinTogether.Models;
+using ElinTogether.Patches;
 using ReflexCLI.Attributes;
 using Serilog.Context;
 
@@ -8,34 +9,29 @@ namespace ElinTogether.Net;
 [ConsoleCommandClassCustomizer("emp")]
 internal partial class ElinNetClient
 {
-    public void RequestZoneState(string zoneFullName = "", int uid = -1)
+    public void RequestZoneState(MapDataRequest request)
     {
         EmpLog.Information("Requesting zone state {@Zone} from host",
-            new {
-                ZoneFullName = zoneFullName,
-                ZoneUid = uid,
-            });
+            request);
 
-        Socket.FirstPeer.Send(MapDataRequest.CurrentRemoteZone);
+        Socket.FirstPeer.Send(request);
     }
 
     /// <summary>
-    ///     Zone change state received, update regular map assets
+    /// Net event: received zone state update, must do a scene init
     /// </summary>
     private void OnZoneDataResponse(ZoneDataResponse response)
     {
         using var _ = LogContext.PushProperty("Zone", response.Map, true);
 
-        var zoneFullName = response.Map.ZoneFullName;
-        var zoneUid = response.Map.ZoneUid;
-
-        response.Map.WriteToTemp();
+        response.WriteToTemp();
 
         var spatial = game.spatials;
 
-        var remoteZone = spatial.Find(zoneUid);
+        // popping from spatial gen refs makes no sense actually
+        var remoteZone = spatial.Find(response.ZoneUid) ?? SpatialGenEvent.TryPop(response.ZoneUid);
         if (remoteZone is null) {
-            EmpLog.Information("Remote zone does not exist, creating new spatial");
+            EmpLog.Information("Remote zone does not exist, waiting for new spatial gen");
 
             var probeZone = response.Zone.Decompress<Zone>();
             var parent = spatial.Find(probeZone.parent.uid);
@@ -43,34 +39,40 @@ internal partial class ElinNetClient
             if (parent is null) {
                 EmpLog.Warning("Remote zone parent does not exist in current game");
 
-                Socket.Disconnect(Socket.FirstPeer, "emp_invalid_zone_retry");
                 // TODO: add reconnect logic to resync save probe
-                // Reconnect();
+                Socket.Disconnect(Socket.FirstPeer, "emp_invalid_zone");
                 return;
             }
 
-            var (_, zoneId, zoneLv) = zoneFullName.ParseZoneFullName();
-            remoteZone = SpatialGen.Create(zoneId, parent, true, probeZone.x, probeZone.y) as Zone;
-            remoteZone = remoteZone.FindOrCreateLevel(zoneLv, probeZone.id);
+            // swap out the serialized parent
+            probeZone.parent = parent;
+            spatial.map[response.ZoneUid] = remoteZone = probeZone;
 
             if (parent is Region region) {
                 region.elomap.SetZone(probeZone.x, probeZone.y, remoteZone, true);
             }
         }
 
-        if (remoteZone is null || remoteZone.ZoneFullName != zoneFullName) {
+        if (remoteZone.ZoneFullName != response.ZoneFullName) {
             EmpLog.Warning("Zone state mismatch");
 
+            // TODO: add reconnect logic to resync save probe
             Socket.Disconnect(Socket.FirstPeer, "emp_invalid_zone");
             return;
         }
 
         EmpLog.Information("Received zone state");
 
-        NetSession.Instance.CurrentZone = remoteZone;
-
-        // suppress client-side regeneration
+        // suppress client-side map regeneration
         remoteZone.isGenerated = true;
         remoteZone.dateExpire = int.MaxValue;
+
+        if (remoteZone is Region eloMap) {
+            // suppress client-side overworld poi generation
+            eloMap.dateCheckSites = int.MaxValue;
+        }
+
+        // update session remote zone
+        NetSession.Instance.CurrentZone = remoteZone;
     }
 }

@@ -1,16 +1,16 @@
 using ElinTogether.Net;
-using ElinTogether.Patches.DeltaEvents;
+using ElinTogether.Patches;
 using MessagePack;
 
 namespace ElinTogether.Models.ElinDelta;
 
 [MessagePackObject]
-public class CardGenDelta : IElinDelta
+public class CardGenDelta : ElinDeltaBase
 {
     [Key(0)]
     public required RemoteCard Card { get; init; }
 
-    public void Apply(ElinNetBase net)
+    public override void Apply(ElinNetBase net)
     {
         if (Card.Data is null) {
             return;

@@ -8,17 +8,19 @@ namespace ElinTogether.Models.ElinDelta;
 [Union(101, typeof(CardDamageHpDelta))]
 // Chara
 [Union(200, typeof(CharaMoveDelta))]
-[Union(201, typeof(CharaMoveZoneDelta))]
+[Union(201, typeof(CharaTickDelta))]
 [Union(202, typeof(CharaMakeAllyDelta))]
 [Union(203, typeof(CharaPickThingDelta))]
 [Union(204, typeof(CharaDieDelta))]
-[Union(205, typeof(CharaTickDelta))]
+[Union(205, typeof(CharaUseAbilityDelta))]
+[Union(206, typeof(CharaAddConditionDelta))]
 // Thing
 // Zone
-[Union(400, typeof(ZoneAddCardDelta))]
+[Union(400, typeof(SpatialGenDelta))]
+[Union(401, typeof(ZoneAddCardDelta))]
 // World
 [Union(500, typeof(GameTimeDelta))]
-public interface IElinDelta
+public abstract class ElinDeltaBase : EClass
 {
-    public void Apply(ElinNetBase net);
+    public abstract void Apply(ElinNetBase net);
 }

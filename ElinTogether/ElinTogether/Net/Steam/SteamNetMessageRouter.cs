@@ -15,7 +15,7 @@ public sealed class SteamNetMessageRouter : ISteamNetListener
 
     public void OnPeerDisconnected(ISteamNetPeer peer, string reason)
     {
-        OnPeerDisconnectedEvent?.Invoke(peer, reason);
+        OnPeerDisconnectedEvent?.Invoke(peer, reason.lang());
     }
 
     public void OnMessageReceived(object msg, ISteamNetPeer peer)

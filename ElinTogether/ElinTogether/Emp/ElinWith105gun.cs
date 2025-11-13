@@ -1,9 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using BepInEx;
-using Cwl.Helper.String;
+using Cwl.API.Attributes;
 using ElinTogether.Helper;
 using ElinTogether.Net;
+using ElinTogether.Patches;
 using HarmonyLib;
 using ReflexCLI;
 using Steamworks;
@@ -14,7 +15,7 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.elintogether";
     internal const string Name = "Elin Together";
-    internal const string Version = "0.8.17";
+    internal const string Version = "0.8.33";
 
     [field: AllowNull]
     public static string BuildVersion => field ??= EmpMod.Assembly.GetName().Version.ToString();
@@ -51,8 +52,6 @@ internal sealed class EmpMod : BaseUnityPlugin
         ResourceFetch.InvalidateTemp();
 
         SteamNetworkingUtils.InitRelayNetworkAccess();
-
-        //var _ = ProgressIndicator.CreateProgress(() => new(Build()), _ => false, 1f);
     }
 
     private void OnApplicationQuit()
@@ -61,15 +60,10 @@ internal sealed class EmpMod : BaseUnityPlugin
         StringAllocator.UnpinSharedStringHandles();
     }
 
-    private string Build()
+    [CwlPostLoad]
+    private static void ClearRef()
     {
-        using var sb = StringBuilderPool.Get();
-
-        if (EClass.core.IsGameStarted) {
-            var ai = EClass.pc.ai;
-            sb.Append(ai.ToString());
-        }
-
-        return sb.ToString();
+        CardGenEvent.HeldRefCards.Clear();
+        SpatialGenEvent.HeldRefZones.Clear();
     }
 }

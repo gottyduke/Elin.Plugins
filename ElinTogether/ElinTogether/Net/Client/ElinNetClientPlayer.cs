@@ -34,9 +34,9 @@ internal partial class ElinNetClient
         player.zone = null;
 
         // do an initial zone request to load in
-        RequestZoneState();
+        RequestZoneState(MapDataRequest.CurrentRemoteZone);
 
-        EmpLog.Debug("Waiting on zone state complete...");
+        EmpPop.Debug("Waiting on zone state complete...");
 
         this.StartDeferredCoroutine(
             () => {

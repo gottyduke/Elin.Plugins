@@ -9,12 +9,20 @@ namespace ElinTogether.Net;
 
 internal partial class ElinNetHost
 {
-    private readonly Dictionary<uint, Dictionary<SourceListType, bool>> _validationResults = [];
+    private readonly Dictionary<int, Dictionary<SourceListType, bool>> _validationResults = [];
 
     internal readonly HashSet<SourceListType> SourceValidationsEnabled = [
         // this is necessary to check so we can map remote acts
-        SourceListType.AiAct,
+        SourceListType.Act,
     ];
+
+    private void EnsureValidation(ISteamNetPeer peer)
+    {
+        if (!_validationResults.TryGetValue(peer.Id, out var validations) ||
+            validations.Values.Any(r => !r)) {
+            throw new InvalidOperationException($"player {peer.Id} not validated");
+        }
+    }
 
     private void RequestSourceValidation(ISteamNetPeer peer)
     {

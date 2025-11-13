@@ -1,32 +1,29 @@
 using ElinTogether.Net;
-using ElinTogether.Patches.DeltaEvents;
+using ElinTogether.Patches;
 using MessagePack;
 
 namespace ElinTogether.Models.ElinDelta;
 
 [MessagePackObject]
-public class ZoneAddCardDelta : IElinDelta
+public class ZoneAddCardDelta : ElinDeltaBase
 {
     [Key(0)]
     public required RemoteCard Card { get; init; }
 
     [Key(1)]
-    public int ZoneUid { get; init; }
+    public required int ZoneUid { get; init; }
 
     [Key(2)]
-    public int PosX { get; init; }
+    public required Position Pos { get; init; }
 
-    [Key(3)]
-    public int PosZ { get; init; }
-
-    public void Apply(ElinNetBase net)
+    public override void Apply(ElinNetBase net)
     {
-        if (EClass.game?.activeZone?.map is null) {
+        if (game?.activeZone?.map is null) {
             net.Delta.DeferLocal(this);
             return;
         }
 
-        var zone = EClass.game.spatials.Find(ZoneUid);
+        var zone = game.spatials.Find(ZoneUid) ?? SpatialGenEvent.TryPop(ZoneUid);
         if (zone is null) {
             return;
         }
@@ -41,6 +38,6 @@ public class ZoneAddCardDelta : IElinDelta
             return;
         }
 
-        zone.Stub_AddCard(card, PosX, PosZ);
+        zone.Stub_AddCard(card, Pos.X, Pos.Z);
     }
 }

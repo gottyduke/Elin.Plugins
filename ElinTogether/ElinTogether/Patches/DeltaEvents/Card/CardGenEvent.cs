@@ -2,13 +2,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Cwl.API.Attributes;
 using ElinTogether.Models;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
 
-namespace ElinTogether.Patches.DeltaEvents;
+namespace ElinTogether.Patches;
 
 [HarmonyPatch]
 internal static class CardGenEvent
@@ -38,20 +37,20 @@ internal static class CardGenEvent
         return card;
     }
 
+    [HarmonyPrefix]
+    internal static bool OnClientCardGen()
+    {
+        return NetSession.Instance.IsHost;
+    }
+
     [HarmonyPostfix]
     private static void OnCardGenCreate(Card __result)
     {
         // we should relay every single creation call so remotes can hold references
-        if (NetSession.Instance.Connection is { IsConnected: true } connection) {
+        if (NetSession.Instance.Connection is ElinNetHost connection) {
             connection.Delta.AddRemote(new CardGenDelta {
                 Card = RemoteCard.Create(__result, true),
             });
         }
-    }
-
-    [CwlPostLoad]
-    private static void ClearRef()
-    {
-        HeldRefCards.Clear();
     }
 }

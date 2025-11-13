@@ -20,7 +20,7 @@ public enum SourceListType : byte
     Stat,
 
     // runtime data
-    AiAct,
+    Act,
 
     //
     All,

@@ -3,7 +3,7 @@ using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
 
-namespace ElinTogether.Patches.DeltaEvents;
+namespace ElinTogether.Patches;
 
 [HarmonyPatch(typeof(Zone), nameof(Zone.AddCard), typeof(Card), typeof(int), typeof(int))]
 internal static class ZoneAddCardEvent
@@ -11,7 +11,7 @@ internal static class ZoneAddCardEvent
     [HarmonyPrefix]
     internal static bool OnAddCardToZone(Zone __instance, Card t, int x, int z)
     {
-        if (NetSession.Instance.Connection is not { IsConnected: true } connection) {
+        if (NetSession.Instance.Connection is not { } connection) {
             return true;
         }
 
@@ -19,8 +19,7 @@ internal static class ZoneAddCardEvent
             connection.Delta.AddRemote(new ZoneAddCardDelta {
                 Card = t,
                 ZoneUid = __instance.uid,
-                PosX = x,
-                PosZ = z,
+                Pos = new() { X = x, Z = z },
             });
         }
 

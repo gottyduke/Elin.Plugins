@@ -4,7 +4,7 @@ using MessagePack;
 namespace ElinTogether.Models.ElinDelta;
 
 [MessagePackObject]
-public class CharaPickThingDelta : IElinDelta
+public class CharaPickThingDelta : ElinDeltaBase
 {
     [Key(0)]
     public required RemoteCard Owner { get; init; }
@@ -12,7 +12,7 @@ public class CharaPickThingDelta : IElinDelta
     [Key(1)]
     public required RemoteCard Thing { get; init; }
 
-    public void Apply(ElinNetBase net)
+    public override void Apply(ElinNetBase net)
     {
         // we do not apply to ourselves
         if (Owner.Find() is not Chara { IsPC: false } chara) {

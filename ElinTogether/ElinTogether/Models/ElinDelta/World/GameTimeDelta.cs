@@ -1,18 +1,18 @@
 using ElinTogether.Net;
-using ElinTogether.Patches.DeltaEvents;
+using ElinTogether.Patches;
 using MessagePack;
 
 namespace ElinTogether.Models.ElinDelta;
 
 [MessagePackObject]
-public class GameTimeDelta : IElinDelta
+public class GameTimeDelta : ElinDeltaBase
 {
     [Key(0)]
     public int AdvanceMin { get; init; }
 
-    public void Apply(ElinNetBase net)
+    public override void Apply(ElinNetBase net)
     {
-        if (EClass.game?.world?.date is not { } date) {
+        if (game?.world?.date is not { } date) {
             // simply drop delta and wait for reconciliation
             return;
         }

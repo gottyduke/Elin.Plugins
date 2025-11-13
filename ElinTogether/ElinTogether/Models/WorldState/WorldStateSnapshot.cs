@@ -9,7 +9,7 @@ namespace ElinTogether.Models;
 public class WorldStateSnapshot
 {
     [Key(0)]
-    public required uint ServerTick { get; init; }
+    public required int ServerTick { get; init; }
 
     [Key(1)]
     public required int[] GameDate { get; init; }
@@ -21,9 +21,6 @@ public class WorldStateSnapshot
     public required int GlobalUidNext { get; init; }
 
     [Key(4)]
-    public required bool Paused { get; init; }
-
-    [Key(5)]
     public required int SharedSpeed { get; init; }
 
     public static WorldStateSnapshot Create(IEnumerable<Chara> excludeSnapshots)
@@ -35,7 +32,6 @@ public class WorldStateSnapshot
                 .Except(excludeSnapshots)
                 .Select(CharaSnapshot.Create),
             GlobalUidNext = EClass.game.cards.uidNext,
-            Paused = Game.isPaused,
             SharedSpeed = NetSession.Instance.SharedSpeed,
         };
     }
@@ -54,9 +50,6 @@ public class WorldStateSnapshot
         EClass.game.cards.uidNext = GlobalUidNext;
 
         // 4
-        Game.isPaused = Paused;
-
-        // 5
         NetSession.Instance.SharedSpeed = SharedSpeed;
     }
 }

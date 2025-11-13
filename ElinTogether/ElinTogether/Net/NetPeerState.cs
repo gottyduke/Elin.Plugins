@@ -6,7 +6,7 @@ namespace ElinTogether.Net;
 public class NetPeerState
 {
     [Key(0)]
-    public required uint Index { get; init; }
+    public required int Index { get; init; }
 
     [Key(1)]
     public required ulong Uid { get; init; }
@@ -18,11 +18,11 @@ public class NetPeerState
     public required int CharaUid { get; init; }
 
     [Key(4)]
-    public bool IsValidated { get; internal init; }
+    public int Speed { get; set; }
 
     [Key(5)]
-    public byte LastAct { get; set; }
+    public ushort LastAct { get; set; }
 
     [Key(6)]
-    public int Speed { get; set; }
+    public int LastReceivedTick { get; set; } = -1;
 }

@@ -52,6 +52,8 @@ public abstract partial class ElinNetBase : EMono
 
     protected abstract void RegisterPackets();
 
+    protected abstract void DisconnectInactive();
+
     protected void Initialize()
     {
         if (_initialized) {
@@ -66,7 +68,6 @@ public abstract partial class ElinNetBase : EMono
         Socket.Initialize(Router);
 
         Scheduler = new();
-        Scheduler.Subscribe(DisconnectInactive, 1);
 
         RegisterPackets();
 
@@ -94,27 +95,11 @@ public abstract partial class ElinNetBase : EMono
             var peer = peers[i];
 
             sb.AppendLine(peer.Colorize(peer.Name));
-            sb.Append(peer.Stat.ToString());
-
-            if (i < peers.Count - 1) {
-                sb.AppendLine();
-            }
+            sb.AppendLine(peer.Stat.ToString());
         }
+
+        sb.Append(Delta.ToString());
 
         return sb.ToString();
-    }
-
-    private void DisconnectInactive()
-    {
-        foreach (var peer in Socket.Peers) {
-            if (!peer.IsConnected) {
-                Socket.Disconnect(peer, "emp_inactive");
-            }
-        }
-
-        // remove self
-        if (!IsHost && Socket.Peers.Count == 0) {
-            NetSession.Instance.RemoveComponent();
-        }
     }
 }

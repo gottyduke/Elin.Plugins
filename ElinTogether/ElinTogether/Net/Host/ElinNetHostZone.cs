@@ -1,6 +1,7 @@
 using Cwl.Helper.Extensions;
 using Cwl.Helper.Unity;
 using ElinTogether.Models;
+using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net.Steam;
 using Serilog.Context;
 
@@ -8,7 +9,7 @@ namespace ElinTogether.Net;
 
 internal partial class ElinNetHost
 {
-    internal void PropagateZoneChangeState(Zone zone, ISteamNetPeer? peer = null)
+    public void PropagateZoneChangeState(Zone zone, ISteamNetPeer? peer = null)
     {
         using var _ = LogContext.PushProperty("Zone", zone, true);
 
@@ -18,10 +19,7 @@ internal partial class ElinNetHost
         // try not to drop deltas during loading or something
         this.StartDeferredCoroutine(() => ResumeWorldStateUpdate(false));
 
-        var packet = new ZoneDataResponse {
-            Map = MapDataResponse.Create(zone, true),
-            Zone = LZ4Bytes.Create(zone),
-        };
+        var packet = ZoneDataResponse.Create(zone);
 
         if (peer is not null) {
             EmpLog.Debug("Dispatching zone to player {@Peer}",
@@ -37,8 +35,6 @@ internal partial class ElinNetHost
 
     private void OnMapDataRequest(MapDataRequest request, ISteamNetPeer peer)
     {
-        EnsureValidation(peer);
-
         using var _ = LogContext.PushProperty("Zone", request, true);
 
         EmpLog.Information("Received zone state request from player {@Peer}",

@@ -3,7 +3,7 @@ using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
 
-namespace ElinTogether.Patches.DeltaEvents;
+namespace ElinTogether.Patches;
 
 [HarmonyPatch(typeof(Chara), nameof(Chara._Move))]
 internal static class CharaMoveEvent
@@ -12,7 +12,7 @@ internal static class CharaMoveEvent
     internal static void OnCharaMove(Chara __instance, Point newPoint, ref Card.MoveType type)
     {
         var session = NetSession.Instance;
-        if (session.Connection is not { IsConnected: true } connection) {
+        if (session.Connection is not { } connection) {
             return;
         }
 
@@ -37,8 +37,7 @@ internal static class CharaMoveEvent
 
         connection.Delta.AddRemote(new CharaMoveDelta {
             Owner = __instance,
-            PosX = newPoint.x,
-            PosZ = newPoint.z,
+            Pos = newPoint,
             MoveType = (CharaMoveDelta.CharaMoveType)Card.MoveType.Force,
         });
     }

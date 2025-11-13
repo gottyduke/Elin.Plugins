@@ -1,4 +1,5 @@
-using ElinTogether.Patches.DeltaEvents;
+using ElinTogether.Net;
+using ElinTogether.Patches;
 using MessagePack;
 
 namespace ElinTogether.Models;
@@ -13,27 +14,23 @@ public class CharaSnapshot
     public int Hp { get; init; }
 
     [Key(2)]
-    public int PosX { get; init; }
+    public required Position Pos { get; init; }
 
     [Key(3)]
-    public int PosZ { get; init; }
-
-    [Key(4)]
-    public int ZoneUid { get; init; }
+    public required int CurrentZoneUid { get; init; }
 
     public static CharaSnapshot Create(Chara chara)
     {
         return new() {
             Owner = chara,
             Hp = chara.hp,
-            PosX = chara.pos.x,
-            PosZ = chara.pos.z,
-            ZoneUid = chara.currentZone.uid,
+            Pos = chara.pos,
+            CurrentZoneUid = chara.currentZone.uid,
         };
     }
 
     /// <summary>
-    ///     This only corrects on client side
+    ///     This only applies to client side
     ///     We assume host is always right
     /// </summary>
     public void ApplyReconciliation()
@@ -51,12 +48,17 @@ public class CharaSnapshot
         }
 
         // only apply position fix if on the same map
-        if (ZoneUid != EClass._zone.uid) {
+        // if chara hasn't been moved to new remote zone, do it
+        // TODO separate this logic from reconciliation
+        if (chara.currentZone.uid != CurrentZoneUid) {
+            if (CurrentZoneUid == NetSession.Instance.CurrentZone?.uid) {
+                chara.MoveZone(NetSession.Instance.CurrentZone);
+            }
             return;
         }
 
-        if (chara.pos.x != PosX || chara.pos.z != PosZ) {
-            chara.Stub_Move(new(PosX, PosZ), Card.MoveType.Force);
+        if (Point.map == NetSession.Instance.CurrentZone?.map && chara.pos != Pos) {
+            chara.Stub_Move(Pos, Card.MoveType.Force);
         }
     }
 }

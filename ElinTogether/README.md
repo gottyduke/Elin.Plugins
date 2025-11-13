@@ -10,17 +10,20 @@ timeline
     10/30/2025 : Initial concept, looked into LiteNetLib
     10/31/2025 : First version of ElinNetBase components
     : Setup NAT holepunch server on GCP
-    11/03/2025 : 1st session (Han), NAT holepunch is unreliable
+    11/03/2025 : Session #1 (Han), NAT holepunch is unreliable
     : Considering SteamNetworkingSockets
     11/07/2025 : Swapped to SteamNetworkingSockets + removed NAT code
-    : 2nd session (Han), couldn't beat Puppy Cave due to map loading issue
-    11/08/2025 : 3rd session (Omega, Ryozu), testing SteamNetworkingSockets
-    : 4th session (InuiDame), testing with high latency
+    : Session #2 (Han), couldn't beat Puppy Cave due to map loading issue
+    11/08/2025 : Session #3 (Omega, Ryozu), testing SteamNetworkingSockets
+    : Session #4 (InuiDame), testing with high latency
     11/09/2025 : Added delta packets + tick scheduler
-    : 5th session (Han), couldn't beat Puppy Cave due to map loading issue
+    : Session #5 (Han), couldn't beat Puppy Cave due to map loading issue
     : Publicized source code
     11/11/2025 : Added shared speed + shared ticking
-    : 6th session (Han), couldn't beat Puppy Cave due to level loading issue
+    : Session #6 (Han), couldn't beat Puppy Cave due to level loading issue
+    : Session #7 (Omega), couldn't beat Puppy Cave due to 3rd player not synced
+    11/12/2025 : Session #8 (InuiDame), couldn't beat Puppy Cave due to not handling client death
+    : Session #9 (Han, Omega), 3 player testing, couldn't beat Puppy Cave due to enemies not taking death updates
 ```
 
 ## Build

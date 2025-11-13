@@ -3,7 +3,7 @@ using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
 
-namespace ElinTogether.Patches.DeltaEvents;
+namespace ElinTogether.Patches;
 
 [HarmonyPatch(typeof(GameDate), nameof(GameDate.AdvanceMin))]
 internal static class GameDateAdvanceMinEvent
@@ -12,12 +12,12 @@ internal static class GameDateAdvanceMinEvent
     internal static bool OnGameAdvanceMin(int a)
     {
         switch (NetSession.Instance.Connection) {
-            case ElinNetHost { IsConnected: true } host:
+            case ElinNetHost  host:
                 host.Delta.AddRemote(new GameTimeDelta {
                     AdvanceMin = a,
                 });
                 return true;
-            case ElinNetClient { IsConnected: true }:
+            case ElinNetClient :
                 // we are clients, drop the update and wait for delta
                 return false;
             default:

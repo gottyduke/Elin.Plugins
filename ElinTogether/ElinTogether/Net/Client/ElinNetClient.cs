@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Cwl.Helper.Unity;
 using ElinTogether.Common;
 using ElinTogether.Models;
@@ -33,6 +34,10 @@ internal partial class ElinNetClient : ElinNetBase
         Router.RegisterHandler<WorldStateDeltaList>(OnWorldStateDeltaResponse);
     }
 
+    protected override void DisconnectInactive()
+    {
+    }
+
 #region Net Events
 
     /// <summary>
@@ -40,8 +45,15 @@ internal partial class ElinNetClient : ElinNetBase
     /// </summary>
     protected override void OnPeerConnected(ISteamNetPeer host)
     {
+        // CLIENT-ONLY
+        var sw = Stopwatch.StartNew();
+        while (host.Name is null && sw.ElapsedMilliseconds <= 500) {
+            // do a spin wait here to pin the username
+            // ignore if steam can't respond in 500ms
+        }
+
         EmpPop.Information("Connecting to host {@Peer}",
-            host);
+            Socket.FirstPeer);
 
         this.StartDeferredCoroutine(StartWorldStateUpdate, () => core.IsGameStarted);
 

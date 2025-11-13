@@ -1,7 +1,7 @@
 using System;
 using ElinTogether.Models;
 using ElinTogether.Net.Steam;
-using ElinTogether.Patches.DeltaEvents;
+using ElinTogether.Patches;
 
 namespace ElinTogether.Net;
 
@@ -101,15 +101,15 @@ internal partial class ElinNetHost
 
         state.LastAct = response.LastAct;
         state.Speed = response.Speed;
+        state.LastReceivedTick = response.LastReceivedTick;
 
         NetSession.Instance.SharedSpeed = SharedSpeed;
 
         var chara = ActiveRemoteCharas[peer.Id];
 
-        if (response.ZoneUid == chara.currentZone.uid &&
-            (response.PosX != chara.pos.x || response.PosZ != chara.pos.z)) {
+        if (response.ZoneUid == game.activeZone.uid && response.Pos != chara.pos) {
             // fix the position
-            chara.Stub_Move(new(response.PosX, response.PosZ), Card.MoveType.Force);
+            //chara.Stub_Move(response.Pos, Card.MoveType.Force);
         }
     }
 
@@ -140,7 +140,7 @@ internal partial class ElinNetHost
         Scheduler.Unsubscribe(WorldStateDeltaUpdate);
         Scheduler.Unsubscribe(WorldStateDeltaProcess);
 
-        NetSession.Instance.Tick = 0U;
+        NetSession.Instance.Tick = 0;
 
         _pauseUpdate = false;
 
@@ -160,7 +160,7 @@ internal partial class ElinNetHost
     /// <summary>
     ///     Resume sending out deltas
     /// </summary>
-    public void ResumeWorldStateUpdate(bool clearDelta = false)
+    public void ResumeWorldStateUpdate(bool clearDelta = true)
     {
         _pauseUpdate = false;
 

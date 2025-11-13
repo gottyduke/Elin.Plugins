@@ -14,23 +14,23 @@ internal class SteamNetPeer : ISteamNetPeer, IDisposable
     private const int MemoryArenaInitialSize = 4 * (1 << 10);
     private const int MemoryArenaGrowthRatio = 2;
 
-    private static readonly Dictionary<ulong, uint> _recentPeers = [];
+    private static readonly Dictionary<ulong, int> _recentPeers = [];
     private static readonly Func<int, IntPtr> _allocator = Marshal.AllocHGlobal;
     private static readonly Action<IntPtr> _deallocator = Marshal.FreeHGlobal;
     private static readonly Func<IntPtr, IntPtr, IntPtr> _reallocator = Marshal.ReAllocHGlobal;
 
-    private static int _nextId;
+    private static int _nextId = -1;
 
     // ReSharper disable once ChangeFieldTypeToSystemThreadingLock
-    private readonly object _arenaLock = new();
-    private readonly ISteamNetSerializer _serializer;
+    protected readonly object ArenaLock = new();
 
     public readonly HSteamNetConnection Connection;
     public readonly SteamNetworkingIdentity RemoteIdentity;
-
-    private IntPtr _arena;
-    private int _arenaSize;
+    protected readonly ISteamNetSerializer Serializer;
     private bool _disposed;
+
+    protected IntPtr Arena;
+    protected int ArenaSize;
 
     public SteamNetPeer(HSteamNetConnection connection, ISteamNetSerializer serializer)
     {
@@ -40,50 +40,55 @@ internal class SteamNetPeer : ISteamNetPeer, IDisposable
         RemoteIdentity = info.m_identityRemote;
 
         Uid = RemoteIdentity.GetSteamID64();
-        Name = "";
         SteamUserName.PinUserName(RemoteIdentity.GetSteamID64(), name => Name = name);
 
-        if (_recentPeers.TryGetValue(Uid, out var id)) {
-            Id = id;
-            Interlocked.Decrement(ref _nextId);
-        } else {
-            _recentPeers[Uid] = Id;
+        // use recent Id if it's a reconnection
+        if (!_recentPeers.TryGetValue(Uid, out var id)) {
+            _recentPeers[Uid] = id = Interlocked.Increment(ref _nextId);
         }
 
-        _serializer = serializer;
-        _arenaSize = MemoryArenaInitialSize;
-        _arena = _allocator(_arenaSize);
+        Id = id;
+
+        Serializer = serializer;
+        ArenaSize = MemoryArenaInitialSize;
+        Arena = _allocator(ArenaSize);
     }
 
-    public uint Id { get; } = (uint)Interlocked.Increment(ref _nextId);
+    public ESteamNetworkingConnectionState ConnectionState =>
+        SteamNetworkingSockets.GetConnectionInfo(Connection, out var info)
+            ? info.m_eState
+            : ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_None;
+
+    public virtual int Id { get; }
     public ulong Uid { get; }
-    public string Name { get; private set; }
+    public virtual string? Name { get; private set; }
 
     [field: AllowNull]
     public SteamNetPeerStat Stat => field ??= new();
 
-    public bool IsConnected =>
-        Connection != HSteamNetConnection.Invalid &&
-        SteamNetworkingSockets.GetConnectionInfo(Connection, out var info) &&
-        info.m_eState == ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected;
+    public virtual bool IsConnected =>
+        ConnectionState is
+            ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connecting or
+            ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_FindingRoute or
+            ESteamNetworkingConnectionState.k_ESteamNetworkingConnectionState_Connected;
 
-    public bool Send<T>(T message, SteamNetSendFlag sendFlags = SteamNetSendFlag.Reliable)
+    public virtual bool Send<T>(T message, SteamNetSendFlag sendFlags = SteamNetSendFlag.Reliable)
     {
-        var bytes = _serializer.Serialize(message);
+        var bytes = Serializer.Serialize(message);
         return Send(bytes, sendFlags);
     }
 
-    public bool Send(byte[] bytes, SteamNetSendFlag sendFlags = SteamNetSendFlag.Reliable)
+    public virtual bool Send(byte[] bytes, SteamNetSendFlag sendFlags = SteamNetSendFlag.Reliable)
     {
         var size = bytes.Length;
 
-        lock (_arenaLock) {
+        lock (ArenaLock) {
             PinArena(size);
 
-            Marshal.Copy(bytes, 0, _arena, size);
+            Marshal.Copy(bytes, 0, Arena, size);
 
             // crash on native side cannot be handled
-            var result = SteamNetworkingSockets.SendMessageToConnection(Connection, _arena, (uint)size, (int)sendFlags, out _);
+            var result = SteamNetworkingSockets.SendMessageToConnection(Connection, Arena, (uint)size, (int)sendFlags, out _);
             if (result != EResult.k_EResultOK) {
                 return false;
             }
@@ -95,16 +100,16 @@ internal class SteamNetPeer : ISteamNetPeer, IDisposable
         return true;
     }
 
-    private void PinArena(int size)
+    protected void PinArena(int size)
     {
-        if (size <= _arenaSize) {
+        if (size <= ArenaSize) {
             return;
         }
 
-        var newSize = Math.Max(size, _arenaSize * MemoryArenaGrowthRatio);
+        var newSize = Math.Max(size, ArenaSize * MemoryArenaGrowthRatio);
 
-        _arena = _reallocator(_arena, (IntPtr)newSize);
-        _arenaSize = newSize;
+        Arena = _reallocator(Arena, (IntPtr)newSize);
+        ArenaSize = newSize;
     }
 
     public void UpdateRealtime()
@@ -157,9 +162,9 @@ internal class SteamNetPeer : ISteamNetPeer, IDisposable
             return;
         }
 
-        if (_arena != IntPtr.Zero) {
-            _deallocator(_arena);
-            _arena = IntPtr.Zero;
+        if (Arena != IntPtr.Zero) {
+            _deallocator(Arena);
+            Arena = IntPtr.Zero;
         }
 
         _disposed = true;

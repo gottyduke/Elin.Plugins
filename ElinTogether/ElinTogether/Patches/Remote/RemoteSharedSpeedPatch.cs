@@ -5,7 +5,7 @@ using HarmonyLib;
 namespace ElinTogether.Patches;
 
 [HarmonyPatch(typeof(Chara), nameof(Chara.Speed), MethodType.Getter)]
-internal static class SharedSpeedPatch
+internal static class RemoteSharedSpeedPatch
 {
     [HarmonyPrefix]
     internal static bool OnGetSpeed(Chara __instance, ref int __result)

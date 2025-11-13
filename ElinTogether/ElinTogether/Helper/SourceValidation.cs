@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Cwl.Helper;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
@@ -27,12 +26,12 @@ public class SourceValidation
         SourceListType.Religion,
         SourceListType.Quest,
         SourceListType.Stat,
-        SourceListType.AiAct,
+        SourceListType.Act,
     ];
 
     // 255 should be more than enough
-    public static readonly Dictionary<byte, Type> ByteToAIActMapping = [];
-    public static readonly Dictionary<Type, byte> AIActToByteMapping = [];
+    public static readonly Dictionary<ushort, Type> IdToActMapping = [];
+    public static readonly Dictionary<Type, ushort> ActToIdMapping = [];
 
     public static Dictionary<SourceListType, byte[]> GenerateAll()
     {
@@ -57,7 +56,7 @@ public class SourceValidation
 
     public static IEnumerable<string> GenerateSourceIdList(SourceListType type)
     {
-        if (AIActToByteMapping.Count == 0) {
+        if (ActToIdMapping.Count == 0) {
             BuildAiActMapping();
         }
 
@@ -75,7 +74,7 @@ public class SourceValidation
             SourceListType.Quest => sources.quests.rows.Select(r => r.id),
             SourceListType.Stat => sources.stats.rows.Select(r => r.alias),
             SourceListType.Zone => sources.zones.rows.Select(r => r.id),
-            SourceListType.AiAct => AIActToByteMapping.Keys.Select(t => t.Name),
+            SourceListType.Act => ActToIdMapping.Keys.Select(t => t.Name),
             _ => DebugThrow.Return(new ArgumentOutOfRangeException(nameof(type)), Array.Empty<string>()),
         };
     }
@@ -90,16 +89,16 @@ public class SourceValidation
 
     public static void BuildAiActMapping()
     {
-        AIActToByteMapping.Clear();
-        ByteToAIActMapping.Clear();
+        ActToIdMapping.Clear();
+        IdToActMapping.Clear();
 
-        var actType = typeof(AIAct);
+        var actType = typeof(Act);
         var allActs = AccessTools.AllAssemblies()
             .SelectMany(a => {
                 try {
                     return a.GetTypes();
-                } catch (ReflectionTypeLoadException ex) {
-                    return ex.Types.Where(t => t != null);
+                } catch {
+                    return [];
                 }
             })
             .Where(actType.IsAssignableFrom)
@@ -107,16 +106,16 @@ public class SourceValidation
             .ThenBy(t => t.Name);
 
         // keep NoGoal as 0 for bit checking
-        ByteToAIActMapping[0] = typeof(NoGoal);
-        AIActToByteMapping[typeof(NoGoal)] = 0;
+        IdToActMapping[0] = typeof(NoGoal);
+        ActToIdMapping[typeof(NoGoal)] = 0;
 
         byte actIndex = 1;
         foreach (var act in allActs) {
-            if (!AIActToByteMapping.TryAdd(act, actIndex)) {
+            if (!ActToIdMapping.TryAdd(act, actIndex)) {
                 continue;
             }
 
-            ByteToAIActMapping[actIndex] = act;
+            IdToActMapping[actIndex] = act;
             actIndex++;
         }
 

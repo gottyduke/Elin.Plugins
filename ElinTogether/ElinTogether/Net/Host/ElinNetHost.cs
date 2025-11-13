@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Security.Authentication;
+using System.Diagnostics;
 using Cwl.Helper.Unity;
 using ElinTogether.Models;
 using ElinTogether.Net.Steam;
@@ -9,7 +9,7 @@ namespace ElinTogether.Net;
 
 internal partial class ElinNetHost : ElinNetBase
 {
-    internal readonly ConcurrentDictionary<uint, NetPeerState> States = [];
+    internal readonly ConcurrentDictionary<int, NetPeerState> States = [];
 
     public override bool IsHost => true;
 
@@ -24,6 +24,7 @@ internal partial class ElinNetHost : ElinNetBase
         }
 
         Socket.StartServerSdr();
+        Scheduler.Subscribe(DisconnectInactive, 1);
 
         // TODO Assign SessionId
         NetSession.Instance.SessionId = 0UL;
@@ -44,24 +45,40 @@ internal partial class ElinNetHost : ElinNetBase
         Router.RegisterHandler<RemoteCharaSnapshot>(OnClientRemoteCharaSnapshot);
     }
 
-    private void EnsureValidation(ISteamNetPeer peer)
-    {
-        if (!States.TryGetValue(peer.Id, out var state) ||
-            !state.IsValidated) {
-            throw new InvalidCredentialException("peer is not validated");
-        }
-    }
-
     private void Broadcast<T>(T packet)
     {
         Socket.Broadcast.Send(packet);
+    }
+
+    protected override void DisconnectInactive()
+    {
+        foreach (var peer in Socket.Peers) {
+            if (!States.TryGetValue(peer.Id, out var state)) {
+                continue;
+            }
+
+            if (state.LastReceivedTick == -1) {
+                continue;
+            }
+
+            // client has not been responding after 25 ticks
+            if (!peer.IsConnected && NetSession.Instance.Tick - state.LastReceivedTick > 25) {
+                Socket.Disconnect(peer, "emp_inactive");
+            }
+        }
     }
 
 #region Net Events
 
     protected override void OnPeerConnected(ISteamNetPeer peer)
     {
-        EmpPop.Information("Player {@Peer} connected", peer);
+        var sw = Stopwatch.StartNew();
+        while (peer.Name is null && sw.ElapsedMilliseconds <= 500) {
+            // do a spin wait to pin the username
+        }
+
+        EmpPop.Information("Player {@Peer} connected",
+            peer);
 
         if (SourceValidationsEnabled.Count > 0) {
             RequestSourceValidation(peer);

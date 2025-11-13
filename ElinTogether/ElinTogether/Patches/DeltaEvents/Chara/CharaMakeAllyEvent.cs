@@ -3,7 +3,7 @@ using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
 
-namespace ElinTogether.Patches.DeltaEvents;
+namespace ElinTogether.Patches;
 
 [HarmonyPatch(typeof(Chara), nameof(Chara.MakeAlly))]
 internal static class CharaMakeAllyEvent
@@ -12,13 +12,14 @@ internal static class CharaMakeAllyEvent
     internal static bool OnMakeAlly(Chara __instance, bool msg)
     {
         switch (NetSession.Instance.Connection) {
-            case ElinNetHost { IsConnected: true } host:
+            case ElinNetHost  host:
                 host.Delta.AddRemote(new CharaMakeAllyDelta {
                     Owner = __instance,
                     ShowMsg = msg,
+                    TemporaryAllyName = __instance.c_altName,
                 });
                 return true;
-            case ElinNetClient { IsConnected: true }:
+            case ElinNetClient :
                 // we are clients, drop the update and wait for delta
                 return false;
             default:

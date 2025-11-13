@@ -7,7 +7,7 @@ using HarmonyLib;
 namespace ElinTogether.Patches;
 
 [HarmonyPatch]
-internal class SharedScenePausePatch
+internal class RemoteScenePausePatch
 {
     [HarmonyTranspiler]
     [HarmonyPatch(typeof(Scene), nameof(Scene.OnUpdate))]
@@ -30,7 +30,7 @@ internal class SharedScenePausePatch
             return;
         }
 
-        if (NetSession.Instance.Connection is not ElinNetHost { IsConnected: true } host) {
+        if (NetSession.Instance.Connection is not ElinNetHost  host) {
             return;
         }
 

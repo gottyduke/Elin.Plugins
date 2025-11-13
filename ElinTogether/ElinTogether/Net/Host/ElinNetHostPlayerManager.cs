@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -12,7 +13,7 @@ namespace ElinTogether.Net;
 
 internal partial class ElinNetHost
 {
-    public readonly Dictionary<uint, Chara> ActiveRemoteCharas = [];
+    public readonly Dictionary<int, Chara> ActiveRemoteCharas = [];
 
     /// <summary>
     ///     A combination of all remote chara's act states
@@ -44,10 +45,15 @@ internal partial class ElinNetHost
     /// </summary>
     public void PreparePlayerJoin(ISteamNetPeer peer)
     {
+        EnsureValidation(peer);
+
         EmpLog.Information("Preparing player {@Peer} for joining", peer);
 
         var chara = GetOrCreateRemoteChara(peer.Uid);
         chara.c_altName = peer.Name;
+
+        chara.MakeAlly();
+        chara.SetFlagValue("remote_chara");
 
         ActiveRemoteCharas[peer.Id] = chara;
 
@@ -66,8 +72,7 @@ internal partial class ElinNetHost
         States[peer.Id] = new() {
             Index = peer.Id,
             Uid = peer.Uid,
-            Name = peer.Name,
-            IsValidated = true,
+            Name = peer.Name!,
             CharaUid = chara.uid,
         };
 
@@ -82,21 +87,22 @@ internal partial class ElinNetHost
         EmpLog.Information("Sending save probe to player {@Peer} for replication",
             peer);
 
-        game.Save(false, true);
+        game.Save(silent: true);
 
         peer.Send(SaveDataProbe.Create(ActiveRemoteCharas[peer.Id]));
     }
 
     public Chara GetOrCreateRemoteChara(ulong uid)
     {
-        if (!SavedRemoteCharas.TryGetValue(uid, out var charaUid) ||
-            game.cards.globalCharas.Find(charaUid) is not { } chara) {
-            chara = CharaGen.Create("player");
-            SavedRemoteCharas[uid] = chara.uid;
+        if (SavedRemoteCharas.TryGetValue(uid, out var charaUid) &&
+            game.cards.globalCharas.Find(charaUid) is { } chara) {
+            return chara;
         }
 
-        chara.MakeAlly();
-        chara.SetFlagValue("remote_chara");
+        // TODO exchange player creation data with clients
+        // right now we just spawn a random
+        chara = CharaGen.Create("player");
+        SavedRemoteCharas[uid] = chara.uid;
 
         return chara;
     }
@@ -104,11 +110,11 @@ internal partial class ElinNetHost
     public int GetAverageSpeed()
     {
         var selfSpeed = pc.Stub_get_Speed();
-        if (States.Count == 0) {
-            return selfSpeed;
-        }
 
-        return (int)(selfSpeed + States.Values.Average(s => s.Speed) / 2);
+        var total = selfSpeed + States.Values.Sum(s => s.Speed);
+        var count = States.Count + 1;
+
+        return total / count;
     }
 
     public static void RemoveRemoteChara(Chara remoteChara)

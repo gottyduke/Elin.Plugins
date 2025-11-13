@@ -3,15 +3,17 @@ using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
 
-namespace ElinTogether.Patches.DeltaEvents;
+namespace ElinTogether.Patches;
 
 [HarmonyPatch(typeof(Chara), nameof(Chara.Tick))]
 internal static class CharaTickEvent
 {
+    internal static int LastTick { get; private set; }
+
     [HarmonyPrefix]
     internal static bool OnCharaTick(Chara __instance)
     {
-        if (NetSession.Instance.Connection is not { IsConnected: true } connection) {
+        if (NetSession.Instance.Connection is not { } connection) {
             return true;
         }
 
@@ -24,6 +26,8 @@ internal static class CharaTickEvent
         connection.Delta.AddRemote(new CharaTickDelta {
             Owner = __instance,
         });
+
+        LastTick = NetSession.Instance.Tick;
 
         return true;
     }

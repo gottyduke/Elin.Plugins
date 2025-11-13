@@ -4,7 +4,7 @@ using UnityEngine;
 namespace ElinTogether.Patches;
 
 [HarmonyPatch]
-internal class NoPausePatch
+internal class NoApplicationPausePatch
 {
     [HarmonyPostfix]
     [HarmonyPatch(typeof(CoreConfig), nameof(CoreConfig.Apply))]

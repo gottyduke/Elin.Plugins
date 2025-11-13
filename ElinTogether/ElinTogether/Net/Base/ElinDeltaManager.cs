@@ -10,22 +10,22 @@ public class ElinDeltaManager
     /// <summary>
     ///     Coming in
     /// </summary>
-    private readonly ConcurrentQueue<IElinDelta> _inBuffer = [];
+    private readonly ConcurrentQueue<ElinDeltaBase> _inBuffer = [];
 
     /// <summary>
     ///     Local deferred
     /// </summary>
-    private readonly ConcurrentQueue<IElinDelta> _inBufferDeferred = [];
+    private readonly ConcurrentQueue<ElinDeltaBase> _inBufferDeferred = [];
 
     /// <summary>
     ///     Sending out
     /// </summary>
-    private readonly ConcurrentQueue<IElinDelta> _outBuffer = [];
+    private readonly ConcurrentQueue<ElinDeltaBase> _outBuffer = [];
 
     /// <summary>
     ///     Remote deferred
     /// </summary>
-    private readonly ConcurrentQueue<IElinDelta> _outBufferDeferred = [];
+    private readonly ConcurrentQueue<ElinDeltaBase> _outBufferDeferred = [];
 
     public bool HasPendingOut => !_outBuffer.IsEmpty || !_outBufferDeferred.IsEmpty;
     public bool HasPendingIn => !_inBuffer.IsEmpty || !_inBufferDeferred.IsEmpty;
@@ -34,7 +34,7 @@ public class ElinDeltaManager
     /// <summary>
     ///     Sending out
     /// </summary>
-    public void AddRemote(IElinDelta delta)
+    public void AddRemote(ElinDeltaBase delta)
     {
         _outBuffer.Enqueue(delta);
     }
@@ -42,7 +42,7 @@ public class ElinDeltaManager
     /// <summary>
     ///     Sending out, next flush
     /// </summary>
-    public void DeferRemote(IElinDelta delta)
+    public void DeferRemote(ElinDeltaBase delta)
     {
         _outBufferDeferred.Enqueue(delta);
     }
@@ -50,7 +50,7 @@ public class ElinDeltaManager
     /// <summary>
     ///     Coming in to process
     /// </summary>
-    public void AddLocal(IElinDelta delta)
+    public void AddLocal(ElinDeltaBase delta)
     {
         _inBuffer.Enqueue(delta);
     }
@@ -58,7 +58,7 @@ public class ElinDeltaManager
     /// <summary>
     ///     Local defer, next flush
     /// </summary>
-    public void DeferLocal(IElinDelta delta)
+    public void DeferLocal(ElinDeltaBase delta)
     {
         _inBufferDeferred.Enqueue(delta);
     }
@@ -77,9 +77,9 @@ public class ElinDeltaManager
         }
     }
 
-    public List<IElinDelta> FlushOutBuffer(int batchSize = -1)
+    public List<ElinDeltaBase> FlushOutBuffer(int batchSize = -1)
     {
-        var batch = new List<IElinDelta>();
+        var batch = new List<ElinDeltaBase>();
         if (_outBuffer.IsEmpty) {
             return batch;
         }
@@ -99,9 +99,9 @@ public class ElinDeltaManager
         return batch;
     }
 
-    public List<IElinDelta> FlushInBuffer(int batchSize = -1)
+    public List<ElinDeltaBase> FlushInBuffer(int batchSize = -1)
     {
-        var batch = new List<IElinDelta>();
+        var batch = new List<ElinDeltaBase>();
         if (_inBuffer.IsEmpty) {
             return batch;
         }
@@ -136,5 +136,11 @@ public class ElinDeltaManager
     public (int outBuffer, int outDeferred, int inBuffer, int inDeferred) GetCounts()
     {
         return (_outBuffer.Count, _outBufferDeferred.Count, _inBuffer.Count, _inBufferDeferred.Count);
+    }
+
+    public override string ToString()
+    {
+        var (outBuffer, outDeferred, inBuffer, inDeferred) = GetCounts();
+        return $"D-Out\t{outBuffer} {outDeferred}\tD-In\t{inBuffer} {inDeferred}";
     }
 }

@@ -1,19 +1,18 @@
 using ElinTogether.Net;
-using ElinTogether.Patches.DeltaEvents;
+using ElinTogether.Patches;
 using MessagePack;
 
 namespace ElinTogether.Models.ElinDelta;
 
 [MessagePackObject]
-public class CharaTickDelta : IElinDelta
+public class CharaTickDelta : ElinDeltaBase
 {
     [Key(0)]
     public required RemoteCard Owner { get; init; }
 
-    public void Apply(ElinNetBase net)
+    public override void Apply(ElinNetBase net)
     {
-        // we do not apply to ourselves
-        if (Owner.Find() is not Chara { IsPC: false } chara) {
+        if (Owner.Find() is not Chara chara) {
             return;
         }
 
@@ -22,6 +21,7 @@ public class CharaTickDelta : IElinDelta
             net.Delta.AddRemote(this);
         }
 
-        chara.Stub_Tick();
+        // TODO need to buffer this so we don't go insanely fast
+        //chara.Stub_Tick();
     }
 }

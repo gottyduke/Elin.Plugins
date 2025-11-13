@@ -2,7 +2,7 @@ using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
 
-namespace ElinTogether.Patches.DeltaEvents;
+namespace ElinTogether.Patches;
 
 [HarmonyPatch(typeof(Chara), nameof(Chara.Pick))]
 internal class CharaPickThingEvent
@@ -11,7 +11,7 @@ internal class CharaPickThingEvent
     internal static bool OnCharaPickThingy(Chara __instance, Thing t)
     {
         var session = NetSession.Instance;
-        if (session.Connection is not { IsConnected: true } connection) {
+        if (session.Connection is not  { } connection) {
             return true;
         }
 

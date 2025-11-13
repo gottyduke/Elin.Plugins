@@ -32,7 +32,7 @@ public class NetSession
     public Chara? Player { get; internal set; }
     public int SharedSpeed { get; internal set; }
     public Zone? CurrentZone { get; internal set; }
-    public uint Tick { get; internal set; }
+    public int Tick { get; internal set; }
     public ulong SessionId { get; internal set; }
     public List<NetPeerState> CurrentPlayers { get; } = [];
 
@@ -54,7 +54,7 @@ public class NetSession
         }
 
         Connection = null;
-        Tick = 0U;
+        Tick = 0;
         CurrentPlayers.Clear();
 
         ResourceFetch.InvalidateTemp();

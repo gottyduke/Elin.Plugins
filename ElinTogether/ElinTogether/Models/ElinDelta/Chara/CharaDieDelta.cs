@@ -1,11 +1,11 @@
 using ElinTogether.Net;
-using ElinTogether.Patches.DeltaEvents;
+using ElinTogether.Patches;
 using MessagePack;
 
 namespace ElinTogether.Models.ElinDelta;
 
 [MessagePackObject]
-public class CharaDieDelta : IElinDelta
+public class CharaDieDelta : ElinDeltaBase
 {
     [Key(0)]
     public required RemoteCard Owner { get; init; }
@@ -22,8 +22,13 @@ public class CharaDieDelta : IElinDelta
     [Key(4)]
     public RemoteCard? OriginalTarget { get; init; }
 
-    public void Apply(ElinNetBase net)
+    public override void Apply(ElinNetBase net)
     {
+        if (net.IsHost) {
+            // reject every single chara die delta from clients
+            return;
+        }
+
         if (Owner.Find() is not Chara chara) {
             return;
         }

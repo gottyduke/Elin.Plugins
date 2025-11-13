@@ -1,7 +1,6 @@
 using Cwl.API.Attributes;
 using ElinTogether.Net;
 using ReflexCLI.Attributes;
-using Steamworks;
 
 namespace ElinTogether;
 
@@ -22,16 +21,16 @@ internal class EmpConsole
         NetSession.Instance.RemoveComponent();
     }
 
-    [ConsoleCommand("debug")]
-    internal static void AddClient()
+    [ConsoleCommand("d1")]
+    internal static void AddClientD1()
     {
-        var selfId = SteamUser.GetSteamID();
-        var targetId = 76561198412175578UL;
-        if (targetId == (ulong)selfId) {
-            targetId = 76561198254677013UL;
-        }
+        AddClientToSteamId(76561198412175578UL);
+    }
 
-        AddClientToSteamId(targetId);
+    [ConsoleCommand("d2")]
+    internal static void AddClientD2()
+    {
+        AddClientToSteamId(76561198254677013UL);
     }
 
     [ConsoleCommand("connect_steam")]

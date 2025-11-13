@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
 using ElinTogether.Common;
@@ -34,9 +35,15 @@ public partial class SteamNetManager(ISteamNetSerializer? serializer = null) : I
     public bool IsListening { get; private set; }
 
     /// <summary>
+    ///     Fake placeholder peer
+    /// </summary>
+    [field: AllowNull]
+    private ISteamNetPeer FakePeer => field ??= new SteamNetPeerFake();
+
+    /// <summary>
     ///     The first connected peer, mainly client->host
     /// </summary>
-    public ISteamNetPeer FirstPeer => _peers.First(p => p.IsConnected);
+    public ISteamNetPeer FirstPeer => _peers.FirstOrDefault(p => p.IsConnected) ?? FakePeer;
 
     /// <summary>
     ///     The optimized broadcast peer, mainly host->multiple clients

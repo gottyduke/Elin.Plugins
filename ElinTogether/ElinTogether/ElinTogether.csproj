@@ -71,7 +71,6 @@
     <ItemGroup>
         <Folder Include="Components\"/>
         <Folder Include="Models\ElinDelta\Act\"/>
-        <Folder Include="Models\ElinDelta\Misc\"/>
         <Folder Include="Models\ElinDelta\Thing\"/>
     </ItemGroup>
     <Target Name="CopyAssets" AfterTargets="AfterBuild">

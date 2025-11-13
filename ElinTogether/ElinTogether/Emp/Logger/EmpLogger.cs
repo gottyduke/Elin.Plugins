@@ -99,15 +99,7 @@ internal static partial class EmpLogger
                     ZoneFullName = z.ZoneFullName.TagColor(0x009e73),
                     z.ZoneUid,
                 })
-                .Destructure.ByTransforming<MapDataResponse>(z => new {
-                    ZoneFullName = z.ZoneFullName.TagColor(0x009e73),
-                    z.ZoneUid,
-                })
                 .Destructure.ByTransforming<ZoneDataResponse>(z => new {
-                    ZoneFullName = z.Map.ZoneFullName.TagColor(0x009e73),
-                    z.Map.ZoneUid,
-                })
-                .Destructure.ByTransforming<CharaMoveZoneDelta>(z => new {
                     ZoneFullName = z.ZoneFullName.TagColor(0x009e73),
                     z.ZoneUid,
                 });

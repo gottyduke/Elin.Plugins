@@ -1,11 +1,11 @@
 using ElinTogether.Net;
-using ElinTogether.Patches.DeltaEvents;
+using ElinTogether.Patches;
 using MessagePack;
 
 namespace ElinTogether.Models.ElinDelta;
 
 [MessagePackObject]
-public class CharaMakeAllyDelta : IElinDelta
+public class CharaMakeAllyDelta : ElinDeltaBase
 {
     [Key(0)]
     public required RemoteCard Owner { get; init; }
@@ -13,9 +13,17 @@ public class CharaMakeAllyDelta : IElinDelta
     [Key(1)]
     public bool ShowMsg { get; init; }
 
-    public void Apply(ElinNetBase net)
+    [Key(2)]
+    public required string? TemporaryAllyName { get; init; }
+
+    public override void Apply(ElinNetBase net)
     {
-        if (EClass.game?.activeZone?.map is null) {
+        if (net.IsHost) {
+            // reject every single chara make ally delta from clients
+            return;
+        }
+
+        if (game?.activeZone?.map is null) {
             net.Delta.DeferLocal(this);
             return;
         }
@@ -24,6 +32,7 @@ public class CharaMakeAllyDelta : IElinDelta
             return;
         }
 
+        chara.c_altName = TemporaryAllyName;
         chara.Stub_MakeAlly(ShowMsg);
     }
 }

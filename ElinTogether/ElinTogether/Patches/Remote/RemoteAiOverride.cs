@@ -14,11 +14,11 @@ internal class RemoteAiOverride
     {
         g = NetSession.Instance.Connection switch {
             // we are host
-            ElinNetHost { IsConnected: true } host when host.ActiveRemoteCharas.Values.Contains(__instance) =>
+            ElinNetHost  host when host.ActiveRemoteCharas.Values.Contains(__instance) =>
                 // assign all active client charas as remote
                 GoalRemote.Default,
             // we are client
-            ElinNetClient { IsConnected: true } when !__instance.IsPC =>
+            ElinNetClient  when !__instance.IsPC =>
                 // assign all other charas as remote
                 GoalRemote.Default,
             _ => g,
