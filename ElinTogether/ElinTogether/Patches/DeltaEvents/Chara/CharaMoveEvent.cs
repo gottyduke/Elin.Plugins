@@ -1,4 +1,5 @@
 using System;
+using ElinTogether.Models;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
@@ -38,7 +39,7 @@ internal static class CharaMoveEvent
         connection.Delta.AddRemote(new CharaMoveDelta {
             Owner = __instance,
             Pos = newPoint,
-            MoveType = (CharaMoveDelta.CharaMoveType)Card.MoveType.Force,
+            MoveType = (MoveTypeByte)Card.MoveType.Force,
         });
     }
 

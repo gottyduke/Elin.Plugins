@@ -24,6 +24,7 @@ timeline
     : Session #7 (Omega), couldn't beat Puppy Cave due to 3rd player not synced
     11/12/2025 : Session #8 (InuiDame), couldn't beat Puppy Cave due to not handling client death
     : Session #9 (Han, Omega), 3 player testing, couldn't beat Puppy Cave due to enemies not taking death updates
+    : Session #10 (Drakeny), couldn't beat Puppy Cave due to Drakeny died so fast and there's no host-death handling code
 ```
 
 ## Build

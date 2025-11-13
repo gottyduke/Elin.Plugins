@@ -1,4 +1,5 @@
 using System;
+using ElinTogether.Models;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
@@ -17,7 +18,7 @@ internal static class CharaDieEvent
                     Owner = __instance,
                     ElementId = e?.id,
                     Origin = origin,
-                    AttackSource = attackSource,
+                    AttackSource = (AttackSourceByte)attackSource,
                     OriginalTarget = originalTarget,
                 });
                 return true;

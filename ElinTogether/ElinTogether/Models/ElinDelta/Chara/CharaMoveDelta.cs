@@ -7,12 +7,6 @@ namespace ElinTogether.Models.ElinDelta;
 [MessagePackObject]
 public class CharaMoveDelta : ElinDeltaBase
 {
-    public enum CharaMoveType : byte
-    {
-        Walk,
-        Force,
-    }
-
     [Key(0)]
     public required RemoteCard Owner { get; init; }
 
@@ -20,7 +14,7 @@ public class CharaMoveDelta : ElinDeltaBase
     public required Position Pos { get; init; }
 
     [Key(2)]
-    public CharaMoveType MoveType { get; init; }
+    public MoveTypeByte MoveType { get; init; }
 
     public override void Apply(ElinNetBase net)
     {
@@ -52,7 +46,7 @@ public class CharaMoveDelta : ElinDeltaBase
         return new() {
             Owner = chara,
             Pos = chara.pos,
-            MoveType = (CharaMoveType)Card.MoveType.Force,
+            MoveType = (MoveTypeByte)Card.MoveType.Force,
         };
     }
 }
