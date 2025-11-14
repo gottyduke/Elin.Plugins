@@ -5,7 +5,7 @@ using Object = UnityEngine.Object;
 
 namespace ElinTogether.Net;
 
-public class NetSession
+public class NetSession : EClass
 {
     public enum Mode : byte
     {
@@ -43,8 +43,8 @@ public class NetSession
     public void RemoveComponent()
     {
         if (Connection != null) {
-            if (!Connection.IsHost && EClass.core.IsGameStarted) {
-                EClass.game.Kill();
+            if (!Connection.IsHost && core.IsGameStarted) {
+                game.Kill();
             }
 
             Object.DestroyImmediate(Connection);

@@ -12,14 +12,14 @@ internal static class CharaMakeAllyEvent
     internal static bool OnMakeAlly(Chara __instance, bool msg)
     {
         switch (NetSession.Instance.Connection) {
-            case ElinNetHost  host:
+            case ElinNetHost host:
                 host.Delta.AddRemote(new CharaMakeAllyDelta {
                     Owner = __instance,
                     ShowMsg = msg,
                     TemporaryAllyName = __instance.c_altName,
                 });
                 return true;
-            case ElinNetClient :
+            case ElinNetClient:
                 // we are clients, drop the update and wait for delta
                 return false;
             default:

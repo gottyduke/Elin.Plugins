@@ -1,7 +1,6 @@
 using Cwl.Helper.Extensions;
 using Cwl.Helper.Unity;
 using ElinTogether.Models;
-using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net.Steam;
 using Serilog.Context;
 
@@ -11,13 +10,13 @@ internal partial class ElinNetHost
 {
     public void PropagateZoneChangeState(Zone zone, ISteamNetPeer? peer = null)
     {
-        using var _ = LogContext.PushProperty("Zone", zone, true);
+        using var _ = LogContext.PushProperty("Zone", new { zone.ZoneFullName, ZoneUid = zone.uid }, true);
 
         EmpPop.Debug("Initiating zone state change");
 
         PauseWorldStateUpdate();
         // try not to drop deltas during loading or something
-        this.StartDeferredCoroutine(() => ResumeWorldStateUpdate(false));
+        this.StartDeferredCoroutine(() => ResumeWorldStateUpdate(true));
 
         var packet = ZoneDataResponse.Create(zone);
 
@@ -33,6 +32,9 @@ internal partial class ElinNetHost
         }
     }
 
+    /// <summary>
+    ///     Net event: Send the clients a map snapshot
+    /// </summary>
     private void OnMapDataRequest(MapDataRequest request, ISteamNetPeer peer)
     {
         using var _ = LogContext.PushProperty("Zone", request, true);
@@ -54,5 +56,45 @@ internal partial class ElinNetHost
 
             Socket.Disconnect(peer, "emp_invalid_zone");
         }
+    }
+
+    /// <summary>
+    ///     Net event: Clients have replicated the zone and map, ready to transition
+    /// </summary>
+    private void OnZoneDataReceivedResponse(ZoneDataReceivedResponse response, ISteamNetPeer peer)
+    {
+        EmpLog.Debug("Player {@Peer} has finished zone replication",
+            peer);
+
+        var chara = ActiveRemoteCharas[peer.Id];
+
+        // check if the received zone is still the current zone
+        // in case clients have a high RTT and host fast fingered to another zone
+        if (response.ZoneUid != _zone.uid) {
+            EmpLog.Debug("...but the zone state is stale, switching to new zone state {@Zone}",
+                new {
+                    _zone.ZoneFullName,
+                    ZoneUid = _zone.uid,
+                });
+
+            PropagateZoneChangeState(_zone, peer);
+            return;
+        }
+
+        // player first time joining in
+        // we only move their character to zone when they are ready
+        if (!chara.ExistsOnMap) {
+            var pos = pc.pos.GetNearestPoint(allowChara: false, allowInstalled: false);
+            _zone.AddCard(chara, pos);
+        }
+
+        EmpLog.Debug("Assigned zone sync position to player {@Peer} at {@Position}",
+            peer, chara.pos);
+
+        // after that, their characters will always be with host as party members
+        peer.Send(new ZoneActivateResponse {
+            ZoneUid = _zone.uid,
+            Pos = chara.pos,
+        });
     }
 }

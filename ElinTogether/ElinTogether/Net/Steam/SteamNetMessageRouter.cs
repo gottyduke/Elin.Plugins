@@ -1,12 +1,12 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using Cwl.Helper.Exceptions;
 
 namespace ElinTogether.Net.Steam;
 
 public sealed class SteamNetMessageRouter : ISteamNetListener
 {
-    private readonly Dictionary<uint, Action<object, ISteamNetPeer>> _handlers = [];
+    private readonly ConcurrentDictionary<uint, Action<object, ISteamNetPeer>> _handlers = [];
 
     public void OnPeerConnected(ISteamNetPeer peer)
     {

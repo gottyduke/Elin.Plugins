@@ -49,6 +49,13 @@ public class ZoneDataResponse
         };
     }
 
+    public ZoneDataReceivedResponse Ready()
+    {
+        return new() {
+            ZoneUid = ZoneUid,
+        };
+    }
+
     public void WriteToTemp()
     {
         var basePath = ResourceFetch.GetEmpSavePath();

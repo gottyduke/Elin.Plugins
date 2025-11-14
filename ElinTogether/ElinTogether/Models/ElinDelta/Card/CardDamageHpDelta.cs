@@ -20,7 +20,7 @@ public class CardDamageHpDelta : ElinDeltaBase
     public int EleP { get; init; }
 
     [Key(4)]
-    public AttackSource AttackSource { get; init; }
+    public AttackSourceByte AttackSource { get; init; }
 
     [Key(5)]
     public RemoteCard? Origin { get; init; }
@@ -40,6 +40,6 @@ public class CardDamageHpDelta : ElinDeltaBase
             return;
         }
 
-        card.Stub_DamageHP(Dmg, Ele, EleP, AttackSource, Origin, ShowEffect, Weapon, OriginalTarget);
+        card.Stub_DamageHP(Dmg, Ele, EleP, (AttackSource)AttackSource, Origin, ShowEffect, Weapon, OriginalTarget);
     }
 }

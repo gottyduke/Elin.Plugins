@@ -41,22 +41,15 @@ public class CharaSnapshot
 
         chara.hp = Hp;
 
-        // we do not roll back as clients
-        // that would cause a lot of de-syncs
-        if (chara.IsPC) {
+        if (chara.currentZone?.uid != CurrentZoneUid) {
+            if (CurrentZoneUid == NetSession.Instance.CurrentZone?.uid) {
+                NetSession.Instance.CurrentZone.AddCard(chara, Pos);
+            }
+
             return;
         }
 
         // only apply position fix if on the same map
-        // if chara hasn't been moved to new remote zone, do it
-        // TODO separate this logic from reconciliation
-        if (chara.currentZone.uid != CurrentZoneUid) {
-            if (CurrentZoneUid == NetSession.Instance.CurrentZone?.uid) {
-                chara.MoveZone(NetSession.Instance.CurrentZone);
-            }
-            return;
-        }
-
         if (Point.map == NetSession.Instance.CurrentZone?.map && chara.pos != Pos) {
             chara.Stub_Move(Pos, Card.MoveType.Force);
         }

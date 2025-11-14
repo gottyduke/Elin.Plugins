@@ -1,4 +1,3 @@
-using Cwl.Helper.Unity;
 using ElinTogether.Models;
 
 namespace ElinTogether.Net;
@@ -37,14 +36,6 @@ internal partial class ElinNetClient
         RequestZoneState(MapDataRequest.CurrentRemoteZone);
 
         EmpPop.Debug("Waiting on zone state complete...");
-
-        this.StartDeferredCoroutine(
-            () => {
-                EmpLog.Debug("Starting initial scene init");
-                player.zone = pc.currentZone = NetSession.Instance.CurrentZone;
-                scene.Init(Scene.Mode.Zone);
-            },
-            () => NetSession.Instance.CurrentZone is not null);
 
         probeGame.isLoading = false;
     }

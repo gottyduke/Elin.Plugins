@@ -19,6 +19,7 @@ public enum AttackSourceByte : byte
     Hang,
     Wrath,
     ManaBackfire,
+
     // ReSharper disable once IdentifierTypo
     DeathSentense,
     Shockwave,

@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -14,7 +14,7 @@ internal class SteamNetPeer : ISteamNetPeer, IDisposable
     private const int MemoryArenaInitialSize = 4 * (1 << 10);
     private const int MemoryArenaGrowthRatio = 2;
 
-    private static readonly Dictionary<ulong, int> _recentPeers = [];
+    private static readonly ConcurrentDictionary<ulong, int> _recentPeers = [];
     private static readonly Func<int, IntPtr> _allocator = Marshal.AllocHGlobal;
     private static readonly Action<IntPtr> _deallocator = Marshal.FreeHGlobal;
     private static readonly Func<IntPtr, IntPtr, IntPtr> _reallocator = Marshal.ReAllocHGlobal;

@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Cwl.Helper.Unity;
@@ -9,7 +8,7 @@ namespace ElinTogether.Net;
 
 internal partial class ElinNetHost : ElinNetBase
 {
-    internal readonly ConcurrentDictionary<int, NetPeerState> States = [];
+    internal readonly Dictionary<int, NetPeerState> States = [];
 
     public override bool IsHost => true;
 
@@ -40,6 +39,7 @@ internal partial class ElinNetHost : ElinNetBase
     {
         Router.RegisterHandler<SourceListResponse>(OnSourceListResponse);
         Router.RegisterHandler<MapDataRequest>(OnMapDataRequest);
+        Router.RegisterHandler<ZoneDataReceivedResponse>(OnZoneDataReceivedResponse);
         Router.RegisterHandler<WorldStateRequest>(OnWorldStateRequest);
         Router.RegisterHandler<WorldStateDeltaList>(OnWorldStateDeltaResponse);
         Router.RegisterHandler<RemoteCharaSnapshot>(OnClientRemoteCharaSnapshot);

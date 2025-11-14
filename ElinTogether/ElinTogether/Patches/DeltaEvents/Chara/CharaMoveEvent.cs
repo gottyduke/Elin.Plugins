@@ -10,11 +10,11 @@ namespace ElinTogether.Patches;
 internal static class CharaMoveEvent
 {
     [HarmonyPrefix]
-    internal static void OnCharaMove(Chara __instance, Point newPoint, ref Card.MoveType type)
+    internal static bool OnCharaMove(Chara __instance, Point newPoint, ref Card.MoveType type)
     {
         var session = NetSession.Instance;
         if (session.Connection is not { } connection) {
-            return;
+            return true;
         }
 
         // we are host, everyone should generate a delta
@@ -24,7 +24,7 @@ internal static class CharaMoveEvent
         // ignore all other relayed moves
 
         if (!connection.IsHost && !__instance.IsPC) {
-            return;
+            return true;
         }
 
         // movement could be random in certain circumstances
@@ -39,8 +39,10 @@ internal static class CharaMoveEvent
         connection.Delta.AddRemote(new CharaMoveDelta {
             Owner = __instance,
             Pos = newPoint,
-            MoveType = (MoveTypeByte)Card.MoveType.Force,
+            MoveType = (MoveTypeByte)type,
         });
+
+        return true;
     }
 
     extension(Chara chara)

@@ -5,11 +5,9 @@ using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net;
-using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
 using ElinTogether.Helper;
 using ElinTogether.Models;
-using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using ElinTogether.Net.Steam;
 using Serilog;
@@ -90,11 +88,10 @@ internal static partial class EmpLogger
                     s.Tick,
                     s.SyncMode,
                 })
-                .Destructure.ByTransformingWhere<Zone>(typeof(Zone).IsAssignableFrom,
-                    z => new {
-                        ZoneFullName = z.ZoneFullName.TagColor(0x009e73),
-                        ZoneUid = z.uid,
-                    })
+                .Destructure.ByTransforming<Point>(p => new {
+                    X = p.x,
+                    Z = p.z,
+                })
                 .Destructure.ByTransforming<MapDataRequest>(z => new {
                     ZoneFullName = z.ZoneFullName.TagColor(0x009e73),
                     z.ZoneUid,

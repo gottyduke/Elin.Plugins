@@ -1,5 +1,4 @@
 using ElinTogether.Net;
-using ElinTogether.Patches;
 using MessagePack;
 
 namespace ElinTogether.Models.ElinDelta;
@@ -15,6 +14,15 @@ public class CharaMoveDelta : ElinDeltaBase
 
     [Key(2)]
     public MoveTypeByte MoveType { get; init; }
+
+    public static implicit operator CharaMoveDelta(Chara chara)
+    {
+        return new() {
+            Owner = chara,
+            Pos = chara.pos,
+            MoveType = (MoveTypeByte)Card.MoveType.Force,
+        };
+    }
 
     public override void Apply(ElinNetBase net)
     {
@@ -34,19 +42,8 @@ public class CharaMoveDelta : ElinDeltaBase
             return;
         }
 
-        if (chara.pos == Pos) {
-            return;
+        if (chara.pos != Pos) {
+            chara._Move(Pos, (Card.MoveType)MoveType);
         }
-
-        chara._Move(Pos, (Card.MoveType)MoveType);
-    }
-
-    public static implicit operator CharaMoveDelta(Chara chara)
-    {
-        return new() {
-            Owner = chara,
-            Pos = chara.pos,
-            MoveType = (MoveTypeByte)Card.MoveType.Force,
-        };
     }
 }

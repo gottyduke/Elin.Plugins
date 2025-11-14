@@ -1,4 +1,6 @@
+using System;
 using Cwl.Helper.Extensions;
+using Cwl.Helper.Unity;
 using ElinTogether.Models;
 using ElinTogether.Patches;
 using ReflexCLI.Attributes;
@@ -18,11 +20,11 @@ internal partial class ElinNetClient
     }
 
     /// <summary>
-    /// Net event: received zone state update, must do a scene init
+    ///     Net event: received zone state update, must do a scene init
     /// </summary>
     private void OnZoneDataResponse(ZoneDataResponse response)
     {
-        using var _ = LogContext.PushProperty("Zone", response.Map, true);
+        using var _ = LogContext.PushProperty("Zone", new { response.ZoneFullName, response.ZoneUid }, true);
 
         response.WriteToTemp();
 
@@ -74,5 +76,35 @@ internal partial class ElinNetClient
 
         // update session remote zone
         NetSession.Instance.CurrentZone = remoteZone;
+
+        // respond for replication complete, waiting for sync position
+        Socket.FirstPeer.Send(response.Ready());
+    }
+
+    /// <summary>
+    ///     Net event: Ready to init scene with new zone state and sync position
+    /// </summary>
+    private void OnZoneActivateResponse(ZoneActivateResponse response)
+    {
+        var currentZone = NetSession.Instance.CurrentZone;
+
+        if (currentZone?.uid != response.ZoneUid) {
+            // ??? how
+            throw new InvalidOperationException("zone state is invalid");
+        }
+
+        if (player.zone is null) {
+            // first time joining, need to do scene init from title
+            EmpLog.Debug("Starting initial scene init to");
+
+            player.zone = pc.currentZone = currentZone;
+            scene.Init(Scene.Mode.Zone);
+        } else if (player.zone != currentZone) {
+            // do normal zone transition
+            pc.MoveZone(currentZone);
+        }
+
+        // reassign zone pos
+        this.StartDeferredCoroutine(() => pc.Stub_Move(response.Pos, Card.MoveType.Force));
     }
 }

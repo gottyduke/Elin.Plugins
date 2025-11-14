@@ -30,7 +30,7 @@ internal class RemoteScenePausePatch
             return;
         }
 
-        if (NetSession.Instance.Connection is not ElinNetHost  host) {
+        if (NetSession.Instance.Connection is not ElinNetHost host) {
             return;
         }
 

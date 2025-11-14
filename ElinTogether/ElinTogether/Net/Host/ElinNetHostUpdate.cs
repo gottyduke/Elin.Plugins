@@ -1,7 +1,6 @@
 using System;
 using ElinTogether.Models;
 using ElinTogether.Net.Steam;
-using ElinTogether.Patches;
 
 namespace ElinTogether.Net;
 
@@ -160,7 +159,7 @@ internal partial class ElinNetHost
     /// <summary>
     ///     Resume sending out deltas
     /// </summary>
-    public void ResumeWorldStateUpdate(bool clearDelta = true)
+    public void ResumeWorldStateUpdate(bool clearDelta)
     {
         _pauseUpdate = false;
 

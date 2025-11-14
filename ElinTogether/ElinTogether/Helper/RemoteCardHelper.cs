@@ -10,8 +10,8 @@ internal static class RemoteCardHelper
         public bool IsRemoteChara =>
             NetSession.Instance.Connection switch {
                 null => false,
-                ElinNetHost  host => host.ActiveRemoteCharas.Values.Contains(chara),
-                ElinNetClient  => !chara.IsPC,
+                ElinNetHost host => host.ActiveRemoteCharas.Values.Contains(chara),
+                ElinNetClient => !chara.IsPC,
                 _ => false,
             };
     }

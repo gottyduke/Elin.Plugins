@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -27,7 +25,7 @@ internal partial class ElinNetHost
 
     [CwlContextVar("remote_chara")]
     [field: AllowNull]
-    private static ConcurrentDictionary<ulong, int> SavedRemoteCharas
+    private static Dictionary<ulong, int> SavedRemoteCharas
     {
         get => field ??= [];
         set {
@@ -56,18 +54,6 @@ internal partial class ElinNetHost
         chara.SetFlagValue("remote_chara");
 
         ActiveRemoteCharas[peer.Id] = chara;
-
-        if (!chara.ExistsOnMap) {
-            var pos = pc.pos.GetNearestPoint(allowChara: false, allowInstalled: false);
-            chara.MoveZone(_zone, new ZoneTransition {
-                state = ZoneTransition.EnterState.Exact,
-                x = pos.x,
-                z = pos.z,
-            });
-
-            EmpLog.Debug("Assigned zone sync position to player {@Peer}",
-                peer);
-        }
 
         States[peer.Id] = new() {
             Index = peer.Id,

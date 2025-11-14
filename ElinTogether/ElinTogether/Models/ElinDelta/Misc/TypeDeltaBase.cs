@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -29,11 +28,15 @@ public class TypeDeltaBase : ElinDeltaBase
         private const BindingFlags TypeFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic |
                                                BindingFlags.DeclaredOnly;
 
-        private static readonly ConcurrentDictionary<Type, MemberInfo[]> _cache = [];
+        private static readonly Dictionary<Type, MemberInfo[]> _cache = [];
 
         public static MemberInfo[] GetMembers(Type type)
         {
-            return _cache.GetOrAdd(type, GetAllMembers);
+            if (!_cache.TryGetValue(type, out var members)) {
+                members = _cache[type] = GetAllMembers(type);
+            }
+
+            return members;
 
             static MemberInfo[] GetAllMembers(Type? type)
             {

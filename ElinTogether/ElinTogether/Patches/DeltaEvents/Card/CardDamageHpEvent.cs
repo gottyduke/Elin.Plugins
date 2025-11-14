@@ -1,5 +1,4 @@
 using System;
-using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
 
@@ -10,9 +9,19 @@ namespace ElinTogether.Patches;
 internal static class CardDamageHpEvent
 {
     [HarmonyPrefix]
-    internal static bool OnCardDamageHP()
+    internal static bool OnCardDamageHP(long dmg,
+                                        int ele,
+                                        int eleP,
+                                        AttackSource attackSource,
+                                        Card origin,
+                                        bool showEffect,
+                                        Thing weapon,
+                                        Chara originalTarget)
     {
         // simply drop the update as clients and wait for delta
+        if (NetSession.Instance.Connection is ElinNetHost host) {
+        }
+
         return NetSession.Instance.IsHost;
     }
 

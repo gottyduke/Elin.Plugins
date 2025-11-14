@@ -9,21 +9,19 @@ namespace ElinTogether.Patches;
 internal static class ZoneAddCardEvent
 {
     [HarmonyPrefix]
-    internal static bool OnAddCardToZone(Zone __instance, Card t, int x, int z)
+    internal static void OnAddCardToZone(Zone __instance, Card t, int x, int z)
     {
         if (NetSession.Instance.Connection is not { } connection) {
-            return true;
+            return;
         }
 
-        if (connection.IsHost || !t.IsPC) {
-            connection.Delta.AddRemote(new ZoneAddCardDelta {
-                Card = t,
-                ZoneUid = __instance.uid,
-                Pos = new() { X = x, Z = z },
-            });
-        }
-
-        return true;
+        // we propagate every add card event to remotes
+        // and validate it accordingly by net type
+        connection.Delta.AddRemote(new ZoneAddCardDelta {
+            Card = t,
+            ZoneUid = __instance.uid,
+            Pos = new() { X = x, Z = z },
+        });
     }
 
     extension(Zone zone)

@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -12,7 +11,7 @@ namespace ElinTogether.Patches;
 [HarmonyPatch]
 internal static class CardGenEvent
 {
-    internal static readonly ConcurrentDictionary<int, Card> HeldRefCards = [];
+    internal static readonly Dictionary<int, Card> HeldRefCards = [];
 
     internal static IEnumerable<MethodBase> TargetMethods()
     {
@@ -24,7 +23,7 @@ internal static class CardGenEvent
 
     internal static Card? TryPop(int uid)
     {
-        if (!HeldRefCards.TryRemove(uid, out var card)) {
+        if (!HeldRefCards.Remove(uid, out var card)) {
             return null;
         }
 
@@ -35,12 +34,6 @@ internal static class CardGenEvent
         }
 
         return card;
-    }
-
-    [HarmonyPrefix]
-    internal static bool OnClientCardGen()
-    {
-        return NetSession.Instance.IsHost;
     }
 
     [HarmonyPostfix]

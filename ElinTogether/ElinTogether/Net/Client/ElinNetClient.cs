@@ -30,6 +30,7 @@ internal partial class ElinNetClient : ElinNetBase
         Router.RegisterHandler<SourceDiffResponse>(OnSourceDiffResponse);
         Router.RegisterHandler<SaveDataProbe>(OnSaveDataProbe);
         Router.RegisterHandler<ZoneDataResponse>(OnZoneDataResponse);
+        Router.RegisterHandler<ZoneActivateResponse>(OnZoneActivateResponse);
         Router.RegisterHandler<WorldStateSnapshot>(OnWorldStateSnapshot);
         Router.RegisterHandler<WorldStateDeltaList>(OnWorldStateDeltaResponse);
     }

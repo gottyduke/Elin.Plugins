@@ -12,12 +12,12 @@ internal static class GameDateAdvanceMinEvent
     internal static bool OnGameAdvanceMin(int a)
     {
         switch (NetSession.Instance.Connection) {
-            case ElinNetHost  host:
+            case ElinNetHost host:
                 host.Delta.AddRemote(new GameTimeDelta {
                     AdvanceMin = a,
                 });
                 return true;
-            case ElinNetClient :
+            case ElinNetClient:
                 // we are clients, drop the update and wait for delta
                 return false;
             default:

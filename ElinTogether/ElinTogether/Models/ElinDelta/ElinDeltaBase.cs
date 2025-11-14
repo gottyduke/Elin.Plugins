@@ -12,7 +12,7 @@ namespace ElinTogether.Models.ElinDelta;
 [Union(202, typeof(CharaMakeAllyDelta))]
 [Union(203, typeof(CharaPickThingDelta))]
 [Union(204, typeof(CharaDieDelta))]
-[Union(205, typeof(CharaUseAbilityDelta))]
+[Union(205, typeof(CharaActPerformDelta))]
 [Union(206, typeof(CharaAddConditionDelta))]
 // Thing
 // Zone

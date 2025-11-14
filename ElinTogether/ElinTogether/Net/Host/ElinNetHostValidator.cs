@@ -38,6 +38,9 @@ internal partial class ElinNetHost
             peer);
     }
 
+    /// <summary>
+    ///     Net event: Check the source list checksum from clients
+    /// </summary>
     private void OnSourceListResponse(SourceListResponse response, ISteamNetPeer peer)
     {
         if (!_validationResults.TryGetValue(peer.Id, out var validations)) {

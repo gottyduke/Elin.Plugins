@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Cwl.Helper.Unity;
@@ -15,11 +14,11 @@ namespace ElinTogether.Patches;
 [HarmonyPatch(typeof(SpatialGen), nameof(SpatialGen.Create))]
 internal static class SpatialGenEvent
 {
-    internal static readonly ConcurrentDictionary<int, Zone> HeldRefZones = [];
+    internal static readonly Dictionary<int, Zone> HeldRefZones = [];
 
     internal static Zone? TryPop(int uid)
     {
-        if (!HeldRefZones.TryRemove(uid, out var card)) {
+        if (!HeldRefZones.Remove(uid, out var card)) {
             return null;
         }
 
@@ -35,7 +34,7 @@ internal static class SpatialGenEvent
     [HarmonyPostfix]
     internal static void OnSpatialGen(Spatial __result)
     {
-        if (NetSession.Instance.Connection is not ElinNetHost  host) {
+        if (NetSession.Instance.Connection is not ElinNetHost host) {
             return;
         }
 

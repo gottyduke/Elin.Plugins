@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Cwl.API.Attributes;
 using ElinTogether.Patches;
 using MessagePack;
 
@@ -16,6 +18,8 @@ public class RemoteCard
         Thing,
         Chara,
     }
+
+    private static readonly Dictionary<int, WeakReference<Card>> _cached = [];
 
     [Key(0)]
     public required int Uid { get; init; }
@@ -68,8 +72,12 @@ public class RemoteCard
 
     public Card? Find()
     {
+        if (_cached.TryGetValue(Uid, out var reference) && reference.TryGetTarget(out var card)) {
+            return card;
+        }
+
         var map = EClass.game?.activeZone?.map;
-        Card? card = Type switch {
+        card = Type switch {
             CardType.Thing => map?.FindThing(Uid),
             CardType.Chara => Uid == EClass.player.uidChara
                 ? EClass.pc
@@ -84,6 +92,15 @@ public class RemoteCard
             card = Parent.Find()?.things.Find(Uid);
         }
 
+        _cached[Uid] = new(card, false);
+
         return card;
+    }
+
+    [CwlPreLoad]
+    [CwlSceneInitEvent(Scene.Mode.Title)]
+    private static void ClearCachedRefs()
+    {
+        _cached.Clear();
     }
 }
