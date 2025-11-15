@@ -1,9 +1,9 @@
-name: Emmersive Elin CI Deploy
+name: Elin Together CI Deploy
 
 on:
   push:
     branches: ["*"]
-    paths: ["Emmersive/**"]
+    paths: ["ElinTogether/ElinTogether/**"]
   pull_request:
   workflow_dispatch:
 
@@ -27,7 +27,7 @@ jobs:
           fetch-depth: 0
           sparse-checkout: |
             CustomWhateverLoader/
-            Emmersive/
+            ElinTogether/ElinTogether/
             Directory.Build.props
           sparse-checkout-cone-mode: false
 
@@ -46,7 +46,7 @@ jobs:
           cache: true
           cache-dependency-path: |
             ${{ github.workspace }}\CustomWhateverLoader\packages.lock.json
-            ${{ github.workspace }}\Emmersive\packages.lock.json
+            ${{ github.workspace }}\ElinTogether\ElinTogether\packages.lock.json
 
       - name: Setup Packages
         run: |
@@ -61,15 +61,15 @@ jobs:
         run: |
           $config = '${{ matrix.version }}' -eq 'stable' ? 'Debug' : 'DebugNightly'
           dotnet build ${{ github.workspace }}\CustomWhateverLoader\CustomWhateverLoader.csproj -o ${{ github.workspace }}\${{ matrix.version }}\Package\Mod_CustomWhateverLoader -c $config --no-restore
-          dotnet build ${{ github.workspace }}\Emmersive\Emmersive.csproj -o ${{ github.workspace }}\out\${{ matrix.version }} -c $config --no-restore
+          dotnet build ${{ github.workspace }}\ElinTogether\ElinTogether\ElinTogether.csproj -o ${{ github.workspace }}\out\${{ matrix.version }} -c $config --no-restore
 
-          $dllPath = Join-Path -Path "${{ github.workspace }}\out\${{ matrix.version }}" -ChildPath "Emmersive.dll"
+          $dllPath = Join-Path -Path "${{ github.workspace }}\out\${{ matrix.version }}" -ChildPath "ElinTogether.dll"
           $fileVersion = (Get-Item -Path $dllPath).VersionInfo.FileVersion
           $fileVersionShort = $fileVersion.Split('.')[0..2] -join '.'
 
           echo "file_version=$fileVersion" >> $env:GITHUB_OUTPUT
           echo "file_version_short=$fileVersionShort" >> $env:GITHUB_OUTPUT
-          echo "file_name=emmersive-ci-builds-$fileVersion-${{ matrix.version }}" >> $env:GITHUB_OUTPUT
+          echo "file_name=elintogether-ci-builds-$fileVersion-${{ matrix.version }}" >> $env:GITHUB_OUTPUT
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -82,14 +82,14 @@ jobs:
         shell: pwsh
         run: |
           $source = "${{ github.workspace }}\out\${{ matrix.version }}"
-          $destination = "${{ github.workspace }}\out\${{ matrix.version }}\emmersive-ci-builds-${{ matrix.version }}.zip"
+          $destination = "${{ github.workspace }}\out\${{ matrix.version }}\elintogether-ci-builds-${{ matrix.version }}.zip"
 
           Compress-Archive -Path "$source\*" -DestinationPath $destination -Force
           $path = $destination -Replace '\\', '/'
 
           echo "artifact_path=$path" >> $env:GITHUB_OUTPUT
 
-          $log = git log "$(git describe --tags --abbrev=0 --match="EM-*")..HEAD" --pretty=format:"%s" -- Emmersive/ | ? { $_ -notmatch "cleanup" }
+          $log = git log "$(git describe --tags --abbrev=0 --match="EM-*")..HEAD" --pretty=format:"%s" -- ElinTogether/ | ? { $_ -notmatch "cleanup" }
           $log = $log -join "`n"
           $EOF = [guid]::NewGuid().ToString()
           Add-Content -Path $env:GITHUB_OUTPUT -Value "change_logs<<$EOF"
@@ -99,8 +99,8 @@ jobs:
       - name: Create or Update Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: EM-${{ steps.build.outputs.file_version_short }}
-          name: Emmersive - Elin with AI ${{ steps.build.outputs.file_version }}
+          tag_name: EMP-preview
+          name: Elin Together - Preview ${{ steps.build.outputs.file_version }}
           draft: false
           prerelease: true
           generate_release_notes: false
