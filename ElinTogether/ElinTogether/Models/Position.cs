@@ -51,4 +51,9 @@ public class Position
     {
         return X ^ Z;
     }
+
+    public override string ToString()
+    {
+        return $"({X}/{Z})";
+    }
 }

@@ -17,7 +17,7 @@ public class CharaDieDelta : ElinDeltaBase
     public RemoteCard? Origin { get; init; }
 
     [Key(3)]
-    public AttackSourceByte AttackSource { get; init; }
+    public AttackSource AttackSource { get; init; }
 
     [Key(4)]
     public RemoteCard? OriginalTarget { get; init; }
@@ -34,6 +34,6 @@ public class CharaDieDelta : ElinDeltaBase
         }
 
         var element = ElementId is null ? null : Element.Create(ElementId.Value);
-        chara.Stub_Die(element, Origin, (AttackSource)AttackSource, OriginalTarget);
+        chara.Stub_Die(element, Origin, AttackSource, OriginalTarget);
     }
 }

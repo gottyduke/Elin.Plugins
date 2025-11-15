@@ -11,9 +11,10 @@ public abstract partial class ElinNetBase : EMono
     public readonly ElinDeltaManager Delta = new();
     private bool _initialized;
     protected ProgressIndicator? DebugProgress;
-    protected SteamNetMessageRouter Router = null!;
-    protected TickScheduler Scheduler = null!;
-    protected SteamNetManager Socket = null!;
+    protected SteamNetLobbyManager Lobby => SteamNetLobbyManager.Instance;
+    protected readonly SteamNetMessageRouter Router = new();
+    protected readonly TickScheduler Scheduler = new();
+    protected readonly SteamNetManager Socket = new();
 
     public abstract bool IsHost { get; }
 
@@ -40,6 +41,7 @@ public abstract partial class ElinNetBase : EMono
     {
         Stop();
         Socket.Dispose();
+        Lobby.LeaveLobby();
 
 #if !DEBUG
         EmpMod.SharedHarmony.UnpatchSelf();
@@ -60,14 +62,10 @@ public abstract partial class ElinNetBase : EMono
             return;
         }
 
-        Router = new();
         Router.OnPeerConnectedEvent += OnPeerConnected;
         Router.OnPeerDisconnectedEvent += OnPeerDisconnected;
 
-        Socket = new();
         Socket.Initialize(Router);
-
-        Scheduler = new();
 
         RegisterPackets();
 
@@ -76,7 +74,7 @@ public abstract partial class ElinNetBase : EMono
         _initialized = true;
     }
 
-    internal void Stop()
+    internal virtual void Stop()
     {
         if (ReflexUIManager.IsConsoleOpen()) {
             ReflexUIManager.StaticClose();

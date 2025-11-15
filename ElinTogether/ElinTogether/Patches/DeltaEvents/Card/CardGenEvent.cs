@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -37,13 +38,20 @@ internal static class CardGenEvent
     }
 
     [HarmonyPostfix]
-    private static void OnCardGenCreate(Card __result)
+    internal static void OnCardGenCreate(Card __result)
     {
         // we should relay every single creation call so remotes can hold references
-        if (NetSession.Instance.Connection is ElinNetHost connection) {
-            connection.Delta.AddRemote(new CardGenDelta {
-                Card = RemoteCard.Create(__result, true),
-            });
+        if (NetSession.Instance.Connection is not { } connection) {
+            return;
         }
+
+        // we use negative uid to avoid conflicting with host
+        if (!connection.IsHost) {
+            __result.uid = -__result.uid;
+        }
+
+        connection.Delta.AddRemote(new CardGenDelta {
+            Card = RemoteCard.Create(__result, true),
+        });
     }
 }

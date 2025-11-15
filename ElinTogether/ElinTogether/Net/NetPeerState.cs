@@ -21,7 +21,7 @@ public class NetPeerState
     public int Speed { get; set; }
 
     [Key(5)]
-    public ushort LastAct { get; set; }
+    public int LastAct { get; set; }
 
     [Key(6)]
     public int LastReceivedTick { get; set; } = -1;

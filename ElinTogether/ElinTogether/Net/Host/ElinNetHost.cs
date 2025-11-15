@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using Cwl.Helper.Extensions;
 using Cwl.Helper.Unity;
 using ElinTogether.Models;
 using ElinTogether.Net.Steam;
@@ -22,11 +24,11 @@ internal partial class ElinNetHost : ElinNetBase
             return;
         }
 
+        Lobby.CreateLobby(SteamNetLobbyType.Public);
+
         Socket.StartServerSdr();
         Scheduler.Subscribe(DisconnectInactive, 1);
 
-        // TODO Assign SessionId
-        NetSession.Instance.SessionId = 0UL;
         NetSession.Instance.SharedSpeed = SharedSpeed;
 
         EmpPop.Debug("Started server via SDR\nSource validations enabled: {SourceValidations}",
@@ -42,7 +44,7 @@ internal partial class ElinNetHost : ElinNetBase
         Router.RegisterHandler<ZoneDataReceivedResponse>(OnZoneDataReceivedResponse);
         Router.RegisterHandler<WorldStateRequest>(OnWorldStateRequest);
         Router.RegisterHandler<WorldStateDeltaList>(OnWorldStateDeltaResponse);
-        Router.RegisterHandler<RemoteCharaSnapshot>(OnClientRemoteCharaSnapshot);
+        Router.RegisterHandler<CharaStateSnapshot>(OnClientRemoteCharaSnapshot);
     }
 
     private void Broadcast<T>(T packet)
@@ -64,6 +66,13 @@ internal partial class ElinNetHost : ElinNetBase
             // client has not been responding after 25 ticks
             if (!peer.IsConnected && NetSession.Instance.Tick - state.LastReceivedTick > 25) {
                 Socket.Disconnect(peer, "emp_inactive");
+            }
+        }
+
+        // remove all left over chara
+        foreach (var chara in _map.charas.ToArray()) {
+            if (chara.GetFlagValue("remote_chara") > 0 && !ActiveRemoteCharas.Values.Contains(chara)) {
+                RemoveRemoteChara(chara);
             }
         }
     }
@@ -98,6 +107,8 @@ internal partial class ElinNetHost : ElinNetBase
         if (States.Remove(peer.Id, out var state) &&
             ActiveRemoteCharas.Remove(peer.Id, out var remoteChara)) {
             RemoveRemoteChara(remoteChara);
+
+            NetSession.Instance.CurrentPlayers.Remove(state);
 
             EmpLog.Debug("Removed remote chara {@Chara}",
                 new {

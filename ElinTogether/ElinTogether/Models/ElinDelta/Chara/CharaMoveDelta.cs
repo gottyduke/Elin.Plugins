@@ -1,4 +1,5 @@
 using ElinTogether.Net;
+using ElinTogether.Patches;
 using MessagePack;
 
 namespace ElinTogether.Models.ElinDelta;
@@ -13,19 +14,23 @@ public class CharaMoveDelta : ElinDeltaBase
     public required Position Pos { get; init; }
 
     [Key(2)]
-    public MoveTypeByte MoveType { get; init; }
+    public Card.MoveType MoveType { get; init; }
 
     public static implicit operator CharaMoveDelta(Chara chara)
     {
         return new() {
             Owner = chara,
             Pos = chara.pos,
-            MoveType = (MoveTypeByte)Card.MoveType.Force,
+            MoveType = Card.MoveType.Force,
         };
     }
 
     public override void Apply(ElinNetBase net)
     {
+        if (net.IsHost) {
+            net.Delta.AddRemote(this);
+        }
+
         // this only happens on game load
         if (core.game?.activeZone?.map is null) {
             net.Delta.DeferLocal(this);
@@ -38,12 +43,12 @@ public class CharaMoveDelta : ElinDeltaBase
         }
 
         // drop this
-        if (chara.currentZone != pc.currentZone) {
+        if (chara.currentZone != NetSession.Instance.CurrentZone) {
             return;
         }
 
         if (chara.pos != Pos) {
-            chara._Move(Pos, (Card.MoveType)MoveType);
+            chara.Stub_Move(Pos, MoveType);
         }
     }
 }

@@ -54,6 +54,7 @@ internal partial class ElinNetHost
             EmpLog.Warning("Player {@Peer} requested invalid zone state",
                 peer);
 
+            // gtfo
             Socket.Disconnect(peer, "emp_invalid_zone");
         }
     }
@@ -81,20 +82,17 @@ internal partial class ElinNetHost
             return;
         }
 
-        // player first time joining in
         // we only move their character to zone when they are ready
-        if (!chara.ExistsOnMap) {
-            var pos = pc.pos.GetNearestPoint(allowChara: false, allowInstalled: false);
-            _zone.AddCard(chara, pos);
-        }
+        var pos = pc.pos.GetNearestPoint(allowChara: false, allowInstalled: false);
+        _zone.AddCard(chara, pos);
 
         EmpLog.Debug("Assigned zone sync position to player {@Peer} at {@Position}",
-            peer, chara.pos);
+            peer, pos);
 
         // after that, their characters will always be with host as party members
         peer.Send(new ZoneActivateResponse {
             ZoneUid = _zone.uid,
-            Pos = chara.pos,
+            Pos = pos,
         });
     }
 }

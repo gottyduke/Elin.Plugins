@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using ElinTogether.Models;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
@@ -18,9 +19,10 @@ internal static class CharaDieEvent
                     Owner = __instance,
                     ElementId = e?.id,
                     Origin = origin,
-                    AttackSource = (AttackSourceByte)attackSource,
+                    AttackSource = attackSource,
                     OriginalTarget = originalTarget,
                 });
+
                 return true;
             case ElinNetClient:
                 // we are clients, drop the update and wait for delta

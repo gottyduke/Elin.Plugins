@@ -4,8 +4,10 @@ using System.Linq;
 using Cwl.API.Attributes;
 using Cwl.Helper.Extensions;
 using ElinTogether.Models;
+using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net.Steam;
 using ElinTogether.Patches;
+using JetBrains.Annotations;
 
 namespace ElinTogether.Net;
 
@@ -28,14 +30,7 @@ internal partial class ElinNetHost
     private static Dictionary<ulong, int> SavedRemoteCharas
     {
         get => field ??= [];
-        set {
-            if (value.Count > 0) {
-                EmpLog.Debug("Restoring {RemoteCharaCount} remote characters",
-                    value.Count);
-            }
-
-            field = value;
-        }
+        set;
     }
 
     /// <summary>
@@ -55,12 +50,14 @@ internal partial class ElinNetHost
 
         ActiveRemoteCharas[peer.Id] = chara;
 
-        States[peer.Id] = new() {
+        var state = States[peer.Id] = new() {
             Index = peer.Id,
             Uid = peer.Uid,
             Name = peer.Name!,
             CharaUid = chara.uid,
         };
+
+        NetSession.Instance.CurrentPlayers.Add(state);
 
         SendSaveProbe(peer);
     }
@@ -103,24 +100,27 @@ internal partial class ElinNetHost
         return total / count;
     }
 
-    public static void RemoveRemoteChara(Chara remoteChara)
+    public void RemoveRemoteChara(Chara remoteChara)
     {
         pc.party.RemoveMember(remoteChara);
         _zone.RemoveCard(remoteChara);
+        Delta.AddRemote(new CharaRemoveFromGameDelta {
+            Owner = remoteChara,
+        });
     }
 
     [CwlPostLoad]
-    private static void CleanUpLeftOverCharas()
+    private static void RemoveLeftOverCharas()
     {
-        if (NetSession.Instance.Connection is not ElinNetHost { ActiveRemoteCharas: { } active }) {
-            active = [];
+        if (NetSession.Instance.Connection is not ElinNetHost host) {
+            return;
         }
 
         var currentRemoteCharas = game.cards.globalCharas.Values
             .Where(c => c.GetFlagValue("remote_chara") > 0);
 
-        foreach (var chara in currentRemoteCharas.Except(active.Values)) {
-            RemoveRemoteChara(chara);
+        foreach (var chara in currentRemoteCharas.Except(host.ActiveRemoteCharas.Values)) {
+            host.RemoveRemoteChara(chara);
         }
     }
 }

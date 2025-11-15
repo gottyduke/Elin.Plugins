@@ -35,7 +35,7 @@ public class CharaTickDelta : ElinDeltaBase
         var lastTick = _lastTicked.GetValueOrDefault(chara.uid);
         var elapsed = thisTick - lastTick;
 
-        // each slow tick is 120ms, each fast tick is 240ms
+        // each slow tick is 240ms, each fast tick is 120ms
         // we buffer it and avoid duplicate ticks
         if (elapsed <= 235) {
             return;

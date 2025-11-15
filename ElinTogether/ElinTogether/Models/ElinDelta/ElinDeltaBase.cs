@@ -6,6 +6,7 @@ namespace ElinTogether.Models.ElinDelta;
 // Card
 [Union(100, typeof(CardGenDelta))]
 [Union(101, typeof(CardDamageHpDelta))]
+[Union(102, typeof(CardPlacedDelta))]
 // Chara
 [Union(200, typeof(CharaMoveDelta))]
 [Union(201, typeof(CharaTickDelta))]
@@ -14,6 +15,8 @@ namespace ElinTogether.Models.ElinDelta;
 [Union(204, typeof(CharaDieDelta))]
 [Union(205, typeof(CharaActPerformDelta))]
 [Union(206, typeof(CharaAddConditionDelta))]
+[Union(207, typeof(CharaReviveDelta))]
+[Union(208, typeof(CharaTickConditionDelta))]
 // Thing
 // Zone
 [Union(400, typeof(SpatialGenDelta))]

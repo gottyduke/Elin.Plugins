@@ -10,12 +10,12 @@ public class CharaActPerformDelta : ElinDeltaBase
     // builtin acts that are not instantiated
     private static readonly Dictionary<int, Act> _builtInMapping = new() {
         [ABILITY.ActWait] = ACT.Wait,
+        [ABILITY.ActMelee] = ACT.Melee,
+        [ABILITY.ActThrow] = ACT.Throw,
+        [ABILITY.ActRanged] = ACT.Ranged,
+        [ABILITY.ActKick] = ACT.Kick,
         [ABILITY.ActChat] = ACT.Chat,
         [ABILITY.ActPick] = ACT.Pick,
-        [ABILITY.ActKick] = ACT.Kick,
-        [ABILITY.ActMelee] = ACT.Melee,
-        [ABILITY.ActRanged] = ACT.Ranged,
-        [ABILITY.ActThrow] = ACT.Throw,
         [ABILITY.ActItem] = ACT.Item,
     };
 
@@ -48,7 +48,10 @@ public class CharaActPerformDelta : ElinDeltaBase
             return;
         }
 
-        var act = _builtInMapping.GetValueOrDefault(ActId, chara.elements.GetElement(ActId)?.act ?? ACT.Create(ActId));
+        // reperform act
+        var act = _builtInMapping.GetValueOrDefault(ActId);
+        act ??= chara.elements.GetElement(ActId)?.act ?? ACT.Create(ActId);
+        act.id = ActId;
         act.Perform(chara, TargetCard, Pos);
     }
 }

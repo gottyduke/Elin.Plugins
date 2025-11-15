@@ -33,11 +33,20 @@ public class ZoneAddCardDelta : ElinDeltaBase
             return;
         }
 
-        // do not add clients from this delta
+        // relay to other clients
+        if (net.IsHost) {
+            net.Delta.AddRemote(this);
+        }
+
+        // do not add client characters from this delta
         if (card.IsPC) {
             return;
         }
 
-        zone.Stub_AddCard(card, Pos.X, Pos.Z);
+        // do not update it again if same position
+        // we derive all other state changes to sub deltas
+        if (card.pos != Pos) {
+            zone.Stub_AddCard(card, Pos.X, Pos.Z);
+        }
     }
 }

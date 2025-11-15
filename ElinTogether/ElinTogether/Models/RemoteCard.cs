@@ -87,6 +87,11 @@ public class RemoteCard
         };
 
         card ??= CardGenEvent.TryPop(Uid);
+        card ??= Type switch {
+            CardType.Thing => Data?.Decompress<Thing>(),
+            CardType.Chara => Data?.Decompress<Chara>(),
+            _ => null,
+        };
 
         if (Parent is not null) {
             card = Parent.Find()?.things.Find(Uid);
@@ -95,6 +100,11 @@ public class RemoteCard
         _cached[Uid] = new(card, false);
 
         return card;
+    }
+
+    public override string ToString()
+    {
+        return $"{Find()}";
     }
 
     [CwlPreLoad]

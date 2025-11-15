@@ -4,6 +4,7 @@ using BepInEx;
 using Cwl.API.Attributes;
 using ElinTogether.Helper;
 using ElinTogether.Net;
+using ElinTogether.Net.Steam;
 using ElinTogether.Patches;
 using HarmonyLib;
 using ReflexCLI;
@@ -52,6 +53,8 @@ internal sealed class EmpMod : BaseUnityPlugin
         ResourceFetch.InvalidateTemp();
 
         SteamNetworkingUtils.InitRelayNetworkAccess();
+
+        SteamNetLobbyManager.Instance.TryParseLobbyCommand();
     }
 
     private void OnApplicationQuit()

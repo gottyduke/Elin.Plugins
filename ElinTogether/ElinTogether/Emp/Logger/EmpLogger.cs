@@ -99,6 +99,9 @@ internal static partial class EmpLogger
                 .Destructure.ByTransforming<ZoneDataResponse>(z => new {
                     ZoneFullName = z.ZoneFullName.TagColor(0x009e73),
                     z.ZoneUid,
+                })
+                .Destructure.ByTransforming<RemoteCard>(p => new {
+                    p.Uid,
                 });
         }
 

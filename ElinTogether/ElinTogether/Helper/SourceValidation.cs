@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Cwl.Helper;
 using Cwl.Helper.Exceptions;
@@ -11,11 +12,13 @@ namespace ElinTogether.Helper;
 
 public class SourceValidation
 {
-    private static readonly string[] _excludedPlugins = [
+    // ReSharper disable StringLiteralTypo
+    private static readonly ImmutableArray<string> _excludedPlugins = [
         "com.sinai.unityexplorer",
+        "jp.cmbc.mod.elin.yk-devtool",
     ];
 
-    private static readonly SourceListType[] _validationRequirements = [
+    public static readonly ImmutableArray<SourceListType> ValidationRequirements = [
         SourceListType.Assembly,
         SourceListType.Card,
         SourceListType.Zone,
@@ -30,14 +33,14 @@ public class SourceValidation
     ];
 
     // 255 should be more than enough
-    public static readonly Dictionary<ushort, Type> IdToActMapping = [];
-    public static readonly Dictionary<Type, ushort> ActToIdMapping = [];
+    public static readonly Dictionary<int, Type> IdToActMapping = [];
+    public static readonly Dictionary<Type, int> ActToIdMapping = [];
 
     public static Dictionary<SourceListType, byte[]> GenerateAll()
     {
         var data = new Dictionary<SourceListType, byte[]>();
 
-        foreach (var sourceType in _validationRequirements) {
+        foreach (var sourceType in ValidationRequirements) {
             data[sourceType] = GenerateSourceChecksum(sourceType);
         }
 
@@ -57,7 +60,7 @@ public class SourceValidation
     public static IEnumerable<string> GenerateSourceIdList(SourceListType type)
     {
         if (ActToIdMapping.Count == 0) {
-            BuildAiActMapping();
+            BuildActMapping();
         }
 
         var sources = EMono.sources;
@@ -87,7 +90,7 @@ public class SourceValidation
         }
     }
 
-    public static void BuildAiActMapping()
+    public static void BuildActMapping()
     {
         ActToIdMapping.Clear();
         IdToActMapping.Clear();

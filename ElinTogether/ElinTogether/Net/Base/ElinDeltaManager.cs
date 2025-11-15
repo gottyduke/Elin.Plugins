@@ -27,6 +27,11 @@ public class ElinDeltaManager
     /// </summary>
     private readonly ConcurrentQueue<ElinDeltaBase> _outBufferDeferred = [];
 
+    // smoothed stat
+    private float _averageOut;
+    private float _averageIn;
+    private const float Smoothing = 0.5f;
+
     public bool HasPendingOut => !_outBuffer.IsEmpty || !_outBufferDeferred.IsEmpty;
     public bool HasPendingIn => !_inBuffer.IsEmpty || !_inBufferDeferred.IsEmpty;
     public bool IsIdle => !HasPendingOut && !HasPendingIn;
@@ -70,8 +75,8 @@ public class ElinDeltaManager
             try {
                 delta.Apply(net);
             } catch (Exception ex) {
-                EmpLog.Debug(ex, "Exception at processing delta {DeltaType}",
-                    delta.GetType().Name);
+                EmpLog.Debug(ex, "Exception at processing delta {DeltaType}\n{@Delta}",
+                    delta.GetType().Name, delta);
                 // noexcept
             }
         }
@@ -133,6 +138,12 @@ public class ElinDeltaManager
         _inBufferDeferred.Clear();
     }
 
+    public void UpdateAverages()
+    {
+        _averageOut = _averageOut * (1f - Smoothing) + _outBuffer.Count * Smoothing;
+        _averageIn = _averageIn * (1f - Smoothing) + _inBuffer.Count * Smoothing;
+    }
+
     public (int outBuffer, int outDeferred, int inBuffer, int inDeferred) GetCounts()
     {
         return (_outBuffer.Count, _outBufferDeferred.Count, _inBuffer.Count, _inBufferDeferred.Count);
@@ -140,7 +151,7 @@ public class ElinDeltaManager
 
     public override string ToString()
     {
-        var (outBuffer, outDeferred, inBuffer, inDeferred) = GetCounts();
-        return $"D-Out\t{outBuffer} {outDeferred}\tD-In\t{inBuffer} {inDeferred}";
+        UpdateAverages();
+        return $"Delta Out={_averageOut:F1}\tDelta In={_averageIn:F1}";
     }
 }

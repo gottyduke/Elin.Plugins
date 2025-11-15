@@ -1,4 +1,5 @@
 using System;
+using ElinTogether.Models;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
@@ -15,10 +16,10 @@ internal static class ZoneAddCardEvent
             return;
         }
 
-        // we propagate every add card event to remotes
-        // and validate it accordingly by net type
+        // only host can propagate add card event to remotes
+        RemoteCard card = t.isThing ? RemoteCard.Create(t, true) : t;
         connection.Delta.AddRemote(new ZoneAddCardDelta {
-            Card = t,
+            Card = card,
             ZoneUid = __instance.uid,
             Pos = new() { X = x, Z = z },
         });

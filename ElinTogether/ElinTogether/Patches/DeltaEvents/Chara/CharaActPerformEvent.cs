@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -12,6 +13,7 @@ namespace ElinTogether.Patches;
 internal static class CharaActPerformEvent
 {
     private static readonly HashSet<int> _alwaysSuccessfulActs = [
+        // for some reason this returns false
         ABILITY.ActRide,
     ];
 

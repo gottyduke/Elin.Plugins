@@ -1,6 +1,7 @@
 using System;
 using ElinTogether.Models;
 using ElinTogether.Net.Steam;
+using ElinTogether.Patches;
 
 namespace ElinTogether.Net;
 
@@ -29,6 +30,7 @@ internal partial class ElinNetHost
         }
 
         NetSession.Instance.Tick++;
+        NetSession.Instance.CurrentZone = _zone;
 
         try {
             _lastTick = PropagateWorldState();
@@ -90,7 +92,7 @@ internal partial class ElinNetHost
     /// <summary>
     ///     Net event: Check remote character's snapshot
     /// </summary>
-    private void OnClientRemoteCharaSnapshot(RemoteCharaSnapshot response, ISteamNetPeer peer)
+    private void OnClientRemoteCharaSnapshot(CharaStateSnapshot response, ISteamNetPeer peer)
     {
         if (!States.TryGetValue(peer.Id, out var state)) {
             EmpLog.Warning("Received invalid remote character from peer {@Peer}",
@@ -104,12 +106,10 @@ internal partial class ElinNetHost
 
         NetSession.Instance.SharedSpeed = SharedSpeed;
 
-        var chara = ActiveRemoteCharas[peer.Id];
+        WorldStateSnapshot.CachedRemoteSnapshots.Add(response);
 
-        if (response.ZoneUid == game.activeZone.uid && response.Pos != chara.pos) {
-            // fix the position
-            //chara.Stub_Move(response.Pos, Card.MoveType.Force);
-        }
+        var chara = ActiveRemoteCharas[peer.Id];
+        response.ApplyReconciliation(chara);
     }
 
 #region Scheduler Jobs

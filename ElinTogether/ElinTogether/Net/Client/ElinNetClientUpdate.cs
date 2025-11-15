@@ -16,8 +16,8 @@ internal partial class ElinNetClient
             return;
         }
 
-        // send out self snapshot
-        Socket.FirstPeer.Send(RemoteCharaSnapshot.Create());
+        // send back client state
+        Socket.FirstPeer.Send(CharaStateSnapshot.CreateSelf());
 
         // send out delta
         if (!Delta.HasPendingOut) {

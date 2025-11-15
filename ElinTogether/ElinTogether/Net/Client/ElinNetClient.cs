@@ -39,6 +39,18 @@ internal partial class ElinNetClient : ElinNetBase
     {
     }
 
+    internal override void Stop()
+    {
+        base.Stop();
+
+        if (!core.IsGameStarted) {
+            return;
+        }
+
+        game.Kill();
+        scene.Init(Scene.Mode.Title);
+    }
+
 #region Net Events
 
     /// <summary>

@@ -1,13 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
+using ElinTogether.Helper;
 using ElinTogether.Net;
+using ElinTogether.Patches;
 using MessagePack;
 
 namespace ElinTogether.Models;
 
 [MessagePackObject]
-public class WorldStateSnapshot
+public class WorldStateSnapshot : EClass
 {
+    public static readonly List<CharaStateSnapshot> CachedRemoteSnapshots = [];
+
     [Key(0)]
     public required int ServerTick { get; init; }
 
@@ -15,7 +19,7 @@ public class WorldStateSnapshot
     public required int[] GameDate { get; init; }
 
     [Key(2)]
-    public required IEnumerable<CharaSnapshot> CharaSnapshots { get; init; }
+    public required CharaStateSnapshot[] CharaSnapshots { get; init; }
 
     [Key(3)]
     public required int GlobalUidNext { get; init; }
@@ -25,13 +29,21 @@ public class WorldStateSnapshot
 
     public static WorldStateSnapshot Create(IEnumerable<Chara> excludeSnapshots)
     {
+        CachedRemoteSnapshots.Add(CharaStateSnapshot.CreateSelf());
+
+        var charaSnapshots = _map.charas
+            .Except([pc, ..excludeSnapshots])
+            .Select(CharaStateSnapshot.Create)
+            .Concat(CachedRemoteSnapshots)
+            .ToArray();
+
+        CachedRemoteSnapshots.Clear();
+
         return new() {
             ServerTick = NetSession.Instance.Tick,
-            GameDate = EClass.game.world.date.raw,
-            CharaSnapshots = EClass._map.charas
-                .Except(excludeSnapshots)
-                .Select(CharaSnapshot.Create),
-            GlobalUidNext = EClass.game.cards.uidNext,
+            GameDate = game.world.date.raw,
+            CharaSnapshots = charaSnapshots,
+            GlobalUidNext = game.cards.uidNext,
             SharedSpeed = NetSession.Instance.SharedSpeed,
         };
     }
@@ -42,8 +54,10 @@ public class WorldStateSnapshot
         EClass.world.date.raw = GameDate;
 
         // 2
-        foreach (var chara in CharaSnapshots) {
-            chara.ApplyReconciliation();
+        foreach (var snapshot in CharaSnapshots) {
+            if (snapshot.Owner.Find() is Chara chara) {
+                snapshot.ApplyReconciliation(chara);
+            }
         }
 
         // 3

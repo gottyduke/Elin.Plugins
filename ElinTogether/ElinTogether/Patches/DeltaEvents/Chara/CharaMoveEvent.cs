@@ -9,12 +9,16 @@ namespace ElinTogether.Patches;
 [HarmonyPatch(typeof(Chara), nameof(Chara._Move))]
 internal static class CharaMoveEvent
 {
-    [HarmonyPrefix]
-    internal static bool OnCharaMove(Chara __instance, Point newPoint, ref Card.MoveType type)
+    [HarmonyPostfix]
+    internal static void OnCharaMove(Chara __instance, Card.MoveResult __result, Point newPoint, ref Card.MoveType type)
     {
+        if (__result == Card.MoveResult.Fail) {
+            return;
+        }
+
         var session = NetSession.Instance;
         if (session.Connection is not { } connection) {
-            return true;
+            return;
         }
 
         // we are host, everyone should generate a delta
@@ -24,25 +28,18 @@ internal static class CharaMoveEvent
         // ignore all other relayed moves
 
         if (!connection.IsHost && !__instance.IsPC) {
-            return true;
+            return;
         }
 
         // movement could be random in certain circumstances
         // not really a big problem if everyone is moving
         // simply ignore and wait for reconciliation or next delta
 
-        // and let's not push each other because that is so random
-        if (__instance.IsPC) {
-            type = Card.MoveType.Force;
-        }
-
         connection.Delta.AddRemote(new CharaMoveDelta {
             Owner = __instance,
             Pos = newPoint,
-            MoveType = (MoveTypeByte)type,
+            MoveType = type,
         });
-
-        return true;
     }
 
     extension(Chara chara)
