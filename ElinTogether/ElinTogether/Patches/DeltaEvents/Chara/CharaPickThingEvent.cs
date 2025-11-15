@@ -1,3 +1,4 @@
+using System;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
@@ -5,7 +6,7 @@ using HarmonyLib;
 namespace ElinTogether.Patches;
 
 [HarmonyPatch(typeof(Chara), nameof(Chara.Pick))]
-internal class CharaPickThingEvent
+internal static class CharaPickThingEvent
 {
     [HarmonyPrefix]
     internal static bool OnCharaPickThingy(Chara __instance, Thing t)
@@ -24,6 +25,14 @@ internal class CharaPickThingEvent
             });
         }
 
-        return true;
+        return connection.IsHost;
+    }
+
+    extension(Chara chara)
+    {
+        internal Thing Stub_Pick(Thing thing, bool msg = true, bool tryStack = true)
+        {
+            throw new NotImplementedException("Chara.Pick");
+        }
     }
 }

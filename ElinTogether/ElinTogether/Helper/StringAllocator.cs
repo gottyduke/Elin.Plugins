@@ -14,7 +14,7 @@ internal sealed class StringAllocator : IDisposable
     // ReSharper disable once ChangeFieldTypeToSystemThreadingLock
     private readonly object _lock = new();
 
-    [field: AllowNull]
+    
     public static StringAllocator Shared => field ??= new();
 
     public void Dispose()

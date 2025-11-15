@@ -5,7 +5,7 @@ namespace ElinTogether.Elements;
 
 internal class GoalRemote : NoGoal
 {
-    [field: AllowNull]
+    
     internal static GoalRemote Default => field ??= new();
 
     public override bool IsIdle => true;

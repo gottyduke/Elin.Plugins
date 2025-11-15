@@ -24,7 +24,7 @@ public class NetSession : EClass
         FullSync,
     }
 
-    [field: AllowNull]
+    
     public static NetSession Instance => field ??= new();
 
     public Mode SyncMode { get; private set; } = Mode.None;

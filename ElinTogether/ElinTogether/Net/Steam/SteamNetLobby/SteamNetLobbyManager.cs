@@ -9,14 +9,14 @@ namespace ElinTogether.Net.Steam;
 
 public class SteamNetLobbyManager
 {
-    [field: AllowNull]
+    
     public static SteamNetLobbyManager Instance => field ??= new();
 
     private Action<SteamNetLobby[]>? _nextOnComplete;
 
     public SteamNetLobby? CurrentLobby { get; private set; }
 
-    public SteamNetLobbyManager()
+    private SteamNetLobbyManager()
     {
         SteamCallback<LobbyCreated_t>.Add(OnLobbyCreated);
         SteamCallback<LobbyChatUpdate_t>.Add(OnLobbyChatUpdate);

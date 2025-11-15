@@ -1,4 +1,5 @@
 using ElinTogether.Net;
+using ElinTogether.Patches;
 using MessagePack;
 
 namespace ElinTogether.Models.ElinDelta;
@@ -23,9 +24,11 @@ public class CharaPickThingDelta : ElinDeltaBase
             return;
         }
 
-        chara.Pick(thing);
+        // relay to clients
+        if (net.IsHost) {
+            net.Delta.AddRemote(this);
+        }
 
-        // the patch should handle the relay automatically
-        // albeit a bad code design to separate it
+        chara.Stub_Pick(thing);
     }
 }

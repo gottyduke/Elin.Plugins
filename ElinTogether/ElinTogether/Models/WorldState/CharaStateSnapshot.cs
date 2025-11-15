@@ -18,27 +18,11 @@ public class CharaStateSnapshot : EClass
     public required int CurrentZoneUid { get; init; }
 
     [Key(3)]
-    public required int Hp { get; init; }
+    public required int Hp { get; set; }
 
     // client provided
-
     [Key(4)]
-    public int LastAct { get; init; }
-
-    [Key(5)]
-    public int LastReceivedTick { get; init; }
-
-    [Key(6)]
-    public int Speed { get; init; }
-
-    [Key(7)]
-    public RemoteCard? HeldMainHand { get; init; }
-
-    [Key(8)]
-    public RemoteCard? HeldOffHand { get; init; }
-
-    [Key(9)]
-    public int Dir { get; init; }
+    public ClientCharaStateSnapshot? State { get; set; }
 
     public static CharaStateSnapshot Create(Chara chara)
     {
@@ -63,12 +47,14 @@ public class CharaStateSnapshot : EClass
             Pos = pc.pos,
             CurrentZoneUid = pc.currentZone.uid,
             Hp = pc.hp,
-            LastAct = SourceValidation.ActToIdMapping[pc.ai.GetType()],
-            LastReceivedTick = NetSession.Instance.Tick,
-            Speed = pc.Stub_get_Speed(),
-            HeldMainHand = heldMainHand,
-            HeldOffHand = heldOffHand,
-            Dir = pc.dir,
+            State = new() {
+                LastAct = SourceValidation.ActToIdMapping[pc.ai.GetType()],
+                LastReceivedTick = NetSession.Instance.Tick,
+                Speed = pc.Stub_get_Speed(),
+                HeldMainHand = heldMainHand,
+                HeldOffHand = heldOffHand,
+                Dir = pc.dir,
+            },
         };
     }
 
@@ -76,14 +62,22 @@ public class CharaStateSnapshot : EClass
     ///     This only applies to client characters
     ///     We assume host is always right
     /// </summary>
-    public void ApplyReconciliation(Chara? chara)
+    public void ApplyReconciliation(Chara? remoteChara = null)
     {
-        chara ??= Owner.Find() as Chara;
+        var chara = remoteChara ?? Owner.Find() as Chara;
         if (chara is null) {
             return;
         }
 
-        chara.hp = Hp;
+        // this is received from host side
+        if (remoteChara is null) {
+            chara.hp = Hp;
+        }
+
+        // one more check for lingering death events
+        if (chara.isDead && chara.pos != Pos) {
+            chara.Stub_Revive(Pos, msg: true);
+        }
 
         // fixes should only be applied to other remote charas
         if (chara.IsPC) {
@@ -107,25 +101,24 @@ public class CharaStateSnapshot : EClass
             }
         }
 
+        if (State is null) {
+            return;
+        }
+
         // update tool visual
-        chara.NetProfile.RemoteMainHand = new(HeldMainHand, false);
-        chara.NetProfile.RemoteOffHand = new(HeldOffHand, false);
+        chara.NetProfile.RemoteMainHand = new(State.HeldMainHand, false);
+        chara.NetProfile.RemoteOffHand = new(State.HeldOffHand, false);
 
         // apply held visual
-        if (HeldMainHand?.Find() is { } mainHand && HeldOffHand?.Find() is { } offHand) {
-            if (mainHand == offHand) {
-                chara.HoldCard(mainHand);
-            }
+        if (State.HeldMainHand?.Find() is { } mainHand &&
+            State.HeldOffHand?.Find() is { } offHand &&
+            mainHand == offHand) {
+            chara.HoldCard(mainHand);
         }
 
         // apply direction
-        if (chara.dir != Dir) {
-            chara.SetDir(Dir);
-        }
-
-        // one more check for lingering death events
-        if (chara.isDead && chara.pos != Pos) {
-            chara.Stub_Revive(Pos, msg: true);
+        if (chara.dir != State.Dir) {
+            chara.SetDir(State.Dir);
         }
     }
 }

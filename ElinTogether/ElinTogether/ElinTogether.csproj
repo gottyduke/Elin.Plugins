@@ -13,6 +13,7 @@
         <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
         <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
         <Deterministic>false</Deterministic>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>

@@ -63,7 +63,7 @@ internal class SteamNetPeer : ISteamNetPeer, IDisposable
     public ulong Uid { get; }
     public virtual string? Name { get; private set; }
 
-    [field: AllowNull]
+    
     public SteamNetPeerStat Stat => field ??= new();
 
     public virtual bool IsConnected =>

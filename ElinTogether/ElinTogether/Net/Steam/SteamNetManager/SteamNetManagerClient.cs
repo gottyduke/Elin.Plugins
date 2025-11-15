@@ -44,7 +44,9 @@ public partial class SteamNetManager
     public void Connect(ushort port = EmpConstants.LocalPort)
     {
         var localhost = new SteamNetworkingIPAddr();
-        localhost.ParseString($"127.0.0.1:{port}");
+        localhost.Clear();
+        localhost.m_port = port;
+        //localhost.ParseString($"127.0.0.1:{port}");
 
         Connect(ref localhost);
     }

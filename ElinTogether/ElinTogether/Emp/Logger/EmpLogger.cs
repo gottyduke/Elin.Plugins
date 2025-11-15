@@ -24,7 +24,7 @@ internal static partial class EmpLogger
 {
     private static readonly ConcurrentDictionary<IPAddress, string> _hashCache = [];
 
-    [field: AllowNull]
+    
     private static ILogger DefaultLogger => field ??= GetDefaultLoggerConfiguration().CreateLogger();
 
     internal static LoggerConfiguration GetDefaultLoggerConfiguration()

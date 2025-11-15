@@ -8,6 +8,9 @@ namespace ElinTogether.Net;
 
 internal partial class ElinNetHost
 {
+    /// <summary>
+    /// Send the player a map snapshot from given zone
+    /// </summary>
     public void PropagateZoneChangeState(Zone zone, ISteamNetPeer? peer = null)
     {
         using var _ = LogContext.PushProperty("Zone", new { zone.ZoneFullName, ZoneUid = zone.uid }, true);

@@ -6,7 +6,7 @@ namespace ElinTogether.Models;
 [MessagePackObject]
 public class MapDataRequest
 {
-    [field: AllowNull]
+    
     public static MapDataRequest CurrentRemoteZone =>
         field ??= new() {
             ZoneFullName = "",

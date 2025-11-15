@@ -51,8 +51,8 @@ public partial class SteamNetManager
         if (info.m_nUserData != _connectionKey) {
             EmpPop.Debug("Rejected connection request from {SteamIdentity}\nBuildVersions mismatch\n" +
                          "Host version is {HostVersion}\nClient version is {ClientVersion}",
-                info.m_identityRemote.GetSteamID64(), ModInfo.BuildVersion.TagColor(Color.green),
-                BuildVersionIntegrity.LongToVersionString(info.m_nUserData).TagColor(Color.red));
+                info.m_identityRemote.GetSteamID64(), ModInfo.BuildVersion.TagColor(UnityEngine.Color.green),
+                Helper.BuildVersionIntegrity.LongToVersionString(info.m_nUserData).TagColor(UnityEngine.Color.red));
 
             // only connect if we have same build version
             SteamNetworkingSockets.CloseConnection(connection, 0, "emp_version_mismatch", false);

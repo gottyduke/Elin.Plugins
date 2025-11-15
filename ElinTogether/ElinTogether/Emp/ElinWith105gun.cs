@@ -18,7 +18,6 @@ internal static class ModInfo
     internal const string Name = "Elin Together";
     internal const string Version = "0.8.33";
 
-    [field: AllowNull]
     public static string BuildVersion => field ??= EmpMod.Assembly.GetName().Version.ToString();
 }
 
@@ -47,7 +46,7 @@ internal sealed class EmpMod : BaseUnityPlugin
     private void Start()
     {
 #if !DEBUG
-        MonoFrame.AddVendorExclusion("MessagePack.");
+        Cwl.Helper.Exceptions.MonoFrame.AddVendorExclusion("MessagePack.");
 #endif
 
         ResourceFetch.InvalidateTemp();

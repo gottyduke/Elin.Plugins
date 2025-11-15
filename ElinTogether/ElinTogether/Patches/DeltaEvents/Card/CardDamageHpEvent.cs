@@ -26,7 +26,7 @@ internal static class CardDamageHpEvent
         }
 
         // when clients took damage, let host know
-        // but we don't execute on client side
+        // we don't execute on client side
         if (connection.IsHost || __instance.IsPC) {
             connection.Delta.DeferRemote(new CardDamageHpDelta {
                 Owner = __instance,

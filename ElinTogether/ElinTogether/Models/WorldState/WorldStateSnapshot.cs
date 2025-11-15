@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using ElinTogether.Helper;
 using ElinTogether.Net;
@@ -16,10 +18,10 @@ public class WorldStateSnapshot : EClass
     public required int ServerTick { get; init; }
 
     [Key(1)]
-    public required int[] GameDate { get; init; }
+    public required ImmutableArray<int> GameDate { get; init; }
 
     [Key(2)]
-    public required CharaStateSnapshot[] CharaSnapshots { get; init; }
+    public required ImmutableArray<CharaStateSnapshot> CharaSnapshots { get; init; }
 
     [Key(3)]
     public required int GlobalUidNext { get; init; }
@@ -27,22 +29,28 @@ public class WorldStateSnapshot : EClass
     [Key(4)]
     public required int SharedSpeed { get; init; }
 
-    public static WorldStateSnapshot Create(IEnumerable<Chara> excludeSnapshots)
+    public static WorldStateSnapshot Create()
     {
         CachedRemoteSnapshots.Add(CharaStateSnapshot.CreateSelf());
 
-        var charaSnapshots = _map.charas
-            .Except([pc, ..excludeSnapshots])
-            .Select(CharaStateSnapshot.Create)
-            .Concat(CachedRemoteSnapshots)
-            .ToArray();
+        var snapshots = new Dictionary<int, CharaStateSnapshot>();
+        foreach (var chara in _map.charas) {
+            snapshots[chara.uid] = CharaStateSnapshot.Create(chara);
+        }
+
+        // attach remote state to client characters
+        foreach (var remoteSnapshot in CachedRemoteSnapshots) {
+            if (snapshots.TryGetValue(remoteSnapshot.Owner.Uid, out var snapshot)) {
+                snapshot.State = remoteSnapshot.State;
+            }
+        }
 
         CachedRemoteSnapshots.Clear();
 
         return new() {
             ServerTick = NetSession.Instance.Tick,
-            GameDate = game.world.date.raw,
-            CharaSnapshots = charaSnapshots,
+            GameDate = [..game.world.date.raw],
+            CharaSnapshots = [..snapshots.Values],
             GlobalUidNext = game.cards.uidNext,
             SharedSpeed = NetSession.Instance.SharedSpeed,
         };
@@ -51,17 +59,15 @@ public class WorldStateSnapshot : EClass
     public void ApplyReconciliation()
     {
         // 1
-        EClass.world.date.raw = GameDate;
+        world.date.raw = GameDate.ToArray();
 
         // 2
         foreach (var snapshot in CharaSnapshots) {
-            if (snapshot.Owner.Find() is Chara chara) {
-                snapshot.ApplyReconciliation(chara);
-            }
+            snapshot.ApplyReconciliation();
         }
 
         // 3
-        EClass.game.cards.uidNext = GlobalUidNext;
+        game.cards.uidNext = GlobalUidNext;
 
         // 4
         NetSession.Instance.SharedSpeed = SharedSpeed;

@@ -1,7 +1,6 @@
 using System;
 using ElinTogether.Models;
 using ElinTogether.Net.Steam;
-using ElinTogether.Patches;
 
 namespace ElinTogether.Net;
 
@@ -17,7 +16,7 @@ internal partial class ElinNetHost
     {
         return core.game?.activeZone?.map is null
             ? _lastTick!
-            : WorldStateSnapshot.Create(ActiveRemoteCharas.Values);
+            : WorldStateSnapshot.Create();
     }
 
     /// <summary>
@@ -95,14 +94,20 @@ internal partial class ElinNetHost
     private void OnClientRemoteCharaSnapshot(CharaStateSnapshot response, ISteamNetPeer peer)
     {
         if (!States.TryGetValue(peer.Id, out var state)) {
-            EmpLog.Warning("Received invalid remote character from peer {@Peer}",
+            EmpLog.Warning("Received invalid remote character from player {@Peer}",
                 peer);
             return;
         }
 
-        state.LastAct = response.LastAct;
-        state.Speed = response.Speed;
-        state.LastReceivedTick = response.LastReceivedTick;
+        if (response.State is null) {
+            EmpLog.Warning("Received empty remote character state from player {@Peer}",
+                peer);
+            return;
+        }
+
+        state.LastAct = response.State.LastAct;
+        state.Speed = response.State.Speed;
+        state.LastReceivedTick = response.State.LastReceivedTick;
 
         NetSession.Instance.SharedSpeed = SharedSpeed;
 

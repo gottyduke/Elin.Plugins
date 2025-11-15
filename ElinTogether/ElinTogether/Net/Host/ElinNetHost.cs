@@ -14,7 +14,7 @@ internal partial class ElinNetHost : ElinNetBase
 
     public override bool IsHost => true;
 
-    internal void StartServer()
+    internal void StartServer(bool localUdp = false)
     {
         Stop();
         StopWorldStateUpdate();
@@ -26,12 +26,17 @@ internal partial class ElinNetHost : ElinNetBase
 
         Lobby.CreateLobby(SteamNetLobbyType.Public);
 
-        Socket.StartServerSdr();
+        if (localUdp) {
+            Socket.StartServerUdp();
+        } else {
+            Socket.StartServerSdr();
+        }
+
         Scheduler.Subscribe(DisconnectInactive, 1);
 
         NetSession.Instance.SharedSpeed = SharedSpeed;
 
-        EmpPop.Debug("Started server via SDR\nSource validations enabled: {SourceValidations}",
+        EmpPop.Debug("Started server\nSource validations enabled: {SourceValidations}",
             SourceValidationsEnabled.Count);
 
         StartWorldStateUpdate();

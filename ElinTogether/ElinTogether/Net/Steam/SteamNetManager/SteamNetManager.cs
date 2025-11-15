@@ -37,7 +37,7 @@ public partial class SteamNetManager(ISteamNetSerializer? serializer = null) : I
     /// <summary>
     ///     Fake placeholder peer
     /// </summary>
-    [field: AllowNull]
+    
     private ISteamNetPeer FakePeer => field ??= new SteamNetPeerFake();
 
     /// <summary>

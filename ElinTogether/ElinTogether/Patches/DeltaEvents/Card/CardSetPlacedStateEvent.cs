@@ -9,14 +9,10 @@ namespace ElinTogether.Patches;
 internal static class CardSetPlacedStateEvent
 {
     [HarmonyPrefix]
-    internal static void OnSetCardPlacedState(Card __instance, PlaceState newState, bool byPlayer)
+    internal static bool OnSetCardPlacedState(Card __instance, PlaceState newState, bool byPlayer)
     {
         if (NetSession.Instance.Connection is not { } connection) {
-            return;
-        }
-
-        if (newState == PlaceState.none) {
-            return;
+            return true;
         }
 
         // we propagate every place event to remotes
@@ -27,6 +23,8 @@ internal static class CardSetPlacedStateEvent
             PlaceState = newState,
             ByPlayer = byPlayer,
         });
+
+        return connection.IsHost;
     }
 
     extension(Card card)

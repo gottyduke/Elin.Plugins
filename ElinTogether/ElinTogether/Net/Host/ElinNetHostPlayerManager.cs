@@ -26,7 +26,7 @@ internal partial class ElinNetHost
     public int SharedSpeed => GetAverageSpeed();
 
     [CwlContextVar("remote_chara")]
-    [field: AllowNull]
+    
     private static Dictionary<ulong, int> SavedRemoteCharas
     {
         get => field ??= [];

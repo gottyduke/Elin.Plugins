@@ -93,7 +93,7 @@ public class RemoteCard
             _ => null,
         };
 
-        if (Parent is not null) {
+        if (card is null && Parent is not null) {
             card = Parent.Find()?.things.Find(Uid);
         }
 

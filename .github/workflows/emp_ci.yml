@@ -51,7 +51,7 @@ jobs:
       - name: Setup Packages
         run: |
           dotnet restore ${{ github.workspace }}\CustomWhateverLoader\ --locked-mode
-          dotnet restore ${{ github.workspace }}\Emmersive\ --locked-mode
+          dotnet restore ${{ github.workspace }}\ElinTogether\ElinTogether\ --locked-mode
 
       - name: Build
         id: build

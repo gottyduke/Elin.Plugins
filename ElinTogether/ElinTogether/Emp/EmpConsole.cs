@@ -10,6 +10,13 @@ namespace ElinTogether;
 [ConsoleCommandClassCustomizer("emp")]
 internal class EmpConsole
 {
+    [ConsoleCommand("add_local")]
+    internal static void AddLocalServerUdp()
+    {
+        var server = NetSession.Instance.InitializeComponent<ElinNetHost>();
+        server.StartServer(true);
+    }
+
     [ConsoleCommand("add_server")]
     internal static void AddServer()
     {
@@ -33,6 +40,13 @@ internal class EmpConsole
     internal static void AddClientD2()
     {
         AddClientToSteamId(76561198254677013UL);
+    }
+
+    [ConsoleCommand("connect_udp")]
+    internal static void AddClientToUdpPort()
+    {
+        var client = NetSession.Instance.InitializeComponent<ElinNetClient>();
+        client.ConnectLocalPort();
     }
 
     [ConsoleCommand("connect_steam")]

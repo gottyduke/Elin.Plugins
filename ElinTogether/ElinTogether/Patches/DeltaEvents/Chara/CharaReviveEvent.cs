@@ -9,15 +9,22 @@ namespace ElinTogether.Patches;
 internal static class CharaReviveEvent
 {
     [HarmonyPrefix]
-    internal static void OnCharaRevive(Chara __instance)
+    internal static bool OnCharaRevive(Chara __instance)
     {
         if (NetSession.Instance.Connection is not { } connection) {
-            return;
+            return true;
+        }
+
+        // drop all other character revives and wait for delta
+        if (!connection.IsHost && !__instance.IsPC) {
+            return false;
         }
 
         connection.Delta.AddRemote(new CharaReviveDelta {
             Owner = __instance,
         });
+
+        return true;
     }
 
     extension(Chara chara)

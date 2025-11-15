@@ -11,6 +11,9 @@ namespace ElinTogether.Net;
 [ConsoleCommandClassCustomizer("emp")]
 internal partial class ElinNetClient
 {
+    /// <summary>
+    /// Request a map snapshot manually, mostly just used when joining a session
+    /// </summary>
     public void RequestZoneState(MapDataRequest request)
     {
         EmpLog.Information("Requesting zone state {@Zone} from host",
@@ -20,7 +23,7 @@ internal partial class ElinNetClient
     }
 
     /// <summary>
-    ///     Net event: received zone state update, must do a scene init
+    ///     Net event: Received zone state update, must do a scene init
     /// </summary>
     private void OnZoneDataResponse(ZoneDataResponse response)
     {
@@ -90,12 +93,13 @@ internal partial class ElinNetClient
 
         if (currentZone?.uid != response.ZoneUid) {
             // ??? how
+            Socket.Disconnect(Socket.FirstPeer, "emp_invalid_zone");
             throw new InvalidOperationException("zone state is invalid");
         }
 
         if (player.zone is null) {
             // first time joining, need to do scene init from title
-            EmpLog.Debug("Starting initial scene init to");
+            EmpLog.Debug("Starting initial scene init");
 
             player.zone = pc.currentZone = currentZone;
             scene.Init(Scene.Mode.Zone);
