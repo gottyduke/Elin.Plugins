@@ -10,6 +10,13 @@ public class FileWatcherHelper
 {
     private static readonly Dictionary<string, (FileSystemWatcher, Action<FileSystemEventArgs>)> _watchers = [];
 
+    private static bool SupportsFileSystemWatcher()
+    {
+        var v = Environment.OSVersion.Version;
+        // Windows 8 (6.2) or higher
+        return v.Major > 6 || v is { Major: 6, Minor: >= 2 };
+    }
+
     public static void Register(string id,
                                 string path,
                                 string filter,
@@ -17,6 +24,11 @@ public class FileWatcherHelper
                                 [CallerMemberName] string caller = "")
     {
         if (_watchers.ContainsKey(id)) {
+            return;
+        }
+
+        if (!SupportsFileSystemWatcher()) {
+            CwlMod.Warn<FileWatcherHelper>($"disabled for unsupported OS (Windows 7). ID={id}");
             return;
         }
 
