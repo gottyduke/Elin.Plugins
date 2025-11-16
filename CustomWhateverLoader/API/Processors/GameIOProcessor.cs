@@ -142,15 +142,15 @@ public class GameIOProcessor
     [CwlPreLoad]
     private static void SetContextVars(GameIOContext context)
     {
-        if (!context.Load<Dictionary<string, object>>(out var loaded, "context_vars")) {
-            return;
+        if (!context.Load<Dictionary<string, object?>>(out var loaded, "context_vars")) {
+            loaded = [];
         }
 
         foreach (var (chunk, property) in _contextVars.ToArray()) {
             try {
-                if (loaded.TryGetValue($"{property.DeclaringType!.FullName}:{chunk}", out var value)) {
-                    property.SetMethod.FastInvokeStatic(value);
-                }
+                var key = $"{property.DeclaringType!.FullName}:{chunk}";
+                var value = loaded.GetValueOrDefault(key);
+                property.SetMethod.FastInvokeStatic(value);
             } catch (Exception ex) {
                 CwlMod.Error($"failed to populate context var {chunk}\n{ex}");
                 _contextVars.Remove(chunk);
@@ -167,7 +167,8 @@ public class GameIOProcessor
         foreach (var (chunk, property) in _contextVars.ToArray()) {
             try {
                 var reference = property.GetMethod.FastInvokeStatic();
-                data[$"{property.DeclaringType!.FullName}:{chunk}"] = reference;
+                var key = $"{property.DeclaringType!.FullName}:{chunk}";
+                data[key] = reference;
             } catch (Exception ex) {
                 CwlMod.Error($"failed to save context var {chunk}\n{ex}");
                 _contextVars.Remove(chunk);

@@ -8,33 +8,28 @@ namespace Cwl.Helper.String;
 
 public static class StringHelper
 {
+    private static readonly string[] _memSizeSuffixes = ["B", "KB", "MB", "GB", "TB", "PB"];
+
     public static string ToAllocateString(this long bytes)
     {
-        string[] suffixes = ["B", "KB", "MB", "GB"];
-        var suffix = 0;
-        var readable = bytes;
-
-        while (readable >= 1L << 10 && suffix < suffixes.Length - 1) {
-            readable >>= 10;
-            suffix++;
+        switch (bytes) {
+            case < 0:
+                return "-" + ToAllocateString(-bytes);
+            case 0:
+                return "0 B";
         }
 
-        double fmt;
-        if (suffix == 0) {
-            fmt = bytes;
-        } else {
-            var divisor = 1L << (suffix * 10);
-            fmt = (double)bytes / divisor;
-        }
+        var mag = (int)Math.Log(bytes, 1024);
+        var size = bytes / Math.Pow(1024, mag);
 
-        return $"{fmt:0.##} {suffixes[suffix]}";
+        return $"{size:0.##} {_memSizeSuffixes[mag]}";
     }
 
     public static string MergeOverlap(string lhs, string rhs)
     {
         var maxOverlap = 0;
         for (var i = 1; i <= Math.Min(lhs.Length, rhs.Length); ++i) {
-            if (lhs.EndsWith(rhs[..i], StringComparison.Ordinal)) {
+            if (lhs.EndsWith(rhs[..i], StringComparison.OrdinalIgnoreCase)) {
                 maxOverlap = i;
             }
         }
@@ -82,21 +77,25 @@ public static class StringHelper
             return input.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
         }
 
-        public string Wrap(int segments = 6, int segmentsCjk = 14)
+        public string Wrap(int segments = 7, int segmentsCjk = 14)
         {
             input = input.TrimNewLines().Replace("\n", "").Trim();
-
             var matches = Cjk.Splitter.Matches(input);
+
+            if (matches.Count == 0) {
+                return "";
+            }
+
+            using var sb = StringBuilderPool.Get();
+
             var count = 0;
             var lastCjk = false;
             var inCjkSegment = false;
 
-            using var sb = StringBuilderPool.Get();
-
-            foreach (Match match in matches) {
-                var token = match.Value;
+            for (var i = 0; i < matches.Count; ++i) {
+                var token = matches[i].Value;
                 var isCjk = Cjk.Char.IsMatch(token);
-                var isCjkPunc = Cjk.Punc.IsMatch(token);
+                var isPunc = Cjk.Punc.IsMatch(token);
 
                 if (count > 0 && !isCjk && !lastCjk) {
                     sb.Append(' ');
@@ -104,21 +103,27 @@ public static class StringHelper
 
                 sb.Append(token);
 
-                if (!isCjkPunc) {
+                if (!isPunc) {
                     count++;
                 }
 
-                if (!token.IsEmpty()) {
+                if (!string.IsNullOrEmpty(token)) {
                     inCjkSegment = isCjk;
                 }
 
                 var limit = inCjkSegment ? segmentsCjk : segments;
-                if (count >= limit) {
+
+                var nextIsPunc = false;
+                if (i + 1 < matches.Count) {
+                    nextIsPunc = Cjk.Punc.IsMatch(matches[i + 1].Value);
+                }
+
+                if (count >= limit && !nextIsPunc) {
                     sb.AppendLine();
                     count = 0;
                 }
 
-                lastCjk = isCjk || isCjkPunc;
+                lastCjk = isCjk || isPunc;
             }
 
             var result = sb.ToString().TrimEnd();
@@ -137,6 +142,7 @@ public static class StringHelper
                 return result;
             }
 
+            // merge back
             var firstChar = lastLine.Length > 0 ? lastLine[0] : '\0';
             var startsWithPunc = firstChar is '!' or '?' or '.' or ',' or '…' or ':' or ';';
 

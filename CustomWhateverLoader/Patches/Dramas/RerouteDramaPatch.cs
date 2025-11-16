@@ -34,13 +34,13 @@ internal class RerouteDramaPatch
     // subject to change for dialog expansion
     private static bool TryRerouteDialog(Chara chara)
     {
+        DramaExpansion.Clear();
+
         if (!CustomChara.DramaRoutes.TryGetValue(chara.id, out var drama)) {
             return false;
         }
 
-        DramaExpansion.Clear();
         chara.ShowDialog(drama);
-
         return true;
     }
 }

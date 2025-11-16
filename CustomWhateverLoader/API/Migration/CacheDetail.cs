@@ -16,7 +16,7 @@ namespace Cwl.API.Migration;
 [ConsoleCommandClassCustomizer("cwl.data")]
 public sealed class CacheDetail(string cacheKey)
 {
-    private const string CacheVersionV1 = "1.20.49";
+    private const string CacheVersionV1 = "1.20.56";
     private const string CacheStorage = ModInfo.Name;
 
     private static readonly GameIOProcessor.GameIOContext _context = GameIOProcessor.GetPersistentModContext(CacheStorage)!;

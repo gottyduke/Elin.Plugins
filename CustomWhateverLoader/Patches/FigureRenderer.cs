@@ -36,12 +36,9 @@ internal class FigureRenderer : CardRenderer
     {
         renderer = null;
 
-        if (!owner.IsInstalled && pc.held != owner && owner.ExistsOnMap && !owner.isRoofItem) {
-            return false;
-        }
-
         var refId = owner.c_idRefCard;
-        if (refId is null) {
+        // 23.233 Nightly changes
+        if (refId.IsEmpty() || (!owner.IsInstalled && (pc.held == owner || owner.ExistsOnMap) && !owner.isRoofItem)) {
             return false;
         }
 

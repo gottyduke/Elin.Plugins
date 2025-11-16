@@ -10,9 +10,9 @@
       },
       "GitVersion.MsBuild": {
         "type": "Direct",
-        "requested": "[6.4.0, )",
-        "resolved": "6.4.0",
-        "contentHash": "U3GowPObvH43MBoB+N9HmaP7R9DGOrrGwbuTZIfia6RSFi/7bApoT7RQFMA9QWpZ9pJF6TKysCaxcv7Qwzucqw=="
+        "requested": "[6.5.0, )",
+        "resolved": "6.5.0",
+        "contentHash": "OYBNhjZd8GcUusZWkoVCSFNujzG9fINpWi59YCax+6DXLJciu1RNC+TXSspgrACR6FMUdVDNqKNMHzB7B+X+jQ=="
       },
       "MethodTimer.Fody": {
         "type": "Direct",

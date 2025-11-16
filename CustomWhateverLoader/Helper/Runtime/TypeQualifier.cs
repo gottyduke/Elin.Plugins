@@ -53,7 +53,7 @@ public class TypeQualifier
             return result;
         }
 
-        var baseAsm = assembly.GetName().Name;
+        var baseAsm = assembly.GetName().Name.Replace(" ", "");
         var baseDir = Path.GetDirectoryName(assembly.Location)!.NormalizePath();
 
         var packageAsm = BaseModManager.Instance.packages
