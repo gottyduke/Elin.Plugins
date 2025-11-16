@@ -31,6 +31,8 @@
         <EmbeddedResource Remove="package\**"/>
         <EmbeddedResource Remove="ElinTogether.Test\**"/>
         <EmbeddedResource Remove="ThirdParty\**"/>
+        <None Remove="Common\blocklist.txt" />
+        <EmbeddedResource Include="Common\blocklist.txt" />
     </ItemGroup>
     <ItemGroup>
         <None Remove="package\**"/>

@@ -44,8 +44,12 @@ public partial class SteamNetManager
 
     private void AcceptIfVersionMatch(HSteamNetConnection connection, SteamNetConnectionInfo_t info)
     {
+        var userId = info.m_identityRemote.GetSteamID64();
+
+        SteamNetLobbyManager.Instance.Challenge(userId);
+
         EmpLog.Debug("Received connection request from {RemoteIdentity}",
-            info.m_identityRemote.GetSteamID64());
+            userId);
 
 #if !DEBUG
         if (info.m_nUserData != _connectionKey) {
@@ -60,7 +64,7 @@ public partial class SteamNetManager
 #endif
         {
             EmpLog.Debug("Accepting connection request from {RemoteIdentity}",
-                info.m_identityRemote.GetSteamID64());
+                userId);
 
             var result = SteamNetworkingSockets.AcceptConnection(connection);
             if (result != EResult.k_EResultOK) {

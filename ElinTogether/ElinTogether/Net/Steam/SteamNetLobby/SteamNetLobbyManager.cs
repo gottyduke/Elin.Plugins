@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using ElinTogether.Helper;
+using HeathenEngineering.SteamworksIntegration.API;
 using Steamworks;
 
 namespace ElinTogether.Net.Steam;
@@ -9,6 +13,7 @@ namespace ElinTogether.Net.Steam;
 public class SteamNetLobbyManager
 {
     private Action<SteamNetLobby[]>? _deferOnComplete;
+    private HashSet<ulong> _blocked = [];
 
     private SteamNetLobbyManager()
     {
@@ -17,6 +22,17 @@ public class SteamNetLobbyManager
         SteamCallback<GameLobbyJoinRequested_t>.Add(OnLobbyJoinRequested);
         SteamCallback<LobbyEnter_t>.Add(OnLobbyEntered);
         SteamCallback<LobbyMatchList_t>.Add(OnLobbyMatchListComplete);
+
+        using var ms = EmpMod.Assembly.GetManifestResourceStream("ElinTogether.Common.blocklist.txt");
+        if (ms is null) {
+            return;
+        }
+
+        using var sr = new StreamReader(ms);
+        _blocked = sr.ReadToEnd()
+            .SplitLines()
+            .Select(ulong.Parse)
+            .ToHashSet();
     }
 
     public static SteamNetLobbyManager Instance => field ??= new();
@@ -29,6 +45,8 @@ public class SteamNetLobbyManager
     public void CreateLobby(SteamNetLobbyType type = SteamNetLobbyType.Invite, int maxPlayers = 16)
     {
         LeaveLobby();
+
+        Challenge((ulong)SteamUser.GetSteamID());
 
         EmpLog.Information("Creating steam {LobbyType} lobby",
             type);
@@ -65,6 +83,8 @@ public class SteamNetLobbyManager
     {
         LeaveLobby();
 
+        Challenge((ulong)SteamUser.GetSteamID());
+
         if (EClass.core.IsGameStarted) {
             EClass.game.Kill();
             EMono.scene.Init(Scene.Mode.Title);
@@ -80,6 +100,8 @@ public class SteamNetLobbyManager
     /// </summary>
     public void InviteSteamUser(ulong steamId64)
     {
+        Challenge(steamId64);
+
         if (CurrentLobby is not null) {
             SteamMatchmaking.InviteUserToLobby(CurrentLobby.LobbyId, (CSteamID)steamId64);
         }
@@ -90,6 +112,8 @@ public class SteamNetLobbyManager
     /// </summary>
     public void InviteSteamOverlay()
     {
+        Challenge((ulong)SteamUser.GetSteamID());
+
         if (CurrentLobby is not null) {
             SteamFriends.ActivateGameOverlayInviteDialog(CurrentLobby.LobbyId);
         }
@@ -100,6 +124,8 @@ public class SteamNetLobbyManager
     /// </summary>
     public void GetOnlineLobbies(Action<SteamNetLobby[]> onComplete)
     {
+        Challenge((ulong)SteamUser.GetSteamID());
+
         _deferOnComplete = onComplete;
         //SteamMatchmaking.AddRequestLobbyListStringFilter("EmpVersion", ModInfo.BuildVersion, 0);
         SteamMatchmaking.RequestLobbyList();
@@ -125,6 +151,13 @@ public class SteamNetLobbyManager
 
         if (lobbyId != 0) {
             ConnectLobby(lobbyId);
+        }
+    }
+
+    internal void Challenge(ulong userId)
+    {
+        if (_blocked.Contains(userId)) {
+            throw new NotSupportedException("Target user is blocked");
         }
     }
 
