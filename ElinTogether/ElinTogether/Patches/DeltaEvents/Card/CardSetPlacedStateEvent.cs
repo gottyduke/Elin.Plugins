@@ -15,6 +15,10 @@ internal static class CardSetPlacedStateEvent
             return true;
         }
 
+        if (newState == PlaceState.none) {
+            return true;
+        }
+
         // we propagate every place event to remotes
         // so clients can help with placing stuff
         // Elin: Build Together

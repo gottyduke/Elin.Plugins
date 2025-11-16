@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using BepInEx;
 using Cwl.API.Attributes;

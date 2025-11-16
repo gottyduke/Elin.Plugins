@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
 using ElinTogether.Common;
@@ -37,7 +36,7 @@ public partial class SteamNetManager(ISteamNetSerializer? serializer = null) : I
     /// <summary>
     ///     Fake placeholder peer
     /// </summary>
-    
+
     private ISteamNetPeer FakePeer => field ??= new SteamNetPeerFake();
 
     /// <summary>

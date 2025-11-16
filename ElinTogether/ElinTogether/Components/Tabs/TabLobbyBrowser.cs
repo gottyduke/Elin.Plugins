@@ -1,4 +1,3 @@
-using ElinTogether.Helper;
 using ElinTogether.Net;
 using ElinTogether.Net.Steam;
 
@@ -47,7 +46,9 @@ internal class TabLobbyBrowser : TabEmpBase
             foreach (var lobby in lobbies) {
                 var count = lobby.GetCurrentPlayersCount();
                 total += count;
-                HeaderCard($"{lobby.OwnerName}'s Game");
+
+                HeaderCard($"{lobby.OwnerName}'s Game [{lobby.GameVersion}] with " +
+                           $"{lobby.PlayerCount} Player, at {lobby.CurrentZone}");
             }
 
             totalPlayers.text1.text += total;

@@ -7,6 +7,8 @@ namespace ElinTogether.Net;
 
 public class ElinDeltaManager
 {
+    private const float Smoothing = 0.5f;
+
     /// <summary>
     ///     Coming in
     /// </summary>
@@ -27,10 +29,10 @@ public class ElinDeltaManager
     /// </summary>
     private readonly ConcurrentQueue<ElinDeltaBase> _outBufferDeferred = [];
 
+    private float _averageIn;
+
     // smoothed stat
     private float _averageOut;
-    private float _averageIn;
-    private const float Smoothing = 0.5f;
 
     public bool HasPendingOut => !_outBuffer.IsEmpty || !_outBufferDeferred.IsEmpty;
     public bool HasPendingIn => !_inBuffer.IsEmpty || !_inBufferDeferred.IsEmpty;

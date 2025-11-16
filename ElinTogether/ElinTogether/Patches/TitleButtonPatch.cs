@@ -9,7 +9,7 @@ namespace ElinTogether.Patches;
 
 internal class TitleButtonPatch
 {
-    [CwlSceneInitEvent(Scene.Mode.Title, defer: true)]
+    [CwlSceneInitEvent(Scene.Mode.Title, true)]
     internal static void RegisterTitleButton()
     {
         var title = EMono.ui.GetLayer<LayerTitle>();

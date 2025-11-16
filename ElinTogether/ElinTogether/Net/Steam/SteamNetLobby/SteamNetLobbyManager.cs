@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using Cwl.Helper.Unity;
 using ElinTogether.Helper;
 using Steamworks;
@@ -9,12 +8,7 @@ namespace ElinTogether.Net.Steam;
 
 public class SteamNetLobbyManager
 {
-    
-    public static SteamNetLobbyManager Instance => field ??= new();
-
-    private Action<SteamNetLobby[]>? _nextOnComplete;
-
-    public SteamNetLobby? CurrentLobby { get; private set; }
+    private Action<SteamNetLobby[]>? _deferOnComplete;
 
     private SteamNetLobbyManager()
     {
@@ -25,8 +19,12 @@ public class SteamNetLobbyManager
         SteamCallback<LobbyMatchList_t>.Add(OnLobbyMatchListComplete);
     }
 
+    public static SteamNetLobbyManager Instance => field ??= new();
+
+    public SteamNetLobby? CurrentLobby { get; private set; }
+
     /// <summary>
-    /// Create a new lobby. We do this automatically on Host
+    ///     Create a new lobby. We do this automatically on Host
     /// </summary>
     public void CreateLobby(SteamNetLobbyType type = SteamNetLobbyType.Invite, int maxPlayers = 16)
     {
@@ -48,7 +46,7 @@ public class SteamNetLobbyManager
     }
 
     /// <summary>
-    /// Leave current lobby if it's valid
+    ///     Leave current lobby if it's valid
     /// </summary>
     public void LeaveLobby()
     {
@@ -56,11 +54,12 @@ public class SteamNetLobbyManager
             SteamMatchmaking.LeaveLobby(CurrentLobby.LobbyId);
             EmpLog.Information("Left steam lobby");
         }
+
         CurrentLobby = null;
     }
 
     /// <summary>
-    /// Connect by lobby id
+    ///     Connect by lobby id
     /// </summary>
     public void ConnectLobby(ulong lobbyId)
     {
@@ -77,7 +76,7 @@ public class SteamNetLobbyManager
     }
 
     /// <summary>
-    /// Invite by steam user id
+    ///     Invite by steam user id
     /// </summary>
     public void InviteSteamUser(ulong steamId64)
     {
@@ -87,7 +86,7 @@ public class SteamNetLobbyManager
     }
 
     /// <summary>
-    /// Invite by opening up overlay, requires launching from steam
+    ///     Invite by opening up overlay, requires launching from steam
     /// </summary>
     public void InviteSteamOverlay()
     {
@@ -97,18 +96,17 @@ public class SteamNetLobbyManager
     }
 
     /// <summary>
-    /// Fetch all current online lobbies
+    ///     Fetch all current online lobbies
     /// </summary>
     public void GetOnlineLobbies(Action<SteamNetLobby[]> onComplete)
     {
-        _nextOnComplete = onComplete;
-        SteamMatchmaking.AddRequestLobbyListStringFilter("EmpVersion", ModInfo.BuildVersion,
-            ELobbyComparison.k_ELobbyComparisonEqual);
+        _deferOnComplete = onComplete;
+        //SteamMatchmaking.AddRequestLobbyListStringFilter("EmpVersion", ModInfo.BuildVersion, 0);
         SteamMatchmaking.RequestLobbyList();
     }
 
     /// <summary>
-    /// Parse from steam launch args
+    ///     Parse from steam launch args
     /// </summary>
     internal void TryParseLobbyCommand()
     {
@@ -138,10 +136,11 @@ public class SteamNetLobbyManager
 
         CurrentLobby = new((CSteamID)lobby.m_ulSteamIDLobby);
 
-        CurrentLobby.SetLobbyData("EmpVersion", CurrentLobby.EmpVersion = ModInfo.BuildVersion);
+        CurrentLobby.SetLobbyData("EmpVersion", ModInfo.BuildVersion);
 
         // add our custom lobby data
-        CurrentLobby.SetLobbyData("OwnerName", CurrentLobby.OwnerName = SteamFriends.GetPersonaName());
+        CurrentLobby.SetLobbyData("OwnerName", SteamFriends.GetPersonaName());
+        CurrentLobby.SetLobbyData("GameVersion", EMono.core.version.GetText());
 
         NetSession.Instance.SessionId = lobby.m_ulSteamIDLobby;
     }
@@ -159,6 +158,7 @@ public class SteamNetLobbyManager
     private void OnLobbyEntered(LobbyEnter_t state)
     {
         CurrentLobby = new((CSteamID)state.m_ulSteamIDLobby);
+        CurrentLobby.RefreshData();
 
         NetSession.Instance.SessionId = state.m_ulSteamIDLobby;
 
@@ -181,12 +181,12 @@ public class SteamNetLobbyManager
         var member = (CSteamID)update.m_ulSteamIDUserChanged;
         var state = (SteamNetLobbyMemberState)update.m_rgfChatMemberStateChange;
 
-        SteamUserName.PinUserName(update.m_ulSteamIDUserChanged, name =>
-            EmpPop.Information("Player lobby state changed\n{@LobbyState}",
-                new {
-                    Name = name,
-                    State = state,
-                }));
+        SteamUserName.PinUserName(update.m_ulSteamIDUserChanged, name => EmpPop.Information(
+            "Player lobby state changed\n{@LobbyState}",
+            new {
+                Name = name,
+                State = state,
+            }));
 
         if (member != CurrentLobby!.GetLobbyOwner()) {
             return;
@@ -209,15 +209,13 @@ public class SteamNetLobbyManager
             }
 
             var lobby = new SteamNetLobby(lobbyId);
-            lobby.OwnerId = lobby.GetLobbyOwner();
-            lobby.OwnerName = lobby.GetLobbyData("OwnerName");
-            lobby.EmpVersion = lobby.GetLobbyData("EmpVersion");
+            lobby.RefreshData();
 
             lobbies.Add(lobby);
         }
 
-        _nextOnComplete?.Invoke(lobbies.ToArray());
-        _nextOnComplete = null;
+        _deferOnComplete?.Invoke(lobbies.ToArray());
+        _deferOnComplete = null;
     }
 
 #endregion

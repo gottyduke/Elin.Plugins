@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using ElinTogether.Helper;
 using Object = UnityEngine.Object;
 
@@ -24,7 +23,7 @@ public class NetSession : EClass
         FullSync,
     }
 
-    
+
     public static NetSession Instance => field ??= new();
 
     public Mode SyncMode { get; private set; } = Mode.None;

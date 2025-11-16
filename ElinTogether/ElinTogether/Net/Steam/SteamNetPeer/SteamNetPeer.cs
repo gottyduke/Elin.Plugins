@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading;
 using ElinTogether.Helper;
@@ -63,7 +62,7 @@ internal class SteamNetPeer : ISteamNetPeer, IDisposable
     public ulong Uid { get; }
     public virtual string? Name { get; private set; }
 
-    
+
     public SteamNetPeerStat Stat => field ??= new();
 
     public virtual bool IsConnected =>

@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using MessagePack;
 
 namespace ElinTogether.Models;
@@ -6,7 +5,6 @@ namespace ElinTogether.Models;
 [MessagePackObject]
 public class MapDataRequest
 {
-    
     public static MapDataRequest CurrentRemoteZone =>
         field ??= new() {
             ZoneFullName = "",

@@ -1,6 +1,4 @@
 using System;
-using System.Linq;
-using ElinTogether.Models;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
@@ -15,7 +13,7 @@ internal static class CharaDieEvent
     {
         switch (NetSession.Instance.Connection) {
             case ElinNetHost host:
-                host.Delta.AddRemote(new CharaDieDelta {
+                host.Delta.DeferRemote(new CharaDieDelta {
                     Owner = __instance,
                     ElementId = e?.id,
                     Origin = origin,

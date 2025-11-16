@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace ElinTogether.Net.Steam;
 
 internal class SteamNetPeerFake : ISteamNetPeer
@@ -9,7 +7,7 @@ internal class SteamNetPeerFake : ISteamNetPeer
     public string Name => "emp-no-connection";
     public bool IsConnected => true;
 
-    
+
     public SteamNetPeerStat Stat => field ??= new();
 
     public bool Send(byte[] bytes, SteamNetSendFlag sendFlags = SteamNetSendFlag.Reliable)

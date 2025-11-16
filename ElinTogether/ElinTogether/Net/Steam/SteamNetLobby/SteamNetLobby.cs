@@ -1,4 +1,3 @@
-using System;
 using Steamworks;
 
 namespace ElinTogether.Net.Steam;
@@ -6,9 +5,22 @@ namespace ElinTogether.Net.Steam;
 public class SteamNetLobby(CSteamID steamLobbyId)
 {
     public readonly CSteamID LobbyId = steamLobbyId;
-    public CSteamID OwnerId = CSteamID.Nil;
-    public string OwnerName = "";
-    public string EmpVersion = "";
+    public CSteamID OwnerId { get; private set; } = CSteamID.Nil;
+    public string EmpVersion { get; private set; } = "";
+    public string OwnerName { get; private set; } = "";
+    public string GameVersion { get; private set; } = "";
+    public string CurrentZone { get; private set; } = "";
+    public int PlayerCount { get; private set; }
+
+    public void RefreshData()
+    {
+        OwnerId = GetLobbyOwner();
+        EmpVersion = GetLobbyData("EmpVersion");
+        OwnerName = GetLobbyData("OwnerName");
+        GameVersion = GetLobbyData("GameVersion");
+        CurrentZone = GetLobbyData("CurrentZone");
+        PlayerCount = GetCurrentPlayersCount();
+    }
 
     public void SetLobbyData(string key, string value)
     {

@@ -17,6 +17,7 @@ namespace ElinTogether.Models.ElinDelta;
 [Union(206, typeof(CharaAddConditionDelta))]
 [Union(207, typeof(CharaReviveDelta))]
 [Union(208, typeof(CharaTickConditionDelta))]
+[Union(209, typeof(CharaTaskDelta))]
 // Thing
 // Zone
 [Union(400, typeof(SpatialGenDelta))]

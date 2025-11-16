@@ -9,7 +9,7 @@ namespace ElinTogether.Net;
 internal partial class ElinNetHost
 {
     /// <summary>
-    /// Send the player a map snapshot from given zone
+    ///     Send the player a map snapshot from given zone
     /// </summary>
     public void PropagateZoneChangeState(Zone zone, ISteamNetPeer? peer = null)
     {
@@ -33,6 +33,9 @@ internal partial class ElinNetHost
 
             Broadcast(packet);
         }
+
+        // update lobby data
+        Lobby.CurrentLobby?.SetLobbyData("CurrentZone", zone.NameWithLevel);
     }
 
     /// <summary>

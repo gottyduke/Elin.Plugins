@@ -1,12 +1,11 @@
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace ElinTogether.Elements;
 
-internal class GoalRemote : NoGoal
+internal class GoalRemote : AIAct
 {
-    
-    internal static GoalRemote Default => field ??= new();
+    internal static GoalRemote Default => new();
 
     public override bool IsIdle => true;
 
@@ -18,10 +17,37 @@ internal class GoalRemote : NoGoal
 
     public override bool PushChara => false;
 
-    public override IEnumerable<Status> Run()
+    // took from AutoAct
+    // actually no idea how it works
+    public void InsertAction(AIAct action)
     {
-        while (!owner.isDestroyed) {
-            yield return Status.Running;
+        if (Enumerator is null) {
+            Tick();
+        }
+
+        if (child is null) {
+            SetChild(action, KeepRunning);
+            return;
+        }
+
+        child.SetOwner(owner);
+
+        AIAct last = this;
+        while (last.child?.IsRunning is true) {
+            last = last.child;
+            last.Enumerator = Enumerable.Repeat(Status.Success, 1).GetEnumerator();
+        }
+
+        last.Enumerator = OnEnd().GetEnumerator();
+        last.SetChild(action, KeepRunning);
+
+        return;
+
+        IEnumerable<Status> OnEnd()
+        {
+            last.child?.Reset();
+            last.child = null;
+            yield return Status.Success;
         }
     }
 }

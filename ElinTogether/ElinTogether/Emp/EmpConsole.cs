@@ -1,9 +1,6 @@
-using Cwl.API.Attributes;
-using ElinTogether.Helper;
 using ElinTogether.Net;
 using ElinTogether.Net.Steam;
 using ReflexCLI.Attributes;
-using Steamworks;
 
 namespace ElinTogether;
 

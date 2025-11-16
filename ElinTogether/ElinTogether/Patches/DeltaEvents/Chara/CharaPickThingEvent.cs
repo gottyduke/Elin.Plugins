@@ -9,11 +9,11 @@ namespace ElinTogether.Patches;
 internal static class CharaPickThingEvent
 {
     [HarmonyPrefix]
-    internal static bool OnCharaPickThingy(Chara __instance, Thing t)
+    internal static void OnCharaPickThingy(Chara __instance, Thing t)
     {
         var session = NetSession.Instance;
         if (session.Connection is not { } connection) {
-            return true;
+            return;
         }
 
         // we are host, propagate to everyone
@@ -24,12 +24,11 @@ internal static class CharaPickThingEvent
                 Thing = t,
             });
         }
-
-        return connection.IsHost;
     }
 
     extension(Chara chara)
     {
+        [HarmonyReversePatch(HarmonyReversePatchType.Snapshot)]
         internal Thing Stub_Pick(Thing thing, bool msg = true, bool tryStack = true)
         {
             throw new NotImplementedException("Chara.Pick");

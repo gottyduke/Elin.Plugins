@@ -2,7 +2,6 @@
 global using EmpPop = ElinTogether.EmpLogger;
 using System;
 using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net;
 using Cwl.Helper.String;
@@ -24,7 +23,7 @@ internal static partial class EmpLogger
 {
     private static readonly ConcurrentDictionary<IPAddress, string> _hashCache = [];
 
-    
+
     private static ILogger DefaultLogger => field ??= GetDefaultLoggerConfiguration().CreateLogger();
 
     internal static LoggerConfiguration GetDefaultLoggerConfiguration()

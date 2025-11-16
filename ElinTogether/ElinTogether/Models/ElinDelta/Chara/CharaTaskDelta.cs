@@ -1,31 +1,33 @@
+using ElinTogether.Elements;
 using ElinTogether.Net;
-using ElinTogether.Patches;
 using MessagePack;
 
 namespace ElinTogether.Models.ElinDelta;
 
 [MessagePackObject]
-public class CardPlacedDelta : ElinDeltaBase
+public class CharaTaskDelta : ElinDeltaBase
 {
     [Key(0)]
     public required RemoteCard Owner { get; init; }
 
     [Key(1)]
-    public required PlaceState PlaceState { get; init; }
-
-    [Key(2)]
-    public required bool ByPlayer { get; init; }
+    public required TaskArgsBase TaskArgs { get; init; }
 
     public override void Apply(ElinNetBase net)
     {
-        if (Owner.Find() is not { } card) {
+        if (Owner.Find() is not Chara { IsPC: false } chara) {
             return;
         }
 
+        // relay to clients
         if (net.IsHost) {
             net.Delta.AddRemote(this);
         }
 
-        card.Stub_SetPlacedState(PlaceState, ByPlayer);
+        if (chara.ai is not GoalRemote remote) {
+            return;
+        }
+
+        remote.InsertAction(TaskArgs.CreateSubAct());
     }
 }

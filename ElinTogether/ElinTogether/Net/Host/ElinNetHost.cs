@@ -25,6 +25,7 @@ internal partial class ElinNetHost : ElinNetBase
         }
 
         Lobby.CreateLobby(SteamNetLobbyType.Public);
+        Lobby.CurrentLobby?.SetLobbyData("CurrentZone", _zone.NameWithLevel);
 
         if (localUdp) {
             Socket.StartServerUdp();

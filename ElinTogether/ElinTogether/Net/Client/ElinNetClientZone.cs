@@ -12,7 +12,7 @@ namespace ElinTogether.Net;
 internal partial class ElinNetClient
 {
     /// <summary>
-    /// Request a map snapshot manually, mostly just used when joining a session
+    ///     Request a map snapshot manually, mostly just used when joining a session
     /// </summary>
     public void RequestZoneState(MapDataRequest request)
     {

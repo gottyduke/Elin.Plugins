@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using ReflexCLI.Attributes;
 using Steamworks;
 
@@ -14,7 +13,7 @@ internal sealed class StringAllocator : IDisposable
     // ReSharper disable once ChangeFieldTypeToSystemThreadingLock
     private readonly object _lock = new();
 
-    
+
     public static StringAllocator Shared => field ??= new();
 
     public void Dispose()

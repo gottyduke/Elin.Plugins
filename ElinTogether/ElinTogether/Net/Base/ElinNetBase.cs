@@ -9,12 +9,12 @@ namespace ElinTogether.Net;
 public abstract partial class ElinNetBase : EMono
 {
     public readonly ElinDeltaManager Delta = new();
-    private bool _initialized;
-    protected ProgressIndicator? DebugProgress;
-    protected SteamNetLobbyManager Lobby => SteamNetLobbyManager.Instance;
     protected readonly SteamNetMessageRouter Router = new();
     protected readonly TickScheduler Scheduler = new();
     protected readonly SteamNetManager Socket = new();
+    private bool _initialized;
+    protected ProgressIndicator? DebugProgress;
+    protected SteamNetLobbyManager Lobby => SteamNetLobbyManager.Instance;
 
     public abstract bool IsHost { get; }
 

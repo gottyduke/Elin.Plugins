@@ -4,9 +4,9 @@ A WIP attempt of bringing networking feature to Elin.
 
 ## Timeline
 
+### Prototyping
 ```mermaid
 timeline
-    title Elin Net Development (Prototyping)
     10/30/2025 : Initial concept, looked into LiteNetLib
     10/31/2025 : First version of ElinNetBase components
     : Setup NAT holepunch server on GCP
@@ -19,6 +19,10 @@ timeline
     11/09/2025 : Added delta packets + tick scheduler
     : Session #5 (Han), couldn't beat Puppy Cave due to map loading issue
     : Publicized source code
+```
+
+### Puppy Caving
+```mermaid
     11/11/2025 : Added shared speed + shared ticking
     : Session #6 (Han), couldn't beat Puppy Cave due to level loading issue
     : Session #7 (Omega), couldn't beat Puppy Cave due to 3rd player not synced
@@ -26,7 +30,10 @@ timeline
     : Session #9 (Han, Omega), 3 player testing, couldn't beat Puppy Cave due to enemies not taking death updates
     : Session #10 (Drakeny), couldn't beat Puppy Cave due to Drakeny died so fast and there's no host death handling code
     11/13/2025 : Rewrote entire zone loading system, added Act delta
-    : Session #11 (Han, Puddles), 3 player testing, Han was riding Puddles. Be submissive.
+    : Session #11 (Han, Puddles), 3 player testing, Han was riding Puddles. Be submissive
+    11/14/2025 : Added steam lobby browser and friend invites
+    : Session #12 (Han), couldn't beat Puppy Cave due to having a ghost character(renderer?)
+    : Session #13 (105gun), the hand is here. Couldn't beat puppy cave due to death desyncs
 ```
 
 ## Build
