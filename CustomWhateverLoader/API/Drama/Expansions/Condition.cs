@@ -107,14 +107,14 @@ public partial class DramaExpansion
         parameters.Requires(out var valueExpr);
         dm.RequiresActor(out var actor);
 
-        var match = Regex.Match(valueExpr, @"(\S*?)\s*(\S+)$");
+        var match = Regex.Match(valueExpr, "^(?<op>>=|<=|>|<|=|!=|==)?(?<hostility>.+)$");
         if (!match.Success) {
             throw new DramaActionInvokeException($"invalid expression {valueExpr}");
         }
 
-        var expr = match.Groups[1].Value;
-        if (!Enum.TryParse(match.Groups[2].Value, out Hostility hostility)) {
-            throw new DramaActionInvokeException($"invalid hostility {match.Groups[2].Value}");
+        var expr = match.Groups["op"].Value;
+        if (!Enum.TryParse(match.Groups["hostility"].Value, true, out Hostility hostility)) {
+            throw new DramaActionInvokeException($"invalid hostility {match.Groups["hostility"].Value}");
         }
 
         return Compare(actor._cints[4], $"{expr}{(int)hostility}");
