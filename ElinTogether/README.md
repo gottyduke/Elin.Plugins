@@ -23,6 +23,7 @@ timeline
 
 ### Puppy Caving
 ```mermaid
+timeline
     11/11/2025 : Added shared speed + shared ticking
     : Session #6 (Han), couldn't beat Puppy Cave due to level loading issue
     : Session #7 (Omega), couldn't beat Puppy Cave due to 3rd player not synced
