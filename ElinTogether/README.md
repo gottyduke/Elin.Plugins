@@ -2,6 +2,16 @@
 
 A WIP attempt of bringing networking feature to Elin.
 
+## Play
+To play with friends, it's recommended to use a minimal modlist and keep them consistent for all players. Use steam workshop collections for that purpose.
+
+Host needs to start the game, load into a save or make a new game, and open up the panel from Esc-Mods-Elin Together.
+
+From there, host can invite friends directly from panel or right click in steam friend list and Invite to Game.
+
+The player characters are randomly generated right now(for testing purpose)
+.
+
 ## Timeline
 
 ### Prototyping
