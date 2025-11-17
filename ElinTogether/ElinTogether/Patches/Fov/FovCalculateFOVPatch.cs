@@ -41,13 +41,16 @@ internal class FovCalculateFOVPatch
     {
         if (IsRemotePlayerChara(__instance))
         {
-            EmpLog.Verbose($"OnCardCalculateFOV needOverride {__instance.Name}");
+            if (__instance.fov == null)
+            {
+                EmpLog.Verbose($"OnCardCalculateFOV {__instance.Name} has no fov, create one");
+                __instance.fov = __instance.CreateFov();
+            }
             __instance.fov.isPC = true;
             needOverride = true;
         }
         else
         {
-            EmpLog.Verbose($"OnCardCalculateFOV dont needOverride {__instance.Name}");
             needOverride = false;
         }
         return true;
@@ -58,7 +61,7 @@ internal class FovCalculateFOVPatch
     {
         if (needOverride)
         {
-            __instance.fov.isPC = false;
+            __instance.fov?.isPC = false;
         }
 
         needOverride = false;
