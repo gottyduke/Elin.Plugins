@@ -46,7 +46,7 @@ internal class RemoteHoldThingyPatch
             return current;
         }
 
-        if (chara.NetProfile.RemoteMainHand.TryGetTarget(out var thing) && thing is not null) {
+        if (chara.NetProfile.RemoteMainHand.TryGetTarget(out var thing)) {
             current = thing;
         }
 
@@ -60,7 +60,7 @@ internal class RemoteHoldThingyPatch
             return current;
         }
 
-        if (chara.NetProfile.RemoteOffHand.TryGetTarget(out var thing) && thing is not null) {
+        if (chara.NetProfile.RemoteOffHand.TryGetTarget(out var thing)) {
             current = thing;
         }
 

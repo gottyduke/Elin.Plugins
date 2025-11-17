@@ -1,4 +1,5 @@
 using ElinTogether.Elements;
+using ElinTogether.Helper;
 using ElinTogether.Net;
 using MessagePack;
 
@@ -11,7 +12,10 @@ public class CharaTaskDelta : ElinDeltaBase
     public required RemoteCard Owner { get; init; }
 
     [Key(1)]
-    public required TaskArgsBase TaskArgs { get; init; }
+    public required TaskArgsBase? TaskArgs { get; init; }
+
+    [Key(2)]
+    public bool Complete { get; init; }
 
     public override void Apply(ElinNetBase net)
     {
@@ -28,6 +32,15 @@ public class CharaTaskDelta : ElinDeltaBase
             return;
         }
 
-        remote.InsertAction(TaskArgs.CreateSubAct());
+        // complete remote tasks because we assigned them max value to prevent randomness
+        if (Complete) {
+            remote.child?.OnProgressComplete();
+            if (chara.NetProfile.CurrentTask.TryGetTarget(out var progress)) {
+                progress.OnProgressComplete();
+            }
+        }
+
+        // now assign new task or reset
+        remote.InsertAction(TaskArgs?.CreateSubAct());
     }
 }

@@ -75,6 +75,10 @@ public class ElinDeltaManager
         var batch = FlushInBuffer(batchSize);
         foreach (var delta in batch) {
             try {
+                if (delta is null) {
+                    continue;
+                }
+
                 delta.Apply(net);
             } catch (Exception ex) {
                 EmpLog.Debug(ex, "Exception at processing delta {DeltaType}\n{@Delta}",

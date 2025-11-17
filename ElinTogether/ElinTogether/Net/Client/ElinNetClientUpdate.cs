@@ -16,9 +16,6 @@ internal partial class ElinNetClient
             return;
         }
 
-        // send back client state
-        Socket.FirstPeer.Send(CharaStateSnapshot.CreateSelf());
-
         // send out delta
         if (!Delta.HasPendingOut) {
             return;
@@ -61,7 +58,11 @@ internal partial class ElinNetClient
             return;
         }
 
+        // apply world state
         snapshot.ApplyReconciliation();
+
+        // send back client state
+        Socket.FirstPeer.Send(CharaStateSnapshot.CreateSelf());
     }
 
     /// <summary>

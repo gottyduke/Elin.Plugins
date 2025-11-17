@@ -6,8 +6,8 @@ namespace ElinTogether.Patches;
 [HarmonyPatch]
 internal class NoApplicationPausePatch
 {
-    [HarmonyPostfix]
     [HarmonyCleanup]
+    [HarmonyPostfix]
     [HarmonyPatch(typeof(CoreConfig), nameof(CoreConfig.Apply))]
     internal static void OnOverrideBackgroundRunning()
     {

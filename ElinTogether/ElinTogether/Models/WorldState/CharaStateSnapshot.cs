@@ -101,6 +101,7 @@ public class CharaStateSnapshot : EClass
             }
         }
 
+        // this is from remote players
         if (State is null) {
             return;
         }

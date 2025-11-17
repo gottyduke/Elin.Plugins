@@ -78,6 +78,7 @@ jobs:
           path: ${{ github.workspace }}\out\${{ matrix.version }}
 
       - name: Prepare Release
+        if: github.event_name != 'pull_request'
         id: artifact
         shell: pwsh
         run: |
@@ -97,6 +98,7 @@ jobs:
           Add-Content -Path $env:GITHUB_OUTPUT -Value $EOF
 
       - name: Create or Update Release
+        if: github.event_name != 'pull_request'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: EMP-preview
@@ -104,6 +106,7 @@ jobs:
           draft: false
           prerelease: true
           generate_release_notes: false
+          append_body: false
           body: ${{ steps.artifact.outputs.log }}
           files: ${{ steps.artifact.outputs.artifact_path }}
         env:

@@ -13,7 +13,7 @@ internal class NoActiveGCPatch
 {
     [HarmonyTranspiler]
     [HarmonyPatch(typeof(Core), nameof(Core.OnApplicationFocus))]
-    internal static IEnumerable<CodeInstruction> OnManualGCDispose(IEnumerable<CodeInstruction> instructions)
+    internal static IEnumerable<CodeInstruction> OnManualGCDisposeIl(IEnumerable<CodeInstruction> instructions)
     {
         return new CodeMatcher(instructions)
             .MatchStartForward(

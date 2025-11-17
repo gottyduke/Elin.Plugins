@@ -5,13 +5,13 @@ namespace ElinTogether.Models;
 [MessagePackObject]
 public class ClientCharaStateSnapshot
 {
-    [Key(1)]
+    [Key(0)]
     public int LastAct { get; init; }
 
     [Key(2)]
     public int LastReceivedTick { get; init; }
 
-    [Key(36)]
+    [Key(3)]
     public int Speed { get; init; }
 
     [Key(4)]

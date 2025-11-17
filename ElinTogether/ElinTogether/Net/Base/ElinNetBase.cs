@@ -96,7 +96,7 @@ public abstract partial class ElinNetBase : EMono
             sb.AppendLine(peer.Stat.ToString());
         }
 
-        sb.Append(Delta.ToString());
+        //sb.Append(Delta.ToString());
 
         return sb.ToString();
     }

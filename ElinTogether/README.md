@@ -3,20 +3,18 @@
 A WIP attempt of bringing networking feature to Elin.
 
 ## Play
-To play with friends, it's recommended to use a minimal modlist and keep them consistent for all players. Use steam workshop collections for that purpose.
+To play with friends, it's recommended to use a minimal modlist and keep them consistent for all players. Use Steam Workshop Collections for that purpose.
 
-Host needs to start the game, load into a save or make a new game, and open up the panel from Esc-Mods-Elin Together.
+To be a host, start the game, load into a save or make a new game(recommended), and open up the panel from Esc-Mods-Elin Together.
 
-From there, host can invite friends directly from panel or right click in steam friend list and Invite to Game.
+From there, host can invite friends directly from panel or right click in Steam friend list and Invite to Game.
 
-The player characters are randomly generated right now(for testing purpose)
-.
+The player characters are randomly generated right now(for testing purpose).
 
 ## Timeline
-
-### Prototyping
 ```mermaid
 timeline
+    title Prototyping
     10/30/2025 : Initial concept, looked into LiteNetLib
     10/31/2025 : First version of ElinNetBase components
     : Setup NAT holepunch server on GCP
@@ -31,9 +29,9 @@ timeline
     : Publicized source code
 ```
 
-### Puppy Caving
 ```mermaid
 timeline
+    title Puppy Caving
     11/11/2025 : Added shared speed + shared ticking
     : Session #6 (Han), couldn't beat Puppy Cave due to level loading issue
     : Session #7 (Omega), couldn't beat Puppy Cave due to 3rd player not synced
@@ -59,9 +57,9 @@ ElinGamePath/
 │  │  ├─ *.dll
 ```
 
-This project references Custom Whatever Loader, you can get it from Steam Workshop or GitHub tagged releases, either build is fine (as of 1.20.55).
+This project references Custom Whatever Loader, you can get it from Steam Workshop, GitHub tagged releases, or build from source within this repo. If building with Steam Workshop version, environment variable `SteamContentPath` must be set to Steam `workshop/content` folder.
 
-To build EMP, you need to install [.NET SDK 10.0.x](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
+This project uses C# 14, you need to install [.NET SDK 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) to compile correctly.
 
 Clone the project:
 ```ps

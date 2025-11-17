@@ -2,19 +2,20 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using Cwl.API.Attributes;
+using ElinTogether.Elements;
 using ElinTogether.Net;
 
 namespace ElinTogether.Helper;
 
 internal static class RemoteCardHelper
 {
-    internal static readonly ConcurrentDictionary<Chara, RemoteCharaNetProfile> _remoteCardNetProfile = [];
+    internal static readonly ConcurrentDictionary<Chara, RemoteCharaNetProfile> RemoteCardNetProfile = [];
 
     [CwlPreLoad]
-    [CwlSceneInitEvent(Scene.Mode.Title)]
+    [CwlSceneInitEvent(Scene.Mode.Title, preInit: true)]
     private static void ClearProfiles()
     {
-        _remoteCardNetProfile.Clear();
+        RemoteCardNetProfile.Clear();
     }
 
     internal class RemoteCharaNetProfile(Chara chara)
@@ -23,10 +24,14 @@ internal static class RemoteCardHelper
 
         public WeakReference<Thing> RemoteMainHand { get; set; } = new(null!, false);
         public WeakReference<Thing> RemoteOffHand { get; set; } = new(null!, false);
+
+        public GoalRemote GoalDefault => field ??= new();
+
+        public WeakReference<AIProgress> CurrentTask { get; set; } = new(null!, false);
     }
 
     extension(Chara chara)
     {
-        internal RemoteCharaNetProfile NetProfile => _remoteCardNetProfile.GetOrAdd(chara, chara => new(chara));
+        internal RemoteCharaNetProfile NetProfile => RemoteCardNetProfile.GetOrAdd(chara, chara => new(chara));
     }
 }

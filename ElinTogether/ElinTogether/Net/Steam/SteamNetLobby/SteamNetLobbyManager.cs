@@ -5,15 +5,14 @@ using System.Linq;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using ElinTogether.Helper;
-using HeathenEngineering.SteamworksIntegration.API;
 using Steamworks;
 
 namespace ElinTogether.Net.Steam;
 
 public class SteamNetLobbyManager
 {
+    private readonly HashSet<ulong> _blocked = [];
     private Action<SteamNetLobby[]>? _deferOnComplete;
-    private HashSet<ulong> _blocked = [];
 
     private SteamNetLobbyManager()
     {

@@ -108,7 +108,7 @@ public class RemoteCard
     }
 
     [CwlPreLoad]
-    [CwlSceneInitEvent(Scene.Mode.Title)]
+    [CwlSceneInitEvent(Scene.Mode.Title, preInit: true)]
     private static void ClearCachedRefs()
     {
         _cached.Clear();
