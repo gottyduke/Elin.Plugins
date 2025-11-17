@@ -5,6 +5,7 @@ on:
     branches: ["*"]
     paths: ["CustomWhateverLoader/**"]
   pull_request:
+    paths: ["CustomWhateverLoader/**"]
   workflow_dispatch:
 
 permissions:
@@ -44,7 +45,8 @@ jobs:
       - name: Setup DotNet
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 10.0.100
+          dotnet-version: 10.0.x
+          dotnet-quality: preview
           cache: true
           cache-dependency-path: ${{ github.workspace }}\CustomWhateverLoader\packages.lock.json
 
@@ -57,7 +59,7 @@ jobs:
           ElinGamePath: ${{ github.workspace }}\${{ matrix.version }}
         shell: pwsh
         run: |
-          $config = '${{ matrix.version }}' -eq 'stable' ? 'Release' : 'ReleaseNightly'
+          $config = '${{ matrix.version }}' -eq 'stable' ? 'Debug' : 'DebugNightly'
           dotnet build ${{ github.workspace }}\CustomWhateverLoader\CustomWhateverLoader.csproj -o ${{ github.workspace }}\out\${{ matrix.version }} -c $config --no-restore
 
           $dllPath = Join-Path -Path "${{ github.workspace }}\out\${{ matrix.version }}" -ChildPath "CustomWhateverLoader.dll"
@@ -83,25 +85,32 @@ jobs:
 
           Compress-Archive -Path "$source\*" -DestinationPath $destination -Force
           $path = $destination -Replace '\\', '/'
+          $lastTag = git describe --tags --match="CWL-*" --abbrev=0 HEAD
 
           echo "artifact_path=$path" >> $env:GITHUB_OUTPUT
+          echo "last_tag=$lastTag" >> $env:GITHUB_OUTPUT
 
-          $log = git log "$(git describe --tags --abbrev=0 --match="CWL-*")..HEAD" --pretty=format:"%s" -- CustomWhateverLoader/ | ? { $_ -notmatch "cleanup" }
-          $log = $log -join "`n"
-          $EOF = [guid]::NewGuid().ToString()
-          Add-Content -Path $env:GITHUB_OUTPUT -Value "change_logs<<$EOF"
-          Add-Content -Path $env:GITHUB_OUTPUT -Value $log
-          Add-Content -Path $env:GITHUB_OUTPUT -Value $EOF
+      - name: Generate Release Note
+        id: release_notes
+        uses: mikepenz/release-changelog-builder-action@v6.0.0
 
-      - name: Create or Update Release
+      - name: Create Incremental Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: CWL-${{ steps.build.outputs.file_version_short }}
+          draft: false
+          prerelease: false
+          generate_release_notes: false
+          files: ${{ steps.artifact.outputs.artifact_path }}
+
+      - name: Pin Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: CustomWhateverLoader
           name: Custom Whatever Loader ${{ steps.build.outputs.file_version }}
           draft: false
           prerelease: false
           generate_release_notes: false
-          body: ${{ steps.artifact.outputs.log }}
           files: ${{ steps.artifact.outputs.artifact_path }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -5,6 +5,7 @@ on:
     branches: ["*"]
     paths: ["PluginTemplate/**"]
   pull_request:
+    paths: ["PluginTemplate/**"]
   workflow_dispatch:
 
 permissions:

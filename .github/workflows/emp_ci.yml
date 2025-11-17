@@ -5,6 +5,7 @@ on:
     branches: ["*"]
     paths: ["ElinTogether/ElinTogether/**"]
   pull_request:
+    paths: ["ElinTogether/ElinTogether/**"]
   workflow_dispatch:
 
 permissions:

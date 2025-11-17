@@ -5,6 +5,7 @@ on:
     branches: ["*"]
     paths: ["Emmersive/**"]
   pull_request:
+    paths: ["Emmersive/**"]
   workflow_dispatch:
 
 permissions:
