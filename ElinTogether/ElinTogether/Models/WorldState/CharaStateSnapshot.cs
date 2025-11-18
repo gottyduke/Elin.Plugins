@@ -38,9 +38,16 @@ public class CharaStateSnapshot : EClass
     {
         var hideWeapon = pc.combatCount <= 0 && core.config.game.hideWeapons;
 
-        RemoteCard? heldMainHand = player.currentHotItem.RenderThing ??
-                                   (hideWeapon ? pc.held : pc.body.slotMainHand?.thing);
-        RemoteCard? heldOffHand = core.config.game.showOffhand ? pc.body.slotOffHand?.thing : pc.held;
+        RemoteCard? heldMainHand = player.currentHotItem.RenderThing
+                                   ?? (hideWeapon ? pc.held : pc.body.slotMainHand?.thing);
+        RemoteCard? heldOffHand = core.config.game.showOffhand
+            ? pc.body.slotOffHand?.thing
+            : pc.held;
+
+        // held item override
+        if (pc.held is not null) {
+            heldMainHand = heldOffHand = pc.held;
+        }
 
         return new() {
             Owner = pc,
