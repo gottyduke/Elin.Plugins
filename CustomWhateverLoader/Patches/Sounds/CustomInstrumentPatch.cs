@@ -38,7 +38,7 @@ internal class CustomInstrumentPatch
             return idSong;
         }
 
-        if (SoundManager.current.GetData(id) != null) {
+        if (SoundManager.current.GetData($"Instrument/{id}") != null) {
             idSong = id;
         }
 

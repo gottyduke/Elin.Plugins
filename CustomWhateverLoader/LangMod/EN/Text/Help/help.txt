@@ -18,6 +18,10 @@ $Changelogs
 
 
 
+{topic|1.20.56}
+Disabled FileSystemWatcher usage for Win7 (who uses that)
+Added another path lookup for Custom Instrument
+
 {topic|1.20.55}
 Fixed CWL popup background disappearing due to noa's manual GC.Collect
 Added `CwlContextVars` for save specific properties

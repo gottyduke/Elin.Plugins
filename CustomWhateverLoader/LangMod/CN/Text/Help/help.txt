@@ -18,6 +18,10 @@ $更新日志
 
 
 
+{topic|1.20.56}
+已禁用 Win7 系统中的 FileSystemWatcher 功能（谁还会用它？）
+为自定义乐器添加了另一个路径查找
+
 {topic|1.20.55}
 修复了由于 noa 手动执行 GC.Collect 操作导致 CWL 弹出窗口背景消失的问题
 添加了 `CwlContextVars` 用于保存特定属性
