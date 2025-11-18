@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace ElinTogether.Net;
@@ -9,22 +10,16 @@ public class TickScheduler
     private readonly Queue<TickSubscription> _deferredAdd = [];
     private readonly Queue<Action> _deferredRemove = [];
     private readonly List<TickSubscription> _subscriptions = [];
-    private static int BaseTickRate => Mathf.RoundToInt(1f / Time.fixedDeltaTime);
 
     public bool IsTicking { get; private set; }
 
     public void Tick()
     {
         IsTicking = true;
+        var now = Time.time;
 
-        foreach (var sub in _subscriptions) {
-            sub.TickCounter++;
-
-            if (sub.TickCounter < sub.TicksPerInvoke) {
-                continue;
-            }
-
-            sub.TickCounter = 0;
+        foreach (var sub in _subscriptions.Where(sub => now >= sub.NextInvokeTime)) {
+            sub.NextInvokeTime += sub.TickInterval;
 
             try {
                 sub.Update();
@@ -47,17 +42,16 @@ public class TickScheduler
         }
     }
 
-    public void Subscribe(Action onUpdate, int tickPerSecond)
+    public void Subscribe(Action onUpdate, float hz)
     {
-        if (tickPerSecond <= 0) {
-            throw new ArgumentOutOfRangeException(nameof(tickPerSecond));
+        if (hz <= 0f) {
+            throw new ArgumentOutOfRangeException(nameof(hz));
         }
 
-        var ticksPerInvoke = Mathf.Max(1, BaseTickRate / tickPerSecond);
-        EmpLog.Verbose("Added new tick handler {TickHandler} at {Interval}Hz (every {Ticks} ticks)",
-            onUpdate.Method.Name, tickPerSecond, ticksPerInvoke);
-
-        _deferredAdd.Enqueue(new(onUpdate, ticksPerInvoke));
+        var interval = 1f / hz;
+        _deferredAdd.Enqueue(new(onUpdate, interval) {
+            NextInvokeTime = Time.time + interval,
+        });
     }
 
     public void Unsubscribe(Action onUpdate)
@@ -65,8 +59,8 @@ public class TickScheduler
         _deferredRemove.Enqueue(onUpdate);
     }
 
-    private sealed record TickSubscription(Action Update, int TicksPerInvoke)
+    private sealed record TickSubscription(Action Update, float TickInterval)
     {
-        public int TickCounter { get; set; }
+        public float NextInvokeTime;
     }
 }
