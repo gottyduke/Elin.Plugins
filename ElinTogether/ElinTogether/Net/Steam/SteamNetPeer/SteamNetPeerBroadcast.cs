@@ -32,12 +32,6 @@ internal sealed class SteamNetPeerBroadcast(ISteamNetSerializer serializer)
         _targets.Clear();
     }
 
-    public override bool Send<T>(T packet, SteamNetSendFlag sendFlags = SteamNetSendFlag.Reliable)
-    {
-        var bytes = Serializer.Serialize(packet);
-        return Send(bytes, sendFlags);
-    }
-
     public override bool Send(byte[] bytes, SteamNetSendFlag sendFlags = SteamNetSendFlag.Reliable)
     {
         switch (_targets.Count) {

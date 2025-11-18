@@ -30,7 +30,9 @@ internal static class CharaTaskRemoteEvent
 
         // switch case is inevitable for the mapping layer
         TaskArgsBase? args = g switch {
+            // no goal/reset
             NoGoal and not GoalRemote => NoTask.Default,
+            // task
             TaskClean task => TaskCleanArgs.Create(task),
             TaskCullLife task => TaskCullLifeArgs.Create(task),
             TaskCut task => TaskCutArgs.Create(task),
@@ -42,7 +44,23 @@ internal static class CharaTaskRemoteEvent
             TaskPlow task => TaskPlowArgs.Create(task),
             TaskPourWater task => TaskPourWaterArgs.Create(task),
             TaskWater task => TaskWaterArgs.Create(task),
-            AI_PlayMusic task => AIPlayMusicArgs.Create(task),
+            // ai
+            AI_ArmPillow ai => AIArmPillowArgs.Create(ai),
+            AI_AttackHome ai => AIAttackHomeArgs.Create(ai),
+            AI_Bladder ai => AIBladderArgs.Create(ai),
+            AI_Churyu ai => AIChuryuArgs.Create(ai),
+            AI_Clean ai => AICleanArgs.Create(ai),
+            AI_Cook ai => AICookArgs.Create(ai),
+            AI_Craft_Snowman ai => AICraftSnowmanArgs.Create(ai),
+            AI_Craft ai => AICraftArgs.Create(ai),
+            AI_Dance ai => AIDanceArgs.Create(ai),
+            AI_Deconstruct ai => AIDeconstructArgs.Create(ai),
+            AI_Drink ai => AIDrinkArgs.Create(ai),
+            AI_Eat ai => AIEatArgs.Create(ai),
+            AI_Equip ai => AIEquipArgs.Create(ai),
+            AI_Farm ai => AIFarmArgs.Create(ai),
+            AI_Fish ai => AIFishArgs.Create(ai),
+            AI_PlayMusic ai => AIPlayMusicArgs.Create(ai),
             _ => null,
         };
 

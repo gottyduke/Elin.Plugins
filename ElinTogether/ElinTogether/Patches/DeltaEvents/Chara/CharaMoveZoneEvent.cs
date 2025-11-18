@@ -25,7 +25,7 @@ internal class CharaMoveZoneEvent
 
         // remote characters do not trigger scene change
         // clients do not post move zone delta
-        EmpPop.Debug("Client cannot move zone");
+        EmpPop.Debug("You must gather your party before venturing forth");
         return false;
     }
 }
