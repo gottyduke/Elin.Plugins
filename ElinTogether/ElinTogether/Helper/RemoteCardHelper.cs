@@ -20,7 +20,7 @@ internal static class RemoteCardHelper
 
     internal class RemoteCharaNetProfile(Chara chara)
     {
-        public bool IsPlayer => NetSession.Instance.CurrentPlayers.FirstOrDefault(s => s.CharaUid == chara.uid) is not null;
+        public bool IsRemotePlayer => NetSession.Instance.CurrentPlayers.FirstOrDefault(s => s.CharaUid == chara.uid) is not null;
 
         public WeakReference<Thing> RemoteMainHand { get; set; } = new(null!, false);
         public WeakReference<Thing> RemoteOffHand { get; set; } = new(null!, false);
