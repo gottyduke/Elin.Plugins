@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using Cwl.LangMod;
 using Emmersive.Components;
 using Newtonsoft.Json;
+using UnityEngine;
 
 // ReSharper disable InconsistentNaming
 
@@ -37,7 +38,8 @@ public partial class SceneDirector : EClass
                 continue;
             }
 
-            var delay = reaction.delay - delayReduced;
+            // insert a minimal delay
+            var delay = Mathf.Max(reaction.delay - delayReduced, EmConfig.Scene.MinimalReactionDelay.Value);
 
             delayMax += delay;
             DoPopText(reaction.uid, reaction.text, reaction.duration, delay);

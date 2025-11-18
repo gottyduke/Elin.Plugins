@@ -27,6 +27,7 @@ public partial class EmScheduler
             .CreateStandardPrefix()
             .Add(new NearbyCharaContext(focus))
             .Add(new NearbyThingContext(focus))
+            // put volatile context at the end to hit as much cache as possible
             .Add(ContextBuilder.RecentActionContext);
 
         RequestScenePlayWithContext(builder);
@@ -39,6 +40,7 @@ public partial class EmScheduler
             .CreateStandardPrefix()
             .Add(new NearbyCharaContext(focus))
             .Add(new NearbyThingContext(focus))
+            // put volatile context at the end to hit as much cache as possible
             .Add(ContextBuilder.RecentActionContext)
             .Add(new SceneTriggerContext(_buffer.Copy()));
 

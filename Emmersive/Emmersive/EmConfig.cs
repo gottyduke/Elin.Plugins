@@ -247,6 +247,13 @@ internal partial class EmConfig
             "Prefix speaker's name in front of the chat text to distinguish from others\n" +
             "附加显示反应NPC的姓名");
 
+        Scene.MinimalReactionDelay = config.Bind(
+            "Scene",
+            "MinimalReactionDelay",
+            0f,
+            "Minimal reaction delay in seconds between each scene play popup\n" +
+            "场景演出时每次气泡的最低间隔秒数");
+
         Reload();
     }
 
@@ -260,6 +267,7 @@ internal partial class EmConfig
         internal static ConfigEntry<int> TurnsCooldown { get; set; } = null!;
         internal static ConfigEntry<float> SecondsCooldown { get; set; } = null!;
         internal static ConfigEntry<bool> PrefixSpeakerName { get; set; } = null!;
+        internal static ConfigEntry<float> MinimalReactionDelay { get; set; } = null!;
     }
 
     internal static class Context
