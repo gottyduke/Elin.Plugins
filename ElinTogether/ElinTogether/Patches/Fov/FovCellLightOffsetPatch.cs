@@ -1,99 +1,62 @@
-using System;
 using System.Collections.Generic;
-using System.Reflection.Emit;
-using Cwl.Helper.Extensions;
+using System.Linq;
+using ElinTogether.Helper;
 using HarmonyLib;
-using UnityEngine;
 
 namespace ElinTogether.Patches;
 
+// hand of 105gun
 [HarmonyPatch]
 internal class FovCellLightOffsetPatch
 {
-    public static List<Fov> GetRemotePlayerCharaFovs()
+    public static HashSet<Fov> GetRemotePlayerCharaFovs()
     {
-        List<Fov> list = new();
-        if (EClass.pc?.party == null)
-        {
-            return list;
+        var pc = EClass.pc;
+        if (pc?.party?.members is null) {
+            return [];
         }
 
-        // TODO: dk will fix it
-        foreach (var chara in EClass.pc.party.members)
-        {
-            if (chara != null)
-            {
-                if (chara.fov == null)
-                {
-                    EmpLog.Warning($"GetRemotePlayerCharaFovs chara {chara.Name} has no fov");
-                    chara.fov = chara.CreateFov();
-                }
-                list.Add(chara.fov);
-            }
+        var list = new HashSet<Fov>();
+        foreach (var chara in pc.party.members.Where(chara => chara.NetProfile.IsRemotePlayer)) {
+            list.Add(chara.fov ??= chara.CreateFov());
         }
+
         return list;
     }
 
-    static byte GetClearVisibleOffset(byte original, Fov fov, int key, ref bool found)
-    {
-		Cell cell = Fov.map.GetCell(key);
-        byte currentLightValue = cell.light;
-        byte targetLightValue = 0;
-        found = false;
-        foreach (var f in GetRemotePlayerCharaFovs())
-        {
-            if (f == fov)
-            {
-                continue;
-            }
-            if (f.lastPoints.ContainsKey(key))
-            {
-                targetLightValue = targetLightValue > f.lastPoints[key] ? targetLightValue : f.lastPoints[key];
-                found = true;
-            }
-        }
-        byte newValue = (byte)(currentLightValue - targetLightValue);
-        EmpLog.Verbose($"GetClearVisibleOffset {fov} {original} {key} current {currentLightValue} target {targetLightValue} newValue: {newValue}");
-        return newValue;
-    }
-
-    [HarmonyPatch(typeof(Fov), nameof(Fov.ClearVisible))]
     [HarmonyPrefix]
+    [HarmonyPatch(typeof(Fov), nameof(Fov.ClearVisible))]
     internal static bool OnClearVisible(Fov __instance)
     {
-        List<Fov> RemoteFovList = GetRemotePlayerCharaFovs();
-        if (RemoteFovList.Contains(__instance))
-        {
-            foreach (KeyValuePair<int, byte> lastPoint in __instance.lastPoints)
-            {
-                Cell cell = Fov.map.GetCell(lastPoint.Key);
-                bool found = false;
-                byte value = lastPoint.Value;
-                cell.light -= value;
-                cell.lightR -= (ushort)(value * __instance.r / 2);
-                cell.lightG -= (ushort)(value * __instance.g / 2);
-                cell.lightB -= (ushort)(value * __instance.b / 2);
-
-                // set false only when no remote player chara can see it
-                foreach (var f in RemoteFovList)
-                {
-                    if (f == __instance)
-                    {
-                        continue;
-                    }
-                    if (f.lastPoints.ContainsKey(lastPoint.Key))
-                    {
-                        found = true;
-                    }
-                }
-                if (!found)
-                {
-                    cell.pcSync = false;
-                }
-            }
-            __instance.lastPoints.Clear();
-            return false;
+        var remoteFovList = GetRemotePlayerCharaFovs();
+        if (!remoteFovList.Contains(__instance)) {
+            return true;
         }
-        return true;
+
+        // count how many FOVs saw each position
+        var cellCounts = new Dictionary<int, int>(64);
+        var allPos = remoteFovList
+            .Where(fov => fov != __instance)
+            .SelectMany(fov => fov.lastPoints.Keys);
+
+        foreach (var pos in allPos) {
+            cellCounts.TryGetValue(pos, out var count);
+            cellCounts[pos] = ++count;
+        }
+
+        // set cells as cleared but exclude shared fov cells
+        foreach (var (pos, offset) in __instance.lastPoints) {
+            var cell = Fov.map.GetCell(pos);
+
+            cell.light -= offset;
+            cell.lightR -= (ushort)(offset * __instance.r / 2);
+            cell.lightG -= (ushort)(offset * __instance.g / 2);
+            cell.lightB -= (ushort)(offset * __instance.b / 2);
+
+            cell.pcSync = cellCounts.ContainsKey(pos);
+        }
+
+        __instance.lastPoints.Clear();
+        return false;
     }
 }

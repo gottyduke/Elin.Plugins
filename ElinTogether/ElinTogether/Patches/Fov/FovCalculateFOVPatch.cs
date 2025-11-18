@@ -1,69 +1,32 @@
-using ElinTogether.Models.ElinDelta;
-using ElinTogether.Net;
+using ElinTogether.Helper;
 using HarmonyLib;
 
 namespace ElinTogether.Patches;
 
+// hand of 105gun
 [HarmonyPatch(typeof(Card), nameof(Card.CalculateFOV))]
 internal class FovCalculateFOVPatch
 {
-    public static bool needOverride = false;
-
-    // check whether this card is a remote player chara (which need to share vision)
-    // current PC is not included
-    static bool IsRemotePlayerChara(Card card)
-    {
-        /*
-        var session = NetSession.Instance;
-        if (session.Connection is not { } connection)
-        {
-            return false;
-        }
-        */
-
-        // TODO: dk will fix it
-        // currently share all party members' vision
-        if (card is Chara &&
-            card.Chara.IsPCFaction &&
-            !card.Chara.IsPC &&
-            card.Chara.IsPCParty) 
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
     [HarmonyPrefix]
-    internal static bool OnCardCalculateFOV(Card __instance)
+    internal static void OnCardCalculateFOV(Card __instance, out bool __state)
     {
-        if (IsRemotePlayerChara(__instance))
-        {
-            if (__instance.fov == null)
-            {
-                EmpLog.Verbose($"OnCardCalculateFOV {__instance.Name} has no fov, create one");
-                __instance.fov = __instance.CreateFov();
-            }
-            __instance.fov.isPC = true;
-            needOverride = true;
+        __state = false;
+
+        if (__instance is not Chara { NetProfile.IsRemotePlayer: true } chara) {
+            return;
         }
-        else
-        {
-            needOverride = false;
-        }
-        return true;
+
+        chara.fov ??= chara.CreateFov();
+        chara.fov.isPC = true;
+
+        __state = true;
     }
 
     [HarmonyPostfix]
-    internal static void OnCardCalculateFOVPost(Card __instance)
+    internal static void OnCardCalculateFOVPost(Card __instance, bool __state)
     {
-        if (needOverride)
-        {
+        if (__state) {
             __instance.fov?.isPC = false;
         }
-
-        needOverride = false;
     }
 }
