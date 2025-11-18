@@ -35,7 +35,7 @@ internal partial class ElinNetHost
         }
 
         // update lobby data
-        Lobby.CurrentLobby?.SetLobbyData("CurrentZone", zone.NameWithLevel);
+        Session.Lobby.Current?.SetLobbyData("CurrentZone", zone.NameWithLevel);
     }
 
     /// <summary>
@@ -88,14 +88,14 @@ internal partial class ElinNetHost
             return;
         }
 
-        // we only move their character to zone when they are ready
+        // we only move their characters to zone when they are ready
         var pos = pc.pos.GetNearestPoint(allowChara: false, allowInstalled: false);
         _zone.AddCard(chara, pos);
 
         EmpLog.Debug("Assigned zone sync position to player {@Peer} at {@Position}",
             peer, pos);
 
-        // after that, their characters will always be with host as party members
+        // after that, their characters will always be party members
         peer.Send(new ZoneActivateResponse {
             ZoneUid = _zone.uid,
             Pos = pos,

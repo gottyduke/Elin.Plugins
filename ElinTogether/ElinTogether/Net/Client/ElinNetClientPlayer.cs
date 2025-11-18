@@ -1,4 +1,5 @@
 using ElinTogether.Models;
+using Steamworks;
 
 namespace ElinTogether.Net;
 
@@ -17,7 +18,7 @@ internal partial class ElinNetClient
         core.game = probeGame;
         Game.id = "world_emp";
 
-        var remoteChara = NetSession.Instance.Player = probe.Chara.Decompress<Chara>();
+        var remoteChara = Session.Player = probe.Chara.Decompress<Chara>();
 
         player.uidChara = remoteChara.uid;
         player.chara = remoteChara;
@@ -38,5 +39,15 @@ internal partial class ElinNetClient
         EmpPop.Debug("Waiting on zone state complete...");
 
         probeGame.isLoading = false;
+    }
+
+    /// <summary>
+    ///     Net event: Join steam lobby if not already in it
+    /// </summary>
+    private void OnSteamLobbyRequest(SteamLobbyRequest request)
+    {
+        if (Session.Lobby.Current?.LobbyId != (CSteamID)request.LobbyId) {
+            Session.Lobby.ConnectLobby(request.LobbyId);
+        }
     }
 }

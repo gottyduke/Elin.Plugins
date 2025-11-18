@@ -29,6 +29,8 @@ internal partial class ElinNetClient : ElinNetBase
         Router.RegisterHandler<SourceListRequest>(OnSourceListRequest);
         Router.RegisterHandler<SourceDiffResponse>(OnSourceDiffResponse);
         Router.RegisterHandler<SaveDataProbe>(OnSaveDataProbe);
+        Router.RegisterHandler<SteamLobbyRequest>(OnSteamLobbyRequest);
+        Router.RegisterHandler<SessionPlayersSnapshot>(OnSessionStatesUpdate);
         Router.RegisterHandler<ZoneDataResponse>(OnZoneDataResponse);
         Router.RegisterHandler<ZoneActivateResponse>(OnZoneActivateResponse);
         Router.RegisterHandler<WorldStateSnapshot>(OnWorldStateSnapshot);
@@ -93,7 +95,7 @@ internal partial class ElinNetClient : ElinNetBase
         EmpPop.Information("Disconnected from host\n{DisconnectInfo}",
             disconnectInfo);
 
-        NetSession.Instance.RemoveComponent();
+        Session.RemoveComponent();
     }
 
 #endregion

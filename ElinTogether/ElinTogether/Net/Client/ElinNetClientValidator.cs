@@ -10,7 +10,7 @@ namespace ElinTogether.Net;
 internal partial class ElinNetClient
 {
     /// <summary>
-    ///     Source validation requested, sending checksums
+    ///     Net event: Source validation requested, sending checksums
     /// </summary>
     private void OnSourceListRequest(SourceListRequest request)
     {
@@ -39,7 +39,7 @@ internal partial class ElinNetClient
     }
 
     /// <summary>
-    ///     Source validation failed
+    ///     Net event: Source validation failed
     /// </summary>
     private void OnSourceDiffResponse(SourceDiffResponse response)
     {

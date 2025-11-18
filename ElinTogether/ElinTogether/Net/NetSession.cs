@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ElinTogether.Helper;
+using ElinTogether.Net.Steam;
 using Object = UnityEngine.Object;
 
 namespace ElinTogether.Net;
@@ -23,9 +24,9 @@ public class NetSession : EClass
         FullSync,
     }
 
-
     public static NetSession Instance => field ??= new();
 
+    public SteamNetLobbyManager Lobby => field ??= new();
     public Mode SyncMode { get; private set; } = Mode.None;
     public ElinNetBase? Connection { get; private set; }
     public Chara? Player { get; internal set; }

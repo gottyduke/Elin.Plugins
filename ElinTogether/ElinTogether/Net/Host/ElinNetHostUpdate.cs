@@ -28,8 +28,8 @@ internal partial class ElinNetHost
             return;
         }
 
-        NetSession.Instance.Tick++;
-        NetSession.Instance.CurrentZone = _zone;
+        Session.Tick++;
+        Session.CurrentZone = _zone;
 
         try {
             _lastTick = PropagateWorldState();
@@ -109,12 +109,17 @@ internal partial class ElinNetHost
         state.Speed = response.State.Speed;
         state.LastReceivedTick = response.State.LastReceivedTick;
 
-        NetSession.Instance.SharedSpeed = SharedSpeed;
+        Session.SharedSpeed = SharedSpeed;
 
         WorldStateSnapshot.CachedRemoteSnapshots.Add(response);
 
         var chara = ActiveRemoteCharas[peer.Id];
         response.ApplyReconciliation(chara);
+    }
+
+    private void UpdateRemotePlayerStates()
+    {
+        Broadcast(SessionPlayersSnapshot.Create());
     }
 
 #region Scheduler Jobs
@@ -125,12 +130,14 @@ internal partial class ElinNetHost
     /// </summary>
     public void StartWorldStateUpdate()
     {
+        // 0.5hz session player states update
+        Scheduler.Subscribe(UpdateRemotePlayerStates, 0.5f);
         // 5hz world snapshot reconciliation
-        Scheduler.Subscribe(WorldStateSnapshotUpdate, 5);
+        Scheduler.Subscribe(WorldStateSnapshotUpdate, 5f);
         // 25hz delta dispatch
-        Scheduler.Subscribe(WorldStateDeltaUpdate, 25);
+        Scheduler.Subscribe(WorldStateDeltaUpdate, 25f);
         // 50hz delta process
-        Scheduler.Subscribe(WorldStateDeltaProcess, 50);
+        Scheduler.Subscribe(WorldStateDeltaProcess, 50f);
 
         _pauseUpdate = false;
     }
@@ -140,11 +147,12 @@ internal partial class ElinNetHost
     /// </summary>
     public void StopWorldStateUpdate()
     {
+        Scheduler.Unsubscribe(UpdateRemotePlayerStates);
         Scheduler.Unsubscribe(WorldStateSnapshotUpdate);
         Scheduler.Unsubscribe(WorldStateDeltaUpdate);
         Scheduler.Unsubscribe(WorldStateDeltaProcess);
 
-        NetSession.Instance.Tick = 0;
+        Session.Tick = 0;
 
         _pauseUpdate = false;
 

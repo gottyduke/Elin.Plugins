@@ -5,7 +5,6 @@ using Cwl.Helper.Extensions;
 using ElinTogether.Models;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net.Steam;
-using ElinTogether.Patches;
 
 namespace ElinTogether.Net;
 
@@ -55,7 +54,7 @@ internal partial class ElinNetHost
             CharaUid = chara.uid,
         };
 
-        NetSession.Instance.CurrentPlayers.Add(state);
+        Session.CurrentPlayers.Add(state);
 
         SendSaveProbe(peer);
     }
@@ -90,19 +89,16 @@ internal partial class ElinNetHost
 
     public int GetAverageSpeed()
     {
-        var selfSpeed = pc.Stub_get_Speed();
-
-        var total = selfSpeed + States.Values.Sum(s => s.Speed);
-        var count = States.Count + 1;
-
-        return total / count;
+        // we should always have >= 1 count
+        // because pc is included as well
+        return (int)States.Values.Average(s => s.Speed);
     }
 
     public static void RemoveRemoteChara(Chara remoteChara)
     {
         pc.party.RemoveMember(remoteChara);
         _zone.RemoveCard(remoteChara);
-        if (NetSession.Instance.Connection is ElinNetHost host) {
+        if (Session.Connection is ElinNetHost host) {
             host.Delta.AddRemote(new CharaRemoveFromGameDelta {
                 Owner = remoteChara,
             });
@@ -112,7 +108,7 @@ internal partial class ElinNetHost
     [CwlPostLoad]
     private static void RemoveLeftOverCharas()
     {
-        IEnumerable<Chara> excluded = NetSession.Instance.Connection is ElinNetHost host
+        IEnumerable<Chara> excluded = Session.Connection is ElinNetHost host
             ? host.ActiveRemoteCharas.Values
             : [];
 

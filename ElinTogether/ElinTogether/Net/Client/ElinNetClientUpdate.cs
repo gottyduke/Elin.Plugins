@@ -52,7 +52,7 @@ internal partial class ElinNetClient
         }
 
         _lastTick = snapshot;
-        NetSession.Instance.Tick = snapshot.ServerTick;
+        Session.Tick = snapshot.ServerTick;
 
         if (core.game?.activeZone?.map is null) {
             return;
@@ -75,6 +75,14 @@ internal partial class ElinNetClient
         }
     }
 
+    /// <summary>
+    ///     Net event: Apply new session remote player states
+    /// </summary>
+    private void OnSessionStatesUpdate(SessionPlayersSnapshot states)
+    {
+        states.Apply();
+    }
+
 #region Scheduler Jobs
 
     /// <summary>
@@ -83,9 +91,9 @@ internal partial class ElinNetClient
     public void StartWorldStateUpdate()
     {
         // 25hz delta dispatch
-        Scheduler.Subscribe(WorldStateDeltaUpdate, 25);
+        Scheduler.Subscribe(WorldStateDeltaUpdate, 25f);
         // 50hz delta process
-        Scheduler.Subscribe(WorldStateDeltaProcess, 50);
+        Scheduler.Subscribe(WorldStateDeltaProcess, 50f);
 
         _pauseUpdate = false;
     }

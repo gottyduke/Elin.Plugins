@@ -24,7 +24,7 @@ internal class TabLobbyBrowser : TabEmpBase
         if (NetSession.Instance.Connection == null) {
             btnGroup.Button("Start Server", StartServerFromPanel);
         } else {
-            btnGroup.Button("Invite Friend", SteamNetLobbyManager.Instance.InviteSteamOverlay);
+            btnGroup.Button("Invite Friend", NetSession.Instance.Lobby.InviteSteamOverlay);
             btnGroup.Button("Disconnect", DisconnectFromPanel);
         }
     }
@@ -35,7 +35,7 @@ internal class TabLobbyBrowser : TabEmpBase
 
         var totalPlayers = Header("Total Online Players : ");
 
-        SteamNetLobbyManager.Instance.GetOnlineLobbies(SetupLobbyDisplay);
+        NetSession.Instance.Lobby.GetOnlineLobbies(SetupLobbyDisplay);
 
         return;
 

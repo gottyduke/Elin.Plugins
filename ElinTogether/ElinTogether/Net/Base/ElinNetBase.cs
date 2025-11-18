@@ -8,13 +8,13 @@ namespace ElinTogether.Net;
 
 public abstract partial class ElinNetBase : EMono
 {
+    protected static readonly NetSession Session = NetSession.Instance;
     public readonly ElinDeltaManager Delta = new();
     protected readonly SteamNetMessageRouter Router = new();
     protected readonly TickScheduler Scheduler = new();
     protected readonly SteamNetManager Socket = new();
     private bool _initialized;
     protected ProgressIndicator? DebugProgress;
-    protected SteamNetLobbyManager Lobby => SteamNetLobbyManager.Instance;
 
     public abstract bool IsHost { get; }
 
@@ -41,7 +41,7 @@ public abstract partial class ElinNetBase : EMono
     {
         Stop();
         Socket.Dispose();
-        Lobby.LeaveLobby();
+        NetSession.Instance.Lobby.LeaveLobby();
 
 #if !DEBUG
         EmpMod.SharedHarmony.UnpatchSelf();
@@ -96,7 +96,7 @@ public abstract partial class ElinNetBase : EMono
             sb.AppendLine(peer.Stat.ToString());
         }
 
-        //sb.Append(Delta.ToString());
+        sb.Append(Delta.ToString());
 
         return sb.ToString();
     }

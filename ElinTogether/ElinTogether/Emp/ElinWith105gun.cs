@@ -3,7 +3,6 @@ using BepInEx;
 using Cwl.API.Attributes;
 using ElinTogether.Helper;
 using ElinTogether.Net;
-using ElinTogether.Net.Steam;
 using ElinTogether.Patches;
 using HarmonyLib;
 using ReflexCLI;
@@ -15,9 +14,9 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.elintogether";
     internal const string Name = "Elin Together";
-    internal const string Version = "0.8.33";
+    internal const string Version = "0.8.114";
 
-    public static string BuildVersion => field ??= EmpMod.Assembly.GetName().Version.ToString();
+    internal static string BuildVersion => field ??= EmpMod.Assembly.GetName().Version.ToString();
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
@@ -52,7 +51,7 @@ internal sealed class EmpMod : BaseUnityPlugin
 
         SteamNetworkingUtils.InitRelayNetworkAccess();
 
-        SteamNetLobbyManager.Instance.TryParseLobbyCommand();
+        NetSession.Instance.Lobby.TryParseLobbyCommand();
     }
 
     private void OnApplicationQuit()

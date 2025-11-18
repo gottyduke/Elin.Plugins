@@ -46,7 +46,7 @@ public partial class SteamNetManager
     {
         var userId = info.m_identityRemote.GetSteamID64();
 
-        SteamNetLobbyManager.Instance.Challenge(userId);
+        NetSession.Instance.Lobby.Challenge(userId);
 
         EmpLog.Debug("Received connection request from {RemoteIdentity}",
             userId);

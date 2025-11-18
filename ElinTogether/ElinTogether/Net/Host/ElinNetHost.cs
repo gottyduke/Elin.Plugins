@@ -5,6 +5,7 @@ using Cwl.Helper.Extensions;
 using Cwl.Helper.Unity;
 using ElinTogether.Models;
 using ElinTogether.Net.Steam;
+using Steamworks;
 
 namespace ElinTogether.Net;
 
@@ -24,8 +25,8 @@ internal partial class ElinNetHost : ElinNetBase
             return;
         }
 
-        Lobby.CreateLobby(SteamNetLobbyType.Public);
-        Lobby.CurrentLobby?.SetLobbyData("CurrentZone", _zone.NameWithLevel);
+        Session.Lobby.CreateLobby(SteamNetLobbyType.Public);
+        Session.Lobby.Current?.SetLobbyData("CurrentZone", _zone.NameWithLevel);
 
         if (localUdp) {
             Socket.StartServerUdp();
@@ -35,7 +36,18 @@ internal partial class ElinNetHost : ElinNetBase
 
         Scheduler.Subscribe(DisconnectInactive, 1);
 
-        NetSession.Instance.SharedSpeed = SharedSpeed;
+        // host also registers self state
+        var selfState = States[0] = new() {
+            Index = 0,
+            Uid = (ulong)SteamUser.GetSteamID(),
+            Name = SteamFriends.GetPersonaName(),
+            CharaUid = player.uidChara,
+        };
+
+        // setup session states
+        Session.Player = pc;
+        Session.CurrentPlayers.Add(selfState);
+        Session.SharedSpeed = SharedSpeed;
 
         EmpPop.Debug("Started server\nSource validations enabled: {SourceValidations}",
             SourceValidationsEnabled.Count);
@@ -70,7 +82,7 @@ internal partial class ElinNetHost : ElinNetBase
             }
 
             // client has not been responding after 25 ticks
-            if (!peer.IsConnected && NetSession.Instance.Tick - state.LastReceivedTick > 25) {
+            if (!peer.IsConnected && Session.Tick - state.LastReceivedTick > 25) {
                 Socket.Disconnect(peer, "emp_inactive");
             }
         }
@@ -95,11 +107,13 @@ internal partial class ElinNetHost : ElinNetBase
         EmpPop.Information("Player {@Peer} connected",
             peer);
 
-        if (SourceValidationsEnabled.Count > 0) {
-            RequestSourceValidation(peer);
-        } else {
-            PreparePlayerJoin(peer);
-        }
+        // do source validations
+        RequestSourceValidation(peer);
+
+        // and invite to steam lobby if clients aren't already in
+        peer.Send(new SteamLobbyRequest {
+            LobbyId = (ulong)Session.Lobby.Current!.LobbyId,
+        });
 
         DebugProgress ??= ProgressIndicator.CreateProgress(() => new(BuildDebugInfo()), _ => false, 1f);
     }
@@ -114,7 +128,7 @@ internal partial class ElinNetHost : ElinNetBase
             ActiveRemoteCharas.Remove(peer.Id, out var remoteChara)) {
             RemoveRemoteChara(remoteChara);
 
-            NetSession.Instance.CurrentPlayers.Remove(state);
+            Session.CurrentPlayers.Remove(state);
 
             EmpLog.Debug("Removed remote chara {@Chara}",
                 new {

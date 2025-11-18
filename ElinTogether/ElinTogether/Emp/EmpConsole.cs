@@ -56,18 +56,18 @@ internal class EmpConsole
     [ConsoleCommand("lobby.create_public")]
     internal static void CreatePublicLobby(int maxPlayers = 16)
     {
-        SteamNetLobbyManager.Instance.CreateLobby(SteamNetLobbyType.Public, maxPlayers);
+        NetSession.Instance.Lobby.CreateLobby(SteamNetLobbyType.Public, maxPlayers);
     }
 
     [ConsoleCommand("lobby.invite_steam")]
     internal static void InviteSteamUser(ulong steamId64)
     {
-        SteamNetLobbyManager.Instance.InviteSteamUser(steamId64);
+        NetSession.Instance.Lobby.InviteSteamUser(steamId64);
     }
 
     [ConsoleCommand("lobby.invite_overlay")]
     internal static void InviteSteamOverlay()
     {
-        SteamNetLobbyManager.Instance.InviteSteamOverlay();
+        NetSession.Instance.Lobby.InviteSteamOverlay();
     }
 }

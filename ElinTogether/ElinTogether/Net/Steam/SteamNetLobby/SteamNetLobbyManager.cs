@@ -14,11 +14,12 @@ public class SteamNetLobbyManager
     private readonly HashSet<ulong> _blocked = [];
     private Action<SteamNetLobby[]>? _deferOnComplete;
 
-    private SteamNetLobbyManager()
+    internal SteamNetLobbyManager()
     {
         SteamCallback<LobbyCreated_t>.Add(OnLobbyCreated);
         SteamCallback<LobbyChatUpdate_t>.Add(OnLobbyChatUpdate);
         SteamCallback<GameLobbyJoinRequested_t>.Add(OnLobbyJoinRequested);
+        SteamCallback<GameRichPresenceJoinRequested_t>.Add(OnRichPresenceJoinRequested);
         SteamCallback<LobbyEnter_t>.Add(OnLobbyEntered);
         SteamCallback<LobbyMatchList_t>.Add(OnLobbyMatchListComplete);
 
@@ -34,9 +35,7 @@ public class SteamNetLobbyManager
             .ToHashSet();
     }
 
-    public static SteamNetLobbyManager Instance => field ??= new();
-
-    public SteamNetLobby? CurrentLobby { get; private set; }
+    public SteamNetLobby? Current { get; private set; }
 
     /// <summary>
     ///     Create a new lobby. We do this automatically on Host
@@ -67,12 +66,12 @@ public class SteamNetLobbyManager
     /// </summary>
     public void LeaveLobby()
     {
-        if (CurrentLobby is not null) {
-            SteamMatchmaking.LeaveLobby(CurrentLobby.LobbyId);
+        if (Current is not null) {
+            SteamMatchmaking.LeaveLobby(Current.LobbyId);
             EmpLog.Information("Left steam lobby");
         }
 
-        CurrentLobby = null;
+        Current = null;
     }
 
     /// <summary>
@@ -101,8 +100,8 @@ public class SteamNetLobbyManager
     {
         Challenge(steamId64);
 
-        if (CurrentLobby is not null) {
-            SteamMatchmaking.InviteUserToLobby(CurrentLobby.LobbyId, (CSteamID)steamId64);
+        if (Current is not null) {
+            SteamMatchmaking.InviteUserToLobby(Current.LobbyId, (CSteamID)steamId64);
         }
     }
 
@@ -113,8 +112,8 @@ public class SteamNetLobbyManager
     {
         Challenge((ulong)SteamUser.GetSteamID());
 
-        if (CurrentLobby is not null) {
-            SteamFriends.ActivateGameOverlayInviteDialog(CurrentLobby.LobbyId);
+        if (Current is not null) {
+            SteamFriends.ActivateGameOverlayInviteDialog(Current.LobbyId);
         }
     }
 
@@ -166,13 +165,13 @@ public class SteamNetLobbyManager
     {
         EmpPop.Information("Steam lobby created");
 
-        CurrentLobby = new((CSteamID)lobby.m_ulSteamIDLobby);
+        Current = new((CSteamID)lobby.m_ulSteamIDLobby);
 
-        CurrentLobby.SetLobbyData("EmpVersion", ModInfo.BuildVersion);
+        Current.SetLobbyData("EmpVersion", ModInfo.BuildVersion);
 
         // add our custom lobby data
-        CurrentLobby.SetLobbyData("OwnerName", SteamFriends.GetPersonaName());
-        CurrentLobby.SetLobbyData("GameVersion", EMono.core.version.GetText());
+        Current.SetLobbyData("OwnerName", SteamFriends.GetPersonaName());
+        Current.SetLobbyData("GameVersion", EMono.core.version.GetText());
 
         NetSession.Instance.SessionId = lobby.m_ulSteamIDLobby;
     }
@@ -187,25 +186,43 @@ public class SteamNetLobbyManager
         ConnectLobby((ulong)lobbyId);
     }
 
+    private void OnRichPresenceJoinRequested(GameRichPresenceJoinRequested_t request)
+    {
+        var lobbyId = request.m_rgchConnect;
+
+        EmpPop.Information("Received lobby join request {LobbyId}",
+            lobbyId);
+
+        ConnectLobby(ulong.Parse(lobbyId));
+    }
+
     private void OnLobbyEntered(LobbyEnter_t state)
     {
-        CurrentLobby = new((CSteamID)state.m_ulSteamIDLobby);
-        CurrentLobby.RefreshData();
+        Current = new((CSteamID)state.m_ulSteamIDLobby);
+        Current.RefreshData();
 
         NetSession.Instance.SessionId = state.m_ulSteamIDLobby;
 
-        var host = CurrentLobby.GetLobbyOwner();
-        // connect to host automatically
+        // assign friend grouping
+        var sessionKey = NetSession.Instance.SessionId.ToString();
+        SteamFriends.SetRichPresence("steam_player_group", sessionKey);
+
+        var host = Current.GetLobbyOwner();
         if (host == SteamUser.GetSteamID()) {
+            // assign steam rich presence join key
+            SteamFriends.SetRichPresence("connect", sessionKey);
             return;
         }
 
         EmpPop.Information("Joined lobby, current EmpVersion is {EmpVersion}",
-            CurrentLobby.GetLobbyData("EmpVersion"));
+            Current.EmpVersion);
 
-        NetSession.Instance
-            .InitializeComponent<ElinNetClient>()
-            .ConnectSteamUser((ulong)host);
+        // connect automatically as clients
+        if (NetSession.Instance.Connection is not ElinNetClient) {
+            NetSession.Instance
+                .InitializeComponent<ElinNetClient>()
+                .ConnectSteamUser((ulong)host);
+        }
     }
 
     private void OnLobbyChatUpdate(LobbyChatUpdate_t update)
@@ -220,7 +237,7 @@ public class SteamNetLobbyManager
                 State = state,
             }));
 
-        if (member != CurrentLobby!.GetLobbyOwner()) {
+        if (member != Current!.GetLobbyOwner()) {
             return;
         }
 
@@ -242,6 +259,12 @@ public class SteamNetLobbyManager
 
             var lobby = new SteamNetLobby(lobbyId);
             lobby.RefreshData();
+
+#if DEBUG
+            if (lobby.GetLobbyOwner().m_SteamID is 76561198254677013UL or 76561198412175578UL) {
+                continue;
+            }
+#endif
 
             lobbies.Add(lobby);
         }

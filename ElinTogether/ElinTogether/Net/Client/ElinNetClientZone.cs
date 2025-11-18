@@ -78,7 +78,7 @@ internal partial class ElinNetClient
         }
 
         // update session remote zone
-        NetSession.Instance.CurrentZone = remoteZone;
+        Session.CurrentZone = remoteZone;
 
         // respond for replication complete, waiting for sync position
         Socket.FirstPeer.Send(response.Ready());
@@ -89,7 +89,7 @@ internal partial class ElinNetClient
     /// </summary>
     private void OnZoneActivateResponse(ZoneActivateResponse response)
     {
-        var currentZone = NetSession.Instance.CurrentZone;
+        var currentZone = Session.CurrentZone;
 
         if (currentZone?.uid != response.ZoneUid) {
             // ??? how
