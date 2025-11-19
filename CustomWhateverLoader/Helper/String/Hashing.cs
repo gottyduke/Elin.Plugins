@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -12,7 +11,7 @@ public static class Hashing
     private const uint FnvPrime32 = 0x1000193;
     private const uint FnvOffset32 = 0x811c9dc5;
 
-    [field: AllowNull]
+
     private static SHA256 Sha256 => field ??= SHA256.Create();
 
     public static string UniqueString(this Playlist mold)

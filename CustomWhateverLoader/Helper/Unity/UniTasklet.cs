@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Cwl.API.Attributes;
 using Cwl.Helper.Exceptions;
@@ -10,7 +9,7 @@ public static class UniTasklet
 {
     public static CancellationToken GameToken = CwlMod.Instance.GetCancellationTokenOnDestroy();
 
-    [field: AllowNull]
+
     public static CancellationTokenSource SceneCts
     {
         get => field ??= new();

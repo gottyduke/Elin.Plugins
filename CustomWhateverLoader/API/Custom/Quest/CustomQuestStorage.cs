@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Cwl.API.Custom;
 
@@ -19,6 +18,6 @@ public class CustomQuestStorage : CustomQuestStorageV1;
 
 public class CustomQuestStorageV1 : QuestDialog
 {
-    [JsonProperty] public SerializableQuestData Data { get; protected set; } = new();
-    [JsonProperty] public Dictionary<QuestTextType, string> Text { get; protected set; } = [];
+    [JsonProperty]
+    public SerializableQuestData Data { get; protected set; } = new();
 }

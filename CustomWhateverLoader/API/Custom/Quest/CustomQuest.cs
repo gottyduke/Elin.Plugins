@@ -1,6 +1,7 @@
 ﻿#if DEBUG
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -18,12 +19,13 @@ public class CustomQuest : CustomQuestStorage
 {
     internal static readonly Dictionary<string, SourceQuest.Row> Managed = [];
 
-    internal static List<MethodInfo>? ExternalValidators =>
+    
+    internal static List<MethodInfo> ExternalValidators =>
         field ??= AttributeQuery.MethodsWith<CwlQuestConditionValidator>()
             .Select(aq => aq.Item1)
             .ToList();
 
-    public override bool RequireClientInSameZone => Data.RequireClientInSameZone;
+    public override bool RequireClientInSameZone => true;
     public override bool CanAbandon => Data.CanAbandon;
     public override int AffinityGain => 0;
 
@@ -46,46 +48,51 @@ public class CustomQuest : CustomQuestStorage
 
     public override void OnStart()
     {
+        CwlMod.Debug<CustomQuest>($"starting: {id}, client: {chara.id}");
     }
 
     public override string GetTitle()
     {
-        return Text.GetValueOrDefault(QuestTextType.Title, base.GetTitle());
+        return Data.Texts.GetValueOrDefault(QuestTextType.Title, base.GetTitle());
     }
 
     public override string GetTrackerText()
     {
-        return Text.GetValueOrDefault(QuestTextType.Tracker, base.GetTrackerText());
+        return Data.Texts.GetValueOrDefault(QuestTextType.Tracker, base.GetTrackerText());
     }
 
     public override string GetDetail(bool onJournal = false)
     {
-        return Text.GetValueOrDefault(QuestTextType.Detail, base.GetDetail(onJournal));
+        return Data.Texts.GetValueOrDefault(QuestTextType.Detail, base.GetDetail(onJournal));
     }
 
     public override string GetDetailText(bool onJournal = false)
     {
-        return Text.GetValueOrDefault(QuestTextType.DetailFull, base.GetDetailText(onJournal));
+        return Data.Texts.GetValueOrDefault(QuestTextType.DetailFull, base.GetDetailText(onJournal));
     }
 
     public override string GetTextProgress()
     {
-        return Text.GetValueOrDefault(QuestTextType.Progress, base.GetTextProgress());
+        return Data.Texts.GetValueOrDefault(QuestTextType.Progress, base.GetTextProgress());
     }
 
     public new string GetRewardText()
     {
-        return Text.GetValueOrDefault(QuestTextType.Reward, base.GetRewardText());
+        if (!Data.Texts.TryGetValue(QuestTextType.Reward, out var text)) {
+            text = $"qReward{RewardSuffix}".lang(rewardMoney.ToString());
+        }
+
+        return text;
     }
 
     public override string GetTalkProgress()
     {
-        return Text.GetValueOrDefault(QuestTextType.TalkProgress, base.GetTalkProgress());
+        return Data.Texts.GetValueOrDefault(QuestTextType.TalkProgress, base.GetTalkProgress());
     }
 
     public override string GetTalkComplete()
     {
-        return Text.GetValueOrDefault(QuestTextType.TalkComplete, base.GetTalkComplete());
+        return Data.Texts.GetValueOrDefault(QuestTextType.TalkComplete, base.GetTalkComplete());
     }
 
     public override void OnComplete()
@@ -100,7 +107,7 @@ public class CustomQuest : CustomQuestStorage
 
     public void UpdateText(QuestTextType type, string text)
     {
-        Text[type] = text;
+        Data.Texts[type] = text;
     }
 
     public bool IsValidCondition(string condition, string expr)
@@ -143,7 +150,7 @@ public class CustomQuest : CustomQuestStorage
             return constraint is null || expr.Compare(constraint.Value);
         }
 
-        var validators = ExternalValidators?.ToArray() ?? [];
+        var validators = ExternalValidators.ToArray();
         foreach (var method in validators) {
             try {
                 var result = method.FastInvokeStatic(this, condition, expr);
@@ -184,7 +191,7 @@ public class CustomQuest : CustomQuestStorage
     }
 
     // TODO loc
-    //[CwlSceneInitEvent(Scene.Mode.StartGame, true)]
+    [CwlSceneInitEvent(Scene.Mode.StartGame, true, order: CwlSceneEventOrder.QuestImporter)]
     internal static void AddDelayedQuest()
     {
         var qm = game.quests;
@@ -209,7 +216,7 @@ public class CustomQuest : CustomQuestStorage
             if (r.drama.Length == 0) {
                 CwlMod.Log<CustomQuest>($"quest {id} has no drama defined, maybe script generated");
             } else {
-                client = game.cards.globalCharas.Find(r.drama[0]);
+                client = game.cards.globalCharas.Find(r.drama[0]) ?? pc;
             }
 
             var quest = new CustomQuest {

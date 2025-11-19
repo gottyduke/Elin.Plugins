@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using Cwl.Helper.String;
@@ -33,7 +32,7 @@ public class FileMapping
 
     public DirectoryInfo ModBaseDir => Owner.dirInfo;
 
-    [field: AllowNull]
+
     public static ILookup<string, string> FallbackLut => field ??= _fallbacks.ToLookup(r => r.Item1, r => r.Item2);
 
     public void RebuildLangModMapping(string langCode = "EN")

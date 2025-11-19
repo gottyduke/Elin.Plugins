@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Cwl.Helper;
 
 public class SourceRowComparer : IEqualityComparer<SourceData.BaseRow>
 {
-    [field: AllowNull]
     public static SourceRowComparer Default => field ??= new();
 
     public bool Equals(SourceData.BaseRow? lhs, SourceData.BaseRow? rhs)

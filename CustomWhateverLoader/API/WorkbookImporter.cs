@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -27,7 +26,7 @@ public class WorkbookImporter
 
     internal static string LastTiming = "";
 
-    [field: AllowNull]
+
     public static Dictionary<string, SourceData?> Sources =>
         field ??= typeof(SourceManager)
             .GetFields(AccessTools.all)

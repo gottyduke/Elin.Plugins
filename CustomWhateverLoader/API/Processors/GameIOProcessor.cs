@@ -23,7 +23,7 @@ public class GameIOProcessor
     private static readonly Dictionary<string, PropertyInfo> _contextVars = new(StringComparer.Ordinal);
     public static GameIOContext? LastUsedContext { get; private set; }
 
-    [field: AllowNull]
+
     public static GameIOContext PersistentContext => field ??= new(Application.persistentDataPath);
 
     private static event Action<GameIOContext>? OnGamePreSaveProcess;

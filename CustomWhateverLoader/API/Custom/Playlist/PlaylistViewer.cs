@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using Cwl.API.Attributes;
@@ -19,28 +18,28 @@ public class PlaylistViewer
     private ProgressIndicator? _bgmProgress;
     private bool _detailedView;
 
-    [field: AllowNull]
+
     private string DetailString => field ??= "cwl_ui_bgm_detail".lang();
 
-    [field: AllowNull]
+
     private string NextString => field ??= "cwl_ui_bgm_next".lang();
 
-    [field: AllowNull]
+
     private string PreviousString => field ??= "cwl_ui_bgm_last".lang();
 
-    [field: AllowNull]
+
     private string RebuildString => field ??= "cwl_ui_bgm_rebuild".lang();
 
-    [field: AllowNull]
+
     private string ShuffleString => field ??= "cwl_ui_bgm_shuffle".lang();
 
-    [field: AllowNull]
+
     private GUIStyle ButtonStyle =>
         field ??= new(_bgmProgress?.GUIStyle ?? GUI.skin.label) {
             alignment = TextAnchor.MiddleCenter,
         };
 
-    [field: AllowNull]
+
     private GUIStyle ProgressBarStyle =>
         field ??= new(GUI.skin.box) {
             normal = {
@@ -48,7 +47,7 @@ public class PlaylistViewer
             },
         };
 
-    [field: AllowNull]
+
     private GUIStyle ProgressBarBgStyle =>
         field ??= new(GUI.skin.box) {
             normal = {

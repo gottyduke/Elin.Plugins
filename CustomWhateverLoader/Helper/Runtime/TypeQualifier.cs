@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -41,7 +40,7 @@ public class TypeQualifier
 
     public static readonly Dictionary<Assembly, string> MappedAssemblyNames = [];
 
-    [field: AllowNull]
+
     public static List<BaseUnityPlugin> Plugins =>
         field ??= ModManager.ListPluginObject
             .OfType<BaseUnityPlugin>()

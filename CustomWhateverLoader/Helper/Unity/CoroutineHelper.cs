@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
 namespace Cwl.Helper.Unity;
 
 public class CoroutineHelper : MonoBehaviour
 {
-    [field: AllowNull]
     private static CoroutineHelper Instance => field ??= CwlMod.Instance.GetOrCreate<CoroutineHelper>();
 
     public static Coroutine Immediate(IEnumerator co)

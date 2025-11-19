@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.Extensions;
@@ -28,10 +27,10 @@ public class ProgressIndicator
     public required Func<UpdateInfo> OnUpdate;
     public required Func<ProgressIndicator, bool> ShouldKill;
 
-    [field: AllowNull]
+
     private static ProgressIndicatorUpdater Updater => field ??= CwlMod.Instance.GetOrCreate<ProgressIndicatorUpdater>();
 
-    [field: AllowNull]
+
     public GUIStyle GUIStyle => field ??= GetLabelSkin();
 
     public float DurationRemain { get; private set; }
@@ -173,13 +172,13 @@ public class ProgressIndicator
     {
         internal bool StopOnNextUpdate;
 
-        [field: AllowNull]
+
         private GUIStyle ScrollViewStyle => field ??= GetScrollViewSkin();
 
-        [field: AllowNull]
+
         private GUIStyle VerticalScrollbarStyle => field ??= GetVerticalScrollbarSkin();
 
-        [field: AllowNull]
+
         private GUIStyle VerticalScrollbarThumbStyle => field ??= GetVerticalScrollbarThumbSkin();
 
         private void Start()

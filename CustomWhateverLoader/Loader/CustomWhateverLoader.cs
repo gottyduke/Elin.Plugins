@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
+﻿using System.Reflection;
 using BepInEx;
 using Cwl.Helper.FileUtil;
 using HarmonyLib;
@@ -23,7 +22,7 @@ public static class ModInfo
     public const string Version = "1.20.56";
 
     // for runtime versions
-    [field: AllowNull]
+
     public static string BuildVersion => field ??= CwlMod.Assembly.GetName().Version.ToString();
 }
 
