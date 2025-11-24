@@ -14,7 +14,7 @@ public class RelationContext(IList<Chara> charas) : ContextProviderBase
 {
     public const char KeySeparator = '+';
 
-    [field: AllowNull]
+    
     public static ILookup<string, RelationPrompt> Lookup
     {
         get => field ??= BuildLookup().ToLookup(rp => rp.Key);

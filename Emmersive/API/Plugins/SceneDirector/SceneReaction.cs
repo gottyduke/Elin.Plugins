@@ -44,7 +44,7 @@ public class SceneReaction
         }
         """;
 
-    [field: AllowNull]
+    
     internal static JObject Schema =>
         field ??= JObject.FromObject(new {
             type = "array",
@@ -61,7 +61,7 @@ public class SceneReaction
             },
         });
 
-    [field: AllowNull]
+    
     internal static JObject OpenAiSchema =>
         field ??= JObject.FromObject(new {
                 type = "json_schema",

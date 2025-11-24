@@ -8,7 +8,7 @@ namespace Emmersive.Helper;
 
 internal static class AesKeyBin
 {
-    [field: AllowNull]
+    
     internal static byte[] KeyBin => field ??= GetAesKeyBin();
 
     private static byte[] GetAesKeyBin()

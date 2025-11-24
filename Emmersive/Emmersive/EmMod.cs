@@ -13,9 +13,9 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.emmersive";
     internal const string Name = "Elin with AI (Beta)";
-    internal const string Version = "0.9.16";
+    internal const string Version = "0.9.17";
 
-    [field: AllowNull]
+    
     public static string BuildVersion => field ??= EmMod.Assembly.GetName().Version.ToString();
 }
 

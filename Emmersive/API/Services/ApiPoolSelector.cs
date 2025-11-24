@@ -18,7 +18,7 @@ public sealed class ApiPoolSelector : IAIServiceSelector
     public IReadOnlyList<IChatProvider> Providers => _providers;
     public IChatProvider? CurrentProvider { get; private set; }
 
-    [field: AllowNull]
+    
     public static ApiPoolSelector Instance => field ??= new();
 
     public void AddService(IChatProvider provider)

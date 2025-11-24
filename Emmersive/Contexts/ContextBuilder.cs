@@ -19,13 +19,13 @@ public sealed class ContextBuilder
     {
     }
 
-    [field: AllowNull]
+    
     public static IContextProvider RecentActionContext => field ??= new RecentActionContext();
 
     public static IContextProvider CurrentZoneContext => new ZoneContext(EClass._zone);
     public static IContextProvider PlayerContext => new PlayerContext();
 
-    [field: AllowNull]
+    
     public static IContextProvider SystemContext
     {
         get => field ??= new SystemContext();

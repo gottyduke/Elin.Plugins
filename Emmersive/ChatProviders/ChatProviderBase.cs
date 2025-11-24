@@ -46,7 +46,7 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionReques
     }
 
     [JsonProperty]
-    [field: AllowNull]
+    
     public virtual string Id
     {
         get => field ??= $"{Alias}#{ServiceCount}";
