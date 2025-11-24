@@ -40,11 +40,7 @@ public class TypeQualifier
 
     public static readonly Dictionary<Assembly, string> MappedAssemblyNames = [];
 
-
-    public static List<BaseUnityPlugin> Plugins =>
-        field ??= ModManager.ListPluginObject
-            .OfType<BaseUnityPlugin>()
-            .ToList();
+    public static List<BaseUnityPlugin> Plugins { get; private set; } = [];
 
     public static string GetMappedAssemblyName(Assembly assembly)
     {
@@ -134,6 +130,10 @@ public class TypeQualifier
     internal static void SafeQueryTypesOfAll()
     {
         Declared.Clear();
+
+        Plugins = ModManager.ListPluginObject
+            .OfType<BaseUnityPlugin>()
+            .ToList();
 
         foreach (var plugin in Plugins.ToArray()) {
             try {
