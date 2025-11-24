@@ -1,4 +1,6 @@
-﻿using Cwl.API.Custom;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Cwl.API.Custom;
 using Cwl.API.Drama;
 using Cwl.LangMod;
 
@@ -9,6 +11,16 @@ public static class CharaExt
     extension(Chara chara)
     {
         public RendererDir RendererDir => (RendererDir)(chara.renderer as CharaRenderer)!.currentDir;
+
+        public List<Feat> Feats =>
+            chara.elements.dict.Values
+                .OfType<Feat>()
+                .ToList();
+
+        public List<Ability> Abilities =>
+            chara.elements.dict.Values
+                .OfType<Ability>()
+                .ToList();
 
         public bool IsBoss(bool hostileOnly = false)
         {
