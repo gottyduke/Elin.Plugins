@@ -79,7 +79,7 @@ public class CharaContext(Chara chara) : ContextProviderBase
 
         var conditions = chara.conditions;
         if (conditions.Count > 0) {
-            data["condition"] = string.Join(',', conditions.Select(c => c.Name));
+            data["condition"] = string.Join(',', conditions.Select(c => c.GetText()));
         }
 
         var background = new BackgroundContext(chara).Build();
