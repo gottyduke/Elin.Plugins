@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using Cwl.API.Attributes;
 using UnityEngine;
 
-namespace Cwl.Patches;
+namespace Cwl.Patches.Renderers;
 
 // custom mob figure
 internal class FigureRenderer : CardRenderer
