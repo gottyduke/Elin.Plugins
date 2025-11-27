@@ -11,11 +11,14 @@ using Cwl.Helper.FileUtil;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using Cwl.Patches;
+using Cwl.Patches.Charas;
 using Cwl.Patches.Conditions;
 using Cwl.Patches.Elements;
+using Cwl.Patches.Materials;
 using Cwl.Patches.Quests;
 using Cwl.Patches.Relocation;
 using Cwl.Patches.Sources;
+using Cwl.Patches.Traits;
 using Cwl.Patches.Zones;
 using HarmonyLib;
 using MethodTimer;
@@ -66,6 +69,24 @@ internal sealed partial class CwlMod
         if (CwlConfig.TrimSpaces) {
             CellPostProcessPatch.Add(c => c?.Trim());
         }
+    }
+
+    [Time]
+    private static void BuildDeferredPatches()
+    {
+        SharedHarmony.PatchAll(typeof(ActPerformEvent));
+
+        SharedHarmony.PatchAll(typeof(ConverterEvent.CanDecaySubEvent));
+        SharedHarmony.PatchAll(typeof(ConverterEvent.OnDecaySubEvent));
+
+        SharedHarmony.PatchAll(typeof(LoadZonePatch));
+
+        SharedHarmony.PatchAll(typeof(RepositionTcPatch.TcFixPosPatch));
+
+        SharedHarmony.PatchAll(typeof(InvalidateItemPatch));
+        SharedHarmony.PatchAll(typeof(InvalidateDestThingPatch));
+
+        SharedHarmony.PatchAll(typeof(ReverseIdMapper.RecipeMaterialIdMapper));
     }
 
     [Time]
@@ -125,7 +146,10 @@ internal sealed partial class CwlMod
         CreateLoadingProgress();
 
         CacheDetail.InvalidateCache();
+
         QueryDeclTypes();
+        BuildDeferredPatches();
+
         RegisterEvents();
 
         StartCoroutine(LoadTask());

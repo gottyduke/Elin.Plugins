@@ -8,7 +8,6 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Quests;
 
-[HarmonyPatch]
 internal class InvalidateItemPatch
 {
     private const string FallbackItem = "generator_snowman";
@@ -34,7 +33,6 @@ internal class InvalidateItemPatch
     }
 }
 
-[HarmonyPatch]
 internal static class InvalidateDestThingPatch
 {
     private static readonly List<Thing> _cleanup = [];

@@ -39,7 +39,6 @@ internal class ReverseIdMapper
         return rows.TryGet(index);
     }
 
-    [HarmonyPatch]
     internal class RecipeMaterialIdMapper
     {
         internal static IEnumerable<MethodBase> TargetMethods()

@@ -7,10 +7,8 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Traits;
 
-[HarmonyPatch]
 internal class ConverterEvent
 {
-    [HarmonyPatch]
     internal class CanDecaySubEvent
     {
         internal static IEnumerable<MethodBase> TargetMethods()
@@ -38,7 +36,6 @@ internal class ConverterEvent
         }
     }
 
-    [HarmonyPatch]
     internal class OnDecaySubEvent
     {
         internal static IEnumerable<MethodBase> TargetMethods()

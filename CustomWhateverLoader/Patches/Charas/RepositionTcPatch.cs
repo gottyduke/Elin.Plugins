@@ -23,7 +23,6 @@ internal class RepositionTcPatch
         return renderer is { actor.owner.IsPC: false, usePass: false };
     }
 
-    [HarmonyPatch]
     internal class TcFixPosPatch
     {
         internal static IEnumerable<MethodBase> TargetMethods()

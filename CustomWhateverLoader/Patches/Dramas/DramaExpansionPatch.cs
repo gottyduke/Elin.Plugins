@@ -53,7 +53,7 @@ internal class DramaExpansionPatch
         DramaExpansion.Cookie = new(__instance, item);
 
         if (!item.TryGetValue("action", out var action) ||
-            action is not ("invoke*" or "inject" or "i*")) {
+            action.Trim() is not ("invoke*" or "inject" or "i*")) {
             return false;
         }
 
