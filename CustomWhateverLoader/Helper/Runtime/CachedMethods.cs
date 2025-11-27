@@ -41,9 +41,22 @@ public static class CachedMethods
         }
     }
 
-    public static object? GetFieldValue(this object instance, string fieldName)
+    extension(object instance)
     {
-        return instance.GetType().GetCachedField(fieldName)?.GetValue(instance);
+        public object? GetFieldValue(string fieldName)
+        {
+            return instance.GetType().GetCachedField(fieldName)?.GetValue(instance);
+        }
+
+        public object? GetPropertyValue(string propertyName)
+        {
+            var flags = AccessTools.all & ~BindingFlags.Static;
+
+            return instance.GetType().GetProperties(flags)
+                .Where(p => p.GetGetMethod(true) is not null)
+                .FirstOrDefault(p => string.Equals(p.Name, propertyName, StringComparison.Ordinal))?
+                .GetValue(instance);
+        }
     }
 
     extension(Type type)
