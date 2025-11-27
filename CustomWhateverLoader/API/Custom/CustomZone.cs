@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Cwl.API.Attributes;
 using Cwl.LangMod;
 using MethodTimer;
 
@@ -12,18 +13,27 @@ public class CustomZone : Zone
     public static IReadOnlyCollection<SourceZone.Row> All => Managed.Values;
 
     [Time]
-    public static void AddZone(SourceZone.Row r, string qualified)
+    public static void AddZone(SourceZone.Row r)
     {
         try {
-            if (CwlConfig.QualifyTypeName) {
-                r.type = qualified;
-                CwlMod.Log<CustomZone>("cwl_log_custom_type".Loc(nameof(Zone), r.id, r.type));
-            }
-
             Managed[r.id] = r;
         } catch (Exception ex) {
             CwlMod.ErrorWithPopup<CustomZone>("cwl_error_qualify_type".Loc(nameof(Zone), r.id, r.type), ex);
             // noexcept
+        }
+    }
+
+    [CwlSceneInitEvent(Scene.Mode.StartGame, true, order: CwlSceneEventOrder.ZoneImporter)]
+    public static void AddDelayedZone()
+    {
+        foreach (var row in All) {
+            if (game.spatials.Find(row.id) is not null) {
+                continue;
+            }
+
+            if (row.tag.Contains("addMap")) {
+                SpatialGen.Create(row.id, world.region, true);
+            }
         }
     }
 }

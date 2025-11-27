@@ -1,5 +1,6 @@
 ﻿using Cwl.API.Custom;
 using Cwl.Helper;
+using Cwl.LangMod;
 using Cwl.Patches.Sources;
 using HarmonyLib;
 using MethodTimer;
@@ -23,10 +24,13 @@ internal class SetZoneRowPatch
         }
 
         var qualified = TypeQualifier.TryQualify<Zone>(r.type);
-        if (qualified?.FullName is null) {
-            return;
+        if (qualified?.FullName is { } fullName) {
+            if (CwlConfig.QualifyTypeName) {
+                r.type = fullName;
+                CwlMod.Log<CustomZone>("cwl_log_custom_type".Loc(nameof(Zone), r.id, r.type));
+            }
         }
 
-        CustomZone.AddZone(r, qualified.FullName);
+        CustomZone.AddZone(r);
     }
 }

@@ -58,13 +58,7 @@ internal sealed partial class CwlMod
                 exp.CreateAndPop(payload.ToString());
                 break;
             default: {
-                using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToTruncateString(150)));
-                if (log is not null) {
-                    LogInternal(log);
-                    progress.Get<ProgressIndicator>()
-                        .OnHover(p => GUILayout.Label(log.ToTruncateString(450).TruncateAllLines(150), p.GUIStyle));
-                }
-
+                PopupInternal(payload.RemoveTagColor());
                 break;
             }
         }
@@ -92,14 +86,7 @@ internal sealed partial class CwlMod
                 exp.CreateAndPop(payload.ToString());
                 break;
             default: {
-                using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToTruncateString(150),
-                    Color: _warningColor));
-                if (log is not null) {
-                    LogInternal(log);
-                    progress.Get<ProgressIndicator>()
-                        .OnHover(p => GUILayout.Label(log.ToTruncateString(450).TruncateAllLines(150), p.GUIStyle));
-                }
-
+                PopupInternal(payload.RemoveTagColor(), _warningColor);
                 break;
             }
         }
@@ -109,11 +96,32 @@ internal sealed partial class CwlMod
     internal static void Popup<T>(string message)
     {
         Log<T>(message);
-        using var progress = ProgressIndicator.CreateProgressScoped(() => new(message));
+        PopupInternal(message);
     }
 
     private static void LogInternal(object log)
     {
         UnityEngine.Debug.Log(log.RemoveTagColor());
+    }
+
+    private static void PopupInternal(string log, Color? color = null)
+    {
+        var truncation = log.Length > 150;
+        var header = log;
+        if (truncation) {
+            var truncated = log.ToTruncateString(150);
+            if (!ReferenceEquals(truncated, header)) {
+                header = truncated;
+            } else {
+                truncation = false;
+            }
+        }
+
+        using var progress = ProgressIndicator.CreateProgressScoped(() => new(header, Color: color));
+
+        if (truncation) {
+            var footer = log.RemoveTagColor()[150..];
+            progress.Get<ProgressIndicator>().OnHover(p => GUILayout.Label(footer, p.GUIStyle));
+        }
     }
 }
