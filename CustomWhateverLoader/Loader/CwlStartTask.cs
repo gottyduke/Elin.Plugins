@@ -106,8 +106,6 @@ internal sealed partial class CwlMod
 
         AddResourceRelocators();
 
-        DataLoader.MergeCharaTalk();
-        DataLoader.MergeCharaTone();
         DataLoader.PreloadDialog();
         DataLoader.MergeEffectSetting();
 
@@ -117,6 +115,11 @@ internal sealed partial class CwlMod
         yield return null;
 
         DataLoader.MergeGodTalk();
+        DataLoader.MergeCharaTalk();
+        DataLoader.MergeCharaTone();
+        DataLoader.MergeCustomAlias();
+        DataLoader.MergeCustomName();
+
         DataLoader.MergeFactionElements();
         DataLoader.MergeOfferingMultiplier();
 
