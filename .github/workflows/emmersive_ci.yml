@@ -79,6 +79,7 @@ jobs:
           path: ${{ github.workspace }}\out\${{ matrix.version }}
 
       - name: Prepare Release
+        if: github.event_name != 'pull_request'
         id: artifact
         shell: pwsh
         run: |
@@ -87,25 +88,33 @@ jobs:
 
           Compress-Archive -Path "$source\*" -DestinationPath $destination -Force
           $path = $destination -Replace '\\', '/'
+      
+          $repoUrl = "https://github.com/${{ github.repository }}"
+          $tags = git tag --list "EM-*" --sort=committerdate | select -Last 2
+
+          $commits = git log "$($tags[0])..$($tags[1])" --pretty=format:"%s" -- Emmersive/ 
+          | ? {$_ -notmatch "cleanup"}
+          | % {
+              $parts = $_ -split ';', 2
+              $hash = $parts[0]
+              $msg  = $parts[1]
+
+              "- [$msg]($repoUrl/commit/$hash)"
+          }
+
+          $commits | Out-File -FilePath "${{ github.workspace }}\CHANGELOG.txt" -Encoding UTF8
 
           echo "artifact_path=$path" >> $env:GITHUB_OUTPUT
 
-          $log = git log "$(git describe --tags --abbrev=0 --match="EM-*")..HEAD" --pretty=format:"%s" -- Emmersive/ | ? { $_ -notmatch "cleanup" }
-          $log = $log -join "`n"
-          $EOF = [guid]::NewGuid().ToString()
-          Add-Content -Path $env:GITHUB_OUTPUT -Value "change_logs<<$EOF"
-          Add-Content -Path $env:GITHUB_OUTPUT -Value $log
-          Add-Content -Path $env:GITHUB_OUTPUT -Value $EOF
-
       - name: Create or Update Release
+        if: github.event_name != 'pull_request'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: EM-${{ steps.build.outputs.file_version_short }}
           name: Emmersive - Elin with AI ${{ steps.build.outputs.file_version }}
-          draft: false
           prerelease: true
           generate_release_notes: false
-          body: ${{ steps.artifact.outputs.log }}
+          body_path: ${{ github.workspace }}\CHANGELOG.txt
           files: ${{ steps.artifact.outputs.artifact_path }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

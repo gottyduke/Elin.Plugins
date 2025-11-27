@@ -77,6 +77,7 @@ jobs:
           path: ${{ github.workspace }}\out\${{ matrix.version }}
 
       - name: Prepare Release
+        if: github.event_name != 'pull_request'
         id: artifact
         shell: pwsh
         run: |
@@ -85,32 +86,32 @@ jobs:
 
           Compress-Archive -Path "$source\*" -DestinationPath $destination -Force
           $path = $destination -Replace '\\', '/'
-          $lastTag = git describe --tags --match="CWL-*" --abbrev=0 HEAD
+
+          $repoUrl = "https://github.com/${{ github.repository }}"
+          $tags = git tag --list "CWL-*" --sort=committerdate | select -Last 2
+          
+          $commits = git log "$($tags[0])..$($tags[1])" --pretty=format:"%s" -- CustomWhateverLoader/ 
+          | ? {$_ -notmatch "cleanup"} 
+          | % {
+              $parts = $_ -split ';', 2
+              $hash = $parts[0]
+              $msg  = $parts[1]
+
+              "- [$msg]($repoUrl/commit/$hash)"
+          }
+
+          $commits | Out-File -FilePath "${{ github.workspace }}\CHANGELOG.txt" -Encoding UTF8
 
           echo "artifact_path=$path" >> $env:GITHUB_OUTPUT
-          echo "last_tag=$lastTag" >> $env:GITHUB_OUTPUT
 
-      - name: Generate Release Note
-        id: release_notes
-        uses: mikepenz/release-changelog-builder-action@v6.0.0
-
-      - name: Create Incremental Release
+      - name: Create or Update Release
+        if: github.event_name != 'pull_request'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: CWL-${{ steps.build.outputs.file_version_short }}
-          draft: false
-          prerelease: false
-          generate_release_notes: false
-          files: ${{ steps.artifact.outputs.artifact_path }}
-
-      - name: Pin Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: CustomWhateverLoader
           name: Custom Whatever Loader ${{ steps.build.outputs.file_version }}
-          draft: false
-          prerelease: false
           generate_release_notes: false
+          body_path: ${{ github.workspace }}\CHANGELOG.txt
           files: ${{ steps.artifact.outputs.artifact_path }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
