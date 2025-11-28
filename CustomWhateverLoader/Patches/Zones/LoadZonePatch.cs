@@ -25,7 +25,7 @@ internal class LoadZonePatch
         // we use Maps instead Map or Map Piece to avoid tangling with saved moongate maps
         string[] fileNames = [
             $"Maps/{__instance.idExport}.z",
-            $"Maps/{__instance.source.idFile[0]}_F0.z",
+            $"Maps/{__instance.source.idFile.TryGet(0, true)}_F0.z",
             $"Maps/{__instance.ZoneFullName}.z",
         ];
         var candidate = fileNames
