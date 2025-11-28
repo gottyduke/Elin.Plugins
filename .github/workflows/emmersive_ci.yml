@@ -92,14 +92,14 @@ jobs:
           $repoUrl = "https://github.com/${{ github.repository }}"
           $tags = git tag --list "EM-*" --sort=committerdate | select -Last 2
 
-          $commits = git log "$($tags[0])..$($tags[1])" --pretty=format:"%s" -- Emmersive/ 
+          $commits = git log "$($tags[0])..$($tags[1])" --pretty=format:"%h;%s" -- Emmersive/ 
           | ? {$_ -notmatch "cleanup"}
           | % {
               $parts = $_ -split ';', 2
-              $hash = $parts[0]
+              $sha = $parts[0]
               $msg  = $parts[1]
 
-              "- [$msg]($repoUrl/commit/$hash)"
+              "- $msg $sha"
           }
 
           $commits | Out-File -FilePath "${{ github.workspace }}\CHANGELOG.txt" -Encoding UTF8
