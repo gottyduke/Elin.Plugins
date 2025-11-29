@@ -6,91 +6,97 @@ namespace Cwl.API.Drama;
 
 public static class ActionParameterHelper
 {
-    public static void RequiresAtLeast(this string[] parameters, int count)
+    extension(string[] parameters)
     {
-        if (parameters.Length < count) {
-            throw new DramaActionArgumentException(count, parameters);
+        public void RequiresAtLeast(int count)
+        {
+            if (parameters.Length < count) {
+                throw new DramaActionArgumentException(count, parameters);
+            }
+        }
+
+        public void Requires(out string a1)
+        {
+            parameters.RequiresAtLeast(1);
+            a1 = parameters[0];
+        }
+
+        public void Requires(out string a1, out string a2)
+        {
+            parameters.RequiresAtLeast(2);
+            a1 = parameters[0];
+            a2 = parameters[1];
+        }
+
+        public void Requires(out string a1, out string a2, out string a3)
+        {
+            parameters.RequiresAtLeast(3);
+            a1 = parameters[0];
+            a2 = parameters[1];
+            a3 = parameters[2];
+        }
+
+        public void Requires(out string a1, out string a2, out string a3, out string a4)
+        {
+            parameters.RequiresAtLeast(4);
+            a1 = parameters[0];
+            a2 = parameters[1];
+            a3 = parameters[2];
+            a4 = parameters[3];
+        }
+
+        public void RequiresOpt(out OptParam a1)
+        {
+            a1 = new(parameters.TryGet(0, true));
+        }
+
+        public void RequiresOpt(out OptParam a1, out OptParam a2)
+        {
+            Array.Resize(ref parameters, 2);
+            a1 = new(parameters[0]);
+            a2 = new(parameters[1]);
+        }
+
+        public void RequiresOpt(out OptParam a1, out OptParam a2, out OptParam a3)
+        {
+            Array.Resize(ref parameters, 3);
+            a1 = new(parameters[0]);
+            a2 = new(parameters[1]);
+            a3 = new(parameters[2]);
+        }
+
+        public void RequiresOpt(out OptParam a1, out OptParam a2, out OptParam a3, out OptParam a4)
+        {
+            Array.Resize(ref parameters, 4);
+            a1 = new(parameters[0]);
+            a2 = new(parameters[1]);
+            a3 = new(parameters[2]);
+            a4 = new(parameters[3]);
         }
     }
 
-    public static void Requires(this string[] parameters, out string a1)
+    extension(DramaManager dm)
     {
-        parameters.RequiresAtLeast(1);
-        a1 = parameters[0];
-    }
+        public void RequiresActor(out Chara actor)
+        {
+            RequiresPerson(dm, out var person);
 
-    public static void Requires(this string[] parameters, out string a1, out string a2)
-    {
-        parameters.RequiresAtLeast(2);
-        a1 = parameters[0];
-        a2 = parameters[1];
-    }
-
-    public static void Requires(this string[] parameters, out string a1, out string a2, out string a3)
-    {
-        parameters.RequiresAtLeast(3);
-        a1 = parameters[0];
-        a2 = parameters[1];
-        a3 = parameters[2];
-    }
-
-    public static void Requires(this string[] parameters, out string a1, out string a2, out string a3, out string a4)
-    {
-        parameters.RequiresAtLeast(4);
-        a1 = parameters[0];
-        a2 = parameters[1];
-        a3 = parameters[2];
-        a4 = parameters[3];
-    }
-
-    public static void RequiresOpt(this string[] parameters, out OptParam a1)
-    {
-        a1 = new(parameters.TryGet(0, true));
-    }
-
-    public static void RequiresOpt(this string[] parameters, out OptParam a1, out OptParam a2)
-    {
-        Array.Resize(ref parameters, 2);
-        a1 = new(parameters[0]);
-        a2 = new(parameters[1]);
-    }
-
-    public static void RequiresOpt(this string[] parameters, out OptParam a1, out OptParam a2, out OptParam a3)
-    {
-        Array.Resize(ref parameters, 3);
-        a1 = new(parameters[0]);
-        a2 = new(parameters[1]);
-        a3 = new(parameters[2]);
-    }
-
-    public static void RequiresOpt(this string[] parameters, out OptParam a1, out OptParam a2, out OptParam a3, out OptParam a4)
-    {
-        Array.Resize(ref parameters, 4);
-        a1 = new(parameters[0]);
-        a2 = new(parameters[1]);
-        a3 = new(parameters[2]);
-        a4 = new(parameters[3]);
-    }
-
-    public static void RequiresActor(this DramaManager dm, out Chara actor)
-    {
-        RequiresPerson(dm, out var person);
-
-        actor = person?.chara ?? throw new DramaActorMissingException("actor.chara");
-    }
-
-    public static void RequiresPerson(this DramaManager dm, out Person? person)
-    {
-        var actorId = DramaExpansion.Cookie?.Line["actor"].Replace("?", "") ?? "tg";
-        if (DramaExpansion.Cookie?.Dm.tg.chara.id == actorId) {
-            actorId = "tg";
+            actor = person?.chara ?? throw new DramaActorMissingException("actor.chara");
         }
 
-        if (dm.sequence.GetActor(actorId) is not { owner: { } owner }) {
-            throw new DramaActorMissingException(actorId);
-        }
+        public void RequiresPerson(out Person? person)
+        {
+            var actorId = DramaExpansion.Cookie?.Line["actor"].Replace("?", "") ?? "tg";
+            if (DramaExpansion.Cookie?.Dm.tg.chara.id == actorId) {
+                actorId = "tg";
+            }
 
-        person = owner;
+            if (dm.sequence.GetActor(actorId) is not { owner: { } owner }) {
+                throw new DramaActorMissingException(actorId);
+            }
+
+            person = owner;
+        }
     }
 
     public class OptParam(string? value)

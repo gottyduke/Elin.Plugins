@@ -29,19 +29,6 @@ public partial class DramaExpansion
     }
 
     /// <summary>
-    ///     add_temp_talk(topic)
-    /// </summary>
-    public static bool add_temp_talk(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
-    {
-        parameters.Requires(out var topic);
-        dm.RequiresActor(out _);
-
-        AddTempTalk(topic, line["actor"], line["jump"]);
-
-        return true;
-    }
-
-    /// <summary>
     ///     apply_condition(condition_id)
     /// </summary>
     public static bool apply_condition(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
