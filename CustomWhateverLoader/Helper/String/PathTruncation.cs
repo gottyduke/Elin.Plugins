@@ -8,7 +8,7 @@ public static class PathTruncation
 {
     private static readonly char[] _invalidPathChars = Path.GetInvalidPathChars();
     private static readonly char[] _invalidFileChars = Path.GetInvalidFileNameChars();
-    public static IEqualityComparer<string> PathComparer { get; } = new PathStringComparer();
+    public static IEqualityComparer<string> PathComparer => field ??= new PathStringComparer();
 
     extension(string path)
     {

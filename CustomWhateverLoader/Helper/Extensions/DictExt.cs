@@ -49,7 +49,7 @@ public static class DictExt
 
     public class FileInfoComparer : IEqualityComparer<FileInfo>
     {
-        public static FileInfoComparer Default { get; } = new();
+        public static FileInfoComparer Default => field ??= new();
 
         public bool Equals(FileInfo? lhs, FileInfo? rhs)
         {

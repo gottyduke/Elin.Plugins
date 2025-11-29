@@ -26,7 +26,7 @@ public class ExceptionProfile(string message)
     private static readonly Dictionary<int, ExceptionProfile> _cached = [];
     private ProgressIndicator? _progressIndicator;
 
-    public List<MonoFrame> Frames { get; } = [];
+    public List<MonoFrame> Frames => field ??= [];
 
     public AnalyzeState State { get; private set; } = AnalyzeState.NotStarted;
 
