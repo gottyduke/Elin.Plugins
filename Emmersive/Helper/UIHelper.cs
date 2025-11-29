@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Cwl.Helper.Unity;
 using UnityEngine;
 using UnityEngine.UI;
 using YKF;
@@ -22,7 +23,7 @@ public static class UIHelper
         return _lookup[name] = sprite!;
     }
 
-    extension(YKLayout layout)
+    extension<T>(T layout) where T : YKLayout
     {
         public UIInputText AddPair(string idLang, string text)
         {

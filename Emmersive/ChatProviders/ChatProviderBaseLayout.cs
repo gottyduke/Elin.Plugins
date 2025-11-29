@@ -16,6 +16,9 @@ public abstract partial class ChatProviderBase : ILayoutProvider
     private UIInputText? _endpointInput;
     private UIInputText? _modelInput;
 
+    public virtual bool AllowEndpointCustomization { get; protected set; } = true;
+    public virtual bool AllowModelCustomization { get; protected set; } = true;
+
     public void OnLayout(YKLayout layout)
     {
         var card = layout.MakeCard();
@@ -42,8 +45,14 @@ public abstract partial class ChatProviderBase : ILayoutProvider
 
         card.ShowActivityInfo(Id);
 
-        _modelInput = card.AddPair("em_ui_model", CurrentModel);
-        _endpointInput = card.AddPair("em_ui_endpoint", EndPoint);
+        if (AllowModelCustomization) {
+            _modelInput = card.AddPair("em_ui_model", CurrentModel);
+        }
+
+        if (AllowEndpointCustomization) {
+            _endpointInput = card.AddPair("em_ui_endpoint", EndPoint);
+        }
+
         _aliasInput = card.AddPair("em_ui_alias", Alias);
 
         OnLayoutInternal(card);
@@ -62,7 +71,7 @@ public abstract partial class ChatProviderBase : ILayoutProvider
 
     public virtual void OnLayoutConfirm()
     {
-        if (_modelInput is not null) {
+        if (_modelInput != null) {
             CurrentModel = _modelInput.Text;
         }
 
@@ -77,6 +86,9 @@ public abstract partial class ChatProviderBase : ILayoutProvider
 
         _cooldownUntil = DateTime.MinValue;
 
+        // this is a load not save by design
+        // so that if any changes were made to the Alias
+        // we can load from new aliased param file
         this.LoadProviderParam();
 
         EmKernel.RebuildKernel();

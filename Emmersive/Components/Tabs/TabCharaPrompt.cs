@@ -27,7 +27,7 @@ internal class TabCharaPrompt : TabEmmersiveBase
         return [
             EClass.pc,
             ..EClass._map.charas
-                .Where(c => !c.IsPC && !c.IsAnimal && (c.IsUnique || c.IsGlobal))
+                .Where(c => c.Profile.IsImportant)
                 .Distinct(UniqueCardComparer.Default)
                 .OfType<Chara>()
                 .OrderByDescending(c => c.IsPCFaction),

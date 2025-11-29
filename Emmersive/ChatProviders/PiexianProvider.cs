@@ -24,6 +24,8 @@ internal sealed class PiexianProvider : GoogleProvider
     [JsonProperty]
     public override string EndPoint { get; set; } = "https://proxy.pieixan.icu/v1beta";
 
+    public override bool AllowEndpointCustomization => false;
+
     protected override void OnLayoutInternal(YKLayout card)
     {
         _apiInput = card.AddPair("em_ui_api_key", ApiKey);
