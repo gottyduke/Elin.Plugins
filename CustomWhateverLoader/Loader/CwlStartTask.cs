@@ -117,8 +117,8 @@ internal sealed partial class CwlMod
         DataLoader.MergeGodTalk();
         DataLoader.MergeCharaTalk();
         DataLoader.MergeCharaTone();
-        DataLoader.MergeCustomAlias();
-        DataLoader.MergeCustomName();
+        //DataLoader.MergeCustomAlias();
+        //DataLoader.MergeCustomName();
 
         DataLoader.MergeFactionElements();
         DataLoader.MergeOfferingMultiplier();

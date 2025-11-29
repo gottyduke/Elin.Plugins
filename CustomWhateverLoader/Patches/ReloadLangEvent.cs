@@ -13,7 +13,7 @@ internal class ReloadLangEvent
     {
         PackageIterator.ClearCache();
         DataLoader.MergeGodTalk();
-        DataLoader.MergeCustomAlias();
-        DataLoader.MergeCustomName();
+        //DataLoader.MergeCustomAlias();
+        //DataLoader.MergeCustomName();
     }
 }
