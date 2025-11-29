@@ -44,21 +44,21 @@ internal static class InvalidateDestThingPatch
     }
 
     [HarmonyPrefix]
-    internal static bool InvalidateDestThing(QuestDeliver __instance, ref bool __result, Thing t)
+    internal static bool InvalidateDestThing(QuestDeliver __instance, ref bool __result, Thing __0)
     {
         try {
-            _ = t.source.GetName();
-            _ = t.GetName(NameStyle.Simple, 1);
+            _ = __0.source.GetName();
+            _ = __0.GetName(NameStyle.Simple, 1);
         } catch (Exception ex) {
-            if (!_cleanup.Contains(t)) {
-                _cleanup.Add(t);
+            if (!_cleanup.Contains(__0)) {
+                _cleanup.Add(__0);
 
                 if (!_queued) {
                     CoroutineHelper.Deferred(Cleanup);
                     _queued = true;
                 }
 
-                CwlMod.Warn<QuestDeliver>("cwl_warn_quest_id_thing2".Loc(t.id, ex.Message));
+                CwlMod.Warn<QuestDeliver>("cwl_warn_quest_id_thing2".Loc(__0.id, ex.Message));
             }
 
             __result = false;

@@ -19,7 +19,7 @@ internal class ConverterEvent
         }
 
         [HarmonyPrefix]
-        internal static bool OnCheckDecay(TraitBrewery __instance, ref bool __result, MethodInfo __originalMethod, Card c)
+        internal static bool OnCheckDecay(TraitBrewery __instance, ref bool __result, MethodInfo __originalMethod, Card __0)
         {
             if (CustomConverter.GetConverter(__instance.owner) is not { } converter) {
                 return true;
@@ -30,7 +30,7 @@ internal class ConverterEvent
             }
 
             converter.owner = __instance.owner;
-            __result = converter.CanChildDecay(c);
+            __result = converter.CanChildDecay(__0);
 
             return false;
         }
@@ -49,8 +49,8 @@ internal class ConverterEvent
         internal static bool OnConversion(TraitBrewery __instance,
                                           ref bool __result,
                                           MethodInfo __originalMethod,
-                                          Card c,
-                                          bool firstDecay)
+                                          Card __0,
+                                          bool __1)
         {
             if (CustomConverter.GetConverter(__instance.owner) is not { } converter) {
                 return true;
@@ -61,7 +61,7 @@ internal class ConverterEvent
             }
 
             converter.owner = __instance.owner;
-            __result = converter.OnChildDecay(c, firstDecay);
+            __result = converter.OnChildDecay(__0, __1);
 
             return false;
         }
