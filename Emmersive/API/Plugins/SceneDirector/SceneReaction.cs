@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json.Linq;
 
 namespace Emmersive.API.Plugins;
@@ -44,7 +43,7 @@ public class SceneReaction
         }
         """;
 
-    
+
     internal static JObject Schema =>
         field ??= JObject.FromObject(new {
             type = "array",
@@ -61,7 +60,7 @@ public class SceneReaction
             },
         });
 
-    
+
     internal static JObject OpenAiSchema =>
         field ??= JObject.FromObject(new {
                 type = "json_schema",

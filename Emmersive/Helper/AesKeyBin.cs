@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -8,7 +7,6 @@ namespace Emmersive.Helper;
 
 internal static class AesKeyBin
 {
-    
     internal static byte[] KeyBin => field ??= GetAesKeyBin();
 
     private static byte[] GetAesKeyBin()

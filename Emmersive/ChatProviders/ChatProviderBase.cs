@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -46,7 +45,7 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionReques
     }
 
     [JsonProperty]
-    
+
     public virtual string Id
     {
         get => field ??= $"{Alias}#{ServiceCount}";

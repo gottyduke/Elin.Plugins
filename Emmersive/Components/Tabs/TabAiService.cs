@@ -86,7 +86,10 @@ internal class TabAiService : TabEmmersiveBase
         // CN treat: piexian free API
         if (Lang.langCode == "CN") {
             btnGroup.Button("em_ui_add_service_piexian".lang(),
-                () => Dialog.YesNo("em_ui_px_desc", () => AddService(new PiexianProvider())));
+                () => Dialog.YesNo("em_ui_px_desc", () => {
+                    Application.OpenURL("https://proxy.pieixan.icu/login");
+                    AddService(new PiexianProvider());
+                }));
         }
 
         return;
@@ -125,7 +128,7 @@ internal class TabAiService : TabEmmersiveBase
 
         btnGroup.Button("em_ui_config_open".lang(), () => OpenFileOrPath.Run(EmMod.Instance.Config.ConfigFilePath));
 
-        var link = "https://elin-modding-resources.github.io/Elin.Docs/articles/100_Mod%20Documentation/Emmersive/API_Setup" +
+        var link = "https://elin-modding.net/Elin.Docs/articles/100_Mod%20Documentation/Emmersive/API_Setup" +
                    Lang.langCode switch {
                        "CN" or "ZHTW" => ".CN",
                        "JP" => ".JP",

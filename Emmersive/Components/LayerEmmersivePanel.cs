@@ -11,9 +11,9 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
 {
     private static Vector2 _browsedPosition = Vector2.zero;
     private static string _lastOpenedTab = "";
+    private readonly bool _resetHyp = Lang.setting.hyphenation;
 
     private readonly List<TabEmmersiveBase> _tabs = [];
-    private bool _resetHyp;
     public override string Title => "Elin with AI";
     public override Rect Bound => FitWindow();
 
@@ -23,9 +23,8 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
     {
         Instance = this;
 
-        if (Lang.setting.hyphenation) {
+        if (_resetHyp) {
             Lang.setting.hyphenation = false;
-            _resetHyp = true;
         }
 
         _tabs.Add(CreateTab<TabAiService>("em_ui_tab_ai_service", "em_tab_ai_service"));

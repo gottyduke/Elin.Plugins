@@ -82,9 +82,9 @@ public partial class SceneDirector
                 chara.Say(logText);
 
                 if (profile.UsePopFeed) {
-                    WidgetFeed.Instance.SayRaw(chara, text.Wrap(7));
+                    WidgetFeed.Instance.SayRaw(chara, text.Wrap());
                 } else {
-                    chara.HostRenderer.Say(text.Wrap(7), duration: duration);
+                    chara.HostRenderer.Say(text.Wrap(), duration: duration);
                 }
 
                 profile.ResetTalkCooldown(text);
