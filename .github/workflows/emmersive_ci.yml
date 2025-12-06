@@ -112,6 +112,7 @@ jobs:
         with:
           tag_name: EM-${{ steps.build.outputs.file_version_short }}
           name: Emmersive - Elin with AI ${{ steps.build.outputs.file_version }}
+          draft: false
           prerelease: true
           generate_release_notes: false
           body_path: ${{ github.workspace }}\CHANGELOG.txt
