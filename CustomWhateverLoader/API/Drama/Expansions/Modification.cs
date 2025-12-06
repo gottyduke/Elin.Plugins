@@ -1,6 +1,12 @@
+using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Cwl.API.Attributes;
+using Cwl.Helper;
+using Cwl.Helper.Exceptions;
 using Cwl.Helper.Extensions;
+using Cwl.Helper.String;
+using HarmonyLib;
 
 namespace Cwl.API.Drama;
 
@@ -16,6 +22,48 @@ public partial class DramaExpansion
         dm.RequiresActor(out var actor);
 
         actor.ModAffinity(pc, ArithmeticDiff(actor._affinity, valueExpr));
+
+        return true;
+    }
+
+    /// <summary>
+    ///     mod_cs_set(field_or_property, value_expr)
+    /// </summary>
+    public static bool mod_cs_set(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.Requires(out var memberName, out var valueExpr);
+        dm.RequiresActor(out var actor);
+
+        Action<object> setter;
+        object memberValue;
+
+        var member = actor.GetType().GetCachedField(memberName) as MemberInfo ??
+                     actor.GetType().GetProperty(memberName, AccessTools.all & ~BindingFlags.Static);
+        switch (member) {
+            case FieldInfo field:
+                setter = v => field.SetValue(actor, v);
+                memberValue = field.GetValue(actor);
+                break;
+            case PropertyInfo property:
+                setter = v => property.SetValue(actor, v);
+                memberValue = property.GetValue(actor);
+                break;
+            default:
+                throw new DramaActionInvokeException($"cs member '{memberName}' does not exist");
+        }
+
+        switch (memberValue) {
+            case int i:
+                setter(ArithmeticModOrSet(i, valueExpr));
+                break;
+            case float f:
+                setter(ArithmeticModOrSet(f, valueExpr));
+                break;
+            default:
+                var type = memberValue?.GetType() ?? throw new DramaActionInvokeException("cs member value is null");
+                setter(valueExpr.AsTypeOf(type));
+                break;
+        }
 
         return true;
     }

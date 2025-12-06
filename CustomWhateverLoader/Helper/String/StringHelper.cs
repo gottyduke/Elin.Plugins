@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -150,6 +151,19 @@ public static class StringHelper
             result = string.Join('\n', lines[..^1]);
 
             return result;
+        }
+
+        public object AsTypeOf(Type type)
+        {
+            if (type == typeof(string)) {
+                return input;
+            }
+
+            if (type == typeof(bool)) {
+                return input == "1" || input.Equals("true", StringComparison.OrdinalIgnoreCase);
+            }
+
+            return Convert.ChangeType(input, type, CultureInfo.InvariantCulture);
         }
     }
 

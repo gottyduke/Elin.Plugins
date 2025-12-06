@@ -137,10 +137,25 @@ public class TypeQualifier
 
         foreach (var plugin in Plugins.ToArray()) {
             try {
-                var types = plugin.GetType().Assembly.DefinedTypes.ToArray();
-                // test cast for missing dependency
-                _ = types.Select(ti => typeof(object).IsAssignableFrom(ti)).ToArray();
-                Declared.AddRange(types);
+                foreach (var ti in plugin.GetType().Assembly.DefinedTypes) {
+                    try {
+                        var type = ti.AsType();
+
+                        // test cast for missing dependency
+                        _ = type.BaseType;
+                        _ = type.GetInterfaces();
+                        _ = type.GetMethods(AccessTools.all);
+
+                        Declared.Add(ti);
+                    } catch {
+                        // noexcept
+                    }
+                }
+            } catch (ReflectionTypeLoadException ex) {
+                foreach (var t in ex.Types.Where(t => t != null)) {
+                    Declared.Add(t.GetTypeInfo());
+                }
+                // noexcept
             } catch {
                 CwlMod.Log<TypeQualifier>("cwl_warn_decltype_missing".Loc(plugin.Info.Metadata.GUID));
                 Plugins.Remove(plugin);

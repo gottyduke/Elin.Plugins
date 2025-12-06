@@ -146,6 +146,26 @@ internal class CwlConsole : EMono
     internal static string GetPos()
     {
         var pos = pc.pos;
-        return $"eloX: {pos.eloX}, eloY: {pos.eloY}, x: {pos.x}, y: {pos.z}";
+        return $"Map: {pos.x}, {pos.z}\n" +
+               $"Overworld: {pos.eloX}, {pos.eloY}\n" +
+               $"Zone: {_zone.ZoneFullName}\n" +
+               $"Source: {_zone.source.WhereTheF?.title ?? "Elin/Unknown"}";
+    }
+
+    [ConsoleCommand("reset_quests")]
+    internal static void ResetQuests()
+    {
+        game.quests.globalList.ForeachReverse(q => {
+            try {
+                _ = q.IsVisibleOnQuestBoard();
+                if (!q.IsRandomQuest) {
+                    return;
+                }
+            } catch {
+                // noexcept
+            }
+
+            game.quests.globalList.Remove(q);
+        });
     }
 }

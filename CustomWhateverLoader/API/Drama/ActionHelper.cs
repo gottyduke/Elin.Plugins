@@ -116,4 +116,16 @@ public partial class DramaExpansion
     {
         return expr.Compare(lhs);
     }
+
+    public static bool Compare(object lhs, string expr)
+    {
+        return lhs switch {
+            int i => Compare(i, expr),
+            float f => Compare(f, expr),
+            double d => Compare((float)d, expr),
+            bool b => b,
+            string s => string.Equals(s, expr, StringComparison.OrdinalIgnoreCase),
+            _ => false,
+        };
+    }
 }

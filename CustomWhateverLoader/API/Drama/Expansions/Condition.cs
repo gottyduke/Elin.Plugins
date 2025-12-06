@@ -76,14 +76,7 @@ public partial class DramaExpansion
             throw new DramaActionInvokeException($"cs member '{memberName.Value}' does not exist");
         }
 
-        return member switch {
-            int intVal => Compare(intVal, valueExpr),
-            float floatVal => Compare(floatVal, valueExpr),
-            double doubleVal => Compare((float)doubleVal, valueExpr),
-            bool boolVal => boolVal,
-            string stringVal => string.Equals(stringVal, valueExpr, StringComparison.OrdinalIgnoreCase),
-            _ => false,
-        };
+        return Compare(member, valueExpr);
     }
 
     /// <summary>
