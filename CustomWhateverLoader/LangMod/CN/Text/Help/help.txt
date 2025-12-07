@@ -18,6 +18,21 @@ $更新日志
 
 
 
+{topic|1.20.57}
+修复了延迟补丁的固定索引参数
+启用了调试面板
+剧情扩展（Drama Expansion）：
+・新增 if_cs_get(csMemberName, valueExpression)
+・新增 choice(condition())
+・新增 mod_cs_set(csMemberName, valueExpression)
+・新增更多文档说明
+允许在 dialog.xlsx 中使用 <br> 标签作为换行
+允许自定义区域（zone）资源加载
+新增自定义区域生成点
+新增从地图中安全获取 idFile 的方法
+新增 2 个角色辅助扩展函数
+延迟插件初始化（以防模组在 CWL 之前加载）
+
 {topic|1.20.56}
 已禁用 Win7 系统中的 FileSystemWatcher 功能（谁还会用它？）
 为自定义乐器添加了另一个路径查找

@@ -80,6 +80,8 @@ jobs:
         if: github.event_name != 'pull_request'
         id: artifact
         shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           $source = "${{ github.workspace }}\out\${{ matrix.version }}"
           $destination = "${{ github.workspace }}\out\${{ matrix.version }}\cwl-ci-builds-${{ matrix.version }}.zip"
@@ -88,9 +90,19 @@ jobs:
           $path = $destination -Replace '\\', '/'
 
           $repoUrl = "https://github.com/${{ github.repository }}"
-          $tags = git tag --list "CWL-*" --sort=committerdate | select -Last 2
+          $tag = "CWL-${{ steps.build.outputs.file_version_short }}"
+
+          gh api repos/${{ github.repository }}/git/refs/tags/$tag -q "if .object then true else false" 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            gh api -X DELETE repos/${{ github.repository }}/git/refs/tags/$tag
+          }
+
+          if (git tag -l $tag) {
+            git tag -d $tag
+          }
           
-          $commits = git log "$($tags[0])..$($tags[1])" --pretty=format:"%h;%s" -- CustomWhateverLoader/ 
+          $lastTag = git describe --tags --abbrev=0 --match="CWL-*"
+          $commits = git log "$($lastTag)..HEAD" --pretty=format:"%h;%s" -- CustomWhateverLoader/ 
           | ? {$_ -notmatch "cleanup"} 
           | % {
               $parts = $_ -split ';', 2
