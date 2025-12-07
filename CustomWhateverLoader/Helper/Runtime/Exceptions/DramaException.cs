@@ -8,24 +8,12 @@ using HarmonyLib;
 
 namespace Cwl.Helper.Exceptions;
 
-public class DramaActionArgumentException(int count, string[] parameters) :
-    Exception($"expected {count}, got [{parameters.Join()}");
-
-public class DramaActionInvokeException(string callName) :
-    Exception(callName);
-
-public class DramaActorMissingException(string actorId) :
-    Exception($"couldn't find actor {actorId}");
-
-public class DramaRerouteException(Chara chara, Exception innerException) :
-    Exception($"{chara.Name} / {chara.id}", innerException);
-
-public class DramaParseLineException(DramaExpansion.ActionCookie cookie, Exception innerException) :
-    Exception(GetLineDetail(cookie, innerException))
+public class DramaException(string exceptionMessage = "")
+    : Exception($"{exceptionMessage}\n{GetLineDetail(DramaExpansion.Cookie)}")
 {
     private static Dictionary<string, string> _line = [];
 
-    private static string GetLineDetail(DramaExpansion.ActionCookie cookie, Exception inner)
+    public static string GetLineDetail(DramaExpansion.ActionCookie cookie)
     {
         _line = cookie.Line;
         var dm = cookie.Dm;
@@ -36,7 +24,6 @@ public class DramaParseLineException(DramaExpansion.ActionCookie cookie, Excepti
         var setup = dm.setup;
 
         return new StringBuilder()
-            .AppendLine(inner.Message)
             .AppendLine()
             .AppendLine($"{setup.person.Name} / {setup.person.chara.id}")
             .AppendLine($"{bookPath}#{dm.countLine + cacheEntry.startIndex}")
@@ -50,3 +37,18 @@ public class DramaParseLineException(DramaExpansion.ActionCookie cookie, Excepti
         return $"{column} [{_line.GetValueOrDefault(column)}]";
     }
 }
+
+public class DramaActionArgumentException(int count, string[] parameters) :
+    DramaException($"expected {count}, got [{parameters.Join()}");
+
+public class DramaActionInvokeException(string callName) :
+    DramaException(callName);
+
+public class DramaActorMissingException(string actorId) :
+    DramaException($"couldn't find actor {actorId}");
+
+public class DramaRerouteException(Chara chara, Exception innerException) :
+    DramaException($"{chara.Name} / {chara.id}\n{innerException.Message}");
+
+public class DramaParseLineException(Exception innerException) :
+    DramaException(innerException.Message);

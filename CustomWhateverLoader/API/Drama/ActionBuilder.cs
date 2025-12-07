@@ -76,7 +76,7 @@ public partial class DramaExpansion
         sb.AppendLine("dumping action list");
 
         foreach (var (action, provider) in Actions) {
-            sb.AppendLine($"{action,-30}{provider.GetAssemblyDetailParams(false)}");
+            sb.AppendLine($"{action,-30}{provider.GetAssemblyDetail(false)}");
         }
 
         var log = sb.ToString();
@@ -95,7 +95,7 @@ public partial class DramaExpansion
             return cached;
         }
 
-        var parse = Regex.Match(expression, @"^\s*(?<func>\w+)\s*\(\s*(?<params>.*)\s*\)\s*$");
+        var parse = Regex.Match(expression, @"^\s*(?<func>\w+)\s*(?:\(\s*(?<params>.*)\s*\))?\s*$");
         if (!parse.Success) {
             return null;
         }
@@ -105,7 +105,10 @@ public partial class DramaExpansion
             return null;
         }
 
-        var parameters = parse.Groups["params"].Value.IsEmpty("");
+        var parameters = parse.Groups["params"].Success
+            ? parse.Groups["params"].Value
+            : "";
+
         var pack = funcName switch {
             nameof(and) or nameof(or) or nameof(not) or nameof(choice)
                 => Regex.Matches(parameters, @"\w+\(.*?\)").Select(m => m.Value),

@@ -39,8 +39,8 @@ internal class DramaExpansionPatch
     [HarmonyFinalizer]
     internal static Exception? RethrowParseLine(Exception? __exception)
     {
-        if (__exception is not null && DramaExpansion.Cookie is { } cookie) {
-            __exception = new DramaParseLineException(cookie, __exception);
+        if (__exception is not null && DramaExpansion.Cookie is not null) {
+            __exception = new DramaParseLineException(__exception);
         }
 
         return __exception;
@@ -61,7 +61,7 @@ internal class DramaExpansionPatch
             return false;
         }
 
-        if (action == "inject") {
+        if (action.Trim() == "inject") {
             if (rawExpr == "Unique") {
                 DramaExpansion.InjectUniqueRumor();
             }
@@ -74,6 +74,11 @@ internal class DramaExpansionPatch
 
         foreach (var expr in rawExpr.SplitLines()) {
             if (DramaExpansion.BuildExpression(expr) is not { } func) {
+                continue;
+            }
+
+            if (expr.StartsWith(nameof(DramaExpansion.choice))) {
+                func(__instance, item);
                 continue;
             }
 

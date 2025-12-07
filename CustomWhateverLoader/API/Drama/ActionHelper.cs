@@ -79,6 +79,10 @@ public partial class DramaExpansion
             return false;
             // noexcept
         } catch (Exception ex) {
+            if (ex is not DramaException) {
+                ex = new DramaException(ex.Message);
+            }
+
             var methodGroup = $"[{action.Method.Name}]({string.Join(",", pack)})";
             CwlMod.WarnWithPopup<DramaExpansion>($"call failure: {methodGroup}\n{ex.Message}", ex);
             // noexcept

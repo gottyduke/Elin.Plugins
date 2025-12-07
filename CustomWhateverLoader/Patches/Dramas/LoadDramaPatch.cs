@@ -23,8 +23,7 @@ internal class LoadDramaPatch
     [HarmonyPatch(typeof(DramaManager), nameof(DramaManager.Load))]
     internal static IEnumerable<CodeInstruction> OnLoadIl(IEnumerable<CodeInstruction> instructions)
     {
-        var cm = new CodeMatcher(instructions);
-        return cm
+        return new CodeMatcher(instructions)
             .MatchEndForward(
                 new OperandContains(OpCodes.Callvirt, nameof(ExcelData.BuildList)))
             .EnsureValid("drama build list")
@@ -34,15 +33,6 @@ internal class LoadDramaPatch
                     new(OpCodes.Ldarg_0),
                     Transpilers.EmitDelegate(BuildRelocatedList))
                 .RemoveInstruction())
-            .Start()
-            .MatchStartForward(
-                new OpCodeContains(nameof(OpCodes.Ldloc)),
-                new OperandContains(OpCodes.Ldstr, "id"),
-                new OperandContains(OpCodes.Callvirt, "Item"))
-            .EnsureValid("id insert")
-            .InsertAndAdvance(
-                cm.Instruction,
-                Transpilers.EmitDelegate(SyncTexts))
             .InstructionEnumeration();
     }
 
@@ -58,7 +48,8 @@ internal class LoadDramaPatch
         var cachedBookName = $"{CacheEntry}{book}_{lang}";
         if (PackageIterator.TryLoadFromPackageCache(cachedBookName, out var cachedPath)) {
             data.path = cachedPath;
-            return data.BuildList(sheet);
+            // force a list text sync
+            return SyncTexts(data.BuildList(sheet));
         }
 
         var books = PackageIterator.GetLangFilesFromPackage(Pattern)
@@ -83,31 +74,36 @@ internal class LoadDramaPatch
         PackageIterator.AddCachedPath(cachedBookName, localized);
         data.path = localized;
 
-        return data.BuildList(sheet);
+        // force a list text sync
+        return SyncTexts(data.BuildList(sheet));
     }
 
     // make drama writer life easier
-    private static void SyncTexts(Dictionary<string, string> item)
+    private static List<Dictionary<string, string>> SyncTexts(List<Dictionary<string, string>> list)
     {
-        item.TryAdd("text", "");
-        item.TryAdd("text_EN", "");
-        item.TryAdd("text_JP", "");
+        foreach (var item in list) {
+            item.TryAdd("text", "");
+            item.TryAdd("text_EN", "");
+            item.TryAdd("text_JP", "");
 
-        if (item.TryGetValue($"text_{Lang.langCode}", out var textLang)) {
-            item["text"] = textLang;
+            if (item.TryGetValue($"text_{Lang.langCode}", out var textLang) && !string.IsNullOrWhiteSpace(textLang)) {
+                item["text"] = textLang;
+            }
+
+            var textLocalize = item["text"];
+            var textEn = item["text_EN"];
+            var textJp = item["text_JP"];
+
+            if (textEn.IsEmpty()) {
+                item["text_EN"] = textLocalize.IsEmpty(textJp);
+            }
+
+            if (textJp.IsEmpty()) {
+                item["text_JP"] = textLocalize.IsEmpty(textEn);
+            }
         }
 
-        var textLocalize = item["text"];
-        var textEn = item["text_EN"];
-        var textJp = item["text_JP"];
-
-        if (textEn.IsEmpty()) {
-            item["text_EN"] = textLocalize.IsEmpty(textJp.IsEmpty("<empty>"));
-        }
-
-        if (textJp.IsEmpty()) {
-            item["text_JP"] = textLocalize.IsEmpty(textEn.IsEmpty("<empty>"));
-        }
+        return list;
     }
 
     // prevent duplicate loc id if drama writer is careless
