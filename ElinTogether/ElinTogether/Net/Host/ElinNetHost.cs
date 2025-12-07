@@ -22,6 +22,7 @@ internal partial class ElinNetHost : ElinNetBase
 
         if (!core.IsGameStarted || player?.chara?.homeBranch?.owner is null) {
             EmpPop.Debug("Server can only be started after claiming a zone");
+            Session.RemoveComponent();
             return;
         }
 
@@ -58,6 +59,7 @@ internal partial class ElinNetHost : ElinNetBase
     protected override void RegisterPackets()
     {
         Router.RegisterHandler<SourceListResponse>(OnSourceListResponse);
+        Router.RegisterHandler<SessionNewPlayerResponse>(OnSessionNewPlayerResponse);
         Router.RegisterHandler<MapDataRequest>(OnMapDataRequest);
         Router.RegisterHandler<ZoneDataReceivedResponse>(OnZoneDataReceivedResponse);
         Router.RegisterHandler<WorldStateRequest>(OnWorldStateRequest);

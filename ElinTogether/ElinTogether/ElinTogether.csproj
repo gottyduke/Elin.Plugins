@@ -18,10 +18,6 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)'=='DebugNightly' OR '$(Configuration)'=='Debug'">
-        <DefineConstants>$(DefineConstants)</DefineConstants>
-    </PropertyGroup>
-
     <ItemGroup>
         <Compile Remove="package\**"/>
         <Compile Remove="ElinTogether.Test\**"/>

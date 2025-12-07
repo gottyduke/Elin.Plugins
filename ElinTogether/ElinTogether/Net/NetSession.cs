@@ -34,7 +34,7 @@ public class NetSession : EClass
     public Zone? CurrentZone { get; internal set; }
     public int Tick { get; internal set; }
     public ulong SessionId { get; internal set; }
-    public List<NetPeerState> CurrentPlayers { get; } = [];
+    public List<NetPeerState> CurrentPlayers => field ??= [];
 
     public bool HasActiveConnection => Connection != null && Connection.IsConnected;
     public bool IsHost => Connection?.IsHost is not false;

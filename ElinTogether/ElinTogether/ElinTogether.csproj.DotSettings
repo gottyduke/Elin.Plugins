@@ -154,6 +154,8 @@
     <s:Boolean
             x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=patches_005Cfov/@EntryIndexedValue">True</s:Boolean>
     <s:Boolean
+            x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=patches_005Clayer/@EntryIndexedValue">True</s:Boolean>
+    <s:Boolean
             x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=patches_005Cremote/@EntryIndexedValue">True</s:Boolean>
     <s:Boolean
             x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=statedelta_005Cchara/@EntryIndexedValue">True</s:Boolean>

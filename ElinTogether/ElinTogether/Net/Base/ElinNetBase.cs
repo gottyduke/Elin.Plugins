@@ -25,16 +25,16 @@ public abstract partial class ElinNetBase : EMono
         Initialize();
 
 #if !DEBUG
-        if (!Harmony.HasAnyPatches(ModInfo.Guid)) {
+        if (!HarmonyLib.Harmony.HasAnyPatches(ModInfo.Guid)) {
             EmpMod.SharedHarmony.PatchAll(EmpMod.Assembly);
         }
 #endif
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
-        Socket.Poll();
         Scheduler.Tick();
+        Socket.Poll();
     }
 
     private void OnDestroy()

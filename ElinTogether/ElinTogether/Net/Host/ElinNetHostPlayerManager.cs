@@ -20,7 +20,7 @@ internal partial class ElinNetHost
     /// <summary>
     ///     Shared speed of all players
     /// </summary>
-    public int SharedSpeed => GetAverageSpeed();
+    public int SharedSpeed => (int)States.Values.Average(s => s.Speed);
 
     [CwlContextVar("remote_chara")]
     private static Dictionary<ulong, int> SavedRemoteCharas
@@ -39,12 +39,27 @@ internal partial class ElinNetHost
         EmpLog.Information("Preparing player {@Peer} for joining",
             peer);
 
-        var chara = GetOrCreateRemoteChara(peer.Uid);
-        chara.c_altName = peer.Name;
+        if (SavedRemoteCharas.TryGetValue(peer.Uid, out var charaUid) &&
+            game.cards.globalCharas.Find(charaUid) is { } chara) {
+            // remote character exist
+            SendSaveProbe(chara, peer);
+        } else {
+            EmpLog.Debug("Remote character does not exist, request for new character generation");
+
+            peer.Send(new SessionNewPlayerRequest());
+        }
+    }
+
+    /// <summary>
+    ///     Send a save snapshot for replication
+    /// </summary>
+    public void SendSaveProbe(Chara chara, ISteamNetPeer peer)
+    {
+        EmpLog.Information("Sending save probe to player {@Peer} for replication",
+            peer);
 
         chara.MakeAlly();
         chara.SetFlagValue("remote_chara");
-
         ActiveRemoteCharas[peer.Id] = chara;
 
         var state = States[peer.Id] = new() {
@@ -56,42 +71,28 @@ internal partial class ElinNetHost
 
         Session.CurrentPlayers.Add(state);
 
-        SendSaveProbe(peer);
+        game.Save(silent: true);
+
+        peer.Send(SaveDataProbe.Create(chara));
     }
 
     /// <summary>
-    ///     Send a save snapshot for replication
+    ///     Net event: Client finished character generation and is ready for save probe
     /// </summary>
-    public void SendSaveProbe(ISteamNetPeer peer)
+    private void OnSessionNewPlayerResponse(SessionNewPlayerResponse response, ISteamNetPeer peer)
     {
-        EmpLog.Information("Sending save probe to player {@Peer} for replication",
+        EmpLog.Information("Received remote chara creation from player {@Peer}",
             peer);
 
-        game.Save(silent: true);
+        var chara = response.Chara.Decompress<Chara>();
 
-        peer.Send(SaveDataProbe.Create(ActiveRemoteCharas[peer.Id]));
-    }
+        // assign a global uid
+        chara.SetGlobal();
+        game.cards.AssignUID(chara);
 
-    public Chara GetOrCreateRemoteChara(ulong uid)
-    {
-        if (SavedRemoteCharas.TryGetValue(uid, out var charaUid) &&
-            game.cards.globalCharas.Find(charaUid) is { } chara) {
-            return chara;
-        }
+        SavedRemoteCharas[peer.Uid] = chara.uid;
 
-        // TODO exchange player creation data with clients
-        // right now we just spawn a random
-        chara = CharaGen.Create("player");
-        SavedRemoteCharas[uid] = chara.uid;
-
-        return chara;
-    }
-
-    public int GetAverageSpeed()
-    {
-        // we should always have >= 1 count
-        // because pc is included as well
-        return (int)States.Values.Average(s => s.Speed);
+        SendSaveProbe(chara, peer);
     }
 
     public static void RemoveRemoteChara(Chara remoteChara)
@@ -118,5 +119,8 @@ internal partial class ElinNetHost
         foreach (var chara in currentRemoteCharas.Except(excluded)) {
             RemoveRemoteChara(chara);
         }
+
+        pc.party?.members.RemoveAll(c => c is null);
+        pc.party?.uidMembers.RemoveAll(uid => pc.party?.members.Find(c => c.uid == uid) is null);
     }
 }

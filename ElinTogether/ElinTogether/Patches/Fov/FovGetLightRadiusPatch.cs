@@ -28,18 +28,18 @@ internal class FovGetLightRadiusPatch
                 ? 6
                 : 5;
 
-        var radiusExtra = 2;
+        var extraRadius = 2;
         if (chara.body.GetEquippedThing(SLOT.lightsource)?.trait is TraitLightSource trait) {
-            radiusExtra = trait.LightRadius;
+            extraRadius = trait.LightRadius;
         }
 
         var heldLightRadius = chara.held?.GetLightRadius() ?? 0;
         if (heldLightRadius > 0) {
-            radiusExtra = Math.Max(radiusExtra, heldLightRadius - 1);
-            radiusExtra = Math.Max(radiusExtra, 3);
+            extraRadius = Math.Max(extraRadius, heldLightRadius - 1);
+            extraRadius = Math.Max(extraRadius, 3);
         }
 
-        __result = Math.Max(baseRadius, radiusExtra);
+        __result = Math.Max(baseRadius, extraRadius);
 
         return false;
     }

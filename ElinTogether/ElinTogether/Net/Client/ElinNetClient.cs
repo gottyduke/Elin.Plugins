@@ -28,6 +28,7 @@ internal partial class ElinNetClient : ElinNetBase
     {
         Router.RegisterHandler<SourceListRequest>(OnSourceListRequest);
         Router.RegisterHandler<SourceDiffResponse>(OnSourceDiffResponse);
+        Router.RegisterHandler<SessionNewPlayerRequest>(OnSessionNewPlayerRequest);
         Router.RegisterHandler<SaveDataProbe>(OnSaveDataProbe);
         Router.RegisterHandler<SteamLobbyRequest>(OnSteamLobbyRequest);
         Router.RegisterHandler<SessionPlayersSnapshot>(OnSessionStatesUpdate);
