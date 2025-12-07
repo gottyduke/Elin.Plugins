@@ -89,21 +89,6 @@ jobs:
           Compress-Archive -Path "$source\*" -DestinationPath $destination -Force
           $path = $destination -Replace '\\', '/'
 
-          $repoUrl = "https://github.com/${{ github.repository }}"
-          $tags = git tag --list "EMP-*" --sort=committerdate | select -Last 2
-
-          $commits = git log "$($tags[0])..$($tags[1])" --pretty=format:"%h;%s" -- ElinTogether/ElinTogether/ 
-          | ? {$_ -notmatch "cleanup"}
-          | % {
-              $parts = $_ -split ';', 2
-              $sha = $parts[0]
-              $msg  = $parts[1]
-
-              "- $msg $sha"
-          }
-
-          $commits | Out-File -FilePath "${{ github.workspace }}\CHANGELOG.txt" -Encoding UTF8
-
           echo "artifact_path=$path" >> $env:GITHUB_OUTPUT
 
       - name: Create or Update Release
@@ -114,7 +99,6 @@ jobs:
           name: Elin Together - Preview ${{ steps.build.outputs.file_version }}
           prerelease: true
           generate_release_notes: false
-          body_path: ${{ github.workspace }}\CHANGELOG.txt
           files: ${{ steps.artifact.outputs.artifact_path }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
