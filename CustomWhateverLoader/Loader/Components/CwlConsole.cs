@@ -10,7 +10,7 @@ using UnityEngine;
 namespace Cwl.Components;
 
 [ConsoleCommandClassCustomizer("cwl")]
-internal class CwlConsole : EMono
+internal partial class CwlConsole : EMono
 {
     private void Update()
     {
@@ -146,9 +146,10 @@ internal class CwlConsole : EMono
     internal static string GetPos()
     {
         var pos = pc.pos;
+        var (zoneType, zoneId, zoneLv) = _zone.ZoneFullName.ParseZoneFullName();
         return $"Map: {pos.x}, {pos.z}\n" +
                $"Overworld: {pos.eloX}, {pos.eloY}\n" +
-               $"Zone: {_zone.ZoneFullName}\n" +
+               $"Zone: {zoneType} {zoneId} @ {zoneLv} uid: {_zone.uid}\n" +
                $"Source: {_zone.source.WhereTheF?.title ?? "Elin/Unknown"}";
     }
 
