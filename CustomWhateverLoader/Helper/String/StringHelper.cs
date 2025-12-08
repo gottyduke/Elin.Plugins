@@ -177,7 +177,7 @@ public static class StringHelper
         public string TagColor(int hex)
         {
             var color = (uint)hex;
-            var hexString = color <= 0xFFFFFF
+            var hexString = color <= 0xffffff
                 ? color.ToString("x6")
                 : color.ToString("x8");
             return $"<color=#{hexString}>{input}</color>";

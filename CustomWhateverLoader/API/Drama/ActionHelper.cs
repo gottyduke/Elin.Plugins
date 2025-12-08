@@ -129,7 +129,7 @@ public partial class DramaExpansion
             double d => Compare((float)d, expr),
             bool b => b,
             string s => string.Equals(s, expr, StringComparison.OrdinalIgnoreCase),
-            _ => false,
+            _ => string.Equals(lhs.ToString(), expr, StringComparison.OrdinalIgnoreCase),
         };
     }
 }
