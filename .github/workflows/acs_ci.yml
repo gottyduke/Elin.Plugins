@@ -53,7 +53,9 @@ jobs:
             ${{ github.workspace }}\AnimatedCustomSprites\packages.lock.json
 
       - name: Setup Packages
-        run: dotnet restore ${{ github.workspace }}\AnimatedCustomSprites\ --locked-mode
+        run: |
+          dotnet restore ${{ github.workspace }}\CustomWhateverLoader\ --locked-mode
+          dotnet restore ${{ github.workspace }}\AnimatedCustomSprites\ --locked-mode
 
       - name: Build
         id: build
