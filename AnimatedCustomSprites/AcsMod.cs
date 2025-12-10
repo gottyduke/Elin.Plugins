@@ -9,7 +9,7 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.animatedcustomsprites";
     internal const string Name = "Animated Custom Sprites";
-    internal const string Version = "1.9";
+    internal const string Version = "1.10.0";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
@@ -20,8 +20,10 @@ internal class AcsMod : BaseUnityPlugin
     private void Awake()
     {
         Instance = this;
+
         var harmony = new Harmony(ModInfo.Guid);
         harmony.PatchAll();
+
         CommandRegistry.assemblies.Add(Assembly.GetExecutingAssembly());
     }
 

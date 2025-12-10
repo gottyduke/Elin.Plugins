@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using ACS.API;
+using Cwl.Helper.Extensions;
 using UnityEngine;
 
 namespace ACS.Components;
@@ -33,32 +34,13 @@ public class AcsController : MonoBehaviour
             return;
         }
 
-        if (!ExternalOverride) {
-            var chara = Actor.owner as Chara;
-            if (chara is null && Actor.owner is Thing { parentCard: Chara wielder }) {
-                chara = wielder;
-            }
+        var chara = Actor.owner as Chara;
+        if (chara is null && Actor.owner is Thing { parentCard: Chara wielder }) {
+            chara = wielder;
+        }
 
-            AcsClip? newClip = null;
-            var inCombat = chara?.IsInCombat ?? false;
-            var newClipType = CurrentClip.type;
-
-            var shouldSwitchToCombat = CurrentClip.type != AcsAnimationType.Combat && inCombat;
-            var shouldSwitchToIdle = CurrentClip.type == AcsAnimationType.Combat && !inCombat;
-
-            if (shouldSwitchToCombat) {
-                newClipType = AcsAnimationType.Combat;
-            } else if (shouldSwitchToIdle) {
-                newClipType = AcsAnimationType.Idle;
-            }
-
-            if (newClipType != CurrentClip.type) {
-                newClip = Actor.owner.GetAcsClip(newClipType);
-            }
-
-            if (newClip?.sprites?.Length is > 0 && newClip != CurrentClip) {
-                StartClip(newClip);
-            }
+        if (chara is not null) {
+            RefreshAcsClipState(chara);
         }
 
         _elapsed += Time.deltaTime;
@@ -97,6 +79,34 @@ public class AcsController : MonoBehaviour
         StartClip(idleClip);
     }
 
+    private void RefreshAcsClipState(Chara chara)
+    {
+        AcsClip? newClip = null;
+        if (!ExternalOverride) {
+            var inCombat = chara.IsInCombat;
+            var newClipType = CurrentClip!.type;
+
+            var shouldSwitchToCombat = CurrentClip.type != AcsAnimationType.Combat && inCombat;
+            var shouldSwitchToIdle = CurrentClip.type == AcsAnimationType.Combat && !inCombat;
+
+            if (shouldSwitchToCombat) {
+                newClipType = AcsAnimationType.Combat;
+            } else if (shouldSwitchToIdle) {
+                newClipType = AcsAnimationType.Idle;
+            }
+
+            if (newClipType != CurrentClip.type) {
+                newClip = Actor.owner.GetAcsClip(newClipType);
+            }
+        } else if (chara.mapStr.TryGetValue("acs_clip", out var clipName)) {
+            newClip = Actor.owner.GetAcsClip(clipName);
+        }
+
+        if (newClip?.sprites?.Length is > 0 && newClip != CurrentClip) {
+            StartClip(newClip);
+        }
+    }
+
     public Sprite CurrentFrame()
     {
         if (!IsPlaying || CurrentClip?.sprites?.Length is not > 1) {
@@ -116,6 +126,8 @@ public class AcsController : MonoBehaviour
         if (_playing) {
             ExternalOverride = external;
         }
+
+        Actor.owner.mapStr.Set("acs_clip", clip.name);
     }
 
     public void StopClip()
