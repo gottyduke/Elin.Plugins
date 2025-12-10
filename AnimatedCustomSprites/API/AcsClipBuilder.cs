@@ -27,7 +27,7 @@ public static class AcsClipBuilder
                 throw new ArgumentException("sprite could not be parsed");
             }
 
-            var name = clipName.EmptyOr(param.Groups["clipName"].Value.ToLower());
+            var name = clipName.IsEmpty(param.Groups["clipName"].Value.ToLower());
 
             if (type == AcsAnimationType.Auto) {
                 type = name switch {
