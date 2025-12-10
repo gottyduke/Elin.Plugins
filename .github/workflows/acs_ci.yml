@@ -1,0 +1,139 @@
+name: Animated Custom Sprites CI Deploy
+
+on:
+  push:
+    branches: ["*"]
+    paths: ["AnimatedCustomSprites/**"]
+  pull_request:
+    paths: ["AnimatedCustomSprites/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  build-and-upload:
+    name: Build
+    runs-on: windows-2025
+
+    strategy:
+      matrix:
+        version: [stable, nightly]
+    env:
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          sparse-checkout: |
+            CustomWhateverLoader/
+            AnimatedCustomSprites/
+            Directory.Build.props
+          sparse-checkout-cone-mode: false
+
+      - name: Checkout Deps
+        uses: actions/checkout@v5
+        with:
+          path: ${{ matrix.version }}
+          ref: ${{ matrix.version }}
+          repository: gottyduke/Elin.Plugins.BuildDeps
+          ssh-key: ${{ secrets.DEPS_DEPLOY_KEY }}
+
+      - name: Setup DotNet
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+          dotnet-quality: preview
+          cache: true
+          cache-dependency-path:  |
+            ${{ github.workspace }}\CustomWhateverLoader\packages.lock.json
+            ${{ github.workspace }}\AnimatedCustomSprites\packages.lock.json
+
+      - name: Setup Packages
+        run: dotnet restore ${{ github.workspace }}\AnimatedCustomSprites\ --locked-mode
+
+      - name: Build
+        id: build
+        env:
+          ElinGamePath: ${{ github.workspace }}\${{ matrix.version }}
+        shell: pwsh
+        run: |
+          $config = '${{ matrix.version }}' -eq 'stable' ? 'Debug' : 'DebugNightly'
+          dotnet build ${{ github.workspace }}\CustomWhateverLoader\CustomWhateverLoader.csproj -o ${{ github.workspace }}\${{ matrix.version }}\Package\Mod_CustomWhateverLoader -c $config --no-restore
+          dotnet build ${{ github.workspace }}\AnimatedCustomSprites\AnimatedCustomSprites.csproj -o ${{ github.workspace }}\out\${{ matrix.version }} -c $config --no-restore
+
+          $dllPath = Join-Path -Path "${{ github.workspace }}\out\${{ matrix.version }}" -ChildPath "AnimatedCustomSprites.dll"
+          $fileVersion = (Get-Item -Path $dllPath).VersionInfo.FileVersion
+          $fileVersionShort = $fileVersion.Split('.')[0..2] -join '.'
+
+          echo "file_version=$fileVersion" >> $env:GITHUB_OUTPUT
+          echo "file_version_short=$fileVersionShort" >> $env:GITHUB_OUTPUT
+          echo "file_name=acs-ci-builds-$fileVersion-${{ matrix.version }}" >> $env:GITHUB_OUTPUT
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.build.outputs.file_name }}
+          path: ${{ github.workspace }}\out\${{ matrix.version }}
+
+      - name: Prepare Release
+        if: github.event_name != 'pull_request'
+        id: artifact
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $source = "${{ github.workspace }}\out\${{ matrix.version }}"
+          $destination = "${{ github.workspace }}\out\${{ matrix.version }}\acs-ci-builds-${{ matrix.version }}.zip"
+
+          Compress-Archive -Path "$source\*" -DestinationPath $destination -Force
+          $path = $destination -Replace '\\', '/'
+
+          $repoUrl = "https://github.com/${{ github.repository }}"
+          $tag = "ACS-${{ steps.build.outputs.file_version_short }}"
+
+          gh api repos/${{ github.repository }}/git/refs/tags/$tag -q "if .object then true else false" 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            gh api -X DELETE repos/${{ github.repository }}/git/refs/tags/$tag
+          }
+
+          if (git tag -l $tag) {
+            git tag -d $tag
+          }
+          
+          $lastTag = git describe --tags --abbrev=0 --match="ACS-*"
+          $lastTagSha = git rev-parse $lastTag
+          $commits = git log "$($lastTag)..HEAD" --pretty=format:"%cd;%h;%s" -- AnimatedCustomSprites/ 
+          | ? {$_ -notmatch "cleanup"} 
+          | % {
+              $parts = $_ -split ';', 3
+              $date = $parts[0]
+              $sha = $parts[1]
+              $msg  = $parts[2]
+
+              "- $date $msg $sha"
+          }
+
+          $changelog = @()
+          $changelog += "Last Tag ($lastTag): $lastTagSha"
+          $changelog += ""
+          $changelog += $commits
+
+          $changelog | Out-File -FilePath "${{ github.workspace }}\CHANGELOG.txt" -Encoding UTF8
+
+          echo "artifact_path=$path" >> $env:GITHUB_OUTPUT
+
+      - name: Create or Update Release
+        if: github.event_name != 'pull_request'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ACS-${{ steps.build.outputs.file_version_short }}
+          name: Animated Custom Sprites ${{ steps.build.outputs.file_version }}
+          generate_release_notes: false
+          body_path: ${{ github.workspace }}\CHANGELOG.txt
+          files: ${{ steps.artifact.outputs.artifact_path }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

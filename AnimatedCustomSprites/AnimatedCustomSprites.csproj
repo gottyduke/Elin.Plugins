@@ -8,9 +8,12 @@
         <RootNamespace>Acs</RootNamespace>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <OutputPath>$(ElinGamePath)\Package\Mod_$(AssemblyName)\</OutputPath>
+        <Deterministic>false</Deterministic>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
         <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     </PropertyGroup>
 
     <ItemGroup>
@@ -29,9 +32,19 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Reference Include="$(ElinGamePath)\Package\Mod_CustomWhateverLoader\CustomWhateverLoader.dll">
+        <Reference Include="CustomWhateverLoader">
+            <HintPath Condition="Exists('$(SteamContentPath)\2135150\3370512305')">$(SteamContentPath)\2135150\3370512305\CustomWhateverLoader.dll</HintPath>
+            <HintPath Condition="Exists('$(SteamContentPath)\2135150\3544010094')">$(SteamContentPath)\2135150\3544010094\CustomWhateverLoader.dll</HintPath>
+            <HintPath Condition="Exists('$(ElinGamePath)\Package\Mod_CustomWhateverLoader')">$(ElinGamePath)\Package\Mod_CustomWhateverLoader\CustomWhateverLoader.dll</HintPath>
             <Private>false</Private>
         </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="GitVersion.MsBuild" Version="6.5.1">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
     </ItemGroup>
 
     <Target Name="CopyAssets" AfterTargets="AfterBuild">
