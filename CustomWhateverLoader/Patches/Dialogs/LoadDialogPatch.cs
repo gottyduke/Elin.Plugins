@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using Cwl.Helper.Extensions;
+using Cwl.Helper.String;
 using HarmonyLib;
 using MethodTimer;
 
@@ -58,7 +59,7 @@ internal class LoadDialogPatch
         foreach (var cache in Cached) {
             cache.BuildMap(sheetName);
             foreach (var (topic, cells) in cache.sheets[sheetName].map) {
-                if (topic.IsEmpty()) {
+                if (topic.IsEmptyOrNull) {
                     continue;
                 }
 

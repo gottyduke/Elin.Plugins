@@ -17,7 +17,7 @@ internal partial class CwlMod
             return;
         }
 
-        if (message.IsEmpty() || message == "InvalidOperationException: Steamworks is not initialized.") {
+        if (message.IsEmptyOrNull || message == "InvalidOperationException: Steamworks is not initialized.") {
             return;
         }
 

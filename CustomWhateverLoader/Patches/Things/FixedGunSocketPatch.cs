@@ -31,7 +31,7 @@ internal class FixedGunSocketPatch : EClass
             thing.AddSocket();
 
             var socket = socketExpr.ExtractInBetween('(', ')');
-            if (socket.IsEmpty()) {
+            if (socket.IsEmptyOrNull) {
                 emptyRequired++;
             } else {
                 thing.ApplyRangedSocket(socket);

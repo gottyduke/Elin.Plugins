@@ -31,7 +31,7 @@ public static class SpriteCreator
                                   int resizeWidth = 0,
                                   int resizeHeight = 0)
         {
-            if (spritePath.IsEmpty()) {
+            if (spritePath.IsEmptyOrNull) {
                 return null;
             }
 

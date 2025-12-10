@@ -51,7 +51,7 @@ public class MonoFrame
             : SanitizedMethodCall;
 
     public string? AssemblyName => field ??= Method?.Module.ToString();
-    public bool IsVendorMethod => _vendorExclusion.Any(AssemblyName.IsEmpty("").StartsWith);
+    public bool IsVendorMethod => _vendorExclusion.Any(AssemblyName.EmptyOr("").StartsWith);
 
     public static MonoFrame GetFrame(string frame)
     {

@@ -67,7 +67,7 @@ public class TypeQualifier
     public static Type? TryQualify<T>(params string[] unqualified) where T : EClass
     {
         foreach (var unq in unqualified) {
-            if (unq.IsEmpty()) {
+            if (unq.IsEmptyOrNull) {
                 continue;
             }
 
@@ -105,7 +105,7 @@ public class TypeQualifier
     public static Type? GlobalResolve(string unresolvedStr)
     {
         var sanitized = unresolvedStr.Replace('/', '+').Trim();
-        if (sanitized.IsEmpty()) {
+        if (sanitized.IsEmptyOrNull) {
             return null;
         }
 

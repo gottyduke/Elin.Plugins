@@ -42,7 +42,7 @@ internal class SetMaterialRowPatch
         try {
             foreach (var tag in tags) {
                 var value = tag.ExtractInBetween('(', ')');
-                if (value.IsEmpty()) {
+                if (value.IsEmptyOrNull) {
                     continue;
                 }
 

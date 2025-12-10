@@ -38,7 +38,7 @@ internal class LoadBookPatch
                 var meta = sr.ReadLine()!.Split(',');
                 var item = new BookList.Item {
                     title = meta[0],
-                    author = meta.Length >= 2 && !meta[1].IsEmpty()
+                    author = meta.Length >= 2 && !meta[1].IsEmptyOrNull
                         ? "nameAuthor".lang(meta[1])
                         : "unknownAuthor".lang(),
                     chance = meta.Length >= 3 ? meta[2].ToInt() : 100,
@@ -71,10 +71,10 @@ internal class LoadBookPatch
     }
 
     [Time]
-    private static string[] BuildRelocatedPages(string[] textArray, UIBook book)
+    private static string[] BuildRelocatedPages(string[]? textArray, UIBook book)
     {
         var id = book.idFile;
-        if (!textArray.IsEmpty()) {
+        if (textArray?.Length is > 0) {
             return textArray;
         }
 

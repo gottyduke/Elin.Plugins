@@ -19,7 +19,7 @@ public partial class DramaExpansion
 
         var talkEvent = new DramaEventTalk {
             idActor = actor,
-            idJump = jump ?? dm.sequence.lastlastStep.IsEmpty("end"),
+            idJump = jump ?? dm.sequence.lastlastStep.EmptyOr("end"),
             text = text,
             temp = true,
             sequence = dm.sequence,
@@ -55,7 +55,7 @@ public partial class DramaExpansion
 
         dm.CustomEvent(dm.sequence.Exit);
 
-        var choice = new DramaChoice("letsTalk".lang(), dm.sequence.steps.Last().Key.IsEmpty(dm.setup.step));
+        var choice = new DramaChoice("letsTalk".lang(), dm.sequence.steps.Last().Key.EmptyOr(dm.setup.step));
         dm.lastTalk.choices.Add(choice);
         dm._choices.Add(choice);
 
@@ -124,11 +124,26 @@ public partial class DramaExpansion
     public static bool Compare(object lhs, string expr)
     {
         return lhs switch {
+            byte b => Compare(b, expr),
+            sbyte b => Compare(b, expr),
+            short s => Compare(s, expr),
+            ushort s => Compare(s, expr),
+
             int i => Compare(i, expr),
+            uint i => Compare((int)i, expr),
+
+            long l => Compare((int)l, expr),
+            ulong l => Compare((int)l, expr),
+
             float f => Compare(f, expr),
-            double d => Compare((float)d, expr),
-            bool b => b,
+            double f => Compare((float)f, expr),
+            decimal d => Compare((float)d, expr),
+
+            bool b => b == bool.Parse(expr),
+
+            char c => c.ToString() == expr,
             string s => string.Equals(s, expr, StringComparison.OrdinalIgnoreCase),
+
             _ => string.Equals(lhs.ToString(), expr, StringComparison.OrdinalIgnoreCase),
         };
     }

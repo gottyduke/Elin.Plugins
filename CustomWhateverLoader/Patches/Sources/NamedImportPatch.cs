@@ -8,6 +8,7 @@ using Cwl.API.Migration;
 using Cwl.Helper;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.Extensions;
+using Cwl.Helper.String;
 using HarmonyLib;
 using NPOI.SS.UserModel;
 
@@ -106,7 +107,7 @@ internal class NamedImportPatch
 
             if (!_cached.TryGetValue(sheet, out var header)) {
                 var headerColumns = sheet.GetRow(sheet.FirstRowNum).Cells
-                    .Where(c => !c.StringCellValue.IsEmpty());
+                    .Where(c => !c.StringCellValue.IsEmptyOrNull);
 
                 header = new();
                 foreach (var cell in headerColumns) {

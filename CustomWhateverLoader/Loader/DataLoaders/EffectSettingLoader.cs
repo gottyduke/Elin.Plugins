@@ -40,7 +40,7 @@ internal partial class DataLoader
         foreach (var (path, gunData) in effects) {
             foreach (var (id, read) in gunData) {
                 try {
-                    read.spriteId = read.spriteId.IsEmpty(read.idSprite);
+                    read.spriteId = read.spriteId.EmptyOr(read.idSprite);
                     var sprite = Array.Find(sprites, s => s.name == read.spriteId);
 
                     if (sprite == null) {

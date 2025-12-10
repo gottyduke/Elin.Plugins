@@ -114,7 +114,7 @@ internal class CwlPipe : EMono
                 int newline;
                 while ((newline = current.IndexOf('\n')) >= 0) {
                     var line = current[..newline].TrimEnd('\r');
-                    if (!line.IsEmpty()) {
+                    if (!line.IsEmptyOrNull) {
                         _commands.Enqueue(line);
                     }
 

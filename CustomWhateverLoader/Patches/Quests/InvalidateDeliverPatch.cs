@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Cwl.Helper;
+using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using HarmonyLib;
@@ -20,7 +21,7 @@ internal class InvalidateItemPatch
     [HarmonyPrefix]
     internal static bool InvalidateItem(QuestDeliver __instance, ref SourceThing.Row __result)
     {
-        __instance.idThing = __instance.idThing.IsEmpty(FallbackItem);
+        __instance.idThing = __instance.idThing.EmptyOr(FallbackItem);
         if (EMono.sources.things.map.TryGetValue(__instance.idThing, out __result) && __result is not null) {
             return false;
         }

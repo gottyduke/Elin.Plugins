@@ -2,6 +2,7 @@
 using System.Linq;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.Extensions;
+using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using HarmonyLib;
 using UnityEngine;
@@ -57,8 +58,8 @@ internal class ExtendedGunEffectPatch : EClass
                 }
             }
 
-            var gunEffect = data.idEffect.IsEmpty("gunfire");
-            var fireSound = data.idSound.IsEmpty("attack_gun");
+            var gunEffect = data.idEffect.EmptyOr("gunfire");
+            var fireSound = data.idSound.EmptyOr("attack_gun");
             var ejectSound = "bullet_drop";
             if (dataEx?.idSoundEject is not (null or "")) {
                 ejectSound = dataEx.idSoundEject;

@@ -31,13 +31,18 @@ internal class RerouteDramaPatch
     }
 
     // TODO: this only reroutes if it's actually going to show
-    // subject to change for dialog expansion
-    private static bool TryRerouteDialog(Chara chara)
+    // subject to change for drama expansion
+    private static bool TryRerouteDialog(Chara chara, string book, string step)
     {
         DramaExpansion.Clear();
 
-        if (!CustomChara.DramaRoutes.TryGetValue(chara.id, out var drama)) {
+        if (!CustomChara.DramaRoutes.TryGetValue(chara.id, out var drama) &&
+            !chara.mapStr.TryGetValue("drama_route", out drama)) {
             return false;
+        }
+
+        try {
+        } catch {
         }
 
         chara.ShowDialog(drama);

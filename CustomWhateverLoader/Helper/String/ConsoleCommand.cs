@@ -22,7 +22,7 @@ public static class ConsoleCommand
             }
 
             var resultStr = result?.ToString();
-            if (resultStr.IsEmpty()) {
+            if (resultStr.IsEmptyOrNull) {
                 return "";
             }
 

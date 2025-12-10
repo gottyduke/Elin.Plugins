@@ -94,12 +94,12 @@ internal class LoadDramaPatch
             var textEn = item["text_EN"];
             var textJp = item["text_JP"];
 
-            if (textEn.IsEmpty()) {
-                item["text_EN"] = textLocalize.IsEmpty(textJp);
+            if (textEn.IsEmptyOrNull) {
+                item["text_EN"] = textLocalize.EmptyOr(textJp);
             }
 
-            if (textJp.IsEmpty()) {
-                item["text_JP"] = textLocalize.IsEmpty(textEn);
+            if (textJp.IsEmptyOrNull) {
+                item["text_JP"] = textLocalize.EmptyOr(textEn);
             }
         }
 
@@ -121,8 +121,8 @@ internal class LoadDramaPatch
                 var dict = lists[i];
                 var id = dict["id"];
 
-                if (id.IsEmpty()) {
-                    if (!dict["text"].IsEmpty()) {
+                if (id.IsEmptyOrNull) {
+                    if (!dict["text"].IsEmptyOrNull) {
                         dict["id"] = GetNewId();
                     }
 

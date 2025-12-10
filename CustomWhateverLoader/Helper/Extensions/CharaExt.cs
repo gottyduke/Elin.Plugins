@@ -2,6 +2,7 @@
 using System.Linq;
 using Cwl.API.Custom;
 using Cwl.API.Drama;
+using Cwl.Helper.String;
 using Cwl.LangMod;
 
 namespace Cwl.Helper.Extensions;
@@ -95,7 +96,7 @@ public static class CharaExt
                 return chara.GetDialogText("unique", chara.id);
             }
 
-            if (EClass.rnd(2) == 0 && !chara.trait.IDRumor.IsEmpty()) {
+            if (EClass.rnd(2) == 0 && !chara.trait.IDRumor.IsEmptyOrNull) {
                 return chara.GetDialogText("rumor", chara.trait.IDRumor);
             }
 
@@ -116,7 +117,7 @@ public static class CharaExt
 
         public bool HasRumorText(string idSheet, string? idTopic = null)
         {
-            idTopic = idTopic.IsEmpty(chara.id);
+            idTopic = idTopic.EmptyOr(chara.id);
             var rumors = Lang.GetDialog(idSheet, idTopic);
             return rumors.Length > 1 || rumors.TryGet(0, true) != idTopic;
         }
@@ -124,7 +125,7 @@ public static class CharaExt
         public string GetDialogText(string idSheet, string idTopic)
         {
             var dm = DramaExpansion.Cookie?.Dm;
-            if (!idTopic.IsEmpty() && (dm?.customTalkTopics.TryGetValue(idTopic, out var text) ?? false)) {
+            if (!idTopic.IsEmptyOrNull && (dm?.customTalkTopics.TryGetValue(idTopic, out var text) ?? false)) {
                 return text;
             }
 

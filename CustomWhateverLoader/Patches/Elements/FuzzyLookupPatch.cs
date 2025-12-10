@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using Cwl.Helper.Extensions;
+using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;
 
@@ -29,7 +30,7 @@ internal class FuzzyLookup
 
     internal static bool TryFuzzyGetValue(Dictionary<string, SourceElement.Row> aliasMap, string alias, out SourceElement.Row row)
     {
-        alias = alias.IsEmpty("_void");
+        alias = alias.EmptyOr("_void");
 
         var newHash = aliasMap.GetContentHashCode();
         if (_hash != newHash) {

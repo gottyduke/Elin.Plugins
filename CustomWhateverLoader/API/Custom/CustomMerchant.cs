@@ -4,6 +4,7 @@ using System.Linq;
 using Cwl.API.Attributes;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
+using Cwl.Helper.String;
 using Cwl.LangMod;
 using ReflexCLI.Attributes;
 
@@ -26,7 +27,7 @@ public class CustomMerchant : TraitMerchant
     [ConsoleCommand("add")]
     public static void AddStock(string ownerId, string stockId = "")
     {
-        stockId = stockId.IsEmpty(ownerId);
+        stockId = stockId.EmptyOr(ownerId);
 
         var stock = GetStockData(stockId);
         if (stock is null) {

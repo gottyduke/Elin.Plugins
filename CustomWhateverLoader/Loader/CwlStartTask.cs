@@ -8,6 +8,7 @@ using Cwl.API.Processors;
 using Cwl.Components;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
+using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using Cwl.Patches;
@@ -30,8 +31,9 @@ namespace Cwl;
 
 internal sealed partial class CwlMod
 {
-    private static bool _loadingComplete;
     private static bool _duplicate;
+
+    internal static bool LoadingComplete { get; private set; }
 
     internal static string CurrentLoading
     {
@@ -39,11 +41,11 @@ internal sealed partial class CwlMod
         set {
             field = value;
 
-            if (value.IsEmpty()) {
+            if (value.IsEmptyOrNull) {
                 return;
             }
 
-            if (_loadingComplete) {
+            if (LoadingComplete) {
                 CreateLoadingProgress();
             }
         }
@@ -248,12 +250,12 @@ internal sealed partial class CwlMod
 
     private static void CreateLoadingProgress()
     {
-        _loadingComplete = false;
+        LoadingComplete = false;
 
         ProgressIndicator
             .CreateProgress(
                 () => new("cwl_log_loading".Loc(ModInfo.Version, CurrentLoading)),
-                _ => _loadingComplete);
+                _ => LoadingComplete);
     }
 
     private static IEnumerator ReportDuplicateVersion()
@@ -265,7 +267,7 @@ internal sealed partial class CwlMod
 
     private static void ReportLoadingComplete()
     {
-        _loadingComplete = true;
+        LoadingComplete = true;
         Log<CwlMod>("loading complete");
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.Extensions;
+using Cwl.Helper.String;
 
 namespace Cwl.API.Drama;
 
@@ -101,12 +102,12 @@ public static class ActionParameterHelper
 
     public class OptParam(string? value)
     {
-        public bool Provided => !value.IsEmpty();
+        public bool Provided => !value.IsEmptyOrNull;
         public string Value => value!;
 
         public string Get(string fallback)
         {
-            return value.IsEmpty(fallback);
+            return value.EmptyOr(fallback);
         }
 
         public int AsInt(int fallback = 0)

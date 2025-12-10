@@ -56,6 +56,13 @@ public static class StringHelper
 
     extension(string input)
     {
+        public bool IsEmptyOrNull => string.IsNullOrEmpty(input);
+
+        public string EmptyOr(string fallback)
+        {
+            return string.IsNullOrEmpty(input) ? fallback : input;
+        }
+
         public string Capitalize()
         {
             Span<char> buf = input.ToCharArray();
@@ -65,7 +72,7 @@ public static class StringHelper
 
         public string Truncate(int length)
         {
-            return input.IsEmpty() || input.RemoveTagColor().Length <= length ? input : $"{input[..length]} ...";
+            return input.IsEmptyOrNull || input.RemoveTagColor().Length <= length ? input : $"{input[..length]} ...";
         }
 
         public string TruncateAllLines(int length)

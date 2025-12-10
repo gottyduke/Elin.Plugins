@@ -1,4 +1,5 @@
-﻿using Cwl.LangMod;
+﻿using Cwl.Helper.String;
+using Cwl.LangMod;
 using HarmonyLib;
 
 namespace Cwl.Patches.Dialogs;
@@ -10,7 +11,7 @@ internal class SafePopTalkPatch
     [HarmonyPatch(typeof(TCText), nameof(TCText.Say))]
     internal static bool ShouldSafePop(TCText __instance, string s)
     {
-        if (!s.IsEmpty()) {
+        if (!s.IsEmptyOrNull) {
             return true;
         }
 

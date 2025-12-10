@@ -1,5 +1,6 @@
 ﻿using System;
 using Cwl.Helper.Exceptions;
+using Cwl.Helper.String;
 
 namespace Cwl.LangMod;
 
@@ -29,7 +30,7 @@ public static class LocFormatter
         public string Loc(params object?[] args)
         {
             var lang = Lang.isBuiltin
-                ? row.text_L.IsEmpty() && !row.text.IsEmpty() ? row.text : row.text_L
+                ? row.text_L.IsEmptyOrNull && !row.text.IsEmptyOrNull ? row.text : row.text_L
                 : Lang.isJP
                     ? row.text_JP
                     : row.text;

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Cwl.API.Attributes;
+using Cwl.Helper.String;
 using UnityEngine;
 
 namespace Cwl.Patches.Renderers;
@@ -38,7 +39,7 @@ internal class FigureRenderer : CardRenderer
 
         var refId = owner.c_idRefCard;
         // 23.233 Nightly changes
-        if (refId.IsEmpty() || (!owner.IsInstalled && (pc.held == owner || owner.ExistsOnMap) && !owner.isRoofItem)) {
+        if (refId.IsEmptyOrNull || (!owner.IsInstalled && (pc.held == owner || owner.ExistsOnMap) && !owner.isRoofItem)) {
             return false;
         }
 

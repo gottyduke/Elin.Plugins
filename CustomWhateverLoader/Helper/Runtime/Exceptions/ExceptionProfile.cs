@@ -58,7 +58,7 @@ public class ExceptionProfile(string message)
             exception = inner;
         }
 
-        var exp = GetFromStackTrace(Regex.Replace(exception.StackTrace.IsEmpty(""), @"^(\s+at\s)", ""), exception.Message);
+        var exp = GetFromStackTrace(Regex.Replace(exception.StackTrace.EmptyOr(""), @"^(\s+at\s)", ""), exception.Message);
 
         var stackTrace = new StackTrace(exception);
         foreach (var frame in stackTrace.GetFrames() ?? []) {
@@ -81,6 +81,13 @@ public class ExceptionProfile(string message)
     {
         var profile = GetFromStackTrace(ref exception);
         profile.CreateAndPop();
+    }
+
+    public static bool ScriptExceptionHandler(Exception exception)
+    {
+        var profile = GetFromStackTrace(ref exception);
+        profile.CreateAndPop();
+        return true;
     }
 
     public void CreateAndPop(string? display = null)
@@ -169,7 +176,7 @@ public class ExceptionProfile(string message)
             sb.AppendLine("cwl_ui_callstack".lang());
 
             foreach (var frame in StackTrace.SplitLines().Distinct()) {
-                if (frame.IsEmpty()) {
+                if (frame.IsEmptyOrNull) {
                     continue;
                 }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using Cwl.API.Attributes;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.Extensions;
+using Cwl.Helper.String;
 
 namespace Cwl.API.Drama;
 
@@ -168,7 +169,7 @@ public partial class DramaExpansion
             id = owner.chara.GetIdPortrait();
         } else {
             var portrait = portraitId.Value;
-            var actorId = owner.id.IsEmpty(owner.chara?.id);
+            var actorId = owner.id.EmptyOr(owner.chara?.id);
             var ids = new HashSet<string>(StringComparer.Ordinal) {
                 $"UN_{actorId}_{portrait}.png",
                 $"{portrait}.png",

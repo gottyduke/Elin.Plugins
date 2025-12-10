@@ -70,7 +70,7 @@ internal class DramaExpansionPatch
         }
 
         // default actor
-        item["actor"] = item["actor"].IsEmpty("tg");
+        item["actor"] = item["actor"].EmptyOr("tg");
 
         foreach (var expr in rawExpr.SplitLines()) {
             if (DramaExpansion.BuildExpression(expr) is not { } func) {
@@ -83,7 +83,7 @@ internal class DramaExpansionPatch
             }
 
             var step = new DramaEventMethod(() => func(__instance, item));
-            if (item.TryGetValue("jump", out var jump) && !jump.IsEmpty()) {
+            if (item.TryGetValue("jump", out var jump) && !jump.IsEmptyOrNull) {
                 step.action = null;
                 step.jumpFunc = () => func(__instance, item) ? jump : "";
             }

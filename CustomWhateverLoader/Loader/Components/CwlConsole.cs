@@ -110,7 +110,7 @@ internal partial class CwlConsole : EMono
             .Do(t => t.Identify(idtSource: IDTSource.SuperiorIdentify));
     }
 
-    [ConsoleCommand("spawn_zone")]
+    [ConsoleCommand("zone.spawn")]
     internal static void SpawnZoneThingy(string zoneFullName, int eloX = 99999, int eloY = 99999)
     {
         var pos = pc.pos;
@@ -126,7 +126,7 @@ internal partial class CwlConsole : EMono
         world.region.SpawnZoneAt(zoneFullName, eloX, eloY, false);
     }
 
-    [ConsoleCommand("remove_zone")]
+    [ConsoleCommand("zone.remove")]
     internal static void DeleteZoneThingy(int eloX = 99999, int eloY = 99999)
     {
         var pos = pc.pos;
@@ -142,14 +142,39 @@ internal partial class CwlConsole : EMono
         world.region.DestroyZoneAt(eloX, eloY);
     }
 
+    [ConsoleCommand("zone.reset")]
+    internal static string ResetZone(string zoneFullName = "")
+    {
+        if (_zone.IsRegion) {
+            return "Can't reset overworld map";
+        }
+
+        if (zoneFullName == "") {
+            zoneFullName = _zone.ZoneFullName;
+        }
+
+        if (!zoneFullName.ValidateZone(out var zone)) {
+            return "Zone not found";
+        }
+
+        zone.dateExpire = 0;
+
+        return "Zone will reset upon next visit";
+    }
+
     [ConsoleCommand("get_pos")]
     internal static string GetPos()
     {
         var pos = pc.pos;
+
+        if (_zone.IsRegion) {
+            return $"Overworld: {pos.eloX}, {pos.eloY}\n";
+        }
+
         var (zoneType, zoneId, zoneLv) = _zone.ZoneFullName.ParseZoneFullName();
         return $"Map: {pos.x}, {pos.z}\n" +
-               $"Overworld: {pos.eloX}, {pos.eloY}\n" +
                $"Zone: {zoneType} {zoneId} @ {zoneLv} uid: {_zone.uid}\n" +
+               $"Expire: {Date.ToDate(_zone.dateExpire)}\n" +
                $"Source: {_zone.source.WhereTheF?.title ?? "Elin/Unknown"}";
     }
 

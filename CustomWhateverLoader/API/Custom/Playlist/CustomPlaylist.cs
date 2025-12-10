@@ -99,7 +99,7 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
     {
         var shuffle = false;
         foreach (var order in orders) {
-            if (order.IsEmpty()) {
+            if (order.IsEmptyOrNull) {
                 continue;
             }
 

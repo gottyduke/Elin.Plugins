@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;
 using UnityEngine;
@@ -47,7 +48,7 @@ internal class InvalidateAbilityPatch
             var actCombat = actCombats[i];
             var act = actCombat.Split('/')[0];
 
-            if (act.IsEmpty()) {
+            if (act.IsEmptyOrNull) {
                 actCombats.RemoveAt(i);
                 replacement = true;
                 continue;

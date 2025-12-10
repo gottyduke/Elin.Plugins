@@ -20,8 +20,8 @@ public class OpenFileOrPath
             // noexcept
         }
 
-        var proton = !"PROTON_VERSION".EnvVar.IsEmpty() ||
-                     !"STEAM_COMPAT_DATA_PATH".EnvVar.IsEmpty();
+        var proton = !"PROTON_VERSION".EnvVar.IsEmptyOrNull ||
+                     !"STEAM_COMPAT_DATA_PATH".EnvVar.IsEmptyOrNull;
 
         if (File.Exists(path)) {
             // open with notepad

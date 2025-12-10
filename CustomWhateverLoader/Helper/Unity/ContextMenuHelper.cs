@@ -15,7 +15,7 @@ public class ContextMenuHelper
 
     public static void Add(string entry, string displayName, Func<object?>? onClick = null)
     {
-        if (entry.IsEmpty()) {
+        if (entry.IsEmptyOrNull) {
             CwlMod.WarnWithPopup<ContextMenuHelper>("entry is empty");
             return;
         }

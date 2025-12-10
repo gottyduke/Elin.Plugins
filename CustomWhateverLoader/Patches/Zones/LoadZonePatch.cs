@@ -4,6 +4,7 @@ using System.Reflection;
 using Cwl.Helper;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.FileUtil;
+using Cwl.Helper.String;
 using HarmonyLib;
 
 namespace Cwl.Patches.Zones;
@@ -18,11 +19,11 @@ internal class LoadZonePatch
     [HarmonyPostfix]
     internal static void OnLoadCustomZone(Zone __instance, ref string __result)
     {
-        if (__instance.idExport.IsEmpty() && !__instance.source.tag.Contains("addMap")) {
+        if (__instance.idExport.IsEmptyOrNull && !__instance.source.tag.Contains("addMap")) {
             return;
         }
 
-        // we use Maps instead Map or Map Piece to avoid tangling with saved moongate maps
+        // we use Maps instead of Map or Map Piece to avoid tangling with saved moongate maps
         string[] fileNames = [
             $"Maps/{__instance.idExport}.z",
             $"Maps/{__instance.source.idFile.TryGet(0, true)}_F0.z",
