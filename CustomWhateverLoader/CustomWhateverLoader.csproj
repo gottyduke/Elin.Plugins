@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net472</TargetFramework>
+        <TargetFramework>netstandard2.0</TargetFramework>
         <Platforms>AnyCPU</Platforms>
         <LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>
@@ -12,14 +12,19 @@
         <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
         <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <GenerateDependencyFile>false</GenerateDependencyFile>
+        <GenerateRuntimeConfigurationFiles>false</GenerateRuntimeConfigurationFiles>
         <NoWarn>1701;1702;8620;8604</NoWarn>
+
+        <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Fody" Version="6.9.3">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="GitVersion.MsBuild" Version="6.5.0">
+        <PackageReference Include="GitVersion.MsBuild" Version="6.5.1">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -27,6 +32,7 @@
             <PrivateAssets>all</PrivateAssets>
             <ExcludeAssets>runtime</ExcludeAssets>
         </PackageReference>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="5.0.0" />
         <PackageReference Include="PolySharp" Version="1.15.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
