@@ -35,5 +35,6 @@ jobs:
         id: build
         shell: pwsh
         run: |
-          dotnet pack PluginTemplate -o ${{ github.workspace }}\nupkgs\
-          dotnet nuget push ${{ github.workspace }}\nupkgs\*.nupkg -k ${{ secrets.NUGET_PUBLISH_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+          cd PluginTemplate
+          dotnet pack -o .\nupkgs
+          dotnet nuget push .\nupkgs\*.nupkg -k ${{ secrets.NUGET_PUBLISH_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate

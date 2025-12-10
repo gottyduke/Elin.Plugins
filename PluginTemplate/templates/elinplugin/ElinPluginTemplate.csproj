@@ -22,7 +22,6 @@
     <EmbeddedResource Remove="package\**" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="package\" />
     <None Remove="Directory.Build.props" />
     <None Remove="LICENSE" />
     <None Remove="README.md" />
