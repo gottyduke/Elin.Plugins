@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Cwl.Helper.String;
 using HarmonyLib;
 
 namespace Cwl.Helper;
@@ -10,7 +11,6 @@ namespace Cwl.Helper;
 public static class CachedMethods
 {
     private static readonly Dictionary<TypeInfo, MethodInfo[]> _cachedMethods = [];
-    private static readonly Dictionary<TypeInfo, FieldInfo[]> _cachedFields = [];
     private static readonly Dictionary<MethodBase, FastInvokeHandler> _cachedInvokers = [];
 
     public static MethodInfo? GetCachedMethod(string typeName, string methodName, Type[] types)
@@ -41,65 +41,16 @@ public static class CachedMethods
         }
     }
 
-    extension(object instance)
-    {
-        public object? GetFieldValue(string fieldName)
-        {
-            return instance.GetType().GetCachedField(fieldName)?.GetValue(instance);
-        }
-
-        public object? GetPropertyValue(string propertyName)
-        {
-            var flags = AccessTools.all & ~BindingFlags.Static;
-
-            return instance.GetType().GetProperties(flags)
-                .Where(p => p.GetGetMethod(true) is not null)
-                .FirstOrDefault(p => string.Equals(p.Name, propertyName, StringComparison.Ordinal))?
-                .GetValue(instance);
-        }
-    }
-
     extension(Type type)
     {
         public MethodInfo[] GetCachedMethods()
         {
-            return GetCachedMethods(type.GetTypeInfo());
-        }
-
-        public FieldInfo[] GetCachedFields()
-        {
-            return GetCachedFields(type.GetTypeInfo());
-        }
-
-        public FieldInfo? GetCachedField(string fieldName)
-        {
-            return GetCachedField(type.GetTypeInfo(), fieldName);
-        }
-    }
-
-    extension(TypeInfo typeInfo)
-    {
-        public MethodInfo[] GetCachedMethods()
-        {
+            var typeInfo = type.GetTypeInfo();
             if (_cachedMethods.TryGetValue(typeInfo, out var methods)) {
                 return methods;
             }
 
             return _cachedMethods[typeInfo] = AccessTools.GetDeclaredMethods(typeInfo).ToArray();
-        }
-
-        public FieldInfo[] GetCachedFields()
-        {
-            if (_cachedFields.TryGetValue(typeInfo, out var fields)) {
-                return fields;
-            }
-
-            return _cachedFields[typeInfo] = typeInfo.GetFields(AccessTools.all & ~BindingFlags.Static);
-        }
-
-        public FieldInfo? GetCachedField(string fieldName)
-        {
-            return GetCachedFields(typeInfo).FirstOrDefault(f => f.Name == fieldName);
         }
     }
 
@@ -148,7 +99,7 @@ public static class CachedMethods
                 var paramType = parameter.ParameterType;
                 var (type, name) = types[i];
 
-                if (type.IsEmpty()) {
+                if (type.IsEmptyOrNull) {
                     if (!paramType.IsValueType || Nullable.GetUnderlyingType(paramType) != null) {
                         continue;
                     }

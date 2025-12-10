@@ -70,13 +70,14 @@ public partial class DramaExpansion
         parameters.RequiresOpt(out var memberName, out var optExpr);
         dm.RequiresActor(out var actor);
 
+        var fullName = memberName.Value;
         var valueExpr = optExpr.Get(">=0");
-        var member = actor.GetFieldValue(memberName.Value) ?? actor.GetPropertyValue(memberName.Value);
+        var member = actor.GetMemberInfo(fullName);
         if (member is null) {
-            throw new DramaActionInvokeException($"cs member '{memberName.Value}' does not exist");
+            throw new DramaActionInvokeException($"cs member '{fullName}' does not exist");
         }
 
-        return Compare(member, valueExpr);
+        return Compare(member.Value.memberInstance.GetMemberValue(member.Value.memberInfo), valueExpr);
     }
 
     /// <summary>
@@ -240,23 +241,12 @@ public partial class DramaExpansion
     public static bool if_stat(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.Requires(out var stat, out var valueExpr);
-        dm.RequiresActor(out var actor);
+        var member = player.stats.GetMemberInfo(stat);
+        if (member is null) {
+            throw new DramaActionInvokeException($"invalid stat {stat}");
+        }
 
-        var value = stat.ToLowerInvariant() switch {
-            "hunger" => actor.hunger.value,
-            "burden" => actor.burden.value,
-            "depression" => actor.depression.value,
-            "hygiene" => actor.hygiene.value,
-            "bladder" => actor.bladder.value,
-            "sleepiness" => actor.sleepiness.value,
-            "san" => actor.SAN.value,
-            "stamina" => actor.stamina.value,
-            "hp" => actor.hp,
-            "mana" => actor.mana.value,
-            _ => throw new DramaActionInvokeException($"invalid stat name {stat}"),
-        };
-
-        return Compare(value, valueExpr);
+        return Compare(member.Value.memberInstance.GetMemberValue(member.Value.memberInfo), valueExpr);
     }
 
     /// <summary>
