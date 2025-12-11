@@ -1,4 +1,6 @@
-﻿using BepInEx.Configuration;
+﻿using System.IO;
+using BepInEx.Configuration;
+using Cwl.Helper.FileUtil;
 using ReflexCLI.Attributes;
 
 // ReSharper disable MemberHidesStaticFromOuterClass
@@ -9,80 +11,83 @@ namespace Cwl;
 public abstract class CwlConfig
 {
     [ConsoleCommand]
-    public static bool LoggingVerbose => Logging.Verbose!.Value;
+    public static bool LoggingVerbose => Logging.Verbose.Value;
 
     [ConsoleCommand]
-    public static bool SeamlessStreaming => BGM.SeamlessStreaming!.Value;
+    public static bool SeamlessStreaming => BGM.SeamlessStreaming.Value;
 
     [ConsoleCommand]
-    public static bool CacheTalks => Caching.Talks!.Value;
+    public static bool CacheTalks => Caching.Talks.Value;
 
     [ConsoleCommand]
-    public static bool CacheTypes => Caching.Types!.Value;
+    public static bool CacheTypes => Caching.Types.Value;
 
     [ConsoleCommand]
-    public static bool CachePaths => Caching.Paths!.Value;
+    public static bool CachePaths => Caching.Paths.Value;
 
     [ConsoleCommand]
-    public static bool CacheSourceSheets => Caching.SourceSheets!.Value;
+    public static bool CacheSourceSheets => Caching.SourceSheets.Value;
 
     [ConsoleCommand]
-    public static int CacheSourceSheetsRetention => Caching.SourceSheetsRetention!.Value;
+    public static int CacheSourceSheetsRetention => Caching.SourceSheetsRetention.Value;
 
     [ConsoleCommand]
-    public static bool CacheSprites => Caching.Sprites!.Value;
+    public static bool CacheSprites => Caching.Sprites.Value;
 
     [ConsoleCommand]
-    public static bool ExpandedActions => Dialog.ExpandedActions!.Value;
+    public static bool ExpandedActions => Dialog.ExpandedActions.Value;
 
     [ConsoleCommand]
-    public static bool ExpandedActionsExternal => Dialog.ExpandedActionsAllowExternal!.Value;
+    public static bool ExpandedActionsExternal => Dialog.ExpandedActionsAllowExternal.Value;
 
     [ConsoleCommand]
-    public static bool NoOverlappingSounds => Dialog.NoOverlappingSounds!.Value;
+    public static bool NoOverlappingSounds => Dialog.NoOverlappingSounds.Value;
 
     [ConsoleCommand]
-    public static bool VariableQuote => Dialog.VariableQuote!.Value;
+    public static bool VariableQuote => Dialog.VariableQuote.Value;
 
     [ConsoleCommand]
-    public static bool ExceptionAnalyze => Exceptions.Analyze!.Value;
+    public static bool ExceptionAnalyze => Exceptions.Analyze.Value;
 
     [ConsoleCommand]
-    public static bool ExceptionPopup => Exceptions.Popup!.Value;
+    public static bool ExceptionPopup => Exceptions.Popup.Value;
 
     [ConsoleCommand]
-    public static bool FixBaseGameAvatar => Patches.FixBaseGameAvatar!.Value;
+    public static bool FixBaseGameAvatar => Patches.FixBaseGameAvatar.Value;
 
     [ConsoleCommand]
-    public static bool FixBaseGamePopup => Patches.FixBaseGamePopup!.Value;
+    public static bool FixBaseGamePopup => Patches.FixBaseGamePopup.Value;
 
     [ConsoleCommand]
-    public static bool QualifyTypeName => Patches.QualifyTypeName!.Value;
+    public static bool QualifyTypeName => Patches.QualifyTypeName.Value;
 
     [ConsoleCommand]
-    public static bool SafeCreateClass => Patches.SafeCreateClass!.Value;
+    public static bool SafeCreateClass => Patches.SafeCreateClass.Value;
 
     [ConsoleCommand]
-    public static bool AllowProcessors => Source.AllowProcessors!.Value;
+    public static bool AllowProcessors => Source.AllowProcessors.Value;
 
     [ConsoleCommand]
-    public static bool NamedImport => Source.NamedImport!.Value;
+    public static bool NamedImport => Source.NamedImport.Value;
 
     [ConsoleCommand]
-    public static bool OverrideSameId => Source.OverrideSameId!.Value;
+    public static bool OverrideSameId => Source.OverrideSameId.Value;
 
     [ConsoleCommand]
-    public static bool RethrowException => Source.RethrowException!.Value;
+    public static bool RethrowException => Source.RethrowException.Value;
 
     [ConsoleCommand]
-    public static bool SheetInspection => Source.SheetInspection!.Value;
+    public static bool SheetInspection => Source.SheetInspection.Value;
 
     // TODO: disabled due to frequent game updates
     [ConsoleCommand]
-    public static bool SheetMigrate => Source.SheetMigrate!.Value && false;
+    public static bool SheetMigrate => Source.SheetMigrate.Value && false;
 
     [ConsoleCommand]
-    public static bool TrimSpaces => Source.TrimSpaces!.Value;
+    public static bool TrimSpaces => Source.TrimSpaces.Value;
+
+    [ConsoleCommand]
+    public static bool AllowScripting => Scripting.AllowScripting.Value;
 
     internal static void Load(ConfigFile config)
     {
@@ -311,60 +316,89 @@ public abstract class CwlConfig
             "Trim all leading and trailing spaces from cell value\nRequires Source.AllowProcessors to be true\n" +
             "移除单元格数据的前后空格文本，需要允许执行单元格后处理\n" +
             "セルデータの前後空白文字を削除(セル後処理の実行許可が必要)");
+
+        Scripting.AllowScripting = config.Bind(
+            ModInfo.Name,
+            "Scripting.AllowScripting",
+            true,
+            "Allow runtime CSharp compilation, scripting, and emitting\n" +
+            "允许运行时CSharp代码编译，执行和实例化\n" +
+            "ランタイム CSharp コードをコンパイル、実行、インスタンス化できるようにします");
+
+        FileWatcherHelper.Register(
+            "cwl_config",
+            Path.GetDirectoryName(config.ConfigFilePath)!,
+            $"{ModInfo.Guid}.cfg",
+            args => {
+                if (args.ChangeType != WatcherChangeTypes.Changed) {
+                    return;
+                }
+
+                CwlMod.Popup<CwlConfig>("cwl_ui_config_changed".lang());
+
+                config.SaveOnConfigSet = false;
+                config.Reload();
+                config.SaveOnConfigSet = true;
+            });
     }
 
     internal abstract class Logging
     {
-        internal static ConfigEntry<bool>? Verbose { get; set; }
-        internal static ConfigEntry<bool>? Execution { get; set; }
+        internal static ConfigEntry<bool> Verbose { get; set; } = null!;
+        internal static ConfigEntry<bool> Execution { get; set; } = null!;
     }
 
     internal abstract class BGM
     {
-        internal static ConfigEntry<bool>? SeamlessStreaming { get; set; }
+        internal static ConfigEntry<bool> SeamlessStreaming { get; set; } = null!;
     }
 
     internal abstract class Caching
     {
-        internal static ConfigEntry<bool>? Talks { get; set; }
-        internal static ConfigEntry<bool>? Types { get; set; }
-        internal static ConfigEntry<bool>? Paths { get; set; }
-        internal static ConfigEntry<bool>? SourceSheets { get; set; }
-        internal static ConfigEntry<int>? SourceSheetsRetention { get; set; }
-        internal static ConfigEntry<bool>? Sprites { get; set; }
+        internal static ConfigEntry<bool> Talks { get; set; } = null!;
+        internal static ConfigEntry<bool> Types { get; set; } = null!;
+        internal static ConfigEntry<bool> Paths { get; set; } = null!;
+        internal static ConfigEntry<bool> SourceSheets { get; set; } = null!;
+        internal static ConfigEntry<int> SourceSheetsRetention { get; set; } = null!;
+        internal static ConfigEntry<bool> Sprites { get; set; } = null!;
     }
 
     internal abstract class Dialog
     {
-        internal static ConfigEntry<bool>? DynamicCheckIf { get; set; }
-        internal static ConfigEntry<bool>? ExpandedActions { get; set; }
-        internal static ConfigEntry<bool>? ExpandedActionsAllowExternal { get; set; }
-        internal static ConfigEntry<bool>? NoOverlappingSounds { get; set; }
-        internal static ConfigEntry<bool>? VariableQuote { get; set; }
+        internal static ConfigEntry<bool> DynamicCheckIf { get; set; } = null!;
+        internal static ConfigEntry<bool> ExpandedActions { get; set; } = null!;
+        internal static ConfigEntry<bool> ExpandedActionsAllowExternal { get; set; } = null!;
+        internal static ConfigEntry<bool> NoOverlappingSounds { get; set; } = null!;
+        internal static ConfigEntry<bool> VariableQuote { get; set; } = null!;
     }
 
     internal abstract class Exceptions
     {
-        internal static ConfigEntry<bool>? Analyze { get; set; }
-        internal static ConfigEntry<bool>? Popup { get; set; }
+        internal static ConfigEntry<bool> Analyze { get; set; } = null!;
+        internal static ConfigEntry<bool> Popup { get; set; } = null!;
     }
 
     internal abstract class Patches
     {
-        internal static ConfigEntry<bool>? FixBaseGameAvatar { get; set; }
-        internal static ConfigEntry<bool>? FixBaseGamePopup { get; set; }
-        internal static ConfigEntry<bool>? QualifyTypeName { get; set; }
-        internal static ConfigEntry<bool>? SafeCreateClass { get; set; }
+        internal static ConfigEntry<bool> FixBaseGameAvatar { get; set; } = null!;
+        internal static ConfigEntry<bool> FixBaseGamePopup { get; set; } = null!;
+        internal static ConfigEntry<bool> QualifyTypeName { get; set; } = null!;
+        internal static ConfigEntry<bool> SafeCreateClass { get; set; } = null!;
+    }
+
+    internal abstract class Scripting
+    {
+        internal static ConfigEntry<bool> AllowScripting { get; set; } = null!;
     }
 
     internal abstract class Source
     {
-        internal static ConfigEntry<bool>? AllowProcessors { get; set; }
-        internal static ConfigEntry<bool>? NamedImport { get; set; }
-        internal static ConfigEntry<bool>? OverrideSameId { get; set; }
-        internal static ConfigEntry<bool>? RethrowException { get; set; }
-        internal static ConfigEntry<bool>? SheetInspection { get; set; }
-        internal static ConfigEntry<bool>? SheetMigrate { get; set; }
-        internal static ConfigEntry<bool>? TrimSpaces { get; set; }
+        internal static ConfigEntry<bool> AllowProcessors { get; set; } = null!;
+        internal static ConfigEntry<bool> NamedImport { get; set; } = null!;
+        internal static ConfigEntry<bool> OverrideSameId { get; set; } = null!;
+        internal static ConfigEntry<bool> RethrowException { get; set; } = null!;
+        internal static ConfigEntry<bool> SheetInspection { get; set; } = null!;
+        internal static ConfigEntry<bool> SheetMigrate { get; set; } = null!;
+        internal static ConfigEntry<bool> TrimSpaces { get; set; } = null!;
     }
 }

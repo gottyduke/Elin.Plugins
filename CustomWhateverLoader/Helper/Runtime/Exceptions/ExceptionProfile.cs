@@ -86,7 +86,7 @@ public class ExceptionProfile(string message)
     public static bool ScriptExceptionHandler(Exception exception)
     {
         var profile = GetFromStackTrace(ref exception);
-        profile.CreateAndPop();
+        profile.CreateAndPop("cwl_error_cs_execution".lang());
         return true;
     }
 
