@@ -3,6 +3,7 @@ using System.Reflection.Emit;
 using Cwl.API.Custom;
 using Cwl.API.Drama;
 using Cwl.Helper.Extensions;
+using Cwl.Helper.Unity;
 using HarmonyLib;
 
 namespace Cwl.Patches.Dramas;
@@ -32,7 +33,7 @@ internal class RerouteDramaPatch
 
     // TODO: this only reroutes if it's actually going to show
     // subject to change for drama expansion
-    private static bool TryRerouteDialog(Chara chara, string book, string step)
+    private static bool TryRerouteDialog(Chara chara)
     {
         DramaExpansion.Clear();
 
@@ -42,10 +43,13 @@ internal class RerouteDramaPatch
         }
 
         try {
+            chara.ShowDialog(drama);
         } catch {
+            ELayerCleanup.Cleanup<LayerDrama>();
+            chara.ShowDialog(chara.id);
+            // noexcept
         }
 
-        chara.ShowDialog(drama);
         return true;
     }
 }
