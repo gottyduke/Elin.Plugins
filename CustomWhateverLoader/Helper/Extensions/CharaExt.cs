@@ -51,9 +51,8 @@ public static class CharaExt
 
             if (added.source.category == "skill") {
                 added.vSourcePotential += added.GetSourcePotential(power);
+                added.vSource += (int)added.GetSourceValue(power, chara.LV, SourceValueType.Chara);
             }
-
-            added.vSource += (int)added.GetSourceValue(power, chara.LV, SourceValueType.Chara);
 
             return added;
         }
