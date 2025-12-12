@@ -58,7 +58,7 @@ public class ExceptionProfile(string message)
             exception = inner;
         }
 
-        var exp = GetFromStackTrace(Regex.Replace(exception.StackTrace.EmptyOr(""), @"^(\s+at\s)", ""), exception.Message);
+        var exp = GetFromStackTrace(Regex.Replace(exception.StackTrace.OrIfEmpty(""), @"^(\s+at\s)", ""), exception.Message);
 
         var stackTrace = new StackTrace(exception);
         foreach (var frame in stackTrace.GetFrames() ?? []) {

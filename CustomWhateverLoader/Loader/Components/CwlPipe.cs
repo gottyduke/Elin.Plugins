@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO.Pipes;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using Cwl.Helper.String;
@@ -14,6 +15,7 @@ internal class CwlPipe : EMono
 {
     private const string PipeName = @"Elin\Console";
     private static readonly CancellationTokenSource _cts = new();
+    private readonly List<NamedPipeServerStream> _activeServers = [];
 
     private readonly ConcurrentQueue<string> _commands = new();
     private readonly List<UniTask> _connections = [];
@@ -31,6 +33,35 @@ internal class CwlPipe : EMono
 
         lock (_connections) {
             UniTask.WhenAll(_connections).Forget();
+        }
+    }
+
+    public async UniTaskVoid Notify(NamedPipeServerStream server, string msg)
+    {
+        if (server is not { IsConnected: true }) {
+            return;
+        }
+
+        var data = Encoding.UTF8.GetBytes(msg + "\n");
+
+        try {
+            await server.WriteAsync(data, 0, data.Length, _cts.Token);
+            await server.FlushAsync(_cts.Token);
+        } catch {
+            // noexcept
+        }
+    }
+
+    public void Notify(string msg)
+    {
+        List<NamedPipeServerStream> snapshot;
+
+        lock (_connections) {
+            snapshot = _activeServers.ToList();
+        }
+
+        foreach (var server in snapshot) {
+            Notify(server, msg).Forget();
         }
     }
 
@@ -52,7 +83,7 @@ internal class CwlPipe : EMono
         while (!_cts.IsCancellationRequested) {
             var server = new NamedPipeServerStream(
                 PipeName,
-                PipeDirection.In,
+                PipeDirection.InOut,
                 NamedPipeServerStream.MaxAllowedServerInstances,
                 PipeTransmissionMode.Byte,
                 PipeOptions.Asynchronous);
@@ -71,6 +102,7 @@ internal class CwlPipe : EMono
             }
 
             lock (_connections) {
+                _activeServers.Add(server);
                 _connections.Add(HandleConnection(server));
             }
 
@@ -127,6 +159,10 @@ internal class CwlPipe : EMono
         } catch {
             // noexcept
         } finally {
+            lock (_connections) {
+                _activeServers.Remove(server);
+            }
+
             await DisposeServer(server);
         }
     }

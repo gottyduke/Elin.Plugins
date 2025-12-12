@@ -57,10 +57,16 @@ public static class StringHelper
     extension(string input)
     {
         public bool IsEmptyOrNull => string.IsNullOrEmpty(input);
+        public bool IsWhiteSpaceOrNull => string.IsNullOrWhiteSpace(input);
 
-        public string EmptyOr(string fallback)
+        public string OrIfEmpty(string fallback)
         {
             return string.IsNullOrEmpty(input) ? fallback : input;
+        }
+
+        public string OrIfWhiteSpace(string fallback)
+        {
+            return string.IsNullOrWhiteSpace(input) ? fallback : input;
         }
 
         public string Capitalize()
@@ -115,7 +121,7 @@ public static class StringHelper
                     count++;
                 }
 
-                if (!string.IsNullOrEmpty(token)) {
+                if (!token.IsEmptyOrNull) {
                     inCjkSegment = isCjk;
                 }
 

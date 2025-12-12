@@ -30,7 +30,7 @@ internal class FuzzyLookup
 
     internal static bool TryFuzzyGetValue(Dictionary<string, SourceElement.Row> aliasMap, string alias, out SourceElement.Row row)
     {
-        alias = alias.EmptyOr("_void");
+        alias = alias.OrIfEmpty("_void");
 
         var newHash = aliasMap.GetContentHashCode();
         if (_hash != newHash) {

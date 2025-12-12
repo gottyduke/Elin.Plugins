@@ -19,7 +19,7 @@ public partial class DramaExpansion
 
         var talkEvent = new DramaEventTalk {
             idActor = actor,
-            idJump = jump ?? dm.sequence.lastlastStep.EmptyOr("end"),
+            idJump = jump ?? dm.sequence.lastlastStep.OrIfEmpty("end"),
             text = text,
             temp = true,
             sequence = dm.sequence,
@@ -55,7 +55,7 @@ public partial class DramaExpansion
 
         dm.CustomEvent(dm.sequence.Exit);
 
-        var choice = new DramaChoice("letsTalk".lang(), dm.sequence.steps.Last().Key.EmptyOr(dm.setup.step));
+        var choice = new DramaChoice("letsTalk".lang(), dm.sequence.steps.Last().Key.OrIfEmpty(dm.setup.step));
         dm.lastTalk.choices.Add(choice);
         dm._choices.Add(choice);
 

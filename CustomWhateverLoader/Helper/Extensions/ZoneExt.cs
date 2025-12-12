@@ -59,7 +59,7 @@ public static class ZoneExt
                     return newZone;
                 }
 
-                newZone = (SpatialGen.Create(id.EmptyOr(zone.GetNewZoneID(lv)), zone, true) as Zone)!;
+                newZone = (SpatialGen.Create(id.OrIfEmpty(zone.GetNewZoneID(lv)), zone, true) as Zone)!;
                 newZone.lv = lv;
                 newZone.x = zone.x;
                 newZone.y = zone.y;

@@ -116,7 +116,7 @@ public static class CharaExt
 
         public bool HasRumorText(string idSheet, string? idTopic = null)
         {
-            idTopic = idTopic.EmptyOr(chara.id);
+            idTopic = idTopic.OrIfEmpty(chara.id);
             var rumors = Lang.GetDialog(idSheet, idTopic);
             return rumors.Length > 1 || rumors.TryGet(0, true) != idTopic;
         }

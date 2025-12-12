@@ -57,7 +57,7 @@ public class TypeQualifier
                          ?? baseAsm;
 
         packageAsm = packageAsm.Replace(" ", "").Replace(baseAsm, "");
-        packageAsm = string.IsNullOrWhiteSpace(packageAsm)
+        packageAsm = packageAsm.IsWhiteSpaceOrNull
             ? baseAsm
             : StringHelper.MergeOverlap(packageAsm, baseAsm);
 

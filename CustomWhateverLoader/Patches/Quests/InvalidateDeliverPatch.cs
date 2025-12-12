@@ -21,7 +21,7 @@ internal class InvalidateItemPatch
     [HarmonyPrefix]
     internal static bool InvalidateItem(QuestDeliver __instance, ref SourceThing.Row __result)
     {
-        __instance.idThing = __instance.idThing.EmptyOr(FallbackItem);
+        __instance.idThing = __instance.idThing.OrIfEmpty(FallbackItem);
         if (EMono.sources.things.map.TryGetValue(__instance.idThing, out __result) && __result is not null) {
             return false;
         }

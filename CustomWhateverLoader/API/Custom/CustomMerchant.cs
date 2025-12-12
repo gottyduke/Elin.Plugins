@@ -27,7 +27,7 @@ public class CustomMerchant : TraitMerchant
     [ConsoleCommand("add")]
     public static void AddStock(string ownerId, string stockId = "")
     {
-        stockId = stockId.EmptyOr(ownerId);
+        stockId = stockId.OrIfEmpty(ownerId);
 
         var stock = GetStockData(stockId);
         if (stock is null) {

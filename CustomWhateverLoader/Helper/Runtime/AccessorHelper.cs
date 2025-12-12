@@ -42,13 +42,13 @@ public static class AccessorHelper
                          (allowMethodCall ? type.GetMethod(memberName, access) : null);
 
             if (member is not null) {
-                return string.IsNullOrEmpty(chained)
+                return chained.IsEmptyOrNull
                     ? (instance, member)
                     : instance.GetMemberValue(member)?.GetMemberInfo(chained);
             }
 
             var indexer = memberName.ExtractInBetween('[', ']');
-            if (string.IsNullOrEmpty(indexer)) {
+            if (indexer.IsEmptyOrNull) {
                 return null;
             }
 

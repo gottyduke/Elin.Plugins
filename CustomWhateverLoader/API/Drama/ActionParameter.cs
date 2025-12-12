@@ -107,7 +107,7 @@ public static class ActionParameterHelper
 
         public string Get(string fallback)
         {
-            return value.EmptyOr(fallback);
+            return value.OrIfEmpty(fallback);
         }
 
         public int AsInt(int fallback = 0)

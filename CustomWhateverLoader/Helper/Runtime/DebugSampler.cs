@@ -90,7 +90,7 @@ public class DebugSampler : MethodStub
         }
 
         for (var i = 0; i < diff; ++i) {
-            var charaId = id.EmptyOr(EMono.sources.charas.map.Keys.RandomItem());
+            var charaId = id.OrIfEmpty(EMono.sources.charas.map.Keys.RandomItem());
             var charaLv = lv == -1 ? EClass.rnd(100) : lv;
             var chara = CharaGen.Create(charaId, charaLv);
             EClass._zone.AddCard(chara, EClass.pc.pos.GetNearestPoint(false, false, false, true));
