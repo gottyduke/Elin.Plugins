@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection.Emit;
 using Cwl.API.Drama;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
+using Cwl.Scripting;
 using HarmonyLib;
 
 namespace Cwl.Patches.Dramas;
@@ -52,8 +54,7 @@ internal class DramaExpansionPatch
         //! cookie must be set first to share parse state between patches
         DramaExpansion.Cookie = new(__instance, item);
 
-        if (!item.TryGetValue("action", out var action) ||
-            action.Trim() is not ("invoke*" or "inject" or "i*")) {
+        if (!item.TryGetValue("action", out var action)) {
             return false;
         }
 
@@ -61,36 +62,72 @@ internal class DramaExpansionPatch
             return false;
         }
 
-        if (action.Trim() == "inject") {
-            if (rawExpr == "Unique") {
-                DramaExpansion.InjectUniqueRumor();
-            }
+        // set default actor
+        item["actor"] = item["actor"].OrIfEmpty("tg");
 
-            return false;
-        }
-
-        // default actor
-        item["actor"] = item["actor"].EmptyOr("tg");
-
-        foreach (var expr in rawExpr.SplitLines()) {
-            if (DramaExpansion.BuildExpression(expr) is not { } func) {
-                continue;
-            }
-
-            if (expr.StartsWith(nameof(DramaExpansion.choice))) {
-                func(__instance, item);
-                continue;
-            }
-
-            var step = new DramaEventMethod(() => func(__instance, item));
-            if (item.TryGetValue("jump", out var jump) && !jump.IsEmptyOrNull) {
-                step.action = null;
-                step.jumpFunc = () => func(__instance, item) ? jump : "";
-            }
-
-            __instance.AddEvent(step);
+        switch (action.Trim()) {
+            case "i*":
+            case "invoke*":
+                ProcessInvokeAction();
+                break;
+            case "inject":
+                ProcessInjectAction();
+                break;
+            case "eval":
+                ProcessEvalAction();
+                break;
+            default:
+                return false;
         }
 
         return true;
+
+        void ProcessInjectAction()
+        {
+            if (rawExpr == "Unique") {
+                DramaExpansion.InjectUniqueRumor();
+            }
+        }
+
+        void ProcessInvokeAction()
+        {
+            // TODO: maybe allow multiline params?
+            foreach (var expr in rawExpr.SplitLines()) {
+                if (DramaExpansion.BuildExpression(expr) is not { } func) {
+                    continue;
+                }
+
+                if (expr.StartsWith(nameof(DramaExpansion.choice))) {
+                    func(__instance, item);
+                    continue;
+                }
+
+                var step = new DramaEventMethod(() => func(__instance, item));
+                if (item.TryGetValue("jump", out var jump) && !jump.IsEmptyOrNull) {
+                    step.action = null;
+                    step.jumpFunc = () => func(__instance, item) ? jump : "";
+                }
+
+                __instance.AddEvent(step);
+            }
+        }
+
+        void ProcessEvalAction()
+        {
+            // import
+            if (rawExpr.StartsWith("<<<")) {
+                var scriptFile = rawExpr[3..].Trim();
+                var root = Path.GetDirectoryName(DramaExpansion.CurrentData!.path)!;
+                var filePath = Path.Combine(root, scriptFile);
+
+                if (!File.Exists(filePath)) {
+                    throw new FileNotFoundException(scriptFile);
+                }
+
+                rawExpr = File.ReadAllText(filePath);
+            }
+
+            rawExpr.ExecuteAsCs(new { dm = __instance }, "drama");
+        }
     }
 }

@@ -1,12 +1,15 @@
-#if CWL_SCRIPTING
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using Cwl.Helper;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
-using Cwl.Helper.Unity;
+using Cwl.LangMod;
 using HarmonyLib;
+using MethodTimer;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
@@ -16,36 +19,77 @@ using ReflexCLI.Attributes;
 namespace Cwl.Scripting;
 
 [ConsoleCommandClassCustomizer("cwl.cs")]
-public static class CwlScriptLoader
+public static partial class CwlScriptLoader
 {
-    private static ScriptState<object>? _sharedState;
-    private static bool _pinnedSharedState;
-    private static IReadOnlyList<MetadataReference> CurrentDomainReferences => field ??= CreateStaticDomainReferences();
-    private static Dictionary<BaseModPackage, CompilationReference> UserAssemblies => field ??= [];
+    private static readonly string[] _defaultScriptNamespaces = [
+        "System",
+        "System.Collections",
+        "System.Collections.Generic",
+        "System.IO",
+        "System.Linq",
+        "System.Text",
+        "System.Text.RegularExpressions",
+        "System.Reflection",
+        // cwl
+        "Cwl.API",
+        "Cwl.API.Attributes",
+        "Cwl.API.Custom",
+        "Cwl.API.Drama",
+        "Cwl.API.Processors",
+        "Cwl.Helper",
+        "Cwl.Helper.Extensions",
+        "Cwl.Helper.FileUtil",
+        "Cwl.Helper.Unity",
+        "Cwl.Helper.Exceptions",
+        "Cwl.LangMod",
+        "Cwl.Scripting",
+        // mods
+        "HarmonyLib",
+        // unity
+        "UnityEngine",
+        "UnityEngine.UI",
+    ];
 
-    [ConsoleCommand("clear_shared_state")]
-    public static void ClearSharedState()
-    {
-        _sharedState = null;
-    }
+    private static readonly string[] _defaultPreprocessors = [
+#if DEBUG
+        "DEBUG",
+#endif
+        "TRACE",
+#if NIGHTLY
+        "NIGHTLY",
+#endif
+    ];
 
-    [ConsoleCommand("pin_shared_state")]
-    public static void PinSharedState(bool pinned = true)
-    {
-        _pinnedSharedState = pinned;
-    }
+    internal static IReadOnlyList<MetadataReference> StaticDomainReferences => field ??= CreateStaticDomainReferences();
+    internal static IReadOnlyList<MetadataReference> CurrentDomainReferences => [
+        ..StaticDomainReferences,
+        ..UserAssemblies.Values,
+    ];
 
-    public static void TestIfScriptAvailable()
+    internal static HashSet<string> CurrentDomainNamespaces => field ??= [.._defaultScriptNamespaces];
+    internal static Dictionary<BaseModPackage, CompilationReference> UserAssemblies => field ??= [];
+
+    internal static CSharpParseOptions DefaultParseOptions =>
+        field ??= new(LanguageVersion.Latest,
+            DocumentationMode.None,
+            SourceCodeKind.Script,
+            _defaultPreprocessors);
+
+    internal static CSharpCompilationOptions DefaultCompilationOptions =>
+        field ??= new(OutputKind.DynamicallyLinkedLibrary,
+            nullableContextOptions: NullableContextOptions.Enable,
+            optimizationLevel: OptimizationLevel.Release);
+
+    public static void RegisterDefaultNamespaces(Assembly assembly)
     {
-        if (!CwlMod.LoadingComplete) {
-            throw new ScriptLoaderNotReadyException();
+        var namespaces = GetNamespaces(assembly);
+        if (namespaces.Count == 0) {
+            return;
         }
 
-        if (!CwlConfig.AllowScripting) {
-            throw new ScriptDisabledException();
-        }
+        CurrentDomainNamespaces.UnionWith(namespaces);
 
-        // add some other runtime feature set checks
+        CwlMod.Log("cwl_log_cs_add_fqdn".Loc(TypeQualifier.GetMappedAssemblyName(assembly), namespaces.Join(delimiter: ";")));
     }
 
     internal static (Compilation compilation, Script<object> script) CompileScript(string scriptStr,
@@ -53,7 +97,7 @@ public static class CwlScriptLoader
                                                                                    bool throwOnFailure = false,
                                                                                    object? globals = null)
     {
-        TestIfScriptAvailable();
+        CwlMod.Log("cwl_log_csc_single".Loc(scriptStr.GetHashCode()));
 
         var script = CSharpScript.Create(scriptStr, options, globals?.GetType());
         var compilation = script.GetCompilation();
@@ -70,43 +114,61 @@ public static class CwlScriptLoader
         return (compilation, script);
     }
 
-    internal static Compilation CompileScriptFromDir(DirectoryInfo scriptDir)
+    internal static Compilation? CompileScriptFromDir(DirectoryInfo scriptDir, CSharpCompilationOptions? options = null)
     {
-        TestIfScriptAvailable();
-
         if (!scriptDir.Exists) {
-            throw new DirectoryNotFoundException($"Directory not found: {scriptDir.FullName}");
+            throw new DirectoryNotFoundException($"directory not found: {scriptDir.FullName}");
         }
 
         var scripts = scriptDir.GetFiles("*.cs", SearchOption.TopDirectoryOnly);
         if (scripts.Length == 0) {
-            throw new ScriptCompilationException("cwl_error_cs_empty_script_dir");
+            return null;
         }
 
         var trees = scripts
             .Select(f => CSharpSyntaxTree.ParseText(
                 File.ReadAllText(f.FullName),
-                new(kind: SourceCodeKind.Script),
-                f.FullName))
-            .ToList();
+                DefaultParseOptions,
+                f.FullName));
+
+        options ??= DefaultCompilationOptions;
 
         return CSharpCompilation.Create(
             $"cwl-script-{scriptDir.FullName.ShortPath().GetHashCode()}",
             trees,
-            CreateCurrentDomainReferences(),
-            new(
-                OutputKind.DynamicallyLinkedLibrary,
-                allowUnsafe: true,
-                nullableContextOptions: NullableContextOptions.Enable,
-                optimizationLevel: OptimizationLevel.Release)
-        );
+            CurrentDomainReferences,
+            options);
     }
 
-    internal static Compilation CompileScriptFromPackage(BaseModPackage package)
+    [Time]
+    [Conditional("CWL_SCRIPTING")]
+    internal static void CompileAllPackages()
     {
-        TestIfScriptAvailable();
+        var userPackages = BaseModManager.Instance.packages
+            .Where(p => p is { builtin: false, activated: true, id: not null });
 
-        return CompileScriptFromDir(package.dirInfo);
+        foreach (var package in userPackages) {
+            try {
+                if (package.dirInfo.GetDirectories("Scripts") is not [{ } scripts]) {
+                    continue;
+                }
+
+                var options = DefaultCompilationOptions
+                    .WithModuleName(package.id.Replace(' ', '.').SanitizePath('-'));
+
+                CwlMod.Log<CSharpCompilation>("cwl_log_csc_package".Loc(package.title, package.dirInfo.FullName.ShortPath()));
+
+                // TODO: add hashed timestamp key
+
+                var compilation = CompileScriptFromDir(scripts, options);
+                if (compilation is null) {
+                    continue;
+                }
+            } catch (Exception ex) {
+                ExceptionProfile.GetFromStackTrace(ref ex).CreateAndPop();
+                // noexcept
+            }
+        }
     }
 
     // expensive
@@ -122,7 +184,7 @@ public static class CwlScriptLoader
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         foreach (var assembly in assemblies) {
             try {
-                if (assembly.IsDynamic || string.IsNullOrEmpty(assembly.Location)) {
+                if (assembly.IsDynamic || assembly.Location.IsEmptyOrNull) {
                     continue;
                 }
 
@@ -136,48 +198,25 @@ public static class CwlScriptLoader
         return references;
     }
 
-    private static IReadOnlyList<MetadataReference> CreateCurrentDomainReferences()
+    private static HashSet<string> GetNamespaces(Assembly assembly)
     {
-        return [
-            ..CurrentDomainReferences,
-            ..UserAssemblies.Values,
-        ];
-    }
+        var namespaces = new HashSet<string>(StringComparer.Ordinal);
 
-    extension(string scriptStr)
-    {
-        /// <summary>
-        ///     Run a cs script block, expensive, can't GC, bad
-        /// </summary>
-        /// <remarks>Do not create types here</remarks>
-        public object ExecuteAsCs(object? globals = null, bool sharedState = false)
-        {
-            var options = ScriptOptions.Default.WithReferences(CreateCurrentDomainReferences());
-
-            if (sharedState && _sharedState is not null) {
-                var continueState = _sharedState
-                    .ContinueWithAsync(scriptStr, options, ExceptionProfile.ScriptExceptionHandler, UniTasklet.GameToken)
-                    .GetAwaiter()
-                    .GetResult();
-
-                if (!_pinnedSharedState) {
-                    _sharedState = continueState;
+        foreach (var type in assembly.GetTypes()) {
+            try {
+                if (!type.IsPublic) {
+                    continue;
                 }
 
-                return continueState.ReturnValue;
+                var name = type.Namespace;
+                if (!name.IsEmptyOrNull) {
+                    namespaces.Add(name);
+                }
+            } catch {
+                // noexcept
             }
-
-            var (_, script) = CompileScript(scriptStr, options, true, globals);
-            var state = script.RunAsync(globals, ExceptionProfile.ScriptExceptionHandler, UniTasklet.GameToken)
-                .GetAwaiter()
-                .GetResult();
-
-            if (sharedState && state.Exception is null) {
-                _sharedState = state;
-            }
-
-            return state.ReturnValue;
         }
+
+        return namespaces;
     }
 }
-#endif

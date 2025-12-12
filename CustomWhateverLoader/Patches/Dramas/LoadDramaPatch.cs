@@ -86,7 +86,7 @@ internal class LoadDramaPatch
             item.TryAdd("text_EN", "");
             item.TryAdd("text_JP", "");
 
-            if (item.TryGetValue($"text_{Lang.langCode}", out var textLang) && !string.IsNullOrWhiteSpace(textLang)) {
+            if (item.TryGetValue($"text_{Lang.langCode}", out var textLang) && !textLang.IsWhiteSpaceOrNull) {
                 item["text"] = textLang;
             }
 
@@ -95,11 +95,11 @@ internal class LoadDramaPatch
             var textJp = item["text_JP"];
 
             if (textEn.IsEmptyOrNull) {
-                item["text_EN"] = textLocalize.EmptyOr(textJp);
+                item["text_EN"] = textLocalize.OrIfEmpty(textJp);
             }
 
             if (textJp.IsEmptyOrNull) {
-                item["text_JP"] = textLocalize.EmptyOr(textEn);
+                item["text_JP"] = textLocalize.OrIfEmpty(textEn);
             }
         }
 

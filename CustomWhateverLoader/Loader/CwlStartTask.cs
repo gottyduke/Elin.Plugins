@@ -21,6 +21,7 @@ using Cwl.Patches.Relocation;
 using Cwl.Patches.Sources;
 using Cwl.Patches.Traits;
 using Cwl.Patches.Zones;
+using Cwl.Scripting;
 using HarmonyLib;
 using MethodTimer;
 using ReflexCLI;
@@ -152,7 +153,7 @@ internal sealed partial class CwlMod
 
         CacheDetail.InvalidateCache();
 
-        QueryDeclTypes();
+        InitRuntimeFeatures();
         BuildDeferredPatches();
 
         RegisterEvents();
@@ -186,8 +187,10 @@ internal sealed partial class CwlMod
     }
 
     [Time]
-    private static void QueryDeclTypes()
+    private static void InitRuntimeFeatures()
     {
+        // scripts
+        CwlScriptLoader.CompileAllPackages();
         // sources
         TypeQualifier.SafeQueryTypesOfAll();
     }

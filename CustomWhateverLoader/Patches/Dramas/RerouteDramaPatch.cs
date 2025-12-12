@@ -35,7 +35,7 @@ internal class RerouteDramaPatch
     // subject to change for drama expansion
     private static bool TryRerouteDialog(Chara chara)
     {
-        DramaExpansion.Clear();
+        DramaExpansion.ResetStates();
 
         if (!CustomChara.DramaRoutes.TryGetValue(chara.id, out var drama) &&
             !chara.mapStr.TryGetValue("drama_route", out drama)) {
