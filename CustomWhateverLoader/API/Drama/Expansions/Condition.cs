@@ -143,12 +143,7 @@ public partial class DramaExpansion
         var flagKey = flag.Value;
         var valueExpr = optExpr.Get(">=1");
 
-        if (!actor.IsPC) {
-            return Compare(actor.GetFlagValue(flagKey), valueExpr);
-        }
-
-        player.dialogFlags.TryAdd(flagKey, 0);
-        return player.dialogFlags.TryGetValue(flagKey, out var value) && Compare(value, valueExpr);
+        return Compare(actor.GetFlagValue(flagKey), valueExpr);
     }
 
     /// <summary>

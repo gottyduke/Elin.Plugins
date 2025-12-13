@@ -15,6 +15,7 @@ public static class CardExt
             var value = owner.mapInt.GetValueOrDefault(key);
 
             if (EClass.core.IsGameStarted && owner.IsPC) {
+                EClass.player.dialogFlags.TryAdd(flag, 0);
                 value = EClass.player.dialogFlags.GetValueOrDefault(flag, 0);
             }
 

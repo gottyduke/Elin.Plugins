@@ -136,14 +136,7 @@ public partial class DramaExpansion
         dm.RequiresActor(out var actor);
 
         var valueExpr = optExpr.Get("=1");
-        if (actor.IsPC) {
-            player.dialogFlags.TryAdd(flag.Value, 0);
-            player.dialogFlags[flag.Value] = ArithmeticModOrSet(player.dialogFlags[flag.Value], valueExpr);
-        } else {
-            var key = flag.GetHashCode();
-            actor.mapInt.TryAdd(key, 0);
-            actor.mapInt[key] = ArithmeticModOrSet(actor.mapInt[key], valueExpr);
-        }
+        actor.SetFlagValue(flag.Value, ArithmeticModOrSet(actor.GetFlagValue(flag.Value), valueExpr));
 
         return true;
     }

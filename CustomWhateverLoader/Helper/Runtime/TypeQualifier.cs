@@ -36,7 +36,7 @@ public class TypeQualifier
         ["nuint"] = typeof(nuint),
     };
 
-    public static readonly List<TypeInfo> Declared = [];
+    public static readonly HashSet<TypeInfo> Declared = [];
 
     public static readonly Dictionary<Assembly, string> MappedAssemblyNames = [];
 
@@ -129,8 +129,6 @@ public class TypeQualifier
     [SwallowExceptions]
     internal static void SafeQueryTypesOfAll()
     {
-        Declared.Clear();
-
         Plugins = ModManager.ListPluginObject
             .OfType<BaseUnityPlugin>()
             .ToList();
@@ -140,7 +138,7 @@ public class TypeQualifier
                 var types = plugin.GetType().Assembly.DefinedTypes.ToArray();
                 // test cast for missing dependency
                 _ = types.Select(ti => typeof(object).IsAssignableFrom(ti)).ToArray();
-                Declared.AddRange(types);
+                Declared.UnionWith(types);
             } catch {
                 CwlMod.Log<TypeQualifier>("cwl_warn_decltype_missing".Loc(plugin.Info.Metadata.GUID));
                 Plugins.Remove(plugin);

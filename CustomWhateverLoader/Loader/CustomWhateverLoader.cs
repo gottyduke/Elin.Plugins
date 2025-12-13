@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using BepInEx;
 using Cwl.Helper.FileUtil;
+using Cwl.LangMod;
 using HarmonyLib;
 using ReflexCLI;
 
@@ -50,5 +51,7 @@ internal sealed partial class CwlMod : BaseUnityPlugin
         ExecutionAnalysis.DispatchAnalysis();
 
         OpenFileOrPath.ForceCloseAllReferences();
+
+        LocFormatter.DumpUnlocalized();
     }
 }

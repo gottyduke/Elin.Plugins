@@ -36,7 +36,7 @@ public class ActPerformEvent
         CwlMod.Log<GameIOProcessor.GameIOContext>("cwl_log_processor_add".Loc("act", "perform", method.GetAssemblyDetail(false)));
     }
 
-    private static void Add(Action<Act> process)
+    public static void Add(Action<Act> process)
     {
         OnActPerformEvent += Process;
         return;

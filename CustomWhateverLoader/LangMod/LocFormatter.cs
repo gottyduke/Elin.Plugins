@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
 
@@ -6,11 +8,35 @@ namespace Cwl.LangMod;
 
 public static class LocFormatter
 {
+    private static readonly HashSet<string> _unlocalized = new(StringComparer.Ordinal);
+
+    [Conditional("DEBUG")]
+    internal static void DumpUnlocalized()
+    {
+        if (_unlocalized.Count == 0) {
+            return;
+        }
+
+        using var sb = StringBuilderPool.Get();
+
+        sb.AppendLine("unlocalized entries");
+
+        foreach (var entry in _unlocalized) {
+            sb.AppendLine(entry);
+        }
+
+        CwlMod.Log(sb);
+    }
+
     extension(string id)
     {
         public string Loc(params object?[] args)
         {
             var lang = id.lang();
+            if (lang == id) {
+                _unlocalized.Add(id);
+            }
+
             if (args.Length == 0) {
                 return lang;
             }

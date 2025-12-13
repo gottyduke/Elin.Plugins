@@ -39,10 +39,10 @@ public partial class DramaExpansion
         dm.sequence.Play(step);
     }
 
-    public static void InjectUniqueRumor()
+    public static void InjectUniqueRumor(DramaManager? dm = null)
     {
-        if (Cookie?.Dm is not { } dm ||
-            dm.tg?.hasChara is not true) {
+        dm ??= Cookie?.Dm;
+        if (dm?.tg?.hasChara is not true) {
             return;
         }
 
