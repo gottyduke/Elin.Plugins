@@ -6,6 +6,7 @@ using Cwl.API.Attributes;
 using Cwl.Helper;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
+using Cwl.Scripting;
 
 namespace Cwl.API.Drama;
 
@@ -44,20 +45,12 @@ public partial class DramaExpansion
     /// <summary>
     ///     choice(cmd arg1 arg2 arg3)
     /// </summary>
+    [CwlNodiscard]
     public static bool choice(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.Requires(out var expr);
-
-        if (!BuildExpression(expr)!(dm, line)) {
-            return false;
-        }
-
-        line["action"] = nameof(choice);
-        line["param"] = "";
-
-        dm.ParseLine(line);
-
-        return false;
+        var func = BuildExpression(expr);
+        return func is not null && func(dm, line);
     }
 
     /// <summary>
@@ -107,6 +100,20 @@ public partial class DramaExpansion
         }
 
         return result is true;
+    }
+
+    /// <summary>
+    ///     eval(csharp)
+    /// </summary>
+    [CwlNodiscard]
+    public static bool eval(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.Requires(out var expr);
+        if (expr.IsEmptyOrNull) {
+            return false;
+        }
+
+        return expr.ExecuteAsCs(new { dm }, DramaScriptState) is true;
     }
 
     [CwlNodiscard]

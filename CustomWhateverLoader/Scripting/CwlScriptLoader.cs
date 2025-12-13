@@ -14,7 +14,6 @@ using MethodTimer;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Scripting;
 using ReflexCLI.Attributes;
 
@@ -108,127 +107,6 @@ public static partial class CwlScriptLoader
     }
 
     [Time]
-    internal static void CompileScriptPackage(BaseModPackage package)
-    {
-        if (package.dirInfo.GetDirectories("Scripts") is not [{ } scriptDir] ||
-            scriptDir.GetFiles("*.cs", SearchOption.AllDirectories) is not { Length: > 0 } scripts) {
-            return;
-        }
-
-        var log = new ScriptCompileLog();
-
-        log.Log($"api version: {APIVersion}");
-        log.Log($"roslyn version: {RoslynVersion}");
-        log.Log($"package id: {package.id}");
-        log.Log($"package dir: {package.dirInfo.FullName.ShortPath()}");
-
-        var assemblyName = GetPackageScriptName(package.id);
-        var assemblyPath = Path.Combine(package.dirInfo.FullName, $"{assemblyName}.dll");
-        var logPath = Path.ChangeExtension(assemblyPath, "csc.log");
-
-        log.Log($"assembly name: {assemblyName}");
-
-        // deterministic
-        var scriptFiles = scripts
-            .OrderBy(f => f.FullName, StringComparer.OrdinalIgnoreCase)
-            .ToArray();
-
-        log.Log($"script count: {scriptFiles.Length}");
-        foreach (var f in scriptFiles) {
-            log.Log($"  - {Path.GetRelativePath(scriptDir.FullName, f.FullName)}");
-        }
-
-        var (hash, contents) = GetHashAndContents();
-        log.Log($"script hash: {hash}");
-
-        // unload if already loaded
-        TryUnloadScript(assemblyName);
-
-        if (File.Exists(assemblyPath)) {
-            var existingHash = FileVersionInfo.GetVersionInfo(assemblyPath).ProductVersion;
-            log.Log($"existing assembly found with hash {existingHash}");
-
-            if (existingHash != hash) {
-                File.Delete(assemblyPath);
-                log.Log($"old hash was '{existingHash}'");
-            } else {
-                return;
-            }
-        }
-
-        var compilation = CompileScripts(contents, assemblyName, DefaultCompilationOptions)
-            .AddSyntaxTrees(
-                CSharpSyntaxTree.ParseText(
-                    $"[assembly: System.Reflection.AssemblyInformationalVersion(\"{hash}\")]",
-                    DefaultParseOptions,
-                    encoding: Encoding.UTF8))
-            .WithMinimalReferences();
-
-        log.Log($"compilation trees: {compilation.SyntaxTrees.Count()}");
-
-        var pdbPath = Path.ChangeExtension(assemblyPath, "pdb");
-
-        var asmFs = File.OpenWrite(assemblyPath);
-        var pdbFs = File.OpenWrite(pdbPath);
-        var w32Ms = compilation.CreateDefaultWin32Resources(true, false, null, null);
-
-        var emitResult = compilation.Emit(
-            asmFs,
-            pdbFs,
-            win32Resources: w32Ms,
-            options: new(debugInformationFormat: DebugInformationFormat.PortablePdb));
-
-        asmFs.Dispose();
-        pdbFs.Dispose();
-        w32Ms.Dispose();
-
-        try {
-            if (!emitResult.Success) {
-                throw new ScriptCompilationException(emitResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
-            }
-
-            log.Log($"DLL size: {new FileInfo(assemblyPath).Length.ToAllocateString()}");
-            log.Log($"PDB size: {new FileInfo(pdbPath).Length.ToAllocateString()}");
-
-            TryLoadScript(assemblyPath);
-
-            log.WriteTo(logPath);
-        } catch {
-            if (File.Exists(assemblyPath)) {
-                File.Delete(assemblyPath);
-            }
-
-            if (File.Exists(pdbPath)) {
-                File.Delete(pdbPath);
-            }
-
-            throw;
-        }
-
-        return;
-
-        (string sha, IEnumerable<FileInfo> contents) GetHashAndContents()
-        {
-            List<FileInfo> fileContents = [];
-
-            using var sb = StringBuilderPool.Get();
-            sb.Append(APIVersion.ToString());
-
-            foreach (var file in scriptFiles) {
-                sb.Append($"{file.ShortPath()}_{file.LastWriteTimeUtc}");
-                fileContents.Add(file);
-            }
-
-            var hash64 = Convert.ToBase64String(sb.ToString().GetSha256Hash())
-                .TrimEnd('=')
-                .Replace('+', '-')
-                .Replace('/', '_');
-
-            return (hash64[..16], fileContents);
-        }
-    }
-
-
     [Conditional("CWL_SCRIPTING")]
     internal static void CompileAllPackages()
     {
@@ -239,7 +117,7 @@ public static partial class CwlScriptLoader
 
         foreach (var package in userPackages) {
             try {
-                CompileScriptPackage(package);
+                new CwlScriptCompiler(package).Compile();
             } catch (Exception ex) {
                 CwlMod.ErrorWithPopup<CSharpCompilation>("cwl_error_csc_diag".Loc(package.title, ex.Message), ex);
                 // noexcept
@@ -277,27 +155,6 @@ public static partial class CwlScriptLoader
         }
 
         return references;
-    }
-
-    private class ScriptCompileLog
-    {
-        private readonly StringBuilderPool _sb = StringBuilderPool.Get();
-
-        public void Log(string message)
-        {
-            _sb.AppendLine(message);
-            CwlMod.Log<ScriptCompileLog>(message);
-        }
-
-        public void WriteTo(string path)
-        {
-            File.WriteAllText(path, _sb.ToString(), Encoding.UTF8);
-        }
-
-        ~ScriptCompileLog()
-        {
-            _sb.Dispose();
-        }
     }
 
     extension(Compilation compilation)

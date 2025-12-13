@@ -95,27 +95,36 @@ public partial class DramaExpansion
             return cached;
         }
 
-        var parse = Regex.Match(expression, @"^\s*(?<func>\w+)\s*(?:\(\s*(?<params>.*)\s*\))?\s*$");
-        if (!parse.Success) {
+        var (funcName, parameters) = ExtractExpressionSyntax(expression);
+        if (funcName is null || parameters is null) {
             return null;
         }
 
-        var funcName = parse.Groups["func"].Value;
         if (!_built.TryGetValue(funcName, out var func) || func is null) {
             return null;
         }
 
-        var parameters = parse.Groups["params"].Success
-            ? parse.Groups["params"].Value
-            : "";
-
         var pack = funcName switch {
-            nameof(and) or nameof(or) or nameof(not) or nameof(choice)
+            nameof(and) or nameof(or) or nameof(not) or nameof(choice) or nameof(eval)
                 => Regex.Matches(parameters, @"\w+\(.*?\)").Select(m => m.Value),
             _ => SplitParams(parameters),
         };
 
         return _expressions[expression] = (dm, line) => SafeInvoke(func, dm, line, pack.ToArray());
+    }
+
+    private static (string? func, string? param) ExtractExpressionSyntax(string expr)
+    {
+        var parse = Regex.Match(expr, @"^\s*(?<func>\w+)\s*(?:\(\s*(?<params>.*)\s*\))?\s*$");
+        if (!parse.Success) {
+            return (null, null);
+        }
+
+        var funcName = parse.Groups["func"].Value;
+        var parameters = parse.Groups["params"].Success
+            ? parse.Groups["params"].Value
+            : "";
+        return (funcName, parameters);
     }
 
     private static IEnumerable<string> SplitParams(string parameters)

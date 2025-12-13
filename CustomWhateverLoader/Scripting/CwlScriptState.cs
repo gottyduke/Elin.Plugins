@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using Cwl.API.Drama;
+using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
 using Microsoft.CodeAnalysis.Scripting;
 using ReflexCLI.Attributes;
@@ -40,6 +42,8 @@ public partial class CwlScriptLoader
     [ConsoleCommand("state.push")]
     public static string PushState(string state)
     {
+        TestIfDramaScriptStateActive();
+
         _activeStates.Push(state);
         return FormatCurrentStates();
     }
@@ -47,6 +51,8 @@ public partial class CwlScriptLoader
     [ConsoleCommand("state.pop")]
     public static string PopState()
     {
+        TestIfDramaScriptStateActive();
+
         _activeStates.TryPop(out _);
         return FormatCurrentStates();
     }
@@ -71,5 +77,12 @@ public partial class CwlScriptLoader
         }
 
         return sb.ToString();
+    }
+
+    private static void TestIfDramaScriptStateActive()
+    {
+        if (DramaExpansion.Cookie?.Dm is not null) {
+            throw new ScriptStateFrozenException(DramaExpansion.DramaScriptState);
+        }
     }
 }

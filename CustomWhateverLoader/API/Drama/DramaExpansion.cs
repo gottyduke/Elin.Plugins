@@ -18,7 +18,7 @@ public partial class DramaExpansion : DramaOutcome
 {
     public const string DramaScriptState = "drama";
 
-    internal static readonly Dictionary<string, Action<DramaManager, Dictionary<string, string>>> DramaActionHandlers = [];
+    internal static readonly Dictionary<string, Func<DramaManager, Dictionary<string, string>, bool>> DramaActionHandlers = [];
 
     public static ActionCookie? Cookie { get; internal set; }
 
@@ -32,7 +32,7 @@ public partial class DramaExpansion : DramaOutcome
         CwlScriptLoader.RemoveState(DramaScriptState);
     }
 
-    public static void Add(string action, Action<DramaManager, Dictionary<string, string>> process)
+    public static void AddActionHandler(string action, Func<DramaManager, Dictionary<string, string>, bool> process)
     {
         DramaActionHandlers[action] = process;
     }
@@ -40,36 +40,66 @@ public partial class DramaExpansion : DramaOutcome
     [Time]
     internal static void RegisterEvents(MethodInfo method, CwlDramaAction action)
     {
-        Add(action.Action, (dm, line) => method.FastInvokeStatic(dm, line));
+        AddActionHandler(action.Action, (dm, line) => method.FastInvokeStatic(dm, line) is true);
         CwlMod.Log<GameIOProcessor.GameIOContext>("cwl_log_processor_add".Loc("drama_action", action.Action,
             method.GetAssemblyDetail(false)));
     }
 
     internal static bool ProcessAction(string action)
     {
-        if (!DramaActionHandlers.TryGetValue(action, out var handler)) {
-            return false;
-        }
-
-        handler(Cookie!.Dm, Cookie.Line);
-        return true;
+        return DramaActionHandlers.TryGetValue(action, out var handler) && handler(Cookie!.Dm, Cookie.Line);
     }
 
     [CwlDramaAction("inject")]
-    private static void ProcessInjectAction(DramaManager dm, Dictionary<string, string> line)
+    private static bool ProcessInjectAction(DramaManager dm, Dictionary<string, string> line)
     {
         if (line["param"] == "Unique") {
             InjectUniqueRumor(dm);
+            return true;
         }
+
+        return false;
     }
 
+    [CwlDramaAction(nameof(choice))]
+    private static bool ProcessConditionalChoice(DramaManager dm, Dictionary<string, string> line)
+    {
+        var expr = line["param"];
+        if (expr.IsEmptyOrNull) {
+            return false;
+        }
+
+        var func = BuildExpression(expr);
+        if (func is null) {
+            return false;
+        }
+
+        // add first, but conditionally remove it in invoke call
+        Dictionary<string, string> choiceLine = new(line, StringComparer.Ordinal) {
+            ["param"] = "",
+        };
+
+        var choices = dm.lastTalk.choices;
+        var lastChoice = choices.Count;
+        dm.ParseLine(choiceLine);
+
+        if (choices.Count == lastChoice) {
+            // disabled via if / if2 or failed to add or something
+            return false;
+        }
+
+        choices[^1].activeCondition = () => func(dm, line);
+        return true;
+    }
+
+    // always handle this action
     [CwlDramaAction("i*")]
     [CwlDramaAction("invoke*")]
-    private static void ProcessInvokeAction(DramaManager dm, Dictionary<string, string> line)
+    private static bool ProcessInvokeAction(DramaManager dm, Dictionary<string, string> line)
     {
         var rawExpr = line["param"];
         if (rawExpr.StartsWith("//")) {
-            return;
+            return true;
         }
 
         // TODO: maybe allow multiline params?
@@ -78,25 +108,47 @@ public partial class DramaExpansion : DramaOutcome
                 continue;
             }
 
+            // for old i* style usage
             if (expr.StartsWith(nameof(choice))) {
-                func(dm, line);
-                continue;
+                Dictionary<string, string> choiceLine = new(line, StringComparer.Ordinal) {
+                    ["action"] = nameof(choice),
+                    ["param"] = "", // reset so we don't use new action handler
+                };
+
+                var lastChoice = dm.lastTalk.choices.Count;
+                dm.ParseLine(choiceLine);
+
+                if (dm.lastTalk.choices.Count == lastChoice) {
+                    // disabled via if / if2 or failed to add or something
+                    return true;
+                }
+
+                dm.lastTalk.choices[^1].activeCondition = () => func(dm, line);
             }
 
-            var step = new DramaEventMethod(() => func(dm, line));
-            if (line.TryGetValue("jump", out var jump) && !jump.IsEmptyOrNull) {
-                step.action = null;
-                step.jumpFunc = () => func(dm, line) ? jump : "";
+            var jump = line["jump"];
+            var method = new DramaEventMethod(() => func(dm, line));
+
+            if (!jump.IsEmptyOrNull) {
+                method.action = null;
+                method.jumpFunc = () => func(dm, line) ? jump : "";
             }
 
-            dm.AddEvent(step);
+            dm.AddEvent(method);
         }
+
+        return true;
     }
 
-    [CwlDramaAction("eval")]
-    private static void ProcessEvalAction(DramaManager dm, Dictionary<string, string> line)
+    // always handle this action
+    [CwlDramaAction(nameof(eval))]
+    private static bool ProcessEvalAction(DramaManager dm, Dictionary<string, string> line)
     {
         var expr = line["param"];
+        if (expr.IsEmptyOrNull) {
+            return true;
+        }
+
         // import
         if (expr.StartsWith("<<<")) {
             var scriptFile = expr[3..].Trim();
@@ -110,6 +162,16 @@ public partial class DramaExpansion : DramaOutcome
             expr = File.ReadAllText(filePath);
         }
 
-        expr.ExecuteAsCs(new { dm }, DramaScriptState);
+        var jump = line["jump"];
+        var method = new DramaEventMethod(() => expr.ExecuteAsCs(new { dm }, DramaScriptState));
+
+        if (!jump.IsEmptyOrNull) {
+            method.action = null;
+            method.jumpFunc = () => expr.ExecuteAsCs(new { dm }, DramaScriptState) is true ? jump : "";
+        }
+
+        dm.AddEvent(method);
+
+        return true;
     }
 }
