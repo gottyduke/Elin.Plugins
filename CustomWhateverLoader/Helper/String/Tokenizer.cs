@@ -73,7 +73,9 @@ public static class Tokenizer
                 }
 
                 foreach (var field in args.GetType().GetCachedFields()) {
-                    store[field.Name] = field.GetValue(args);
+                    if (field.IsPublic) {
+                        store[field.Name] = field.GetValue(args);
+                    }
                 }
             }
 

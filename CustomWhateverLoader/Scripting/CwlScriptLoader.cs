@@ -165,7 +165,7 @@ public static partial class CwlScriptLoader
         public void InvokeScriptMethod(string methodName, params object[] args)
         {
             assembly.GetTypes()
-                .SelectMany(t => t.GetMethods(AccessTools.all & ~BindingFlags.Static))
+                .SelectMany(t => t.GetMethods(AccessTools.all))
                 .FirstOrDefault(mi => mi.Name == methodName)?
                 .Invoke(null, args);
         }

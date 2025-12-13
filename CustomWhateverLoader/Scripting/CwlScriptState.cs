@@ -22,10 +22,7 @@ public partial class CwlScriptLoader
     [ConsoleCommand("state.remove")]
     public static void RemoveState(string state)
     {
-        if (_scriptStates.Remove(state)) {
-            CwlMod.Popup<ScriptState>("cwl_ui_cs_state_remove".lang());
-        }
-
+        _scriptStates.Remove(state);
         _activeStates = new(_activeStates
             .Where(s => s != state)
             .Reverse());
@@ -73,29 +70,17 @@ public partial class CwlScriptLoader
         }
     }
 
-    public class CwlScriptState : DynamicObject
+    public class CwlScriptState
     {
         // hold a reference to the csharp package
-        private const CSharpArgumentInfoFlags Binder = CSharpArgumentInfoFlags.UseCompileTimeType;
         internal readonly Dictionary<string, object?> Variables = new(StringComparer.Ordinal);
 
-        public dynamic This => this;
+        public CwlScriptState Script => this;
 
         public object? this[string name]
         {
             get => Variables.GetValueOrDefault(name);
             set => Variables[name] = value;
-        }
-
-        public override bool TryGetMember(GetMemberBinder binder, out object? result)
-        {
-            return Variables.TryGetValue(binder.Name, out result);
-        }
-
-        public override bool TrySetMember(SetMemberBinder binder, object? value)
-        {
-            Variables[binder.Name] = value;
-            return true;
         }
     }
 }

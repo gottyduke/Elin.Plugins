@@ -92,11 +92,19 @@ public static class ActionParameterHelper
                 actorId = "tg";
             }
 
-            if (dm.sequence.GetActor(actorId) is not { owner: { } owner }) {
-                throw new DramaActorMissingException(actorId);
-            }
+            person = dm.GetPerson(actorId);
+        }
 
-            person = owner;
+        public Chara GetChara(string actorId)
+        {
+            return dm.GetPerson(actorId).chara ?? throw new DramaActorMissingException("actor.chara");
+        }
+
+        public Person GetPerson(string actorId)
+        {
+            return dm.GetActor(actorId) is not { owner: { } owner }
+                ? throw new DramaActorMissingException(actorId)
+                : owner;
         }
     }
 
