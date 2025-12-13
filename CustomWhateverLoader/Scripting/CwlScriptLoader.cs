@@ -1,20 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using Cwl.Helper;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
-using Cwl.LangMod;
 using HarmonyLib;
-using MethodTimer;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.Scripting;
 using ReflexCLI.Attributes;
 
 namespace Cwl.Scripting;
@@ -61,73 +54,6 @@ public static partial class CwlScriptLoader
         assembly.RegisterScript(assembly.GetName().Name);
 
         return "script loaded";
-    }
-
-    // no need to trim references because it's never emitted
-    internal static (Compilation compilation, Script<object> csharp) CompileScript(string script,
-                                                                                   ScriptOptions options,
-                                                                                   bool throwOnError = false,
-                                                                                   object? globals = null)
-    {
-        CwlMod.Log("cwl_log_csc_eval".Loc(script));
-
-        var csharp = CSharpScript.Create(script, options, globals?.GetType());
-        var compilation = csharp.GetCompilation();
-
-        if (throwOnError) {
-            var errors = compilation.GetDiagnostics()
-                .Where(d => d.Severity == DiagnosticSeverity.Error)
-                .ToArray();
-            if (errors.Length > 0) {
-                throw new ScriptCompilationException(errors);
-            }
-        }
-
-        return (compilation, csharp);
-    }
-
-    internal static Compilation CompileScripts(IEnumerable<FileInfo> scripts,
-                                               string assemblyName,
-                                               CSharpCompilationOptions? options = null)
-    {
-        var trees = scripts
-            .Select(s => CSharpSyntaxTree.ParseText(
-                File.ReadAllText(s.FullName),
-                DefaultParseOptions,
-                s.FullName,
-                Encoding.UTF8));
-
-        options ??= DefaultCompilationOptions;
-
-        return CSharpCompilation.Create(
-            assemblyName,
-            trees,
-            CurrentDomainReferences,
-            options);
-    }
-
-    [Time]
-    [Conditional("CWL_SCRIPTING")]
-    internal static void CompileAllPackages()
-    {
-        CwlMod.Log<CSharpCompilation>("cwl_log_csc_roslyn".Loc(RoslynVersion));
-
-        var userPackages = BaseModManager.Instance.packages
-            .Where(p => p is { builtin: false, activated: true, id: not null });
-
-        foreach (var package in userPackages) {
-            try {
-                new CwlScriptCompiler(package).Compile();
-            } catch (Exception ex) {
-                CwlMod.ErrorWithPopup<CSharpCompilation>("cwl_error_csc_diag".Loc(package.title, ex.Message), ex);
-                // noexcept
-            }
-        }
-    }
-
-    private static string GetPackageScriptName(string id)
-    {
-        return id.Replace(' ', '-').Replace('.', '-').SanitizeFileName('-');
     }
 
     // expensive
@@ -190,6 +116,8 @@ public static partial class CwlScriptLoader
 
     extension(Assembly assembly)
     {
+        public bool IsRoslynScript => assembly.GetName().Name.StartsWith("ℛ*");
+
         private HashSet<string> GetNamespaces()
         {
             var namespaces = new HashSet<string>(StringComparer.Ordinal);

@@ -53,6 +53,15 @@ public static class Tokenizer
                 return tokens;
             }
 
+            return _cached[args] = args.TokenizeObject().ToDictionary(k => k.Key, v => v.Value!.ToString());
+        }
+
+        public Dictionary<string, object> TokenizeObject()
+        {
+            if (args is null) {
+                return [];
+            }
+
             Dictionary<string, object?> store = [];
             if (args is IDictionary<string, object?> input) {
                 foreach (var (k, v) in input) {
@@ -74,7 +83,7 @@ public static class Tokenizer
                 }
             }
 
-            return _cached[args] = store.ToDictionary(k => k.Key, v => v.Value!.ToString());
+            return store.ToDictionary(k => k.Key, v => v.Value!);
         }
     }
 }

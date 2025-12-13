@@ -18,6 +18,21 @@ $Changelogs
 
 
 
+{topic|1.21.0}
+Added runtime CSharp scripting:
+・cwl.cs.eval console command
+・cwl.cs.state console command
+・Drama sheet scripting support
+・User scripts compiler support
+・Scripting, compiling, and state API
+Drama Expansion:
+・choice(expansion_method) can now be used as normal choice with its params being expansion_method
+・eval action for executing csharp scripts
+・Fixed a possible mod_flag bug
+・Fixed a mod_element but where it does not correctly apply feat
+・Rewrote the drama expansion patch as action handlers
+Added reflex_greedy_args support for console commands
+
 {topic|1.20.57}
 Fixed indexed parameters for deferred patches
 Enabled debug panel

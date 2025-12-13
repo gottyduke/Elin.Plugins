@@ -4,7 +4,6 @@ using System.IO;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
-using Microsoft.CodeAnalysis.Scripting;
 using ReflexCLI.Attributes;
 
 namespace Cwl.Scripting;
@@ -36,7 +35,8 @@ public partial class CwlScriptLoader
     {
         _activeStates.TryPeek(out var activeState);
 
-        var result = script.ExecuteAsCs(useState: activeState);
+        // caching console commands are usually not worth it
+        var result = script.ExecuteAsCs(useState: activeState, useCache: false);
 
         switch (result) {
             case null:
@@ -58,26 +58,7 @@ public partial class CwlScriptLoader
     [Description("reflex_greedy_args")] // path may contain spaces
     public static string EvaluateFile(string filePath)
     {
-        if (!File.Exists(filePath)) {
-            return "cwl_error_cs_file_not_found".lang();
-        }
-
         return EvaluateScript(File.ReadAllText(filePath));
-    }
-
-    private class CwlScriptState(ScriptState<object> csharpState)
-    {
-        public ScriptState<object> CSharpState
-        {
-            get => field ??= csharpState;
-            set {
-                if (!Pinned || field is null) {
-                    field = value;
-                }
-            }
-        }
-
-        public bool Pinned { get; set; }
     }
 
     extension(string script)
@@ -86,7 +67,7 @@ public partial class CwlScriptLoader
         ///     Run a cs script block, expensive, can't GC, bad
         /// </summary>
         /// <remarks>Do not create types here</remarks>
-        public object ExecuteAsCs(object? globals = null, string? useState = null)
+        public object ExecuteAsCs(object? globals = null, string? useState = null, bool useCache = true)
         {
             TestIfScriptAvailable();
 
@@ -94,27 +75,24 @@ public partial class CwlScriptLoader
                 _activeStates.TryPeek(out useState);
             }
 
-            if (useState is not null && _scriptStates.TryGetValue(useState, out var stateInfo)) {
-                var continueState = stateInfo.CSharpState
-                    .ContinueWithAsync(script, DefaultScriptOptions, ExceptionProfile.ScriptExceptionHandler,
-                        UniTasklet.GameToken)
-                    .GetAwaiter()
-                    .GetResult();
-
-                // may be pinned
-                stateInfo.CSharpState = continueState;
-
-                return continueState.ReturnValue;
+            if (useState is null || !_scriptStates.TryGetValue(useState, out var scriptState)) {
+                scriptState = new();
             }
 
-            var (_, csharp) = CompileScript(script, DefaultScriptOptions, true, globals);
+            // TODO: box value types
+            var globalVars = globals.TokenizeObject();
+            foreach (var (key, value) in globalVars) {
+                scriptState[key] = value;
+            }
+
+            var csharp = CompileScript(script, DefaultScriptOptions, throwOnError: true, useCache: useCache);
             var state = csharp
-                .RunAsync(globals, ExceptionProfile.ScriptExceptionHandler, UniTasklet.GameToken)
+                .RunAsync(scriptState, UniTasklet.GameToken)
                 .GetAwaiter()
                 .GetResult();
 
-            if (useState is not null && state.Exception is null) {
-                _scriptStates[useState] = new(state);
+            if (useState is not null) {
+                _scriptStates[useState] = scriptState;
             }
 
             return state.ReturnValue;

@@ -4,16 +4,104 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
+using Cwl.LangMod;
+using MethodTimer;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Emit;
+using Microsoft.CodeAnalysis.Scripting;
+using ReflexCLI.Attributes;
 
 namespace Cwl.Scripting;
 
 public partial class CwlScriptLoader
 {
+    private static readonly Dictionary<int, Script<object>> _cachedScripts = [];
+
+    [ConsoleCommand("clear_cache")]
+    public static string ClearCache()
+    {
+        var count = _cachedScripts.Count;
+        _cachedScripts.Clear();
+        return $"removed {count} cached scripts";
+    }
+
+    // no need to trim references because it's never emitted
+    internal static Script<object> CompileScript(string script,
+                                                 ScriptOptions options,
+                                                 bool useCache = true,
+                                                 bool throwOnError = false)
+    {
+        CwlMod.Log("cwl_log_csc_eval".Loc(script));
+
+        var scriptHash = script.GetHashCode();
+
+        if (useCache && _cachedScripts.TryGetValue(scriptHash, out var cachedScript)) {
+            return cachedScript;
+        }
+
+        var csharp = CSharpScript.Create(script, options, typeof(CwlScriptState));
+        var compilation = csharp.GetCompilation();
+
+        if (throwOnError) {
+            var errors = compilation.GetDiagnostics()
+                .Where(d => d.Severity == DiagnosticSeverity.Error)
+                .ToArray();
+            if (errors.Length > 0) {
+                throw new ScriptCompilationException(errors);
+            }
+        }
+
+        if (useCache) {
+            _cachedScripts[scriptHash] = csharp;
+        }
+
+        return csharp;
+    }
+
+    internal static Compilation CompileScripts(IEnumerable<FileInfo> scripts,
+                                               string assemblyName,
+                                               CSharpCompilationOptions? options = null)
+    {
+        var trees = scripts
+            .Select(s => CSharpSyntaxTree.ParseText(
+                File.ReadAllText(s.FullName),
+                DefaultParseOptions,
+                s.FullName,
+                Encoding.UTF8));
+
+        options ??= DefaultCompilationOptions;
+
+        return CSharpCompilation.Create(
+            assemblyName,
+            trees,
+            CurrentDomainReferences,
+            options);
+    }
+
+    [Time]
+    [Conditional("CWL_SCRIPTING")]
+    internal static void CompileAllPackages()
+    {
+        CwlMod.Log<CSharpCompilation>("cwl_log_csc_roslyn".Loc(RoslynVersion));
+
+        var userPackages = BaseModManager.Instance.packages
+            .Where(p => p is { builtin: false, activated: true, id: not null });
+
+        foreach (var package in userPackages) {
+            try {
+                new CwlScriptCompiler(package).Compile();
+            } catch (Exception ex) {
+                CwlMod.ErrorWithPopup<CSharpCompilation>("cwl_error_csc_diag".Loc(package.title, ex.Message), ex);
+                // noexcept
+            }
+        }
+    }
+
     public class CwlScriptCompiler(BaseModPackage package)
     {
         private readonly string _apiVersion = APIVersion.ToString();
@@ -111,9 +199,13 @@ public partial class CwlScriptLoader
 
                 throw;
             }
+
+            var log = _sb.ToString();
+            CwlMod.Log<CwlScriptCompiler>(_sb.ToString());
+            File.WriteAllText(Path.Combine(package.dirInfo.FullName, $"{_assemblyName}.log"), log, Encoding.UTF8);
         }
 
-        public (string sha, IEnumerable<FileInfo> contents) GetHashAndContents(IEnumerable<FileInfo> files)
+        public static (string sha, IEnumerable<FileInfo> contents) GetHashAndContents(IEnumerable<FileInfo> files)
         {
             List<FileInfo> fileContents = [];
 
@@ -128,13 +220,13 @@ public partial class CwlScriptLoader
             return (sb.ToString().GetSha256Code(), fileContents);
         }
 
+        private static string GetPackageScriptName(string id)
+        {
+            return Regex.Replace(id, "[ ._]+", "-").SanitizeFileName('-');
+        }
+
         ~CwlScriptCompiler()
         {
-            var log = _sb.ToString();
-
-            CwlMod.Log<CwlScriptCompiler>(_sb.ToString());
-            File.WriteAllText(Path.Combine(package.dirInfo.FullName, $"{_assemblyName}.log"), log, Encoding.UTF8);
-
             _sb.Dispose();
         }
     }

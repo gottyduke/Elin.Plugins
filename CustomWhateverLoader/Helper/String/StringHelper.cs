@@ -26,7 +26,7 @@ public static class StringHelper
         return $"{size:0.##} {_memSizeSuffixes[mag]}";
     }
 
-    public static string MergeOverlap(string lhs, string rhs)
+    public static string MergeOverlap(string lhs, string rhs, string delimiter = ", ")
     {
         var maxOverlap = 0;
         for (var i = 1; i <= Math.Min(lhs.Length, rhs.Length); ++i) {
@@ -35,7 +35,7 @@ public static class StringHelper
             }
         }
 
-        return lhs + rhs[maxOverlap..];
+        return $"{lhs}{delimiter}{rhs[maxOverlap..]}";
     }
 
     public static class Cjk

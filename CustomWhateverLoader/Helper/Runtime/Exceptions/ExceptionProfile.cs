@@ -83,13 +83,6 @@ public class ExceptionProfile(string message)
         profile.CreateAndPop();
     }
 
-    public static bool ScriptExceptionHandler(Exception exception)
-    {
-        var profile = GetFromStackTrace(ref exception);
-        profile.CreateAndPop("cwl_error_cs_execution".lang());
-        return true;
-    }
-
     public void CreateAndPop(string? display = null)
     {
         EMono.ui?.hud?.imageCover?.SetActive(false);

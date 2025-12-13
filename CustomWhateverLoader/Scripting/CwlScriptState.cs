@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using Cwl.API.Drama;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
 using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.CSharp.RuntimeBinder;
 using ReflexCLI.Attributes;
 
 namespace Cwl.Scripting;
@@ -26,17 +29,6 @@ public partial class CwlScriptLoader
         _activeStates = new(_activeStates
             .Where(s => s != state)
             .Reverse());
-    }
-
-    /// <summary>
-    ///     Pin a script state and freeze its variables
-    /// </summary>
-    [ConsoleCommand("state.pin")]
-    public static void PinState(string state, bool pinned = true)
-    {
-        if (_scriptStates.TryGetValue(state, out var scriptState)) {
-            scriptState.Pinned = pinned;
-        }
     }
 
     [ConsoleCommand("state.push")]
@@ -65,15 +57,10 @@ public partial class CwlScriptLoader
         sb.AppendLine($"script states: [{_activeStates.Count}]");
 
         foreach (var state in _activeStates) {
-            sb.Append($"{state}");
-
-            if (_scriptStates.TryGetValue(state, out var stateInfo)) {
-                if (stateInfo.Pinned) {
-                    sb.AppendLine(" [PINNED]");
-                }
-            } else {
-                sb.AppendLine(" [UNINITIALIZED]");
-            }
+            sb.Append(state);
+            sb.AppendLine(_scriptStates.TryGetValue(state, out var scriptState)
+                ? $" [{scriptState.Variables.Count}]"
+                : " [UNINITIALIZED]");
         }
 
         return sb.ToString();
@@ -83,6 +70,32 @@ public partial class CwlScriptLoader
     {
         if (DramaExpansion.Cookie?.Dm is not null) {
             throw new ScriptStateFrozenException(DramaExpansion.DramaScriptState);
+        }
+    }
+
+    public class CwlScriptState : DynamicObject
+    {
+        // hold a reference to the csharp package
+        private const CSharpArgumentInfoFlags Binder = CSharpArgumentInfoFlags.UseCompileTimeType;
+        internal readonly Dictionary<string, object?> Variables = new(StringComparer.Ordinal);
+
+        public dynamic This => this;
+
+        public object? this[string name]
+        {
+            get => Variables.GetValueOrDefault(name);
+            set => Variables[name] = value;
+        }
+
+        public override bool TryGetMember(GetMemberBinder binder, out object? result)
+        {
+            return Variables.TryGetValue(binder.Name, out result);
+        }
+
+        public override bool TrySetMember(SetMemberBinder binder, object? value)
+        {
+            Variables[binder.Name] = value;
+            return true;
         }
     }
 }

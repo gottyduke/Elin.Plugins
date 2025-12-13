@@ -18,6 +18,21 @@ $更新日志
 
 
 
+{topic|1.21.0}
+新增运行时 C# 脚本功能：
+・cwl.cs.eval 控制台命令
+・cwl.cs.state 控制台命令
+・剧情表（Drama sheet）脚本支持
+・用户脚本编译器支持
+・脚本、编译与状态 API
+剧情扩展：
+・choice(expansion_method) 现在可作为普通 choice 使用，其 param 为 expansion_method
+・新增用于执行 C# 脚本的 eval 动作
+・修复了一个可能的 mod_flag 问题
+・修复了一个 mod_element bug：未能正确应用 feat
+・剧情扩展补丁重写
+新增对控制台命令的 reflex_greedy_args 支持
+
 {topic|1.20.57}
 修复了延迟补丁的固定索引参数
 启用了调试面板

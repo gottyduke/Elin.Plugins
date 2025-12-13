@@ -7,6 +7,7 @@ using BepInEx;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
 using Cwl.LangMod;
+using Cwl.Scripting;
 using HarmonyLib;
 
 namespace Cwl.Helper;
@@ -48,9 +49,16 @@ public class TypeQualifier
             return result;
         }
 
-        var baseAsm = assembly.GetName().Name.Replace(" ", "");
-        var baseDir = Path.GetDirectoryName(assembly.Location)!.NormalizePath();
+        if (assembly.IsRoslynScript) {
+            return "ℛ*";
+        }
 
+        var baseAsm = assembly.GetName().Name.Replace(" ", "");
+        if (assembly.IsDynamic || assembly.Location.IsEmptyOrNull) {
+            return baseAsm;
+        }
+
+        var baseDir = Path.GetDirectoryName(assembly.Location)!.NormalizePath();
         var packageAsm = BaseModManager.Instance.packages
                              .FirstOrDefault(p => p.dirInfo.FullName.NormalizePath() == baseDir)?.title
                          ?? Plugins.FirstOrDefault(p => p.GetType().Assembly == assembly)?.Info.Metadata.Name
