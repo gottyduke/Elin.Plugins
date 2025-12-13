@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -11,6 +12,8 @@ namespace Cwl.Patches.Zones;
 
 internal class LoadZonePatch
 {
+    private static readonly Dictionary<string, string> _cached = new(StringComparer.Ordinal);
+
     internal static IEnumerable<MethodBase> TargetMethods()
     {
         return OverrideMethodComparer.FindAllOverridesGetter(typeof(Zone), nameof(Zone.pathExport));
@@ -20,6 +23,12 @@ internal class LoadZonePatch
     internal static void OnLoadCustomZone(Zone __instance, ref string __result)
     {
         if (__instance.idExport.IsEmptyOrNull && !__instance.source.tag.Contains("addMap")) {
+            return;
+        }
+
+        var cacheKey = $"{__instance.idExport}_{__instance.uid}";
+        if (_cached.TryGetValue(cacheKey, out var path)) {
+            __result = path;
             return;
         }
 
@@ -35,5 +44,7 @@ internal class LoadZonePatch
         if (candidate is not null) {
             __result = candidate.FullName;
         }
+
+        _cached[cacheKey] = __result;
     }
 }
