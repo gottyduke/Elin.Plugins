@@ -8,6 +8,7 @@ public static class CardExt
     extension(Card owner)
     {
         public CardDir CardDir => (CardDir)owner.dir;
+        public string HashKey => $"{owner.id}/{owner.uid}";
 
         public int GetFlagValue(string flag)
         {

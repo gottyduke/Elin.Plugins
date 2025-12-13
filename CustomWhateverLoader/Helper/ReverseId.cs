@@ -7,10 +7,10 @@ public static class ReverseId
 {
     private static Dictionary<string, BGMData> _lookup = [];
 
-    public static int Material(string materialName, int fallback = -1)
+    public static int Material(string materialAlias, int fallback = -1)
     {
         var id = fallback;
-        if (EMono.sources.materials.alias.TryGetValue(materialName, out var row)) {
+        if (EMono.sources.materials.alias.TryGetValue(materialAlias, out var row)) {
             id = EMono.sources.materials.rows.IndexOf(row);
         }
 
@@ -30,10 +30,5 @@ public static class ReverseId
         }
 
         return id;
-    }
-
-    public static string HashKey(this Card card)
-    {
-        return $"{card.id}/{card.uid}";
     }
 }

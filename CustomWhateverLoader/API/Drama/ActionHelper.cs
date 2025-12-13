@@ -5,6 +5,7 @@ using Cwl.Helper;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
+using Cwl.LangMod;
 
 namespace Cwl.API.Drama;
 
@@ -60,13 +61,15 @@ public partial class DramaExpansion
         dm._choices.Add(choice);
 
         var rumor = chara.GetUniqueRumor();
-        choice.SetOnClick(() => {
-            var firstText = rumor;
-            dm.sequence.firstTalk.funcText = () => firstText;
-            rumor = chara.GetUniqueRumor();
-            chara.affinity.OnTalkRumor();
-            choice.forceHighlight = true;
-        }).SetCondition(() => chara.interest > 0);
+        choice
+            .SetOnClick(() => {
+                var firstText = rumor;
+                dm.sequence.firstTalk.funcText = () => firstText;
+                rumor = chara.GetUniqueRumor();
+                chara.affinity.OnTalkRumor();
+                choice.forceHighlight = true;
+            })
+            .SetCondition(() => chara.interest > 0);
     }
 
     private static bool SafeInvoke(ActionWrapper action, DramaManager dm, Dictionary<string, string> item, params string[] pack)
@@ -84,7 +87,7 @@ public partial class DramaExpansion
             }
 
             var methodGroup = $"[{action.Method.Name}]({string.Join(",", pack)})";
-            CwlMod.WarnWithPopup<DramaExpansion>($"call failure: {methodGroup}\n{ex.Message}", ex);
+            CwlMod.WarnWithPopup<DramaExpansion>("cwl_warn_drama_call_ex".Loc(methodGroup, ex.Message), ex);
             // noexcept
         }
 

@@ -30,7 +30,11 @@ internal partial class DataLoader
 
         var godTalk = EMono.sources.dataGodTalk;
         var map = godTalk.sheets[DefaultSheet].map;
-        foreach (var talk in PackageIterator.GetExcelsFromPackage("Data/god_talk.xlsx", 3)) {
+
+        // 1.21.0 changes to Dialog/god_talk.xlsx
+        var dialogs = PackageIterator.GetExcelsFromPackage("Data/god_talk.xlsx", 3)
+            .Concat(PackageIterator.GetExcelsFromPackage("Dialog/god_talk.xlsx", 3));
+        foreach (var talk in dialogs) {
             try {
                 foreach (var (topic, _) in map) {
                     if (topic == "") {

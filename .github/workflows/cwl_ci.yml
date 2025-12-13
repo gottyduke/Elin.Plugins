@@ -103,7 +103,7 @@ jobs:
           
           $lastTag = git describe --tags --abbrev=0 --match="CWL-*"
           $lastTagSha = git rev-parse $lastTag
-          $commits = git log "$($lastTag)..HEAD" --date=format:"%y-%m-%d\ %H:%M" --pretty=format:"%cd;%h;%s" -- CustomWhateverLoader/ 
+          $commits = git log "$($lastTag)..HEAD" --date=format:"%y-%m-%d %H:%M" --pretty=format:"%cd;%h;%s" -- CustomWhateverLoader/ 
           | ? {$_ -notmatch "cleanup"} 
           | % {
               $parts = $_ -split ';', 3

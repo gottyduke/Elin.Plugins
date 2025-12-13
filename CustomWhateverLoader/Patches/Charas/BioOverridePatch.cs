@@ -4,7 +4,6 @@ using System.Reflection.Emit;
 using Cwl.API;
 using Cwl.API.Attributes;
 using Cwl.API.Custom;
-using Cwl.Helper;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.Unity;
@@ -39,7 +38,7 @@ public class BioOverridePatch
     [HarmonyPatch(typeof(WindowChara), nameof(WindowChara.RefreshInfo))]
     internal static void OnRefreshInfo(WindowChara __instance)
     {
-        if (!_cached.TryGetValue(__instance.chara.HashKey(), out var bio)) {
+        if (!_cached.TryGetValue(__instance.chara.HashKey, out var bio)) {
             return;
         }
 
@@ -61,7 +60,7 @@ public class BioOverridePatch
     {
         // override mode
         if (!CustomChara.BioOverride.TryGetValue(chara.id, out var file) ||
-            _cached.ContainsKey(chara.HashKey())) {
+            _cached.ContainsKey(chara.HashKey)) {
             return;
         }
 
@@ -119,7 +118,7 @@ public class BioOverridePatch
                 name = bio.Birthlocation,
             };
 
-            _cached[chara.HashKey()] = bio;
+            _cached[chara.HashKey] = bio;
         } catch (Exception ex) {
             CwlMod.WarnWithPopup<CustomChara>("cwl_error_failure".Loc(ex.Message), ex);
             // noexcept
@@ -128,7 +127,7 @@ public class BioOverridePatch
 
     public static string GetNpcBackground(string fallback, Chara c)
     {
-        if (!_cached.TryGetValue(c.HashKey(), out var bio)) {
+        if (!_cached.TryGetValue(c.HashKey, out var bio)) {
             return fallback;
         }
 
