@@ -1,7 +1,8 @@
-using System.Collections.Generic;
+using System.Collections;
 using System.ComponentModel;
 using System.IO;
 using Cwl.Helper.Exceptions;
+using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Microsoft.CodeAnalysis.Scripting;
 using ReflexCLI.Attributes;
@@ -10,13 +11,9 @@ namespace Cwl.Scripting;
 
 public partial class CwlScriptLoader
 {
-    private static readonly Dictionary<string, CwlScriptState> _scriptStates = [];
-
-    internal static ScriptOptions DefaultScriptOptions =>
-        field ??= ScriptOptions.Default
-            .WithReferences(CurrentDomainReferences)
-            .WithImports(CurrentDomainNamespaces);
-
+    /// <summary>
+    ///     Ensures scripting is enabled for this user
+    /// </summary>
     public static void TestIfScriptAvailable()
     {
         if (!CwlMod.LoadingComplete) {
@@ -30,27 +27,31 @@ public partial class CwlScriptLoader
         // add some other runtime feature set checks
     }
 
-    [ConsoleCommand("clear_state")]
-    public static void ClearState(string state = "shared")
-    {
-        if (_scriptStates.Remove(state)) {
-            CwlMod.Popup<ScriptState>("cwl_ui_cs_state_remove".lang());
-        }
-    }
-
-    [ConsoleCommand("pin_state")]
-    public static void PinState(string state = "shared", bool pinned = true)
-    {
-        if (_scriptStates.TryGetValue(state, out var scriptState)) {
-            scriptState.Pinned = pinned;
-        }
-    }
-
+    /// <summary>
+    ///     Evaluate a script string with state if there's any active
+    /// </summary>
     [ConsoleCommand("eval")]
     [Description("reflex_greedy_args")]
     public static string EvaluateScript(string script)
     {
-        return $"{script.ExecuteAsCs()}";
+        _activeStates.TryPeek(out var activeState);
+
+        var result = script.ExecuteAsCs(useState: activeState);
+
+        switch (result) {
+            case null:
+                return "null or void";
+            case IEnumerable enumerable: {
+                using var sb = StringBuilderPool.Get();
+                foreach (var item in enumerable) {
+                    sb.AppendLine(item.ToString());
+                }
+
+                return sb.ToString();
+            }
+            default:
+                return result.ToString();
+        }
     }
 
     [ConsoleCommand("file")]
@@ -64,21 +65,11 @@ public partial class CwlScriptLoader
         return EvaluateScript(File.ReadAllText(filePath));
     }
 
-    [ConsoleCommand("interactive")]
-    public static string EvaluateInteractive()
+    private class CwlScriptState(ScriptState<object> csharpState)
     {
-        return "";
-    }
-
-    internal static void InitState()
-    {
-    }
-
-    private class CwlScriptState(ScriptState<object> scriptState)
-    {
-        public ScriptState<object> ScriptState
+        public ScriptState<object> CSharpState
         {
-            get => field ??= scriptState;
+            get => field ??= csharpState;
             set {
                 if (!Pinned || field is null) {
                     field = value;
@@ -89,7 +80,7 @@ public partial class CwlScriptLoader
         public bool Pinned { get; set; }
     }
 
-    extension(string scriptStr)
+    extension(string script)
     {
         /// <summary>
         ///     Run a cs script block, expensive, can't GC, bad
@@ -99,21 +90,25 @@ public partial class CwlScriptLoader
         {
             TestIfScriptAvailable();
 
+            if (useState is null) {
+                _activeStates.TryPeek(out useState);
+            }
+
             if (useState is not null && _scriptStates.TryGetValue(useState, out var stateInfo)) {
-                var continueState = stateInfo.ScriptState
-                    .ContinueWithAsync(scriptStr, DefaultScriptOptions, ExceptionProfile.ScriptExceptionHandler,
+                var continueState = stateInfo.CSharpState
+                    .ContinueWithAsync(script, DefaultScriptOptions, ExceptionProfile.ScriptExceptionHandler,
                         UniTasklet.GameToken)
                     .GetAwaiter()
                     .GetResult();
 
                 // may be pinned
-                stateInfo.ScriptState = continueState;
+                stateInfo.CSharpState = continueState;
 
                 return continueState.ReturnValue;
             }
 
-            var (_, script) = CompileScript(scriptStr, DefaultScriptOptions, true, globals);
-            var state = script
+            var (_, csharp) = CompileScript(script, DefaultScriptOptions, true, globals);
+            var state = csharp
                 .RunAsync(globals, ExceptionProfile.ScriptExceptionHandler, UniTasklet.GameToken)
                 .GetAwaiter()
                 .GetResult();

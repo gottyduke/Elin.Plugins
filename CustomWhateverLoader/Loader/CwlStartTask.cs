@@ -154,6 +154,7 @@ internal sealed partial class CwlMod
         CacheDetail.InvalidateCache();
 
         InitRuntimeFeatures();
+
         BuildDeferredPatches();
 
         RegisterEvents();
@@ -216,6 +217,9 @@ internal sealed partial class CwlMod
                             break;
                         case CwlSceneInitEvent sceneInitAttr:
                             SafeSceneInitEvent.RegisterEvents(method, sceneInitAttr);
+                            break;
+                        case CwlDramaAction dmAttr:
+                            DramaExpansion.RegisterEvents(method, dmAttr);
                             break;
                     }
                 } catch (Exception ex) {
