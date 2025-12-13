@@ -1,13 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using Cwl.Helper;
 using Cwl.Helper.Exceptions;
+using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
+using Cwl.LangMod;
 using HarmonyLib;
+using MethodTimer;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using ReflexCLI.Attributes;
 
 namespace Cwl.Scripting;
@@ -35,6 +40,7 @@ public static partial class CwlScriptLoader
             return $"script {assemblyName} not found";
         }
 
+        assembly.UnregisterScript();
         assembly.InvokeScriptMethod("CwlScriptUnload");
 
         return $"tried to unload {assemblyName}";
@@ -49,11 +55,45 @@ public static partial class CwlScriptLoader
 
         var assembly = Assembly.LoadFrom(assemblyPath);
 
+        assembly.RegisterScript(assembly.GetName().Name);
         assembly.InvokeScriptMethod("CwlScriptLoad");
 
-        assembly.RegisterScript(assembly.GetName().Name);
-
         return "script loaded";
+    }
+
+    [Time]
+    [Conditional("CWL_SCRIPTING")]
+    [ConsoleCommand("recompile")]
+    internal static void LoadAllPackageScripts()
+    {
+        CwlMod.Log<CSharpCompilation>("cwl_log_csc_roslyn".Loc(RoslynVersion));
+
+        var userPackages = BaseModManager.Instance.packages
+            .Where(p => p is { builtin: false, activated: true, id: not null });
+
+        foreach (var package in userPackages) {
+            try {
+                var loaded = new PackageScriptCompiler(package).Compile();
+                if (loaded.IsEmptyOrNull) {
+                    continue;
+                }
+
+                TryLoadScript(loaded);
+
+                FileWatcherHelper.Register(
+                    $"cwl_csc_{package.id}",
+                    Path.Combine(package.dirInfo.FullName, "Script"),
+                    "*.cs",
+                    args => {
+                        if ((args.ChangeType & WatcherChangeTypes.All) != 0) {
+                            CwlMod.Popup<PackageScriptCompiler>("cwl_ui_csc_changed".Loc(package.id));
+                        }
+                    });
+            } catch (Exception ex) {
+                CwlMod.ErrorWithPopup<CSharpCompilation>("cwl_error_csc_diag".Loc(package.title, ex.Message), ex);
+                // noexcept
+            }
+        }
     }
 
     // expensive

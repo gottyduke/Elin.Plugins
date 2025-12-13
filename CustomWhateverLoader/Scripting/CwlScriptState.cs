@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using Cwl.API.Drama;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
-using Microsoft.CodeAnalysis.Scripting;
-using Microsoft.CSharp.RuntimeBinder;
 using ReflexCLI.Attributes;
 
 namespace Cwl.Scripting;
@@ -15,6 +12,8 @@ public partial class CwlScriptLoader
 {
     private static readonly Dictionary<string, CwlScriptState> _scriptStates = [];
     private static Stack<string> _activeStates = [];
+
+    public static string? ActiveState => _activeStates.TryPeek(out var state) ? state : null;
 
     /// <summary>
     ///     Clear a script state and reset its variables

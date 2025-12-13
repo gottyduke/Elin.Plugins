@@ -28,6 +28,10 @@ public partial class DramaExpansion : DramaOutcome
     [ConsoleCommand("reset_states")]
     public static void ResetStates()
     {
+        if (CwlScriptLoader.ActiveState == $"{DramaScriptState}.{Cookie?.Dm.tg.chara.uid}") {
+            return;
+        }
+
         _valueStack.Clear();
         CwlScriptLoader.RemoveState(DramaScriptState);
     }
@@ -163,11 +167,11 @@ public partial class DramaExpansion : DramaOutcome
         }
 
         var jump = line["jump"];
-        var method = new DramaEventMethod(() => expr.ExecuteAsCs(new { dm }, DramaScriptState));
+        var method = new DramaEventMethod(() => expr.ExecuteAsCs(new { dm }, $"{DramaScriptState}.{dm.tg.chara.uid}"));
 
         if (!jump.IsEmptyOrNull) {
             method.action = null;
-            method.jumpFunc = () => expr.ExecuteAsCs(new { dm }, DramaScriptState) is true ? jump : "";
+            method.jumpFunc = () => expr.ExecuteAsCs(new { dm }, $"{DramaScriptState}.{dm.tg.chara.uid}") is true ? jump : "";
         }
 
         dm.AddEvent(method);

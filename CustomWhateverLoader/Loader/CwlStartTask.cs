@@ -191,7 +191,7 @@ internal sealed partial class CwlMod
     private static void InitRuntimeFeatures()
     {
         // scripts
-        CwlScriptLoader.CompileAllPackages();
+        CwlScriptLoader.LoadAllPackageScripts();
         // sources
         TypeQualifier.SafeQueryTypesOfAll();
     }

@@ -8,7 +8,6 @@ using System.Text.RegularExpressions;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
 using Cwl.LangMod;
-using MethodTimer;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
@@ -83,28 +82,6 @@ public partial class CwlScriptLoader
             options);
     }
 
-    [Time]
-    [Conditional("CWL_SCRIPTING")]
-    internal static void CompileAllPackages()
-    {
-        CwlMod.Log<CSharpCompilation>("cwl_log_csc_roslyn".Loc(RoslynVersion));
-
-        var userPackages = BaseModManager.Instance.packages
-            .Where(p => p is { builtin: false, activated: true, id: not null });
-
-        foreach (var package in userPackages) {
-            try {
-                var loaded = new PackageScriptCompiler(package).Compile();
-                if (!loaded.IsEmptyOrNull) {
-                    TryLoadScript(loaded);
-                }
-            } catch (Exception ex) {
-                CwlMod.ErrorWithPopup<CSharpCompilation>("cwl_error_csc_diag".Loc(package.title, ex.Message), ex);
-                // noexcept
-            }
-        }
-    }
-
     public class PackageScriptCompiler(BaseModPackage package)
     {
         private static readonly string _apiVersion = APIVersion.ToString();
@@ -115,7 +92,7 @@ public partial class CwlScriptLoader
 
         public string? Compile()
         {
-            if (package.dirInfo.GetDirectories("Scripts") is not [{ } scriptDir] ||
+            if (package.dirInfo.GetDirectories("Script") is not [{ } scriptDir] ||
                 scriptDir.GetFiles("*.cs", SearchOption.AllDirectories) is not { Length: > 0 } scripts) {
                 return null;
             }
