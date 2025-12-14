@@ -25,15 +25,17 @@ public partial class DramaExpansion : DramaOutcome
     public static ExcelData? CurrentData =>
         DramaManager.dictCache.GetValueOrDefault($"{CorePath.DramaData}{Cookie?.Dm.setup.book}.xlsx");
 
+    public static string CurrentState => $"{DramaScriptState}.{Cookie?.Dm.tg?.chara?.uid}";
+
     [ConsoleCommand("reset_states")]
     public static void ResetStates()
     {
-        if (CwlScriptLoader.ActiveState == $"{DramaScriptState}.{Cookie?.Dm.tg.chara.uid}") {
+        if (CwlScriptLoader.ActiveState == CurrentState) {
             return;
         }
 
         _valueStack.Clear();
-        CwlScriptLoader.RemoveState(DramaScriptState);
+        CwlScriptLoader.RemoveState(CurrentState);
     }
 
     public static void AddActionHandler(string action, Func<DramaManager, Dictionary<string, string>, bool> process)
@@ -166,11 +168,11 @@ public partial class DramaExpansion : DramaOutcome
         }
 
         var jump = line["jump"];
-        var method = new DramaEventMethod(() => expr.ExecuteAsCs(new { dm }, $"{DramaScriptState}.{dm.tg.chara.uid}"));
+        var method = new DramaEventMethod(() => expr.ExecuteAsCs(new { dm }, CurrentState));
 
         if (!jump.IsEmptyOrNull) {
             method.action = null;
-            method.jumpFunc = () => expr.ExecuteAsCs(new { dm }, $"{DramaScriptState}.{dm.tg.chara.uid}") is true ? jump : "";
+            method.jumpFunc = () => expr.ExecuteAsCs(new { dm }, CurrentState) is true ? jump : "";
         }
 
         dm.AddEvent(method);
