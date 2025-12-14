@@ -83,7 +83,7 @@ internal class LoadDramaPatch
     {
         var langKey = $"text_{Lang.langCode}";
 
-        foreach (var item in list.Where(item => !item["id"].IsEmptyOrNull)) {
+        foreach (var item in list) {
             item.TryAdd("text", "");
             item.TryAdd("text_EN", "");
             item.TryAdd("text_JP", "");
