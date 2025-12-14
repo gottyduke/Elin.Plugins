@@ -5,6 +5,7 @@ using System.Reflection;
 using Cwl.API.Attributes;
 using Cwl.API.Processors;
 using Cwl.Helper;
+using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using Cwl.Scripting;
@@ -40,7 +41,23 @@ public partial class DramaExpansion : DramaOutcome
 
     public static void AddActionHandler(string action, Func<DramaManager, Dictionary<string, string>, bool> process)
     {
-        DramaActionHandlers[action] = process;
+        DramaActionHandlers[action] = SafeProcess;
+        return;
+
+        bool SafeProcess(DramaManager dm, Dictionary<string, string> line)
+        {
+            try {
+                return process(dm, line);
+            } catch (Exception ex) {
+                var exp = ExceptionProfile.GetFromStackTrace(ref ex);
+                exp.Analyze();
+                exp.CreateAndPop("cwl_warn_drama_play_ex".Loc($"{ex.GetType().Name}: {ex.Message}"));
+                CwlMod.Log(ex);
+                // noexcept
+            }
+
+            return false;
+        }
     }
 
     [Time]

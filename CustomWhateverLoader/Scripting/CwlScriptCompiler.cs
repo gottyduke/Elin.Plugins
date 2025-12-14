@@ -19,7 +19,7 @@ namespace Cwl.Scripting;
 
 public partial class CwlScriptLoader
 {
-    private static readonly Dictionary<int, Script<object>> _cachedScripts = [];
+    private static readonly Dictionary<int, ScriptRunner<object>> _cachedScripts = [];
 
     [ConsoleCommand("clear_cache")]
     public static string ClearCache()
@@ -30,10 +30,10 @@ public partial class CwlScriptLoader
     }
 
     // no need to trim references because it's never emitted
-    internal static Script<object> CompileScript(string script,
-                                                 ScriptOptions options,
-                                                 bool useCache = true,
-                                                 bool throwOnError = false)
+    internal static ScriptRunner<object> CompileScriptRunner(string script,
+                                                             ScriptOptions options,
+                                                             bool useCache = true,
+                                                             bool throwOnError = false)
     {
         CwlMod.Log("cwl_log_csc_eval".Loc(script));
 
@@ -55,11 +55,12 @@ public partial class CwlScriptLoader
             }
         }
 
+        var runner = csharp.CreateDelegate();
         if (useCache) {
-            _cachedScripts[scriptHash] = csharp;
+            _cachedScripts[scriptHash] = runner;
         }
 
-        return csharp;
+        return runner;
     }
 
     internal static Compilation CompileScripts(IEnumerable<FileInfo> scripts,
@@ -80,6 +81,11 @@ public partial class CwlScriptLoader
             trees,
             CurrentDomainReferences,
             options);
+    }
+
+    internal static string GetPackageScriptName(string id)
+    {
+        return Regex.Replace(id, "[ ._]+", "-").SanitizeFileName('-');
     }
 
     public class PackageScriptCompiler(BaseModPackage package)
@@ -115,7 +121,7 @@ public partial class CwlScriptLoader
             }
 
             var (hash, contents) = GetHashAndContents(scripts);
-            _sb.AppendLine($"Script Hash: {hash}");
+            _sb.AppendLine($"Script Hash: '{hash}'");
 
             // unload if already loaded
             TryUnloadScript(_assemblyName);
@@ -142,7 +148,7 @@ public partial class CwlScriptLoader
             _sb.AppendLine($"References: {references.Length}");
 
             foreach (var reference in references) {
-                _sb.AppendLine($"- {reference.Display}");
+                _sb.AppendLine($"- {reference.Display.NormalizePath().ShortPath()}");
             }
 
             var pdbPath = Path.ChangeExtension(assemblyPath, "pdb");
@@ -201,11 +207,6 @@ public partial class CwlScriptLoader
             }
 
             return (sb.ToString().GetSha256Code(), fileContents);
-        }
-
-        private static string GetPackageScriptName(string id)
-        {
-            return Regex.Replace(id, "[ ._]+", "-").SanitizeFileName('-');
         }
 
         ~PackageScriptCompiler()

@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.IO;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
-using Cwl.Helper.Unity;
 using ReflexCLI.Attributes;
 
 namespace Cwl.Scripting;
@@ -85,9 +84,8 @@ public partial class CwlScriptLoader
                 scriptState[key] = value;
             }
 
-            var csharp = CompileScript(script, DefaultScriptOptions, throwOnError: true, useCache: useCache);
-            var state = csharp
-                .RunAsync(scriptState, UniTasklet.GameToken)
+            var runner = CompileScriptRunner(script, DefaultScriptOptions, throwOnError: true, useCache: useCache);
+            var state = runner(scriptState)
                 .GetAwaiter()
                 .GetResult();
 
@@ -95,7 +93,7 @@ public partial class CwlScriptLoader
                 _scriptStates[useState] = scriptState;
             }
 
-            return state.ReturnValue;
+            return state;
         }
     }
 }
