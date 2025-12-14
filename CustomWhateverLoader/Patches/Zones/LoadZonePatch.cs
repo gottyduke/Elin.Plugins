@@ -19,6 +19,7 @@ internal class LoadZonePatch
         return OverrideMethodComparer.FindAllOverridesGetter(typeof(Zone), nameof(Zone.pathExport));
     }
 
+    [SwallowExceptions]
     [HarmonyPostfix]
     internal static void OnLoadCustomZone(Zone __instance, ref string __result)
     {

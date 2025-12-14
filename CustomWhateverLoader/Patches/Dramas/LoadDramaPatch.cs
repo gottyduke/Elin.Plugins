@@ -81,25 +81,29 @@ internal class LoadDramaPatch
     // make drama writer life easier
     private static List<Dictionary<string, string>> SyncTexts(List<Dictionary<string, string>> list)
     {
-        foreach (var item in list) {
+        var langKey = $"text_{Lang.langCode}";
+
+        foreach (var item in list.Where(item => !item["id"].IsEmptyOrNull)) {
             item.TryAdd("text", "");
             item.TryAdd("text_EN", "");
             item.TryAdd("text_JP", "");
 
-            if (item.TryGetValue($"text_{Lang.langCode}", out var textLang) && !textLang.IsWhiteSpaceOrNull) {
-                item["text"] = textLang;
-            }
-
-            var textLocalize = item["text"];
             var textEn = item["text_EN"];
             var textJp = item["text_JP"];
+            var textLocalize = item["text"];
+
+            if (!item.TryGetValue(langKey, out var textLang)) {
+                textLang = textLocalize.OrIfEmpty(textEn.OrIfEmpty(textJp));
+            }
+
+            item["text"] = textLang;
 
             if (textEn.IsEmptyOrNull) {
-                item["text_EN"] = textLocalize.OrIfEmpty(textJp);
+                item["text_EN"] = textLang;
             }
 
             if (textJp.IsEmptyOrNull) {
-                item["text_JP"] = textLocalize.OrIfEmpty(textEn);
+                item["text_JP"] = textLang;
             }
         }
 

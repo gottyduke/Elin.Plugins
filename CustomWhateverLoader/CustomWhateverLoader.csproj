@@ -20,7 +20,7 @@
     </PropertyGroup>
     
     <!-- Scripting Kit -->
-    <PropertyGroup Condition="'$(Configuration)' == 'Debug' OR '$(Configuration)' == 'DebugNightly'">
+    <PropertyGroup>
         <DefineConstants>$(DefineConstants);CWL_SCRIPTING</DefineConstants>
     </PropertyGroup>
     

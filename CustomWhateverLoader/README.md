@@ -26,3 +26,7 @@ Ideal for mods that introduce new items, characters, or audio elements, the CWL 
 CWL is made with community effort and feedback, new features are added upon request.
 
 For the full documentation, visit [Elin Modding Wiki](https://elin-modding-resources.github.io/Elin.Docs/articles/100_Mod%20Documentation/Custom%20Whatever%20Loader/EN/0_README)
+
+---
+
+<a href="https://www.textstudio.com/">Banner Made with TextStudio Font Generator</a>
