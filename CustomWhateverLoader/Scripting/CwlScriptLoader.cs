@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Cwl.Helper;
-using Cwl.Helper.Exceptions;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
@@ -94,33 +93,6 @@ public static partial class CwlScriptLoader
                 // noexcept
             }
         }
-    }
-
-    // expensive
-    private static List<MetadataReference> CreateStaticDomainReferences()
-    {
-        // this is a dynamic image but necessary to reference
-        var unityImage = Path.Combine(CorePath.rootExe, "Elin_Data/Managed/UnityEngine.CoreModule.dll");
-
-        List<MetadataReference> references = [
-            MetadataReference.CreateFromFile(unityImage),
-        ];
-
-        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-        foreach (var assembly in assemblies) {
-            try {
-                if (assembly.IsDynamic || assembly.Location.IsEmptyOrNull) {
-                    continue;
-                }
-
-                references.Add(MetadataReference.CreateFromFile(assembly.Location));
-            } catch (Exception ex) {
-                DebugThrow.Void(ex);
-                // noexcept
-            }
-        }
-
-        return references;
     }
 
     extension(Compilation compilation)

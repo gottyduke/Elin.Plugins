@@ -138,7 +138,12 @@ public partial class CwlScriptLoader
                         encoding: Encoding.UTF8))
                 .WithMinimalReferences();
 
-            _sb.AppendLine($"Syntax Trees: {compilation.SyntaxTrees.Count()}");
+            var references = compilation.References.ToArray();
+            _sb.AppendLine($"References: {references.Length}");
+
+            foreach (var reference in references) {
+                _sb.AppendLine($"- {reference.Display}");
+            }
 
             var pdbPath = Path.ChangeExtension(assemblyPath, "pdb");
 
@@ -177,7 +182,7 @@ public partial class CwlScriptLoader
             }
 
             var log = _sb.ToString();
-            CwlMod.Log<PackageScriptCompiler>(_sb.ToString());
+            CwlMod.Log<PackageScriptCompiler>(log);
             File.WriteAllText(Path.Combine(package.dirInfo.FullName, $"{_assemblyName}.log"), log, Encoding.UTF8);
 
             return assemblyPath;

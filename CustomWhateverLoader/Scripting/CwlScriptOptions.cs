@@ -1,4 +1,8 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
+using Cwl.Helper.Exceptions;
+using Cwl.Helper.String;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Scripting;
@@ -94,4 +98,31 @@ public static partial class CwlScriptLoader
             .WithReferences(CurrentDomainReferences)
             .WithImports(CurrentDomainNamespaces)
             .WithOptimizationLevel(OptimizationLevel.Release);
+
+    // expensive
+    private static List<MetadataReference> CreateStaticDomainReferences()
+    {
+        // this is a dynamic image but necessary to reference
+        var unityImage = Path.Combine(CorePath.rootExe, "Elin_Data/Managed/UnityEngine.CoreModule.dll");
+
+        List<MetadataReference> references = [
+            MetadataReference.CreateFromFile(unityImage),
+        ];
+
+        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        foreach (var assembly in assemblies) {
+            try {
+                if (assembly.IsDynamic || assembly.Location.IsEmptyOrNull) {
+                    continue;
+                }
+
+                references.Add(MetadataReference.CreateFromFile(assembly.Location));
+            } catch (Exception ex) {
+                DebugThrow.Void(ex);
+                // noexcept
+            }
+        }
+
+        return references;
+    }
 }
