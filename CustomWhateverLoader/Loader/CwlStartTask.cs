@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using Cwl.API.Attributes;
 using Cwl.API.Custom;
 using Cwl.API.Drama;
@@ -60,14 +61,7 @@ internal sealed partial class CwlMod
             return;
         }
 
-        foreach (var patch in typeof(CwlMod).Assembly.DefinedTypes) {
-            try {
-                SharedHarmony.CreateClassProcessor(patch).Patch();
-            } catch (Exception ex) {
-                Error<CwlMod>($"failed to apply {patch.Name}\n{ex.InnerException}");
-                // noexcept
-            }
-        }
+        BuildPatchesFromTypes(typeof(CwlMod).Assembly.DefinedTypes);
 
         if (CwlConfig.TrimSpaces) {
             CellPostProcessPatch.Add(c => c?.Trim());
@@ -77,19 +71,30 @@ internal sealed partial class CwlMod
     [Time]
     private static void BuildDeferredPatches()
     {
-        SharedHarmony.PatchAll(typeof(ActPerformEvent));
+        List<Type> deferred = [
+            typeof(ActPerformEvent),
+            typeof(ConverterEvent.CanDecaySubEvent),
+            typeof(ConverterEvent.OnDecaySubEvent),
+            typeof(LoadZonePatch),
+            typeof(RepositionTcPatch.TcFixPosPatch),
+            typeof(InvalidateItemPatch),
+            typeof(InvalidateDestThingPatch),
+            typeof(ReverseIdMapper.RecipeMaterialIdMapper),
+        ];
 
-        SharedHarmony.PatchAll(typeof(ConverterEvent.CanDecaySubEvent));
-        SharedHarmony.PatchAll(typeof(ConverterEvent.OnDecaySubEvent));
+        BuildPatchesFromTypes(deferred);
+    }
 
-        SharedHarmony.PatchAll(typeof(LoadZonePatch));
-
-        SharedHarmony.PatchAll(typeof(RepositionTcPatch.TcFixPosPatch));
-
-        SharedHarmony.PatchAll(typeof(InvalidateItemPatch));
-        SharedHarmony.PatchAll(typeof(InvalidateDestThingPatch));
-
-        SharedHarmony.PatchAll(typeof(ReverseIdMapper.RecipeMaterialIdMapper));
+    private static void BuildPatchesFromTypes(IEnumerable<Type> types)
+    {
+        foreach (var def in types) {
+            try {
+                SharedHarmony.CreateClassProcessor(def).Patch();
+            } catch (Exception ex) {
+                Error<CwlMod>($"failed to apply {def.Name}\n{ex.InnerException}");
+                // noexcept
+            }
+        }
     }
 
     [Time]

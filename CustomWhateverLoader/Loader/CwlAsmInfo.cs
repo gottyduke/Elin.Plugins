@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using Cwl;
 
-[assembly: AssemblyVersion($"{ModInfo.Version}.*")]
+[assembly: AssemblyVersion($"{ModInfo.Version}.{GitVersionInformation.CommitsSinceVersionSource}")]
 [assembly: AssemblyFileVersion($"{ModInfo.Version}.{GitVersionInformation.CommitsSinceVersionSource}")]
 [assembly: AssemblyInformationalVersion($"{GitVersionInformation.CommitDate}+{GitVersionInformation.Sha}")]
 [assembly: AssemblyProduct($"{ModInfo.Guid}+{GitVersionInformation.BranchName}")]
