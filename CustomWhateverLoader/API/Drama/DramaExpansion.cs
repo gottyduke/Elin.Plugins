@@ -59,7 +59,6 @@ public partial class DramaExpansion : DramaOutcome
     {
         if (line["param"] == "Unique") {
             InjectUniqueRumor(dm);
-            return true;
         }
 
         return false;
