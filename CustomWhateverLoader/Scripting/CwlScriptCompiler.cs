@@ -121,7 +121,7 @@ public partial class CwlScriptLoader
             }
 
             var (hash, contents) = GetHashAndContents(scripts);
-            _sb.AppendLine($"Script Hash: '{hash}'");
+            _sb.AppendLine($"Script Hash: {hash}");
 
             // unload if already loaded
             TryUnloadScript(_assemblyName);
@@ -130,7 +130,7 @@ public partial class CwlScriptLoader
                 var existingHash = FileVersionInfo.GetVersionInfo(assemblyPath).ProductVersion;
                 if (existingHash != hash) {
                     File.Delete(assemblyPath);
-                    _sb.AppendLine($"Stale Hash: '{existingHash}'");
+                    _sb.AppendLine($"Stale Hash: {existingHash}");
                 } else {
                     return assemblyPath;
                 }

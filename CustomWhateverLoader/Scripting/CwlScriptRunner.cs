@@ -40,7 +40,7 @@ public partial class CwlScriptLoader
         switch (result) {
             case null:
                 return "null or void";
-            case IEnumerable enumerable: {
+            case IEnumerable enumerable and not string: {
                 using var sb = StringBuilderPool.Get();
                 foreach (var item in enumerable) {
                     sb.AppendLine(item.ToString());
