@@ -5,11 +5,14 @@ using Cwl.API.Attributes;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
+using UnityEngine;
 
 namespace Cwl.API.Drama;
 
 public partial class DramaExpansion
 {
+    private static readonly int _mainTex = Shader.PropertyToID("_MainTex");
+
     /// <summary>
     ///     move_next_to(chara_id)
     /// </summary>
@@ -155,7 +158,16 @@ public partial class DramaExpansion
     /// <summary>
     ///     portrait_set(portrait_id_or_short)
     /// </summary>
+    [Obsolete("use set_portrait")]
     public static bool portrait_set(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        return set_portrait(dm, line, parameters);
+    }
+
+    /// <summary>
+    ///     set_portrait(portrait_id_or_short)
+    /// </summary>
+    public static bool set_portrait(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.RequiresOpt(out var portraitId);
         dm.RequiresPerson(out var owner);
@@ -182,6 +194,32 @@ public partial class DramaExpansion
         }
 
         owner.idPortrait = id;
+
+        return true;
+    }
+
+    /// <summary>
+    ///     set_sprite(id_or_null)
+    /// </summary>
+    public static bool set_sprite(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.RequiresOpt(out var id);
+        dm.RequiresActor(out var owner);
+
+        if (!id.Provided || id.Value.IsEmptyOrNull) {
+            owner.mapStr.Remove("sprite_override");
+        } else {
+            owner.mapStr.Set("sprite_override", id.Value);
+        }
+
+        var actor = owner.renderer.actor;
+        if (actor?.sr == null) {
+            return true;
+        }
+
+        actor.sr.sprite = owner.GetSprite();
+        actor.mpb.SetTexture(_mainTex, actor.sr.sprite.texture);
+        actor.RefreshSprite();
 
         return true;
     }

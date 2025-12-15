@@ -18,6 +18,12 @@ $Changelogs
 
 
 
+{topic|1.21.5}
+Drama Expansion:
+・set_sprite(id_or_empty)
+・set_portrait is now the recommended way instead of portrait_set
+Added console command cwl.data.load_sprites to reload all mod Texture folder
+
 {topic|1.21.0}
 Added runtime CSharp scripting:
 ・cwl.cs.eval console command

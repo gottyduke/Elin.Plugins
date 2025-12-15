@@ -18,6 +18,12 @@ $更新日志
 
 
 
+{topic|1.21.5}
+剧情扩展：
+・set_sprite(id_or_empty)
+・set_portrait 现在代替 portrait_set
+添加了控制台命令 cwl.data.load_sprites 用于重载所有自定义 Texture 文件夹
+
 {topic|1.21.0}
 新增运行时 C# 脚本功能：
 ・cwl.cs.eval 控制台命令
