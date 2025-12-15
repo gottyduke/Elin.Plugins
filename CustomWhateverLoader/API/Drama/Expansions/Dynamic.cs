@@ -29,6 +29,7 @@ public partial class DramaExpansion
     /// <summary>
     ///     build_ext(assembly_name)
     /// </summary>
+    [Obsolete("use eval")]
     public static bool build_ext(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
         parameters.Requires(out var assemblyName);
@@ -73,6 +74,7 @@ public partial class DramaExpansion
     /// <summary>
     ///     emit_call(ext.method_name)
     /// </summary>
+    [Obsolete("use eval")]
     [CwlNodiscard]
     public static bool emit_call(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {

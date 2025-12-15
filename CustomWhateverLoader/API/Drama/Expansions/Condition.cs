@@ -45,6 +45,7 @@ public partial class DramaExpansion
     /// <summary>
     ///     if_cint(cint_id, value_expr)
     /// </summary>
+    [Obsolete("use eval")]
     [CwlNodiscard]
     public static bool if_cint(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {
@@ -63,6 +64,7 @@ public partial class DramaExpansion
     ///     if_cs_get(field_or_property, [value_expr >=0])
     /// </summary>
     /// <remarks>We don't cache this</remarks>
+    [Obsolete("use eval")]
     [CwlNodiscard]
     public static bool if_cs_get(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {

@@ -89,6 +89,12 @@ public abstract class CwlConfig
     [ConsoleCommand]
     public static bool AllowScripting => Scripting.AllowScripting.Value;
 
+    [ConsoleCommand]
+    public static bool CacheScriptSubmissions => Scripting.CacheSubmissions.Value;
+
+    [ConsoleCommand]
+    public static string DefaultScriptState => Scripting.DefaultState.Value;
+
     internal static void Load(ConfigFile config)
     {
         Logging.Verbose = config.Bind(
@@ -324,6 +330,20 @@ public abstract class CwlConfig
             "Allow runtime CSharp compilation, scripting, and emitting\n" +
             "允许运行时CSharp代码编译，执行和实例化\n" +
             "ランタイム CSharp コードをコンパイル、実行、インスタンス化できるようにします");
+
+        Scripting.CacheSubmissions = config.Bind(
+            ModInfo.Name,
+            "Scripting.CacheSubmissions",
+            true,
+            "Emit the submissions compilations and reuse them if contents are not changed\n" +
+            "缓存生成的脚本实例并尽可能复用");
+
+        Scripting.DefaultState = config.Bind(
+            ModInfo.Name,
+            "Scripting.DefaultState",
+            "",
+            "Default script state upon setting up scripting, empty for no default state\n" +
+            "默认的初始化脚本状态示例，留空即不使用\n");
     }
 
     internal static void Watch(ConfigFile config)
@@ -392,6 +412,8 @@ public abstract class CwlConfig
     internal abstract class Scripting
     {
         internal static ConfigEntry<bool> AllowScripting { get; set; } = null!;
+        internal static ConfigEntry<bool> CacheSubmissions { get; set; } = null!;
+        internal static ConfigEntry<string> DefaultState { get; set; } = null!;
     }
 
     internal abstract class Source

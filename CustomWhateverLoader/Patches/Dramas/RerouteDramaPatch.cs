@@ -3,7 +3,6 @@ using System.Reflection.Emit;
 using Cwl.API.Custom;
 using Cwl.API.Drama;
 using Cwl.Helper.Extensions;
-using Cwl.Helper.Unity;
 using HarmonyLib;
 
 namespace Cwl.Patches.Dramas;
@@ -42,13 +41,7 @@ internal class RerouteDramaPatch
             return false;
         }
 
-        try {
-            chara.ShowDialog(drama);
-        } catch {
-            ELayerCleanup.Cleanup<LayerDrama>();
-            chara.ShowDialog(chara.id);
-            // noexcept
-        }
+        chara.ShowDialog(drama);
 
         return true;
     }

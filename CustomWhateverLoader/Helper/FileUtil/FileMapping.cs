@@ -28,7 +28,7 @@ public class FileMapping
 
     public DirectoryInfo? Primary { get; private set; }
 
-    public IEnumerable<FileInfo> Sources => _sources;
+    public IReadOnlyList<FileInfo> Sources => _sources;
 
     public DirectoryInfo ModBaseDir => Owner.dirInfo;
 
@@ -49,7 +49,7 @@ public class FileMapping
 
         var resources = Directory.GetDirectories(langMod);
         if (resources.Length != 0) {
-            // use FallbackLut to get an ordered list of language codes to check
+            // use fallback lookup to get an ordered list of language codes to check
             var ordering = new HashSet<string>(StringComparer.Ordinal);
             ordering.UnionWith([langCode, ..FallbackLut[langCode], ..FallbackLut["*"]]);
 
@@ -71,6 +71,7 @@ public class FileMapping
             _indexed.Add(langMod);
         }
 
+        // base folder
         _indexed.Add(baseDir);
 
         Primary = new(_indexed[0]);
@@ -79,6 +80,7 @@ public class FileMapping
             return;
         }
 
+        // we do not add base folder to source scans
         foreach (var index in _indexed.Take(_indexed.Count - 1)) {
             var sources = Directory.GetFiles(index, "*.xlsx", SearchOption.TopDirectoryOnly);
             if (sources.Length == 0) {

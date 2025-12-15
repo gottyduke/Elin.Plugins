@@ -33,9 +33,9 @@ public static partial class CwlScriptLoader
         "Cwl.Helper.Exceptions",
         "Cwl.LangMod",
         "Cwl.Scripting",
-        // mods
-        "BepInEx",
-        "BepInEx.Configuration",
+        // mods - not sure about bep part
+        //"BepInEx",
+        //"BepInEx.Configuration",
         "HarmonyLib",
         // unity
         "UnityEngine",

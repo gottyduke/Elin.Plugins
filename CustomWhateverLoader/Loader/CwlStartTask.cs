@@ -109,6 +109,8 @@ internal sealed partial class CwlMod
 
     private static IEnumerator LoadTask()
     {
+        DataLoader.RefreshAllPackageTextures();
+
         PrebuildDispatchers();
         DramaExpansion.BuildActionList();
 
@@ -199,6 +201,11 @@ internal sealed partial class CwlMod
     {
         // scripts
         CwlScriptLoader.LoadAllPackageScripts();
+
+        if (!CwlConfig.DefaultScriptState.IsEmptyOrNull) {
+            CwlScriptLoader.PushState(CwlConfig.DefaultScriptState);
+        }
+
         // sources
         TypeQualifier.SafeQueryTypesOfAll();
     }
