@@ -324,7 +324,10 @@ public abstract class CwlConfig
             "Allow runtime CSharp compilation, scripting, and emitting\n" +
             "允许运行时CSharp代码编译，执行和实例化\n" +
             "ランタイム CSharp コードをコンパイル、実行、インスタンス化できるようにします");
+    }
 
+    internal static void Watch(ConfigFile config)
+    {
         FileWatcherHelper.Register(
             "cwl_config",
             Path.GetDirectoryName(config.ConfigFilePath)!,

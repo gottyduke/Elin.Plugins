@@ -152,6 +152,8 @@ internal sealed partial class CwlMod
             return;
         }
 
+        CwlConfig.Watch(Config);
+
         SetupExceptionHook();
 
         CreateLoadingProgress();
