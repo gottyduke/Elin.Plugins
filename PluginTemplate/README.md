@@ -11,16 +11,6 @@ Install from NuGet, using NPM or dotnet CLI:
 dotnet new install ElinPluginTemplate
 ```
 
-## Create Project
-
-Use JetBrains Rider or Visual Studio to create a new project from template. Fill in the necessary template information in the advanced settings.
-![new](./new_project.png)
-
-Or if you really want to use VSC:
-```
-dotnet new elinplugin -n MyNewMod --Guid "unique.mod.id" --ModName "My New Awesome Mod"
-```
-
 ## Build
 
 The environment variable `ElinGamePath` must be set to the root path of the Elin installation. 
@@ -34,4 +24,21 @@ ElinGamePath/
 │  │  ├─ *.dll
 ```
 
+## Create Project
+
+Use JetBrains Rider or Visual Studio to create a new project from template. Fill in the necessary template information in the advanced settings.
+![new](./new_project.png)
+
+Or if you really want to use VSC:
+```
+dotnet new elinplugin -n MyNewMod --Guid "unique.mod.id" --ModName "My New Awesome Mod"
+```
+
 Anything put inside `package/` folder will be copied to the output folder, which is `ElinGamePath/Package/Mod_{ModName}/`.
+
+Things you can put in `package/` folder:
++ `package.xml`
++ `preview.jpg`
++ `Texture` folder
++ `Sound` folder
++ etc.
