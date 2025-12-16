@@ -28,7 +28,6 @@
         <EmbeddedResource Remove="ElinTogether.Test\**"/>
         <EmbeddedResource Remove="ThirdParty\**"/>
         <None Remove="Common\blocklist.txt"/>
-        <EmbeddedResource Include="Common\blocklist.txt"/>
     </ItemGroup>
     <ItemGroup>
         <None Remove="package\**"/>
@@ -52,7 +51,7 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="GitVersion.MsBuild" Version="6.5.0">
+        <PackageReference Include="GitVersion.MsBuild" Version="6.5.1">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -66,6 +65,7 @@
         <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1"/>
         <PackageReference Include="Serilog.Sinks.File" Version="7.0.1-dev-02315"/>
         <PackageReference Include="Serilog.Sinks.Http" Version="9.2.0"/>
+        <PackageReference Include="System.Collections.Immutable" Version="10.0.1" />
     </ItemGroup>
     <Target Name="CopyAssets" AfterTargets="AfterBuild">
         <ItemGroup>

@@ -43,6 +43,8 @@ timeline
     11/14/2025 : Added steam lobby browser and friend invites
     : Session #12 (Han), couldn't beat Puppy Cave due to having a ghost character(renderer?)
     : Session #13 (105gun), the hand is here. Couldn't beat puppy cave due to death desyncs
+    11/16/2025 : 105gun added Shared Fov feature
+    11/19/2025 : Added remote character creation for client
 ```
 
 ## Build
