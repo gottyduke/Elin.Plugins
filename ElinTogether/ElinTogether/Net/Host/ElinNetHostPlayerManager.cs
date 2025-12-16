@@ -2,9 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Cwl.API.Attributes;
 using Cwl.Helper.Extensions;
+using ElinTogether.Helper;
 using ElinTogether.Models;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net.Steam;
+using Newtonsoft.Json;
+using UnityEngine;
 
 namespace ElinTogether.Net;
 
@@ -86,13 +89,19 @@ internal partial class ElinNetHost
 
         var chara = response.Chara.Decompress<Chara>();
 
+        var remoteChara = CharaGen.Create("player");
+
+        JsonConvert.PopulateObject(chara.ToCompactJson(), remoteChara, GameIO.jsReadGame);
+        remoteChara.ChangeJob(chara.job.id);
+        remoteChara.ChangeRace(chara.race.id);
+
         // assign a global uid
-        chara.SetGlobal();
-        game.cards.AssignUID(chara);
+        remoteChara.SetGlobal();
+        game.cards.AssignUID(remoteChara);
 
-        SavedRemoteCharas[peer.Uid] = chara.uid;
+        SavedRemoteCharas[peer.Uid] = remoteChara.uid;
 
-        SendSaveProbe(chara, peer);
+        SendSaveProbe(remoteChara, peer);
     }
 
     public static void RemoveRemoteChara(Chara remoteChara)

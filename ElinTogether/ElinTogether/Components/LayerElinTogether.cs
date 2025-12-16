@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Cwl.API.Attributes;
 using UnityEngine;
 using YKF;
+using Cwl.Helper.String;
 
 namespace ElinTogether.Components;
 
@@ -33,7 +34,7 @@ internal class LayerElinTogether : YKLayer<LayerCreationData>
     {
         base.OnAfterAddLayer();
 
-        if (!Data.StartingTab.IsEmpty()) {
+        if (!Data.StartingTab.IsEmptyOrNull) {
             _lastOpenedTab = Data.StartingTab;
         }
 

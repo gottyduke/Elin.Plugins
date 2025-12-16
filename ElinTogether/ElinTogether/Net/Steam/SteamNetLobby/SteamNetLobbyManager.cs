@@ -19,20 +19,9 @@ public class SteamNetLobbyManager
         SteamCallback<LobbyCreated_t>.Add(OnLobbyCreated);
         SteamCallback<LobbyChatUpdate_t>.Add(OnLobbyChatUpdate);
         SteamCallback<GameLobbyJoinRequested_t>.Add(OnLobbyJoinRequested);
-        SteamCallback<GameRichPresenceJoinRequested_t>.Add(OnRichPresenceJoinRequested);
+        //SteamCallback<GameRichPresenceJoinRequested_t>.Add(OnRichPresenceJoinRequested);
         SteamCallback<LobbyEnter_t>.Add(OnLobbyEntered);
         SteamCallback<LobbyMatchList_t>.Add(OnLobbyMatchListComplete);
-
-        using var ms = EmpMod.Assembly.GetManifestResourceStream("ElinTogether.Common.blocklist.txt");
-        if (ms is null) {
-            return;
-        }
-
-        using var sr = new StreamReader(ms);
-        _blocked = sr.ReadToEnd()
-            .SplitLines()
-            .Select(ulong.Parse)
-            .ToHashSet();
     }
 
     public SteamNetLobby? Current { get; private set; }
@@ -210,7 +199,7 @@ public class SteamNetLobbyManager
         var host = Current.GetLobbyOwner();
         if (host == SteamUser.GetSteamID()) {
             // assign steam rich presence join key
-            SteamFriends.SetRichPresence("connect", sessionKey);
+            //SteamFriends.SetRichPresence("connect", sessionKey);
             return;
         }
 
