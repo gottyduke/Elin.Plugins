@@ -265,6 +265,10 @@ internal sealed partial class CwlMod
         console.ui = Instantiate(Resources.Load<ReflexUIManager>("ReflexConsoleCanvas"));
         console.ui.input.HistoryContainer.AddItem("Logo", console.logo.text);
 
+        if (CwlConfig.AllowScripting) {
+            console.ui.input.HistoryContainer.AddItem("cwl.cs.is_ready", "cwl_ui_cs_ready".lang());
+        }
+
         Instance.GetOrCreate<CwlConsole>();
         Instance.GetOrCreate<CwlPipe>();
     }

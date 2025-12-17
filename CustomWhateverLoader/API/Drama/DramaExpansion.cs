@@ -184,12 +184,24 @@ public partial class DramaExpansion : DramaOutcome
             expr = File.ReadAllText(filePath);
         }
 
+        var submission = CwlScriptSubmission.Create(dm.setup.book);
+        var csharp = submission.CompileAndRun<DramaScriptState>(expr);
+
+        // failed to create for some reason
+        if (csharp is null) {
+            return true;
+        }
+
         var jump = line["jump"];
-        var method = new DramaEventMethod(() => expr.ExecuteAsCs(new { dm }, CurrentState));
+        var state = new DramaScriptState {
+            dm = dm,
+            line = line,
+        };
+        var method = new DramaEventMethod(() => csharp(state));
 
         if (!jump.IsEmptyOrNull) {
             method.action = null;
-            method.jumpFunc = () => expr.ExecuteAsCs(new { dm }, CurrentState) is true ? jump : "";
+            method.jumpFunc = () => csharp(state) is true ? jump : "";
         }
 
         dm.AddEvent(method);

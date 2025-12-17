@@ -1,4 +1,3 @@
-using System.Collections;
 using System.ComponentModel;
 using System.IO;
 using Cwl.Helper.Exceptions;
@@ -12,7 +11,8 @@ public partial class CwlScriptLoader
     /// <summary>
     ///     Ensures scripting is enabled for this user
     /// </summary>
-    public static void TestIfScriptAvailable()
+    [ConsoleCommand("is_ready")]
+    public static string TestIfScriptAvailable()
     {
         if (!CwlMod.LoadingComplete) {
             throw new ScriptLoaderNotReadyException();
@@ -23,6 +23,8 @@ public partial class CwlScriptLoader
         }
 
         // add some other runtime feature set checks
+
+        return "cwl_ui_cs_ready".lang();
     }
 
     /// <summary>
@@ -36,21 +38,7 @@ public partial class CwlScriptLoader
 
         // caching console commands are usually not worth it
         var result = script.ExecuteAsCs(useState: activeState, useCache: false);
-
-        switch (result) {
-            case null:
-                return "null or void";
-            case IEnumerable enumerable and not string: {
-                using var sb = StringBuilderPool.Get();
-                foreach (var item in enumerable) {
-                    sb.AppendLine(item.ToString());
-                }
-
-                return sb.ToString();
-            }
-            default:
-                return result.ToString();
-        }
+        return result.TryToString("null or void");
     }
 
     [ConsoleCommand("file")]

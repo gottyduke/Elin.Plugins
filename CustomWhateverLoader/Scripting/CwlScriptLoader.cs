@@ -52,7 +52,7 @@ public static partial class CwlScriptLoader
             return "script file not found";
         }
 
-        var assembly = Assembly.LoadFrom(assemblyPath);
+        var assembly = Assembly.Load(File.ReadAllBytes(assemblyPath));
 
         assembly.RegisterScript(assembly.GetName().Name);
         assembly.InvokeScriptMethod("CwlScriptLoad");
