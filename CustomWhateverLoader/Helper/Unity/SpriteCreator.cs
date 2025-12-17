@@ -12,6 +12,8 @@ namespace Cwl.Helper.Unity;
 
 public static class SpriteCreator
 {
+    public static readonly int MainTex = Shader.PropertyToID("_MainTex");
+
     private static readonly Dictionary<string, Texture2D> _cached = [];
 
     public static Texture2D GetSolidColorTexture(Color color)

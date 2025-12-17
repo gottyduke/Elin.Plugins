@@ -97,7 +97,7 @@ public static class ActionParameterHelper
 
         public Chara GetChara(string actorId)
         {
-            return dm.GetPerson(actorId).chara ?? throw new DramaActorMissingException("actor.chara");
+            return dm.GetPerson(actorId).chara ?? throw new DramaActorMissingException(actorId);
         }
 
         public Person GetPerson(string actorId)

@@ -112,7 +112,7 @@ public class ConfigCereal
         try {
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
 
-            using var fs = new FileStream(path, FileMode.Create);
+            using var fs = File.Open(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
             var js = JsonSerializer.CreateDefault(settings ?? Settings);
             js.Formatting = compact is CompactLevel.TextIndent ? Formatting.Indented : Formatting.None;
 

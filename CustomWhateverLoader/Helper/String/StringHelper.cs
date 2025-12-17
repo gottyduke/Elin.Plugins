@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using HarmonyLib;
+using Newtonsoft.Json;
 
 namespace Cwl.Helper.String;
 
@@ -211,6 +212,28 @@ public static class StringHelper
         public string RemoveTagColor()
         {
             return Regex.Replace(input.ToString(), "<color(=[^>]*)?>|</color>", "");
+        }
+
+        public string TryToString(string nullFallback = "")
+        {
+            switch (input) {
+                case null:
+                    return nullFallback;
+                case string str:
+                    return str;
+                default:
+                    if (input.GetType().GetMethod(nameof(input.ToString))?.DeclaringType != typeof(object)) {
+                        return input.ToString();
+                    }
+
+                    try {
+                        return JsonConvert.SerializeObject(input, Formatting.Indented);
+                    } catch {
+                        // noexcept
+                    }
+
+                    return nullFallback;
+            }
         }
     }
 

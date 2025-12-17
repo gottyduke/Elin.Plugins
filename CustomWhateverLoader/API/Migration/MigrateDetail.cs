@@ -141,7 +141,7 @@ public sealed class MigrateDetail
                 }
             }
 
-            using var fs = File.OpenWrite(migratedFile);
+            using var fs = File.Open(migratedFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
             book.Write(fs);
 
             CwlMod.Log<MigrateDetail>("cwl_log_migration_complete".Loc(migratedFile));

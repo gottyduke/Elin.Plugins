@@ -205,11 +205,22 @@ public class GameIOProcessor
 
         public DirectoryInfo ChunkDir { get; }
 
+        /// <summary>
+        ///     get a chunk file by name, first format available
+        /// </summary>
         public FileInfo? GetChunkFile(string chunkName)
         {
             return ChunkDir.GetFiles($"{chunkName}.*")
                 .OrderByDescending(f => f.LastWriteTime)
                 .FirstOrDefault();
+        }
+
+        /// <summary>
+        ///     get a full path relative to this context
+        /// </summary>
+        public string GetPath(string relativePath)
+        {
+            return Path.Combine(_path, relativePath);
         }
 
         /// <summary>

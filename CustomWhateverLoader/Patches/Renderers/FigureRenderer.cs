@@ -39,7 +39,7 @@ internal class FigureRenderer : CardRenderer
 
         var refId = owner.c_idRefCard;
         // 23.233 Nightly changes
-        if (refId.IsEmptyOrNull || (!owner.IsInstalled && (pc.held == owner || owner.ExistsOnMap) && !owner.isRoofItem)) {
+        if (refId.IsEmptyOrNull || !owner.IsInstalled && (pc.held == owner || owner.ExistsOnMap) && !owner.isRoofItem) {
             return false;
         }
 

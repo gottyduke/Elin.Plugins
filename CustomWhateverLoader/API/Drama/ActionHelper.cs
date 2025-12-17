@@ -14,7 +14,7 @@ public partial class DramaExpansion
     public static void AddTempTalk(string text, string actor = "tg", string? jump = null)
     {
         if (Cookie?.Dm is not { } dm ||
-            (jump is not null && !dm.sequence.steps.ContainsKey(jump))) {
+            jump is not null && !dm.sequence.steps.ContainsKey(jump)) {
             return;
         }
 
