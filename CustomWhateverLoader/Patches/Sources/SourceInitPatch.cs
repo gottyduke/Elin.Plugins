@@ -18,6 +18,11 @@ internal class SourceInitPatch
     private static bool _patched;
     internal static bool SafeToCreate;
 
+    internal static bool Prepare()
+    {
+        return !CwlMod.IsModdingApiAvailable;
+    }
+
     [HarmonyPrefix]
     [HarmonyPatch(typeof(SourceManager), nameof(SourceManager.Init))]
     internal static void ImportAllSheets()

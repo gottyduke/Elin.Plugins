@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using BepInEx;
 using Cwl.Helper.FileUtil;
 using Cwl.LangMod;
@@ -20,7 +21,7 @@ public static class ModInfo
     public const string Guid = "dk.elinplugins.customdialogloader";
     public const string Name = "Custom Whatever Loader";
 
-    public const string Version = "1.21.5";
+    public const string Version = "1.21.6";
 
     // for runtime versions
 
@@ -32,6 +33,7 @@ internal sealed partial class CwlMod : BaseUnityPlugin
 {
     internal static readonly Assembly Assembly = Assembly.GetExecutingAssembly();
     internal static readonly Harmony SharedHarmony = new(ModInfo.Guid);
+    internal static readonly bool IsModdingApiAvailable = Type.GetType("EMod, Plugin.Modding") != null;
     internal static CwlMod? Instance { get; private set; }
 
     private void Awake()

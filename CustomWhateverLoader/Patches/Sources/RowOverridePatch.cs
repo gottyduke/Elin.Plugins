@@ -14,7 +14,7 @@ internal class RowOverridePatch
 {
     internal static bool Prepare()
     {
-        return CwlConfig.OverrideSameId;
+        return !CwlMod.IsModdingApiAvailable && CwlConfig.OverrideSameId;
     }
 
     internal static IEnumerable<MethodBase> TargetMethods()
