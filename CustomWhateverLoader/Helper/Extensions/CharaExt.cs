@@ -60,14 +60,14 @@ public static class CharaExt
         public Element? AddElement(string alias, int power = 1)
         {
             return EMono.sources.elements.alias.TryGetValue(alias, out var element)
-                ? AddElement(chara, element, power)
+                ? chara.AddElement(element, power)
                 : null;
         }
 
         public Element? AddElement(int id, int power = 1)
         {
             return EMono.sources.elements.map.TryGetValue(id, out var element)
-                ? AddElement(chara, element, power)
+                ? chara.AddElement(element, power)
                 : null;
         }
 

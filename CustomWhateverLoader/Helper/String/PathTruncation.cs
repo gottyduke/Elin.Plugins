@@ -51,7 +51,7 @@ public static class PathTruncation
 
         public string ShortPath()
         {
-            return ShortPath(new FileInfo(path));
+            return new FileInfo(path).ShortPath();
         }
     }
 
@@ -94,14 +94,14 @@ public static class PathTruncation
                 return false;
             }
 
-            return string.Equals(NormalizePath(lhs), NormalizePath(rhs), StringComparison.InvariantCultureIgnoreCase);
+            return string.Equals(lhs.NormalizePath(), rhs.NormalizePath(), StringComparison.InvariantCultureIgnoreCase);
         }
 
         public int GetHashCode(string? obj)
         {
             return obj is null
                 ? 0
-                : NormalizePath(obj).ToLowerInvariant().GetHashCode();
+                : obj.NormalizePath().ToLowerInvariant().GetHashCode();
         }
     }
 }

@@ -35,7 +35,7 @@ public static class MethodDispatcher
         public DispatchResult InstanceDispatch(string methodName, params object[] args)
         {
             if (instance is null ||
-                !TryGetMethod(instance, methodName, out var method) ||
+                !instance.TryGetMethod(methodName, out var method) ||
                 !method.ValidateParameters(args)) {
                 return new(false);
             }

@@ -80,7 +80,7 @@ public static class ActionParameterHelper
     {
         public void RequiresActor(out Chara actor)
         {
-            RequiresPerson(dm, out var person);
+            dm.RequiresPerson(out var person);
 
             actor = person?.chara ?? throw new DramaActorMissingException("actor.chara");
         }

@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Cwl.API.Attributes;
 using Cwl.LangMod;
 using MethodTimer;
+using Exception = System.Exception;
 
 namespace Cwl.API.Custom;
 

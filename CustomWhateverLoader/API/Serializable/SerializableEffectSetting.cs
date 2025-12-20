@@ -12,10 +12,10 @@ public sealed record SerializableEffectData : SerializableEffectDataV3;
 
 public record SerializableEffectDataV3 : SerializableEffectDataV2
 {
-    public string idSoundEject = "bullet_drop";
+    public bool fireFromMuzzle = false;
     public bool forceLaser = false;
     public bool forceRail = false;
-    public bool fireFromMuzzle = false;
+    public string idSoundEject = "bullet_drop";
 }
 
 public record SerializableEffectDataV2 : SerializableEffectDataV1

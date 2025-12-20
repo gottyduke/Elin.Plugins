@@ -16,7 +16,7 @@ public static class ZoneExt
                 .OfType<Zone>()
                 .ToArray();
 
-            var (zoneType, zoneId, zoneLv) = ParseZoneFullName(zoneFullName);
+            var (zoneType, zoneId, zoneLv) = zoneFullName.ParseZoneFullName();
             zone = zones.FirstOrDefault(z => z.GetType().Name == zoneType || z.id == zoneId)?.FindOrCreateLevel(zoneLv);
 
             if (zone is not null) {
@@ -101,7 +101,7 @@ public static class ZoneExt
                 }
             }
 
-            var (_, zoneId, zoneLv) = ParseZoneFullName(zoneFullName);
+            var (_, zoneId, zoneLv) = zoneFullName.ParseZoneFullName();
             int? icon = EMono.sources.zones.map[zoneId].pos.TryGet(2, true);
 
             var zoneParent = SpatialGen.Create(zoneId, region, true, eloX, eloY, icon.GetValueOrDefault(306)) as Zone;
