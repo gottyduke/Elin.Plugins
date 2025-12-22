@@ -64,8 +64,8 @@ internal class RendererPopPatch
             return "";
         }
 
-        if ((profile.LockedInRequest && !EmConfig.Scene.BlockCharaTalk.Value && !profile.OnTalkCooldown) ||
-            (!EmScheduler.CanMakeRequest && !profile.OnTalkCooldown)) {
+        if (profile.LockedInRequest && !EmConfig.Scene.BlockCharaTalk.Value && !profile.OnTalkCooldown ||
+            !EmScheduler.CanMakeRequest && !profile.OnTalkCooldown) {
             // let non-blocked gc talk
             AllowOriginalText();
             return "";
@@ -81,9 +81,12 @@ internal class RendererPopPatch
         }
     }
 
-    internal static void SetSceneTrigger(CardRenderer renderer, string text, Color color, float duration, Chara chara)
+    internal static void SetSceneTrigger(CardRenderer renderer, string text, Color color, float duration, Card card)
     {
-        var profile = chara.Profile;
+        if (card is not Chara { Profile: { } profile } chara) {
+            renderer.Say(text, color, duration);
+            return;
+        }
 
         text = chara.ApplyNewLine(text).StripBrackets();
 
