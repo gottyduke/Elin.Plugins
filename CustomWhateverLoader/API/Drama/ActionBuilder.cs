@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using Cwl.API.Attributes;
 using Cwl.Helper;
@@ -129,11 +130,25 @@ public partial class DramaExpansion
 
     private static IEnumerable<string> SplitParams(string parameters)
     {
-        var matches = Regex.Matches(parameters, """(\"(?<args>.*?)\"|(?<args>[^,]+))""");
-        foreach (Match m in matches) {
-            var content = m.Groups["args"].Value.Trim();
-            yield return content;
+        var sb = new StringBuilder();
+        var inQuotes = false;
+
+        foreach (var c in parameters) {
+            switch (c) {
+                case '"':
+                    inQuotes = !inQuotes;
+                    continue;
+                case ',' when !inQuotes:
+                    yield return sb.ToString().Trim();
+                    sb.Clear();
+                    break;
+                default:
+                    sb.Append(c);
+                    break;
+            }
         }
+
+        yield return sb.ToString().Trim();
     }
 
     private delegate bool DramaAction(DramaManager dm, Dictionary<string, string> line, params string[] parameters);
