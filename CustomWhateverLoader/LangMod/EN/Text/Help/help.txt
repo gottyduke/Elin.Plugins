@@ -18,6 +18,11 @@ $Changelogs
 
 
 
+{topic|1.21.8}
+Updated for 23.252 Stable
+Added drama script submissions to avoid recompilations
+Fixed a bug where optional drama expansion parameters were not parsed correctly
+
 {topic|1.21.5}
 Drama Expansion:
 ・set_sprite(id_or_empty)

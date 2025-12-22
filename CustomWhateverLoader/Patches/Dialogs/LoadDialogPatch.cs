@@ -18,11 +18,7 @@ internal class LoadDialogPatch
     {
         return [
             AccessTools.Method(typeof(DramaCustomSequence), nameof(DramaCustomSequence.HasTopic)),
-            #if NIGHTLY
             AccessTools.Method(typeof(Lang), nameof(Lang.GetDialogSheet)),
-            #else
-            AccessTools.Method(typeof(Lang), nameof(Lang.GetDialog)),
-            #endif
         ];
     }
 
