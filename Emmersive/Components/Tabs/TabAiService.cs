@@ -128,7 +128,7 @@ internal class TabAiService : TabEmmersiveBase
 
         btnGroup.Button("em_ui_config_open".lang(), () => OpenFileOrPath.Run(EmMod.Instance.Config.ConfigFilePath));
 
-        var link = "https://elin-modding.net/Elin.Docs/articles/100_Mod%20Documentation/Emmersive/API_Setup" +
+        var link = "https://elin-modding.net/articles/100_Mod%20Documentation/Emmersive/API_Setup" +
                    Lang.langCode switch {
                        "CN" or "ZHTW" => ".CN",
                        "JP" => ".JP",

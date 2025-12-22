@@ -19,12 +19,10 @@ internal sealed class PiexianProvider : GoogleProvider
     public override string Alias { get; set; } = "氕氙";
 
     [JsonProperty]
-    public override string CurrentModel { get; set; } = "gemini-2.5-flash";
+    public override string CurrentModel { get; set; } = "gpt-4o-mini";
 
     [JsonProperty]
-    public override string EndPoint { get; set; } = "https://proxy.pieixan.icu/v1beta";
-
-    public override bool AllowEndpointCustomization => false;
+    public override string EndPoint { get; set; } = "https://proxy.pieixan.icu/v1";
 
     protected override void OnLayoutInternal(YKLayout card)
     {

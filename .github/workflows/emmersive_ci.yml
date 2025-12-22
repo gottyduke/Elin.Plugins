@@ -23,17 +23,18 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           sparse-checkout: |
             CustomWhateverLoader/
             Emmersive/
             Directory.Build.props
+            global.json
           sparse-checkout-cone-mode: false
 
       - name: Checkout Deps
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           path: ${{ matrix.version }}
           ref: ${{ matrix.version }}
@@ -103,7 +104,7 @@ jobs:
           
           $lastTag = git describe --tags --abbrev=0 --match="EM-*"
           $lastTagSha = git rev-parse $lastTag
-          $commits = git log "$($lastTag)..HEAD" --pretty=format:"%cd;%h;%s" -- Emmersive/ 
+          $commits = git log "$($lastTag)..HEAD" --date=format:"%y-%m-%d %H:%M" --pretty=format:"%cd;%h;%s" -- Emmersive/ 
           | ? {$_ -notmatch "cleanup"}
           | % {
               $parts = $_ -split ';', 3
