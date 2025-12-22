@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Reflection.Emit;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using Cwl.Helper.Extensions;
 using HarmonyLib;
 
@@ -9,28 +7,14 @@ namespace Cwl.Patches.Sounds;
 [HarmonyPatch]
 internal class AudibleTopicTextPatch
 {
-    [HarmonyTranspiler]
-    [HarmonyPatch(typeof(Chara), nameof(Chara.GetTopicText))]
-    internal static IEnumerable<CodeInstruction> OnTopicTextIl(IEnumerable<CodeInstruction> instructions)
-    {
-        return new CodeMatcher(instructions)
-            .End()
-            .MatchEndBackwards(
-                new OperandContains(OpCodes.Call, nameof(ClassExtension.RandomItem)),
-                new(OpCodes.Ret))
-            .EnsureValid("random topic text")
-            .InsertAndAdvance(
-                new(OpCodes.Ldarg_0),
-                Transpilers.EmitDelegate(TryPlaySoundText))
-            .InstructionEnumeration();
-    }
-
-    private static string TryPlaySoundText(string text, Chara chara)
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(CardRenderer), nameof(CardRenderer.Say))]
+    internal static void OnExtractSoundTags(CardRenderer __instance, ref string text)
     {
         var match = Regex.Match(text, "<sound=([^>]+)>");
 
         if (!match.Success || match.Groups.Count <= 1) {
-            return text;
+            return;
         }
 
         var soundExpr = match.Groups[1].Value.Split(',');
@@ -38,9 +22,23 @@ internal class AudibleTopicTextPatch
 
         if (soundExpr.TryGet(1, true) is not { } chance ||
             EClass.rndf(1f) <= chance.AsFloat(1f)) {
-            chara.PlaySound(soundId);
+
+            __instance.owner.PlaySound(soundId);
         }
 
-        return text.Remove(match.Index, match.Length);
+        text = text.Remove(match.Index, match.Length);
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(Msg), nameof(Msg.SayRaw))]
+    internal static void OnSayRawTaggedMsg(ref string text)
+    {
+        var match = Regex.Match(text, "<sound=([^>]+)>");
+
+        if (!match.Success || match.Groups.Count <= 1) {
+            return;
+        }
+
+        text = text.Remove(match.Index, match.Length);
     }
 }
