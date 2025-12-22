@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Cwl.Helper.Extensions;
+using Cwl.Helper.String;
 using Emmersive.Helper;
 
 namespace Emmersive.Contexts;
@@ -58,8 +59,8 @@ public class ZoneContext(Zone zone) : ContextProviderBase
         }
 
         var background = ResourceFetch.GetActiveResource($"Emmersive/Zones/{zone.ZoneFullName}.txt")
-            .IsEmpty(ResourceFetch.GetActiveResource($"Emmersive/Zones/Zone_{zone.id}.txt"));
-        if (!background.IsEmpty()) {
+            .OrIfEmpty(ResourceFetch.GetActiveResource($"Emmersive/Zones/Zone_{zone.id}.txt"));
+        if (!background.IsEmptyOrNull) {
             data["background"] = background;
         }
 

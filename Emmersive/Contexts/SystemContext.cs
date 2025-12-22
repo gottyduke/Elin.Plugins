@@ -1,3 +1,4 @@
+using Cwl.Helper.String;
 using Emmersive.Helper;
 
 namespace Emmersive.Contexts;
@@ -11,7 +12,7 @@ public class SystemContext : ContextProviderBase
     public override object Build()
     {
         var resource = ResourceFetch.GetActiveResource(ResourceKey);
-        if (!resource.IsEmpty()) {
+        if (!resource.IsEmptyOrNull) {
             return resource;
         }
 

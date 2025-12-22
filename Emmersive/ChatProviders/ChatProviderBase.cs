@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
+using Cwl.Helper.String;
 using Cysharp.Threading.Tasks;
 using Emmersive.API;
 using Emmersive.Helper;
@@ -45,7 +46,6 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionReques
     }
 
     [JsonProperty]
-
     public virtual string Id
     {
         get => field ??= $"{Alias}#{ServiceCount}";
@@ -116,7 +116,7 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionReques
         }
 
         foreach (var (k, v) in RequestParams) {
-            if (!k.IsEmpty() && v is not null) {
+            if (!k.IsEmptyOrNull && v is not null) {
                 data[k] = v;
             }
         }

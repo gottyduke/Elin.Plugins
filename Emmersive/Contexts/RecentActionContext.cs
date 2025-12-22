@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cwl.API.Attributes;
+using Cwl.Helper.String;
 using Emmersive.Helper;
 
 namespace Emmersive.Contexts;
@@ -117,7 +118,7 @@ public class RecentActionContext : ContextProviderBase
             }
 
             var text = msg.text.StripBrackets();
-            if (text.IsEmpty() || Filters.Any(text.Contains)) {
+            if (text.IsEmptyOrNull || Filters.Any(text.Contains)) {
                 lastIndex--;
                 continue;
             }

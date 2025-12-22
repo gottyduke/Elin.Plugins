@@ -33,7 +33,7 @@ internal abstract class TabEmmersiveBase : YKLayout<LayerCreationData>
         card.Spacer(5);
 
         var truncated = ResourceFetch.GetActiveResource(path).Truncate(400);
-        card.Text(truncated.IsEmpty("em_ui_non_provided"));
+        card.Text(truncated.OrIfEmpty("em_ui_non_provided"));
 
         return card;
     }

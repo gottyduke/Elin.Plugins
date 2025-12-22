@@ -1,5 +1,6 @@
 using System;
 using Cwl.Helper.Exceptions;
+using Cwl.Helper.String;
 using Cwl.Patches.Charas;
 using Emmersive.Helper;
 
@@ -15,7 +16,7 @@ public class BackgroundContext(Chara chara) : ContextProviderBase
             var resourceKey = $"Emmersive/Characters/{chara.UnifiedId}.txt";
             var background = ResourceFetch.GetActiveResource(resourceKey);
 
-            if (background.IsEmpty()) {
+            if (background.IsEmptyOrNull) {
                 background = chara.IsPC
                     ? EClass.player.GetBackgroundText()
                     : BioOverridePatch.GetNpcBackground("em_ui_non_provided", chara);

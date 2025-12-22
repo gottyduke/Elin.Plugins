@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Cwl.API.Attributes;
+using Cwl.Helper.String;
 using ReflexCLI.Attributes;
 using UnityEngine;
 using YKF;
@@ -43,7 +44,7 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
     {
         base.OnAfterAddLayer();
 
-        if (!Data.StartingTab.IsEmpty()) {
+        if (!Data.StartingTab.IsEmptyOrNull) {
             _lastOpenedTab = Data.StartingTab;
         }
 

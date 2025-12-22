@@ -1,4 +1,5 @@
 using System;
+using Cwl.Helper.String;
 using Emmersive.API;
 using Emmersive.API.Services;
 using Emmersive.Components;
@@ -38,7 +39,7 @@ public abstract partial class ChatProviderBase : ILayoutProvider
 
         card.Spacer(5);
 
-        if (!IsAvailable && !UnavailableReason.IsEmpty()) {
+        if (!IsAvailable && !UnavailableReason.IsEmptyOrNull) {
             card.TextLong(UnavailableReason!);
             card.Spacer(15);
         }

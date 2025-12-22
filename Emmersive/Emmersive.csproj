@@ -43,7 +43,7 @@
         <PackageReference Include="Microsoft.SemanticKernel.Connectors.Google" Version="1.66.0-alpha"/>
         <PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.66.0"/>
         <PackageReference Include="Microsoft.SemanticKernel.Core" Version="1.66.0"/>
-        <PackageReference Include="GitVersion.MsBuild" Version="6.4.0">
+        <PackageReference Include="GitVersion.MsBuild" Version="6.5.1">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -51,6 +51,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.3"/>
     </ItemGroup>
     <ItemGroup>
         <None Remove="package\LangMod\EN\Emmersive\SystemPrompt.txt"/>

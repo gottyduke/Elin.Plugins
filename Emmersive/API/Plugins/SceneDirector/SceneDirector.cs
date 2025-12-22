@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Cwl.Helper.String;
 using Cwl.LangMod;
 using Emmersive.Components;
 using Newtonsoft.Json;
@@ -52,7 +53,7 @@ public partial class SceneDirector : EClass
     {
         content = StripMarkdownFence(content);
 
-        if (content.IsEmpty()) {
+        if (content.IsEmptyOrNull) {
             return null;
         }
 

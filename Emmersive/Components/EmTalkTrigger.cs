@@ -1,6 +1,7 @@
 using System.Linq;
 using Cwl.API.Attributes;
 using Cwl.Helper;
+using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Emmersive.API.Plugins;
 using UnityEngine;
@@ -38,7 +39,7 @@ internal class EmTalkTrigger : EMono
             pc.Name,
             "",
             (cancel, text) => {
-                if (cancel || string.IsNullOrWhiteSpace(text)) {
+                if (cancel || text.IsWhiteSpaceOrNull) {
                     return;
                 }
 

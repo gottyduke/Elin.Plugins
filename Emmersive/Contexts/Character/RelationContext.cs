@@ -43,14 +43,14 @@ public class RelationContext(IList<Chara> charas) : ContextProviderBase
         foreach (var relationKey in relationKeys) {
             var relation = Lookup[relationKey].LastOrDefault();
             // kinda unnecessary check
-            if (relation is null || relation.Prompt.IsEmpty()) {
+            if (relation is null || relation.Prompt.IsEmptyOrNull) {
                 continue;
             }
 
             var resourceKey = $"Emmersive/Relations/{relationKey}.txt";
 
             var active = ResourceFetch.GetActiveResource(resourceKey, false);
-            if (active.IsEmpty()) {
+            if (active.IsEmptyOrNull) {
                 active = relation.Prompt;
                 ResourceFetch.SetActiveResource(resourceKey, active);
             }
@@ -58,7 +58,7 @@ public class RelationContext(IList<Chara> charas) : ContextProviderBase
             var name = SplitByRelationKey(relationKey, charas)
                 .Join(c => c.NameSimple);
 
-            if (!name.IsEmpty() && !active.IsEmpty()) {
+            if (!name.IsEmptyOrNull && !active.IsEmptyOrNull) {
                 data[name] = active;
             }
         }

@@ -32,7 +32,7 @@ public static class Localizer
         {
             if (Lang.General.map.TryGetValue($"em_{input}", out var row)) {
                 result = row.Loc();
-                if (!result.IsEmpty()) {
+                if (!result.IsEmptyOrNull) {
                     return true;
                 }
             } else {

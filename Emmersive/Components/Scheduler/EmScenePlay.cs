@@ -42,7 +42,7 @@ public partial class EmScheduler
             .Add(new NearbyThingContext(focus))
             // put volatile context at the end to hit as much cache as possible
             .Add(ContextBuilder.RecentActionContext)
-            .Add(new SceneTriggerContext(_buffer.Copy()));
+            .Add(new SceneTriggerContext(_buffer.ToArray()));
 
         RequestScenePlayWithContext(builder);
     }
@@ -101,7 +101,7 @@ public partial class EmScheduler
         SetScenePlayDelay(timeout);
 
         var lockedCharas = PointScan.LastNearby
-            .Copy()
+            .ToArray()
             .Where(c => !c.Profile.LockedInRequest)
             .Concat([EClass.pc])
             .ToArray();
@@ -111,7 +111,7 @@ public partial class EmScheduler
         try {
             var response = await provider.HandleRequest(kernel, context, UniTasklet.SceneCts.Token);
 
-            if (response.Content.IsEmpty()) {
+            if (response.Content.IsEmptyOrNull) {
                 activity.SetStatus(EmActivity.StatusType.Failed);
             } else {
                 activity.SetStatus(EmActivity.StatusType.Completed);

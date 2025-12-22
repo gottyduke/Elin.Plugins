@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cwl.Helper.String;
 
 namespace Emmersive.Contexts;
 
@@ -21,7 +22,7 @@ public class CharaContext(Chara chara) : ContextProviderBase
         var data = new Dictionary<string, object> {
             ["uid"] = chara.uid,
             //["can_talk"] = !chara.Profile.OnTalkCooldown,
-            ["title"] = chara.Aka.ToTitleCase().IsEmpty(null),
+            ["title"] = chara.Aka.ToTitleCase().OrIfEmpty(null!),
             ["hp"] = $"{chara.hp}/{chara.MaxHP}",
             ["class"] = $"LV.{chara.LV} {chara.race.GetText().ToTitleCase()}",
         };

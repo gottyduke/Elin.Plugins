@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Cwl.Helper.String;
 
 namespace Emmersive;
 
@@ -103,7 +104,7 @@ public record EmActivity : IDisposable
 
     public static EmActivitySummary GetSummary(string serviceName = "")
     {
-        var activities = serviceName.IsEmpty() ? Session : FromProvider(serviceName).ToList();
+        var activities = serviceName.IsEmptyOrNull ? Session : FromProvider(serviceName).ToList();
         var total = activities.Count;
 
         var success = 0;
