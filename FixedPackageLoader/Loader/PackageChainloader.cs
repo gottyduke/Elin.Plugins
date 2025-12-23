@@ -11,7 +11,7 @@ public static class ModInfo
 {
     public const string Guid = "elin.plugins.chainloader";
     public const string Name = "Package Chainloader";
-    public const string Version = "1.0.0";
+    public const string Version = "2.0.0";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
@@ -37,6 +37,9 @@ internal class PackageChainloader : BaseUnityPlugin
 
             foreach (var info in loader.Plugins.Values) {
                 ModManager.ListPluginObject.Add(info.Instance);
+            }
+
+            if (loader.Plugins.Values.Count > 0) {
                 // also allow external assembly plugin info resolve
                 TypeLoader.CecilResolver.AddSearchDirectory(path);
             }
