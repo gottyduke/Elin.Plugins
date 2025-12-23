@@ -1,12 +1,14 @@
+using Emmersive.API.Plugins;
 using Emmersive.Helper;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using UnityEngine.UI;
 using YKF;
 
 namespace Emmersive.ChatProviders;
 
 [JsonObject(MemberSerialization.OptIn)]
-internal sealed class PiexianProvider : GoogleProvider
+internal sealed class PiexianProvider : OpenAIProvider
 {
     private UIInputText? _apiInput;
 
@@ -23,6 +25,10 @@ internal sealed class PiexianProvider : GoogleProvider
 
     [JsonProperty]
     public override string EndPoint { get; set; } = "https://proxy.pieixan.icu/v1";
+
+    public override IDictionary<string, object> RequestParams { get; set; } = new Dictionary<string, object> {
+        ["response_format"] = SceneReaction.OpenAiSchema,
+    };
 
     protected override void OnLayoutInternal(YKLayout card)
     {

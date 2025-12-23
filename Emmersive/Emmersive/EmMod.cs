@@ -1,5 +1,6 @@
 using System.Reflection;
 using BepInEx;
+using Cwl.Helper.Exceptions;
 using Emmersive.API.Services;
 using Emmersive.Components;
 using Emmersive.Helper;
@@ -12,7 +13,7 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.emmersive";
     internal const string Name = "Elin with AI (Beta)";
-    internal const string Version = "0.9.22";
+    internal const string Version = "0.9.23";
 
     public static string BuildVersion => field ??= EmMod.Assembly.GetName().Version.ToString();
 }
