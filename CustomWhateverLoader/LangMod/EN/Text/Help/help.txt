@@ -18,6 +18,10 @@ $Changelogs
 
 
 
+{topic|1.21.10}
+Added asmr dialog text support with sound tags
+Fixed some zone patches weren't applied
+
 {topic|1.21.8}
 Updated for 23.252 Stable
 Added drama script submissions to avoid recompilations
