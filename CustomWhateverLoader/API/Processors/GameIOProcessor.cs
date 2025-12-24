@@ -234,17 +234,6 @@ public class GameIOProcessor
         }
 
         /// <summary>
-        ///     serialize data to current context, binary format
-        /// </summary>
-        /// <param name="data">arbitrary data</param>
-        /// <param name="chunkName">unique identifier, omit/null will use full qualified type name</param>
-        [Obsolete("use Save instead")]
-        public void SaveBinary<T>(T data, string? chunkName = null)
-        {
-            SaveImpl(data, chunkName, BinaryChunkExt, ConfigCereal.WriteDataBinary);
-        }
-
-        /// <summary>
         ///     serialize data to current context, uncompressed
         /// </summary>
         /// <param name="data">arbitrary data</param>
