@@ -82,14 +82,14 @@ internal sealed partial class CwlMod
             typeof(ReverseIdMapper.RecipeMaterialIdMapper),
         ];
 
-        BuildPatchesFromTypes(deferred);
+        BuildPatchesFromTypes(deferred, true);
     }
 
-    private static void BuildPatchesFromTypes(IEnumerable<Type> types)
+    private static void BuildPatchesFromTypes(IEnumerable<Type> types, bool deferred = false)
     {
         foreach (var def in types) {
             try {
-                SharedHarmony.CreateClassProcessor(def).Patch();
+                SharedHarmony.CreateClassProcessor(def, deferred).Patch();
             } catch (Exception ex) {
                 Error<CwlMod>($"failed to apply {def.Name}\n{ex.InnerException}");
                 // noexcept
