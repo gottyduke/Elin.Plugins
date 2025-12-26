@@ -26,7 +26,7 @@ internal class PackageChainloader : BaseUnityPlugin
     private static IEnumerator DelayedStart()
     {
         while (!ModManager.IsInitialized) {
-            yield return null;
+            yield return new WaitForEndOfFrame();
         }
 
         foreach (var path in ModManager.ListChainLoad) {
