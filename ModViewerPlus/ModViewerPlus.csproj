@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net472</TargetFramework>
+        <TargetFramework>netstandard2.0</TargetFramework>
         <Platforms>AnyCPU</Platforms>
         <LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>
@@ -15,7 +15,6 @@
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <Deterministic>false</Deterministic>
-        <PackageId>Mod Viewer Plus</PackageId>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="GitVersion.MsBuild" Version="6.4.0">
