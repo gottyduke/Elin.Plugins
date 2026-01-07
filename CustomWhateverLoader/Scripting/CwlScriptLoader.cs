@@ -103,12 +103,22 @@ public static partial class CwlScriptLoader
             var model = compilation.GetSemanticModel(tree);
 
             // trimming is necessary so that the generated assembly can be distributed
+            var selfAssembly = compilation.Assembly;
             var linkedSymbols = new HashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
             foreach (var node in tree.GetRoot().DescendantNodes()) {
-                var symbol = model.GetSymbolInfo(node).Symbol;
-                if (symbol is IAssemblySymbol assemblySymbol) {
-                    linkedSymbols.Add(assemblySymbol);
+                var info = model.GetSymbolInfo(node);
+                var symbol = info.Symbol ?? info.CandidateSymbols.FirstOrDefault();
+
+                var assembly = symbol?.ContainingAssembly;
+                if (assembly is null) {
+                    continue;
                 }
+
+                if (SymbolEqualityComparer.Default.Equals(assembly, selfAssembly)) {
+                    continue;
+                }
+
+                linkedSymbols.Add(assembly);
             }
 
             HashSet<MetadataReference> trimmed = [];
