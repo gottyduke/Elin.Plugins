@@ -72,7 +72,7 @@ public partial class CwlScriptLoader
                 scriptState[key] = value;
             }
 
-            var runner = CompileScriptRunner(script, DefaultScriptOptions, throwOnError: true, useCache: useCache);
+            var runner = CompileScriptRunner(script, DefaultScriptOptions, useCache, true);
             var state = runner(scriptState)
                 .GetAwaiter()
                 .GetResult();

@@ -68,7 +68,7 @@ public class CwlScriptSubmission(string submissionKey)
         if (File.Exists(scriptCache)) {
             try {
                 assembly = Assembly.Load(File.ReadAllBytes(scriptCache));
-                CwlMod.Log<CwlScriptSubmission>($"loading from script cache data-{scriptKey}");
+                CwlMod.Log<CwlScriptSubmission>($"loading from script cache {scriptKey}");
             } catch {
                 File.Delete(scriptCache);
                 // noexcept

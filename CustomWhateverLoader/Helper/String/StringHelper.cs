@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using HarmonyLib;
 using Newtonsoft.Json;
+using System.Reflection;
 
 namespace Cwl.Helper.String;
 
@@ -222,17 +223,14 @@ public static class StringHelper
                 case string str:
                     return str;
                 default:
-                    if (input.GetType().GetMethod(nameof(input.ToString))?.DeclaringType != typeof(object)) {
-                        return input.ToString();
-                    }
-
                     try {
-                        return JsonConvert.SerializeObject(input, Formatting.Indented);
+                        return input.GetType().GetRuntimeMethod(nameof(input.ToString), [])?.DeclaringType == typeof(object)
+                            ? JsonConvert.SerializeObject(input, Formatting.Indented)
+                            : input.ToString();
                     } catch {
+                        return nullFallback.OrIfEmpty(input.ToString());
                         // noexcept
                     }
-
-                    return nullFallback;
             }
         }
     }

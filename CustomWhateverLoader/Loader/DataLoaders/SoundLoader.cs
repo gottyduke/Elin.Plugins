@@ -129,7 +129,7 @@ internal partial class DataLoader
 
         var data = ScriptableObject.CreateInstance<SoundData>();
         var metafile = $"{file.DirectoryName}/{name}.json";
-        if (ConfigCereal.ReadConfig<SerializableSoundData>(metafile, out var meta) && meta is not null) {
+        if (ConfigCereal.ReadConfig<SerializableSoundData>(metafile, out var meta)) {
             if (meta.type == SoundData.Type.BGM) {
                 var bgm = ScriptableObject.CreateInstance<BGMData>();
                 bgm._name = name.Capitalize();

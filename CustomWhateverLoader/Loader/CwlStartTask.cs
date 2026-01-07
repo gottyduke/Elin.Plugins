@@ -109,7 +109,7 @@ internal sealed partial class CwlMod
 
     private static IEnumerator LoadTask()
     {
-        DataLoader.RefreshAllPackageTextures();
+        DataLoader.RefreshAllPackageTextures(); // can be removed
 
         PrebuildDispatchers();
         DramaExpansion.BuildActionList();
@@ -173,7 +173,7 @@ internal sealed partial class CwlMod
 
     private static void AddResourceRelocators()
     {
-        LoadResourcesPatch.AddHandler<SoundData>(DataLoader.RelocateSound);
+        LoadResourcesPatch.AddHandler<SoundData>(DataLoader.RelocateSound); // can be removed
         LoadResourcesPatch.AddHandler<Sprite>(DataLoader.RelocateSprite);
 
         DataLoader.SetupEffectTemplate();

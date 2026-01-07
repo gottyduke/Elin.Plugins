@@ -102,7 +102,7 @@ public static partial class CwlScriptLoader
             var tree = compilation.SyntaxTrees.First();
             var model = compilation.GetSemanticModel(tree);
 
-            // trimming is necessary so that generated assembly can be distributed
+            // trimming is necessary so that the generated assembly can be distributed
             var linkedSymbols = new HashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
             foreach (var node in tree.GetRoot().DescendantNodes()) {
                 var symbol = model.GetSymbolInfo(node).Symbol;
@@ -163,6 +163,8 @@ public static partial class CwlScriptLoader
             TypeQualifier.MappedAssemblyNames.Remove(assembly);
             TypeQualifier.Declared.ExceptWith(assembly.DefinedTypes);
         }
+
+        public void HandoverScript() { }
 
         public void RegisterDefaultScriptNamespaces()
         {
