@@ -65,6 +65,7 @@ public static partial class CwlScriptLoader
         "Plugins.BaseCore",
         "Plugins.UI",
         "System.Core",
+        "UnityEngine",
         "UnityEngine.CoreModule",
     ];
 
