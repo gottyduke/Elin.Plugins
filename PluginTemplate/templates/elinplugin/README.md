@@ -20,7 +20,7 @@ dotnet new elinplugin -n MyNewMod --Guid "unique.mod.id" --ModName "My New Aweso
 
 ## Build
 
-The environment variable `ElinGamePath` must be set to the root path of the Elin installation. 
+If you have Elin installed in custom location, you must set the environment variable `ElinGamePath` to the root path of the Elin installation
 ```
 ElinGamePath/
 ├─ BepInEx/
