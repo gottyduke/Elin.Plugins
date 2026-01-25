@@ -41,6 +41,7 @@ public static partial class CwlScriptLoader
 
         assembly.UnregisterScript();
         assembly.InvokeScriptMethod("CwlScriptUnload");
+        ClassCache.assemblies.Remove(assembly.FullName);
 
         return $"tried to unload {assemblyName}";
     }
@@ -56,6 +57,7 @@ public static partial class CwlScriptLoader
 
         assembly.RegisterScript(assembly.GetName().Name);
         assembly.InvokeScriptMethod("CwlScriptLoad");
+        ClassCache.assemblies.Add(assembly.FullName);
 
         return "script loaded";
     }
