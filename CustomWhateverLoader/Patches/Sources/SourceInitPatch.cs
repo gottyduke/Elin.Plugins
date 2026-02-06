@@ -25,8 +25,11 @@ internal class SourceInitPatch
 
     [HarmonyPrefix]
     [HarmonyPatch(typeof(SourceManager), nameof(SourceManager.Init))]
-    internal static void ImportAllSheets()
+    internal static void ImportAllSheets(SourceManager __instance)
     {
+        // FIXME! 23.267 stable: init called during Lang process
+        __instance.initialized = false;
+
         if (_patched) {
             foreach (var (sr, _) in AttributeQuery.MethodsWith<CwlSourceReloadEvent>()) {
                 try {
