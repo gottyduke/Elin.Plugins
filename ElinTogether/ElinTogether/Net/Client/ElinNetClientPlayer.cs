@@ -12,6 +12,10 @@ internal partial class ElinNetClient
     /// </summary>
     private void OnSessionNewPlayerRequest(SessionNewPlayerRequest request)
     {
+        // TODO: disabled for now
+        return;
+
+
         ui.RemoveLayer<LayerEditBio>();
         var embark = ui.AddLayer<LayerEditBio>();
         var content = embark.GetComponentInChildren<Content>();

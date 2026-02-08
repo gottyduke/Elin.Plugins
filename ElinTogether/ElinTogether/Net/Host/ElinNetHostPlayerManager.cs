@@ -42,15 +42,19 @@ internal partial class ElinNetHost
         EmpLog.Information("Preparing player {@Peer} for joining",
             peer);
 
-        if (SavedRemoteCharas.TryGetValue(peer.Uid, out var charaUid) &&
-            game.cards.globalCharas.Find(charaUid) is { } chara) {
-            // remote character exist
-            SendSaveProbe(chara, peer);
-        } else {
+        if (!SavedRemoteCharas.TryGetValue(peer.Uid, out var charaUid) ||
+            game.cards.globalCharas.Find(charaUid) is not { } chara) {
             EmpLog.Debug("Remote character does not exist, request for new character generation");
 
-            peer.Send(new SessionNewPlayerRequest());
+            //peer.Send(new SessionNewPlayerRequest());
+            // TODO: disable for now
+
+            chara = CharaGen.Create("player");
+            SavedRemoteCharas[peer.Uid] = chara.uid;
         }
+        
+        // remote character exists
+        SendSaveProbe(chara, peer);
     }
 
     /// <summary>
