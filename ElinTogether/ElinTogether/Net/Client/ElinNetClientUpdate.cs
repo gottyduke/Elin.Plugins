@@ -10,7 +10,7 @@ internal partial class ElinNetClient
     /// <summary>
     ///     Send out local deltas and self snapshot to remote host
     /// </summary>
-    private void WorldStateDeltaUpdate()
+    internal void WorldStateDeltaUpdate()
     {
         if (_pauseUpdate) {
             return;
@@ -29,13 +29,13 @@ internal partial class ElinNetClient
     /// <summary>
     ///     Process local or deferred deltas received from host
     /// </summary>
-    private void WorldStateDeltaProcess()
+    internal void WorldStateDeltaProcess()
     {
         if (!Delta.HasPendingIn) {
             return;
         }
 
-        Delta.ProcessLocalBatch(this, 16);
+        Delta.ProcessLocalBatch(this);
     }
 
     /// <summary>
@@ -70,9 +70,7 @@ internal partial class ElinNetClient
     /// </summary>
     private void OnWorldStateDeltaResponse(WorldStateDeltaList response)
     {
-        foreach (var delta in response.DeltaList) {
-            Delta.AddLocal(delta);
-        }
+        Delta.AddLocal(response.DeltaList);
     }
 
     /// <summary>
@@ -90,10 +88,10 @@ internal partial class ElinNetClient
     /// </summary>
     public void StartWorldStateUpdate()
     {
-        // 25hz delta dispatch
-        Scheduler.Subscribe(WorldStateDeltaUpdate, 25f);
-        // 50hz delta process
-        Scheduler.Subscribe(WorldStateDeltaProcess, 50f);
+        // // 25hz delta dispatch
+        // Scheduler.Subscribe(WorldStateDeltaUpdate, 25f);
+        // // 50hz delta process
+        // Scheduler.Subscribe(WorldStateDeltaProcess, 50f);
 
         _pauseUpdate = false;
     }
@@ -103,8 +101,8 @@ internal partial class ElinNetClient
     /// </summary>
     public void StopWorldStateUpdate()
     {
-        Scheduler.Unsubscribe(WorldStateDeltaUpdate);
-        Scheduler.Unsubscribe(WorldStateDeltaProcess);
+        // Scheduler.Unsubscribe(WorldStateDeltaUpdate);
+        // Scheduler.Unsubscribe(WorldStateDeltaProcess);
 
         _pauseUpdate = false;
 

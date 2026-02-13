@@ -10,11 +10,11 @@ namespace ElinTogether.Patches;
 internal class ActionModeCombat
 {
     internal static bool InCombat = false;
-    internal static bool WaitForSelf = false;
     internal static bool Paused = false;
+    private static bool WaitForSelf = false;
 
-    [HarmonyPrefix, HarmonyPatch(typeof(Player), nameof(Player.RefreshEmptyAlly))]
-    internal static void TryPauseGame()
+    [HarmonyPrefix, HarmonyPatch(typeof(Game), nameof(Game.OnUpdate))]
+    internal static void CheckIfPauseNeeded()
     {
         if (!InCombat
             || NetSession.Instance.Connection is not ElinNetBase net
@@ -25,26 +25,24 @@ internal class ActionModeCombat
         }
 
         if (EClass.pc.HasNoGoal) {
-            if (!WaitForSelf || !Paused) {
+            if (!Paused || !WaitForSelf) {
+                Paused = true;
                 WaitForSelf = true;
                 Msg.SayGod("Decide your next action. ");
             }
 
-            Paused = true;
-            EClass.scene.paused = true;
             return;
         }
 
         var hasAnyoneToDecide = NetSession.Instance.CurrentPlayers.Any(n =>
             EClass.pc.party.members.Find(c => c.uid == n.CharaUid)?.ai is GoalRemote g && g.child is null);
         if (hasAnyoneToDecide) {
-            if (WaitForSelf || !Paused) {
+            if (!Paused || WaitForSelf) {
+                Paused = true;
                 WaitForSelf = false;
                 Msg.SayGod("Wait for others to decide their next action. ");
             }
 
-            Paused = true;
-            EClass.scene.paused = true;
             return;
         }
 

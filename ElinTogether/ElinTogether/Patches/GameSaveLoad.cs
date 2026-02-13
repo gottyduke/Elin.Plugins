@@ -24,5 +24,6 @@ internal class GameSaveLoad
     internal static void TerminateConnectionOnLoad()
     {
         NetSession.Instance.RemoveComponent();
+        GameUpdaterUpdateEvent.AllowedUpdate = 0;
     }
 }

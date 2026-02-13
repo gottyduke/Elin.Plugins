@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using ElinTogether.Models.ElinDelta;
 
 namespace ElinTogether.Net;
@@ -12,7 +13,7 @@ public class ElinDeltaManager
     /// <summary>
     ///     Coming in
     /// </summary>
-    private readonly ConcurrentQueue<ElinDeltaBase> _inBuffer = [];
+    private readonly ConcurrentQueue<List<ElinDeltaBase>> _inBuffer = [];
 
     /// <summary>
     ///     Local deferred
@@ -57,9 +58,9 @@ public class ElinDeltaManager
     /// <summary>
     ///     Coming in to process
     /// </summary>
-    public void AddLocal(ElinDeltaBase delta)
+    public void AddLocal(List<ElinDeltaBase> deltaList)
     {
-        _inBuffer.Enqueue(delta);
+        _inBuffer.Enqueue(deltaList);
     }
 
     /// <summary>
@@ -117,16 +118,13 @@ public class ElinDeltaManager
             return batch;
         }
 
-        var count = 0;
-        var max = batchSize > 0 ? batchSize : _inBuffer.Count;
-
-        while (count < max && _inBuffer.TryDequeue(out var delta)) {
-            batch.Add(delta);
-            count++;
+        if (_inBuffer.TryDequeue(out var delta)) {
+            batch = delta;
         }
 
-        while (_inBufferDeferred.TryDequeue(out var deferred)) {
-            _inBuffer.Enqueue(deferred);
+        if (_inBufferDeferred.Count > 0) {
+            _inBuffer.Enqueue([.. _inBufferDeferred.Reverse()]);
+            _inBufferDeferred.Clear();
         }
 
         return batch;
