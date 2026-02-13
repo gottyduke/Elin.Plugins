@@ -70,7 +70,7 @@ internal partial class ElinNetClient
     /// </summary>
     private void OnWorldStateDeltaResponse(WorldStateDeltaList response)
     {
-        Delta.AddLocal(response.DeltaList);
+        Delta.AddLocalBatch(response.DeltaList);
     }
 
     /// <summary>
