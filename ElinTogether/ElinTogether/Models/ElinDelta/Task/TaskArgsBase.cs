@@ -4,6 +4,7 @@ namespace ElinTogether.Models.ElinDelta;
 
 [MessagePackObject]
 [Union(0, typeof(NoTask))]
+[Union(1, typeof(FakeTask))]
 // Tasks
 [Union(100, typeof(TaskCleanArgs))]
 [Union(101, typeof(TaskCullLifeArgs))]
