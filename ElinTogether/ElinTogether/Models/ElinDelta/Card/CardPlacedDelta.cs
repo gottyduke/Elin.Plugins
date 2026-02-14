@@ -14,6 +14,9 @@ public class CardPlacedDelta : ElinDeltaBase
     public required PlaceState PlaceState { get; init; }
 
     [Key(2)]
+    public required int Dir { get; init; }
+
+    [Key(3)]
     public required bool ByPlayer { get; init; }
 
     public override void Apply(ElinNetBase net)
@@ -26,6 +29,7 @@ public class CardPlacedDelta : ElinDeltaBase
             net.Delta.AddRemote(this);
         }
 
+        card.dir = Dir;
         card.Stub_SetPlacedState(PlaceState, ByPlayer);
     }
 }

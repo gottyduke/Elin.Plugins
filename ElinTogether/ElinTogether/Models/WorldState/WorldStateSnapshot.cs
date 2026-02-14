@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using MessagePack;
 
@@ -55,18 +56,26 @@ public class WorldStateSnapshot : EClass
 
     public void ApplyReconciliation()
     {
-        // 1
-        world.date.raw = GameDate.ToArray();
-
-        // 2
-        foreach (var snapshot in CharaSnapshots) {
-            snapshot.ApplyReconciliation();
+        if (NetSession.Instance.Connection is not ElinNetClient client) {
+            return;
         }
 
-        // 3
-        game.cards.uidNext = GlobalUidNext;
+        client.Delta.AddLocalBack(new DynamicDelta {
+            Action = (_) => {
+                // 1
+                world.date.raw = GameDate.ToArray();
 
-        // 4
-        NetSession.Instance.SharedSpeed = SharedSpeed;
+                // 2
+                foreach (var snapshot in CharaSnapshots) {
+                    snapshot.ApplyReconciliation();
+                }
+
+                // 3
+                game.cards.uidNext = GlobalUidNext;
+
+                // 4
+                NetSession.Instance.SharedSpeed = SharedSpeed;
+            }
+        });
     }
 }

@@ -46,7 +46,8 @@ internal class RemoteHoldThingyPatch
             return current;
         }
 
-        if (chara.NetProfile.RemoteMainHand.TryGetTarget(out var thing)) {
+        if (chara.NetProfile.RemoteMainHand.TryGetTarget(out var thing)
+            && thing.GetRootCard() == chara) {
             current = thing;
         }
 
@@ -60,7 +61,8 @@ internal class RemoteHoldThingyPatch
             return current;
         }
 
-        if (chara.NetProfile.RemoteOffHand.TryGetTarget(out var thing)) {
+        if (chara.NetProfile.RemoteOffHand.TryGetTarget(out var thing)
+            && thing.GetRootCard() == chara) {
             current = thing;
         }
 

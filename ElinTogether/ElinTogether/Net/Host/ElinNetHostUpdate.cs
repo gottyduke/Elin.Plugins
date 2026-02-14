@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using ElinTogether.Models;
+using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net.Steam;
 
 namespace ElinTogether.Net;
@@ -43,7 +45,7 @@ internal partial class ElinNetHost
     /// <summary>
     ///     Send out local deltas to remote clients
     /// </summary>
-    private void WorldStateDeltaUpdate()
+    internal void WorldStateDeltaUpdate()
     {
         if (_pauseUpdate) {
             return;
@@ -53,21 +55,25 @@ internal partial class ElinNetHost
             return;
         }
 
+        if (Delta.FlushOutBuffer() is not List<ElinDeltaBase> { Count: > 0 } deltaList) {
+            return;
+        }
+
         Broadcast(new WorldStateDeltaList {
-            DeltaList = Delta.FlushOutBuffer(),
+            DeltaList = deltaList,
         });
     }
 
     /// <summary>
     ///     Process local or deferred deltas received from clients
     /// </summary>
-    private void WorldStateDeltaProcess()
+    internal void WorldStateDeltaProcess()
     {
         if (!Delta.HasPendingIn) {
             return;
         }
 
-        Delta.ProcessLocalBatch(this, 16);
+        Delta.ProcessLocalBatch(this);
     }
 
     /// <summary>
@@ -83,9 +89,7 @@ internal partial class ElinNetHost
     /// </summary>
     private void OnWorldStateDeltaResponse(WorldStateDeltaList response, ISteamNetPeer peer)
     {
-        foreach (var delta in response.DeltaList) {
-            Delta.AddLocal(delta);
-        }
+        Delta.AddLocalBatch(response.DeltaList);
     }
 
     /// <summary>
@@ -134,10 +138,10 @@ internal partial class ElinNetHost
         Scheduler.Subscribe(UpdateRemotePlayerStates, 0.5f);
         // 5hz world snapshot reconciliation
         Scheduler.Subscribe(WorldStateSnapshotUpdate, 5f);
-        // 25hz delta dispatch
-        Scheduler.Subscribe(WorldStateDeltaUpdate, 25f);
-        // 50hz delta process
-        Scheduler.Subscribe(WorldStateDeltaProcess, 50f);
+        // // 25hz delta dispatch
+        // Scheduler.Subscribe(WorldStateDeltaUpdate, 25f);
+        // // 50hz delta process
+        // Scheduler.Subscribe(WorldStateDeltaProcess, 50f);
 
         _pauseUpdate = false;
     }
@@ -149,8 +153,8 @@ internal partial class ElinNetHost
     {
         Scheduler.Unsubscribe(UpdateRemotePlayerStates);
         Scheduler.Unsubscribe(WorldStateSnapshotUpdate);
-        Scheduler.Unsubscribe(WorldStateDeltaUpdate);
-        Scheduler.Unsubscribe(WorldStateDeltaProcess);
+        // Scheduler.Unsubscribe(WorldStateDeltaUpdate);
+        // Scheduler.Unsubscribe(WorldStateDeltaProcess);
 
         Session.Tick = 0;
 
