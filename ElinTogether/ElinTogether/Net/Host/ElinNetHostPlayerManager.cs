@@ -7,7 +7,6 @@ using ElinTogether.Models;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net.Steam;
 using Newtonsoft.Json;
-using UnityEngine;
 
 namespace ElinTogether.Net;
 
@@ -52,7 +51,7 @@ internal partial class ElinNetHost
             chara = CharaGen.Create("player");
             SavedRemoteCharas[peer.Uid] = chara.uid;
         }
-        
+
         // remote character exists
         SendSaveProbe(chara, peer);
     }

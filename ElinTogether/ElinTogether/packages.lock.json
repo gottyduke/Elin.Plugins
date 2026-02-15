@@ -28,9 +28,9 @@
       },
       "Serilog": {
         "type": "Direct",
-        "requested": "[4.3.1-dev-02395, )",
-        "resolved": "4.3.1-dev-02395",
-        "contentHash": "mPreTBBKb1zW53sLkk45eLPY5ROe9se2W3KNRCBI7v8nkSFbOR1mhLSSLW2OHL2xl0WGqrYel1dLHzTFXwC/iQ==",
+        "requested": "[4.3.1, )",
+        "resolved": "4.3.1",
+        "contentHash": "savYe7h5yRlkqBVOwP8cIRDOdqKiPmYCU4W87JH38sBmcKD5EBoXvQIw6bNEvZ/pTe1gsiye3VFCzBsoppGkXQ==",
         "dependencies": {
           "System.Diagnostics.DiagnosticSource": "8.0.1",
           "System.Threading.Channels": "8.0.0"
@@ -56,28 +56,28 @@
       },
       "Serilog.Sinks.File": {
         "type": "Direct",
-        "requested": "[7.0.1-dev-02315, )",
-        "resolved": "7.0.1-dev-02315",
-        "contentHash": "LuwBs0Hrr7ptVY/u+h+GJ2Of0+Uv3JiISD3ipiuZYnsy+bqeHEC1LQPVTPW9MgjY3tg3B6HObVbL84qGBcbdBA==",
+        "requested": "[8.0.0-dev-02318, )",
+        "resolved": "8.0.0-dev-02318",
+        "contentHash": "D99fj7/Fl1ukWMedFgbLoy0rrPxieyQDZ8Exsx5CTERmC/3+8Bs3VTKf/QI8EO8B6hg5Rj+r1nb6hYhZ+kwJng==",
         "dependencies": {
           "Serilog": "4.2.0"
         }
       },
       "Serilog.Sinks.Http": {
         "type": "Direct",
-        "requested": "[9.2.0, )",
-        "resolved": "9.2.0",
-        "contentHash": "tngXuEvfI1CrtB02XVXhHAGTX1HvSMKjWcOmlyBT9LVNIMYvNhOSkfigfwxd9OCbv3cXw1aWFrSPGGw8Y6sjtg==",
+        "requested": "[9.2.1, )",
+        "resolved": "9.2.1",
+        "contentHash": "sxc3GZSBsDFuRhcVKZMs66Mr7RfsGCPASSyiGG1Ew20a8kaeFbUL0tru352o0K0GLHjIcmxgkH2KrwoqjvJjjQ==",
         "dependencies": {
-          "Microsoft.Extensions.Configuration.Abstractions": "9.0.7",
+          "Microsoft.Extensions.Configuration.Abstractions": "10.0.1",
           "Serilog.Sinks.File": "7.0.0"
         }
       },
       "System.Collections.Immutable": {
         "type": "Direct",
-        "requested": "[10.0.1, )",
-        "resolved": "10.0.1",
-        "contentHash": "kdTe61B8P7i2M1pODC3MLbZ/CfFGjpC6c6jzxjQoB5DHZNewayCRqgFUmx3JKB6vLQtozpMQEiw+R5fO32Jv4g==",
+        "requested": "[11.0.0-preview.1.26104.118, )",
+        "resolved": "11.0.0-preview.1.26104.118",
+        "contentHash": "Yg7SzlfRHilPYxWcYlhDBLIFECfdf3iJ2f3670W/AfYys66f13yWg1dPDZ5g/OaIr94dFpfhhbqmxqQd8l/nRw==",
         "dependencies": {
           "System.Memory": "4.6.3",
           "System.Runtime.CompilerServices.Unsafe": "6.1.2"
@@ -95,19 +95,19 @@
       },
       "Microsoft.Extensions.Configuration.Abstractions": {
         "type": "Transitive",
-        "resolved": "9.0.7",
-        "contentHash": "lut/kiVvNsQ120VERMUYSFhpXPpKjjql+giy03LesASPBBcC0o6+aoFdzJH9GaYpFTQ3fGVhVjKjvJDoAW5/IQ==",
+        "resolved": "10.0.1",
+        "contentHash": "kPlU11hql+L9RjrN2N9/0GcRcRcZrNFlLLjadasFWeBORT6pL6OE+RYRk90GGCyVGSxTK+e1/f3dsMj5zpFFiQ==",
         "dependencies": {
-          "Microsoft.Extensions.Primitives": "9.0.7"
+          "Microsoft.Extensions.Primitives": "10.0.1"
         }
       },
       "Microsoft.Extensions.Primitives": {
         "type": "Transitive",
-        "resolved": "9.0.7",
-        "contentHash": "ti/zD9BuuO50IqlvhWQs9GHxkCmoph5BHjGiWKdg2t6Or8XoyAfRJiKag+uvd/fpASnNklfsB01WpZ4fhAe0VQ==",
+        "resolved": "10.0.1",
+        "contentHash": "DO8XrJkp5x4PddDuc/CH37yDBCs9BYN6ijlKyR3vMb55BP1Vwh90vOX8bNfnKxr5B2qEI3D8bvbY1fFbDveDHQ==",
         "dependencies": {
-          "System.Memory": "4.5.5",
-          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
+          "System.Memory": "4.6.3",
+          "System.Runtime.CompilerServices.Unsafe": "6.1.2"
         }
       },
       "Microsoft.NET.StringTools": {

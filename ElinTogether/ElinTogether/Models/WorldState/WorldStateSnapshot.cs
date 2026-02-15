@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using MessagePack;
@@ -61,7 +60,7 @@ public class WorldStateSnapshot : EClass
         }
 
         client.Delta.AddLocal(new DynamicDelta {
-            Action = (_) => {
+            Action = _ => {
                 // 1
                 world.date.raw = [..GameDate];
 
@@ -75,7 +74,7 @@ public class WorldStateSnapshot : EClass
 
                 // 4
                 NetSession.Instance.SharedSpeed = SharedSpeed;
-            }
+            },
         });
     }
 }

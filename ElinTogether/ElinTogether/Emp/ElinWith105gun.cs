@@ -14,7 +14,7 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.elintogether";
     internal const string Name = "Elin Together";
-    internal const string Version = "0.8.114";
+    internal const string Version = "0.9.4";
 
     internal static string BuildVersion => field ??= EmpMod.Assembly.GetName().Version.ToString();
 }
