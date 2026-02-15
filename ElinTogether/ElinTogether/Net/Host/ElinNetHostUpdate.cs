@@ -89,7 +89,9 @@ internal partial class ElinNetHost
     /// </summary>
     private void OnWorldStateDeltaResponse(WorldStateDeltaList response, ISteamNetPeer peer)
     {
-        Delta.AddLocalBatch(response.DeltaList);
+        foreach (var delta in response.DeltaList) {
+            Delta.AddLocal(delta);
+        }
     }
 
     /// <summary>

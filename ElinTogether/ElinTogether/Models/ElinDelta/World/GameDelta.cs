@@ -5,10 +5,13 @@ using MessagePack;
 namespace ElinTogether.Models.ElinDelta;
 
 [MessagePackObject]
-public class GameUpdateDelta : ElinDeltaBase
+public class GameDelta : ElinDeltaBase
 {
+    [Key(0)]
+    public required float Delta { get; init; }
+
     public override void Apply(ElinNetBase net)
     {
-        GameUpdaterUpdateEvent.AllowedUpdate++;
+        Synchronization.GameDelta += Delta;
     }
 }

@@ -24,7 +24,7 @@ namespace ElinTogether.Models.ElinDelta;
 [Union(400, typeof(SpatialGenDelta))]
 [Union(401, typeof(ZoneAddCardDelta))]
 // World
-[Union(500, typeof(GameUpdateDelta))]
+[Union(500, typeof(GameDelta))]
 public abstract class ElinDeltaBase : EClass
 {
     public abstract void Apply(ElinNetBase net);

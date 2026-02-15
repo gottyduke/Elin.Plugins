@@ -13,7 +13,7 @@ public class ElinDeltaManager
     /// <summary>
     ///     Coming in
     /// </summary>
-    private readonly ConcurrentQueue<List<ElinDeltaBase>> _inBuffer = [];
+    private readonly ConcurrentQueue<ElinDeltaBase> _inBuffer = [];
 
     /// <summary>
     ///     Local deferred
@@ -55,27 +55,12 @@ public class ElinDeltaManager
         _outBufferDeferred.Enqueue(delta);
     }
 
-    public void AddLocalFront(ElinDeltaBase delta)
+    /// <summary>
+    ///     Coming in to process
+    /// </summary>
+    public void AddLocal(ElinDeltaBase delta)
     {
-        if (_inBuffer.FirstOrDefault() is List<ElinDeltaBase> batch) {
-            batch.Add(delta);
-        } else {
-            AddLocalBatch([delta]);
-        }
-    }
-
-    public void AddLocalBack(ElinDeltaBase delta)
-    {
-        if (_inBuffer.LastOrDefault() is List<ElinDeltaBase> batch) {
-            batch.Add(delta);
-        } else {
-            AddLocalBatch([delta]);
-        }
-    }
-
-    public void AddLocalBatch(List<ElinDeltaBase> batch)
-    {
-        _inBuffer.Enqueue(batch);
+        _inBuffer.Enqueue(delta);
     }
 
     /// <summary>
@@ -88,22 +73,18 @@ public class ElinDeltaManager
 
     public void ProcessLocalBatch(ElinNetBase net, int batchSize = -1)
     {
-        // hurry up if we are too far behind
-        var n = Math.Max((_inBuffer.Count + 3) / 4, 1);
-        while (n-- > 0) {
-            var batch = FlushInBuffer(batchSize);
-            foreach (var delta in batch) {
-                try {
-                    if (delta is null) {
-                        continue;
-                    }
-
-                    delta.Apply(net);
-                } catch (Exception ex) {
-                    EmpLog.Debug(ex, "Exception at processing delta {DeltaType}\n{@Delta}",
-                        delta.GetType().Name, delta);
-                    // noexcept
+        var batch = FlushInBuffer(batchSize);
+        foreach (var delta in batch) {
+            try {
+                if (delta is null) {
+                    continue;
                 }
+
+                delta.Apply(net);
+            } catch (Exception ex) {
+                EmpLog.Debug(ex, "Exception at processing delta {DeltaType}\n{@Delta}",
+                    delta.GetType().Name, delta);
+                // noexcept
             }
         }
     }
@@ -137,12 +118,16 @@ public class ElinDeltaManager
             return batch;
         }
 
-        if (_inBuffer.TryDequeue(out var delta)) {
-            batch = delta;
+        var count = 0;
+        var max = batchSize > 0 ? batchSize : _inBuffer.Count;
+
+        while (count < max && _inBuffer.TryDequeue(out var delta)) {
+            batch.Add(delta);
+            count++;
         }
 
         while (_inBufferDeferred.TryDequeue(out var deferred)) {
-            AddLocalFront(deferred);
+            _inBuffer.Enqueue(deferred);
         }
 
         return batch;

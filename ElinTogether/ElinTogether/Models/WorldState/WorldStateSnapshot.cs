@@ -60,10 +60,10 @@ public class WorldStateSnapshot : EClass
             return;
         }
 
-        client.Delta.AddLocalBack(new DynamicDelta {
+        client.Delta.AddLocal(new DynamicDelta {
             Action = (_) => {
                 // 1
-                world.date.raw = GameDate.ToArray();
+                world.date.raw = [..GameDate];
 
                 // 2
                 foreach (var snapshot in CharaSnapshots) {

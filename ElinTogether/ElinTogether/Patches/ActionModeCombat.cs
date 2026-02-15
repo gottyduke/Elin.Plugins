@@ -34,7 +34,7 @@ internal class ActionModeCombat
         }
 
         var hasAnyoneToDecide = NetSession.Instance.CurrentPlayers.Any(n =>
-            EClass.pc.party.members.Find(c => c.uid == n.CharaUid)?.ai is GoalRemote g && g.child is null);
+            EClass.pc.party.members.Find(c => c.uid == n.CharaUid)?.ai is GoalRemote { child: null } g);
         if (hasAnyoneToDecide) {
             if (!Paused || WaitForSelf) {
                 Paused = true;

@@ -33,5 +33,7 @@ internal static class RemoteCardHelper
     extension(Chara chara)
     {
         internal RemoteCharaNetProfile NetProfile => RemoteCardNetProfile.GetOrAdd(chara, chara => new(chara));
+
+        internal bool IsRemotePlayer => NetSession.Instance.CurrentPlayers.Any(n => n.CharaUid == chara.uid);
     }
 }
