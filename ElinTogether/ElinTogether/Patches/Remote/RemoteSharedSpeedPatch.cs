@@ -18,8 +18,13 @@ internal static class RemoteSharedSpeedPatch
             return true;
         }
 
-        // always use shared speed from entire session
-        __result = NetSession.Instance.SharedSpeed;
+        // use shared speed if server has a meaningful value
+        var sharedSpeed = NetSession.Instance.SharedSpeed;
+        if (sharedSpeed <= 0) {
+            return true;
+        }
+
+        __result = sharedSpeed;
         return false;
     }
 
