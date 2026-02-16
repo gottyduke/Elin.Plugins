@@ -65,7 +65,7 @@ internal partial class ElinNetClient
         }
 
         EmpPop.Popup(LogEventLevel.Warning, "Failed to validate source list {SourceListType}\n{SourceListDiff}",
-            response.Type, sb);
+            response.Type, sb.ToString());
 
         Socket.Disconnect(Socket.FirstPeer, "emp_source_invalid");
     }

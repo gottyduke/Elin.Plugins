@@ -7,7 +7,7 @@ namespace ElinTogether.Patches;
 [HarmonyPatch]
 internal static class CharaBuildCompleteEvent
 {
-    internal static bool Building;
+    internal static bool Building { get; private set; }
 
     [HarmonyPrefix]
     [HarmonyPatch(typeof(TaskBuild), nameof(TaskBuild.OnProgressComplete))]

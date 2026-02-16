@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using ElinTogether.Models;
-using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net.Steam;
 
 namespace ElinTogether.Net;
@@ -55,7 +53,7 @@ internal partial class ElinNetHost
             return;
         }
 
-        if (Delta.FlushOutBuffer() is not List<ElinDeltaBase> { Count: > 0 } deltaList) {
+        if (Delta.FlushOutBuffer() is not { Count: > 0 } deltaList) {
             return;
         }
 
@@ -115,7 +113,10 @@ internal partial class ElinNetHost
         state.Speed = response.State.Speed;
         state.LastReceivedTick = response.State.LastReceivedTick;
 
-        Session.SharedSpeed = SharedSpeed;
+        // if server disabled shared speed, we use -1
+        Session.SharedSpeed = EmpConfig.Server.SharedAverageSpeed.Value
+            ? SharedSpeed
+            : -1;
 
         WorldStateSnapshot.CachedRemoteSnapshots.Add(response);
 

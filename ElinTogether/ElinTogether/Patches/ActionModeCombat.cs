@@ -8,8 +8,8 @@ namespace ElinTogether.Patches;
 [HarmonyPatch]
 internal class ActionModeCombat
 {
-    internal static bool InCombat { get; set; }
-    internal static bool Paused { get; set; }
+    internal static bool InCombat { get; private set; }
+    internal static bool Paused { get; private set; }
     internal static bool WaitForSelf { get; private set; }
 
     // TODO: loc
