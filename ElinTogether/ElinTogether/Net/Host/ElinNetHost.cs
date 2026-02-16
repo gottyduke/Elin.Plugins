@@ -21,7 +21,7 @@ internal partial class ElinNetHost : ElinNetBase
         StopWorldStateUpdate();
 
         if (!core.IsGameStarted || player?.chara?.homeBranch?.owner is null) {
-            EmpPop.Debug("Server can only be started after claiming a zone");
+            EmpPop.Debug("emp_ui_unclaimed_zone".lang());
             Session.RemoveComponent();
             return;
         }
@@ -48,7 +48,9 @@ internal partial class ElinNetHost : ElinNetBase
         // setup session states
         Session.Player = pc;
         Session.CurrentPlayers.Add(selfState);
-        Session.SharedSpeed = SharedSpeed;
+        Session.SharedSpeed = EmpConfig.Server.SharedAverageSpeed.Value
+            ? SharedSpeed
+            : -1;
 
         EmpPop.Debug("Started server\nSource validations enabled: {SourceValidations}",
             SourceValidationsEnabled.Count);

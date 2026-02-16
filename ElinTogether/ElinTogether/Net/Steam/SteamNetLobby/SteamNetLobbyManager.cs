@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using ElinTogether.Helper;
 using Steamworks;

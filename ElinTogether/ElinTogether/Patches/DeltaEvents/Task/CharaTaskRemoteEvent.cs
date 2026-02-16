@@ -28,8 +28,8 @@ internal static class CharaTaskRemoteEvent
                 break;
         }
 
-        // switch case is inevitable for the mapping layer
-        TaskArgsBase? args = g switch {
+        // a switch case is inevitable for the mapping layer
+        TaskArgsBase args = g switch {
             // no goal/reset
             NoGoal and not GoalRemote => NoTask.Default,
             // task
@@ -61,14 +61,13 @@ internal static class CharaTaskRemoteEvent
             AI_Farm ai => AIFarmArgs.Create(ai),
             AI_Fish ai => AIFishArgs.Create(ai),
             AI_PlayMusic ai => AIPlayMusicArgs.Create(ai),
-            _ => null,
+            // default
+            _ => FakeTask.Default,
         };
 
-        if (args is not null) {
-            connection.Delta.AddRemote(new CharaTaskDelta {
-                Owner = __instance,
-                TaskArgs = args,
-            });
-        }
+        connection.Delta.AddRemote(new CharaTaskDelta {
+            Owner = __instance,
+            TaskArgs = args,
+        });
     }
 }

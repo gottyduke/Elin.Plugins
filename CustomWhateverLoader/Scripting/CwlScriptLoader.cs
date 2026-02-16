@@ -41,6 +41,7 @@ public static partial class CwlScriptLoader
 
         assembly.UnregisterScript();
         assembly.InvokeScriptMethod("CwlScriptUnload");
+        ClassCache.assemblies.Remove(assembly.FullName);
 
         return $"tried to unload {assemblyName}";
     }
@@ -56,6 +57,7 @@ public static partial class CwlScriptLoader
 
         assembly.RegisterScript(assembly.GetName().Name);
         assembly.InvokeScriptMethod("CwlScriptLoad");
+        ClassCache.assemblies.Add(assembly.FullName);
 
         return "script loaded";
     }
@@ -188,10 +190,16 @@ public static partial class CwlScriptLoader
 
         public void InvokeScriptMethod(string methodName, params object[] args)
         {
-            assembly.GetTypes()
+            var inits = assembly.GetTypes()
                 .SelectMany(t => t.GetMethods(AccessTools.all))
-                .FirstOrDefault(mi => mi.Name == methodName)?
-                .Invoke(null, args);
+                .Where(mi => mi.Name == methodName);
+            foreach (var init in inits) {
+                try {
+                    init.Invoke(null, args);
+                } catch (Exception ex) {
+                    CwlMod.Warn<PackageScriptCompiler>("cwl_error_csc_diag".Loc(init.GetAssemblyDetail(), ex.Message));
+                }
+            }
         }
     }
 }

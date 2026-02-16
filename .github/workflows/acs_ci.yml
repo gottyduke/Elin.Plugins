@@ -25,17 +25,18 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           sparse-checkout: |
             CustomWhateverLoader/
             AnimatedCustomSprites/
             Directory.Build.props
+            global.json
           sparse-checkout-cone-mode: false
 
       - name: Checkout Deps
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           path: ${{ matrix.version }}
           ref: ${{ matrix.version }}
@@ -46,7 +47,6 @@ jobs:
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 10.0.x
-          dotnet-quality: preview
           cache: true
           cache-dependency-path:  |
             ${{ github.workspace }}\CustomWhateverLoader\packages.lock.json
@@ -108,7 +108,7 @@ jobs:
           
           $lastTag = git describe --tags --abbrev=0 --match="ACS-*"
           $lastTagSha = git rev-parse $lastTag
-          $commits = git log "$($lastTag)..HEAD" --pretty=format:"%cd;%h;%s" -- AnimatedCustomSprites/ 
+          $commits = git log "$($lastTag)..HEAD" --date=format:"%y-%m-%d %H:%M" --pretty=format:"%cd;%h;%s" -- AnimatedCustomSprites/ 
           | ? {$_ -notmatch "cleanup"} 
           | % {
               $parts = $_ -split ';', 3
@@ -130,7 +130,7 @@ jobs:
 
       - name: Create or Update Release
         if: github.event_name != 'pull_request'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@5be0e66d93ac7ed76da52eca8bb058f665c3a5fe #2.4.2
         with:
           tag_name: ACS-${{ steps.build.outputs.file_version_short }}
           name: Animated Custom Sprites ${{ steps.build.outputs.file_version }}

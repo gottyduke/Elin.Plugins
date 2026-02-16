@@ -18,12 +18,13 @@ namespace ElinTogether.Models.ElinDelta;
 [Union(207, typeof(CharaReviveDelta))]
 [Union(208, typeof(CharaTickConditionDelta))]
 [Union(209, typeof(CharaTaskDelta))]
+[Union(210, typeof(CharaBuildDelta))]
 // Thing
 // Zone
 [Union(400, typeof(SpatialGenDelta))]
 [Union(401, typeof(ZoneAddCardDelta))]
 // World
-[Union(500, typeof(GameTimeDelta))]
+[Union(500, typeof(GameDelta))]
 public abstract class ElinDeltaBase : EClass
 {
     public abstract void Apply(ElinNetBase net);

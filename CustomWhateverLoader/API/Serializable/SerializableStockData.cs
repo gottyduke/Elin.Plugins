@@ -31,8 +31,7 @@ public record SerializableStockItemV3 : SerializableStockItemV2
 
     public Thing Create(int lv = -1)
     {
-        CardBlueprint bp = CardBlueprint.current ?? CardBlueprint._Default;
-        bp.rarity = Rarity;
+        CardBlueprint.SetRarity(Rarity);
 
         var thing = Type switch {
             StockItemType.Item => ThingGen.Create(Id, ReverseId.Material(Material), lv).SetNum(Num),
@@ -41,7 +40,7 @@ public record SerializableStockItemV3 : SerializableStockItemV2
             _ => ThingGen.Create(Id),
         };
 
-        thing.c_IDTState = Identified ? 0 : 1;
+        thing.c_IDTState = (int)(Identified ? IDTLevel.Identified : IDTLevel.RequireSuperiorIdentify);
 
         return thing;
     }

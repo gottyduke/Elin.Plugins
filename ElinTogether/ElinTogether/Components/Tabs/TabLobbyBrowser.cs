@@ -1,3 +1,4 @@
+using Cwl.LangMod;
 using ElinTogether.Net;
 using ElinTogether.Net.Steam;
 
@@ -17,15 +18,15 @@ internal class TabLobbyBrowser : TabEmpBase
         btnGroup.Layout.childForceExpandWidth = true;
 
         if (!EClass.core.IsGameStarted) {
-            btnGroup.Header("Server can only be started in an active save");
+            btnGroup.Header("emp_ui_unclaimed_zone");
             return;
         }
 
         if (NetSession.Instance.Connection == null) {
-            btnGroup.Button("Start Server", StartServerFromPanel);
+            btnGroup.Button("emp_ui_sv_start".lang(), StartServerFromPanel);
         } else {
-            btnGroup.Button("Invite Friend", NetSession.Instance.Lobby.InviteSteamOverlay);
-            btnGroup.Button("Disconnect", DisconnectFromPanel);
+            btnGroup.Button("emp_ui_sv_invite".lang(), NetSession.Instance.Lobby.InviteSteamOverlay);
+            btnGroup.Button("emp_ui_sv_dc".lang(), DisconnectFromPanel);
         }
     }
 
@@ -33,7 +34,7 @@ internal class TabLobbyBrowser : TabEmpBase
     {
         Spacer(5);
 
-        var totalPlayers = Header("Total Online Players : ");
+        var totalPlayers = Header("");
 
         NetSession.Instance.Lobby.GetOnlineLobbies(SetupLobbyDisplay);
 
@@ -47,11 +48,10 @@ internal class TabLobbyBrowser : TabEmpBase
                 var count = lobby.GetCurrentPlayersCount();
                 total += count;
 
-                HeaderCard($"{lobby.OwnerName}'s Game [{lobby.GameVersion}] with " +
-                           $"{lobby.PlayerCount} Player, at {lobby.CurrentZone}");
+                HeaderCard("emp_ui_lobby_desc".Loc(lobby.OwnerName, lobby.GameVersion, lobby.PlayerCount, lobby.CurrentZone));
             }
 
-            totalPlayers.text1.text += total;
+            totalPlayers.text1.text = "emp_ui_lobby_tally".Loc(total);
         }
     }
 

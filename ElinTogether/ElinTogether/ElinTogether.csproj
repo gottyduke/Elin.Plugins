@@ -60,21 +60,21 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Serilog" Version="4.3.1-dev-02395"/>
+        <PackageReference Include="Serilog" Version="4.3.1"/>
         <PackageReference Include="Serilog.Formatting.Compact" Version="3.0.0"/>
         <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1"/>
-        <PackageReference Include="Serilog.Sinks.File" Version="7.0.1-dev-02315"/>
-        <PackageReference Include="Serilog.Sinks.Http" Version="9.2.0"/>
-        <PackageReference Include="System.Collections.Immutable" Version="10.0.1" />
+        <PackageReference Include="Serilog.Sinks.File" Version="8.0.0-dev-02318"/>
+        <PackageReference Include="Serilog.Sinks.Http" Version="9.2.1"/>
+        <PackageReference Include="System.Collections.Immutable" Version="11.0.0-preview.1.26104.118"/>
     </ItemGroup>
     <Target Name="CopyAssets" AfterTargets="AfterBuild">
         <ItemGroup>
             <Assets Include="..\package\**\*.*"/>
         </ItemGroup>
         <Copy
-                SourceFiles="@(Assets)"
-                DestinationFiles="@(Assets->'$(OutDir)%(RecursiveDir)%(Filename)%(Extension)')"
-                SkipUnchangedFiles="true"
+            SourceFiles="@(Assets)"
+            DestinationFiles="@(Assets->'$(OutDir)%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
         />
     </Target>
     <Target Name="RemovePdbFromRelease" AfterTargets="Build" Condition="'$(Configuration)' == 'Release' OR '$(Configuration)' == 'ReleaseNightly'">

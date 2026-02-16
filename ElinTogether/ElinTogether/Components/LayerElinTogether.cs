@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using Cwl.API.Attributes;
+using Cwl.Helper.String;
+using ElinTogether.Net;
 using UnityEngine;
 using YKF;
-using Cwl.Helper.String;
 
 namespace ElinTogether.Components;
 
@@ -10,9 +11,10 @@ internal class LayerElinTogether : YKLayer<LayerCreationData>
 {
     private static Vector2 _browsedPosition = Vector2.zero;
     private static string _lastOpenedTab = "";
+    private readonly bool _resetHyp = Lang.setting.hyphenation;
 
     private readonly List<TabEmpBase> _tabs = [];
-    private bool _resetHyp;
+
     public override string Title => "Elin Together";
     public override Rect Bound => FitWindow();
 
@@ -22,12 +24,14 @@ internal class LayerElinTogether : YKLayer<LayerCreationData>
     {
         Instance = this;
 
-        if (Lang.setting.hyphenation) {
+        if (_resetHyp) {
             Lang.setting.hyphenation = false;
-            _resetHyp = true;
         }
 
         _tabs.Add(CreateTab<TabLobbyBrowser>("emp_ui_tab_lobby", "emp_tab_lobby"));
+        if (NetSession.Instance.Connection is ElinNetHost) {
+            _tabs.Add(CreateTab<TabServerConfiguration>("emp_ui_tab_server", "emp_tab_server"));
+        }
     }
 
     public override void OnAfterAddLayer()

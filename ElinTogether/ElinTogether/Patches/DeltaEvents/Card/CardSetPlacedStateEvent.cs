@@ -15,6 +15,11 @@ internal static class CardSetPlacedStateEvent
             return true;
         }
 
+        // avoid duplicate actions sending
+        if (CharaBuildCompleteEvent.Building) {
+            return true;
+        }
+
         if (newState == PlaceState.none) {
             return true;
         }
@@ -25,6 +30,7 @@ internal static class CardSetPlacedStateEvent
         connection.Delta.AddRemote(new CardPlacedDelta {
             Owner = __instance,
             PlaceState = newState,
+            Dir = __instance.dir,
             ByPlayer = byPlayer,
         });
 

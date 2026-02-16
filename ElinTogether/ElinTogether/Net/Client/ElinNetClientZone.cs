@@ -94,7 +94,7 @@ internal partial class ElinNetClient
         if (currentZone?.uid != response.ZoneUid) {
             // ??? how
             Socket.Disconnect(Socket.FirstPeer, "emp_invalid_zone");
-            throw new InvalidOperationException("zone state is invalid");
+            throw new InvalidOperationException($"zone state is invalid with uid {response.ZoneUid}");
         }
 
         if (player.zone is null) {
