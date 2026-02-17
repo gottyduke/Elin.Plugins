@@ -22,7 +22,7 @@ internal partial class CwlMod
         }
 
 #if !DEBUG
-        CustomAchievement.UnlockPersistent("cwl_first_exception");
+        API.Custom.CustomAchievement.UnlockPersistent("cwl_first_exception");
 #endif
 
         var profile = ExceptionProfile.GetFromStackTrace(stackTrace, message);

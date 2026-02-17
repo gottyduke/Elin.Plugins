@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Cwl.API.Attributes;
 using Cwl.API.Processors;
 using Cwl.Helper.FileUtil;
@@ -62,6 +63,11 @@ public class CustomAchievement
 
     public static IReadOnlyCollection<CustomAchievement> AllAchievements => ManagedAchievements.Values;
 
+    public bool HasPrerequisites => Achievement.Prerequisites is { Length: > 0 };
+    public bool IsPrerequisiteMet => !HasPrerequisites || GetMissingPrerequisites().Count == 0;
+    public bool IsProgressMet => Achievement.AutoUnlockProgress is null || Progress >= Achievement.AutoUnlockProgress;
+    public bool IsUnlockable => IsPrerequisiteMet && IsProgressMet;
+
     public static CustomAchievement AddAchievement(SerializableAchievement achievement)
     {
         if (!_managedTemplates.TryAdd(achievement.Id, achievement)) {
@@ -75,24 +81,47 @@ public class CustomAchievement
         };
     }
 
+    public IReadOnlyList<CustomAchievement> GetPrerequisiteAchievements()
+    {
+        if (Achievement.Prerequisites is null || Achievement.Prerequisites.Length == 0) {
+            return [];
+        }
+
+        return Achievement.Prerequisites
+            .Select(GetAchievement)
+            .OfType<CustomAchievement>()
+            .ToArray();
+    }
+
+    public IReadOnlyList<string> GetMissingPrerequisites()
+    {
+        if (Achievement.Prerequisites is null || Achievement.Prerequisites.Length == 0) {
+            return [];
+        }
+
+        return Achievement.Prerequisites
+            .Where(id => GetAchievement(id) is not { IsUnlocked: true })
+            .ToArray();
+    }
+
     [ConsoleCommand("add")]
     public static CustomAchievement AddAchievement(string id,
                                                    string name,
                                                    string? description = null,
-                                                   string? prerequisite = null,
+                                                   string[]? prerequisites = null,
                                                    float? goal = null)
     {
         return AddAchievement(new() {
             Id = id,
             Name = name,
             Description = description,
-            Prerequisite = prerequisite,
+            Prerequisites = prerequisites,
             AutoUnlockProgress = goal,
         });
     }
 
     /// <summary>
-    ///     Unlock a mod achievement by id unconditionally
+    ///     Unlock a mod achievement by id
     /// </summary>
     [ConsoleCommand("unlock")]
     public static void Unlock(string id)
@@ -101,12 +130,34 @@ public class CustomAchievement
     }
 
     /// <summary>
+    ///     Unlock a mod achievement by id unconditionally
+    /// </summary>
+    [ConsoleCommand("unlock")]
+    public static void UnlockForce(string id)
+    {
+        UnlockPrerequisites(id);
+        GetAchievement(id)?.Unlock(force: true);
+    }
+
+    /// <summary>
     ///     Unlock a mod achievement by id unconditionally and persistently save its state
     /// </summary>
     [ConsoleCommand("unlock_persistent")]
     public static void UnlockPersistent(string id)
     {
-        GetAchievement(id)?.Unlock(true);
+        GetAchievement(id)?.Unlock(persistent: true);
+    }
+
+    /// <summary>
+    ///     Unlock all prerequisites of a mod achievement by id unconditionally
+    /// </summary>
+    /// <param name="id"></param>
+    [ConsoleCommand("unlock_persistent")]
+    public static void UnlockPrerequisites(string id)
+    {
+        foreach (var prerequisite in GetAchievement(id)?.GetPrerequisiteAchievements() ?? []) {
+            prerequisite.Unlock(force: true);
+        }
     }
 
     /// <summary>
@@ -144,6 +195,8 @@ public class CustomAchievement
     [ConsoleCommand("reimport")]
     public static void ReimportAchievementDefinitions()
     {
+        _managedTemplates.Clear();
+
         var definitions = PackageIterator.GetRelocatedFilesFromPackage("Data/achievement.json");
         foreach (var definition in definitions) {
             if (!ConfigCereal.ReadConfig<SerializableAchievement[]>(definition.FullName, out var achievements)) {
@@ -160,9 +213,13 @@ public class CustomAchievement
         }
     }
 
-    public void Unlock(bool persistent = false)
+    public void Unlock(bool persistent = false, bool force = false)
     {
         if (IsUnlocked) {
+            return;
+        }
+
+        if (!IsUnlockable && !force) {
             return;
         }
 
@@ -198,6 +255,8 @@ public class CustomAchievement
         Progress = 0f;
         TimeUnlocked = null;
 
+        _persistentUnlocks.Remove(Achievement.Id);
+
         CwlMod.Log<CustomAchievement>("cwl_log_acv_reset".Loc(Achievement.Id));
     }
 
@@ -205,9 +264,7 @@ public class CustomAchievement
     {
         Progress = progress;
 
-        if (Achievement.AutoUnlockProgress is { } goal && progress >= goal) {
-            Unlock();
-        }
+        Unlock();
     }
 
     public void ModProgress(float progressMod)
