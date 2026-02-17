@@ -31,6 +31,7 @@ internal class SourceInitPatch
         __instance.initialized = false;
 
         if (_patched) {
+            // dispatch reload event
             foreach (var (sr, _) in AttributeQuery.MethodsWith<CwlSourceReloadEvent>()) {
                 try {
                     sr.FastInvokeStatic();
