@@ -84,6 +84,15 @@ internal partial class ElinNetClient
         states.Apply();
     }
 
+    /// <summary>
+    ///     Net event: Apply new session rules
+    /// </summary>
+    /// <param name="rules"></param>
+    private void OnSessionRulesUpdate(NetSessionRules rules)
+    {
+        NetSession.Instance.Rules = rules;
+    }
+
 #region Scheduler Jobs
 
     /// <summary>

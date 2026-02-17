@@ -81,6 +81,14 @@ internal partial class ElinNetHost
     }
 
     /// <summary>
+    ///     Update remote client's session rules
+    /// </summary>
+    internal void UpdateRemoteSessionRules()
+    {
+        Broadcast(NetSessionRules.Default);
+    }
+
+    /// <summary>
     ///     Net event: Respond to manual requests
     /// </summary>
     private void OnWorldStateRequest(WorldStateRequest request, ISteamNetPeer peer)

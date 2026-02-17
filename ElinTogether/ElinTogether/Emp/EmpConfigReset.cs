@@ -2,6 +2,7 @@ using System.IO;
 using Cwl.API.Processors;
 using Cwl.Helper.FileUtil;
 using Cwl.LangMod;
+using ElinTogether.Net;
 using ReflexCLI.Attributes;
 
 namespace ElinTogether;
@@ -61,6 +62,10 @@ internal partial class EmpConfig
                 config.SaveOnConfigSet = false;
                 config.Reload();
                 config.SaveOnConfigSet = true;
+
+                if (NetSession.Instance.Connection is ElinNetHost host) {
+                    host.UpdateRemoteSessionRules();
+                }
             });
     }
 

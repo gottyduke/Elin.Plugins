@@ -36,6 +36,7 @@ internal partial class ElinNetClient : ElinNetBase
         Router.RegisterHandler<ZoneActivateResponse>(OnZoneActivateResponse);
         Router.RegisterHandler<WorldStateSnapshot>(OnWorldStateSnapshot);
         Router.RegisterHandler<WorldStateDeltaList>(OnWorldStateDeltaResponse);
+        Router.RegisterHandler<NetSessionRules>(OnSessionRulesUpdate);
     }
 
     protected override void DisconnectInactive()
