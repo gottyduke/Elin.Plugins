@@ -16,6 +16,47 @@ internal static class Synchronization
     internal static bool CanSendDelta { get; set; }
     internal static int RefSpeed { get; set; }
 
+    [HarmonyPatch]
+    internal static class CharaSynchronizationContext
+    {
+        [HarmonyTranspiler]
+        [HarmonyPatch(typeof(Chara), nameof(Chara._Move))]
+        internal static IEnumerable<CodeInstruction> OnCharaMove(IEnumerable<CodeInstruction> instructions)
+        {
+            return new CodeMatcher(instructions)
+                .MatchStartForward(
+                    new CodeMatch(OpCodes.Stfld, AccessTools.Field(typeof(Chara), nameof(Chara.actTime))))
+                .RemoveInstruction()
+                .InsertAndAdvance(
+                    Transpilers.EmitDelegate(SetActTime))
+                .InstructionEnumeration();
+        }
+
+        [HarmonyTranspiler]
+        [HarmonyPatch(typeof(Chara), nameof(Chara.Tick))]
+        internal static IEnumerable<CodeInstruction> OnCharaTick(IEnumerable<CodeInstruction> instructions)
+        {
+            return new CodeMatcher(instructions)
+                .MatchStartForward(
+                    new CodeMatch(OpCodes.Stfld, AccessTools.Field(typeof(Chara), nameof(Chara.actTime))))
+                .RemoveInstruction()
+                .InsertAndAdvance(
+                    Transpilers.EmitDelegate(SetActTime))
+                .MatchStartForward(
+                    new CodeMatch(OpCodes.Stfld, AccessTools.Field(typeof(Chara), nameof(Chara.actTime))))
+                .Advance(-10)
+                .RemoveInstructions(11)
+                .InsertAndAdvance(
+                    Transpilers.EmitDelegate(SetActTime))
+                .InstructionEnumeration();
+        }
+
+        private static void SetActTime(Chara chara, float num)
+        {
+            chara.actTime = num * Mathf.Max(0.1f, (float)RefSpeed / chara.Speed);
+        }
+    }
+
     [HarmonyPatch(typeof(Core), nameof(Core.Update))]
     internal static class CoreSynchronizationContext
     {
@@ -92,39 +133,4 @@ internal static class Synchronization
             }
         }
     }
-
-    [HarmonyPatch]
-    [HarmonyTranspiler, HarmonyPatch(typeof(Chara), nameof(Chara._Move))]
-    internal static IEnumerable<CodeInstruction> OnCharaMove(IEnumerable<CodeInstruction> instructions)
-    {
-        return new CodeMatcher(instructions)
-            .MatchStartForward(
-                new CodeMatch(OpCodes.Stfld, AccessTools.Field(typeof(Chara), nameof(Chara.actTime))))
-            .RemoveInstruction()
-            .InsertAndAdvance(
-                Transpilers.EmitDelegate(SetActTime))
-            .InstructionEnumeration();
-    }
-
-    [HarmonyPatch]
-    [HarmonyTranspiler, HarmonyPatch(typeof(Chara), nameof(Chara.Tick))]
-    internal static IEnumerable<CodeInstruction> OnCharaTick(IEnumerable<CodeInstruction> instructions)
-    {
-        return new CodeMatcher(instructions)
-            .MatchStartForward(
-                new CodeMatch(OpCodes.Stfld, AccessTools.Field(typeof(Chara), nameof(Chara.actTime))))
-            .RemoveInstruction()
-            .InsertAndAdvance(
-                Transpilers.EmitDelegate(SetActTime))
-            .MatchStartForward(
-                new CodeMatch(OpCodes.Stfld, AccessTools.Field(typeof(Chara), nameof(Chara.actTime))))
-            .Advance(-10)
-            .RemoveInstructions(11)
-            .InsertAndAdvance(
-                Transpilers.EmitDelegate(SetActTime))
-            .InstructionEnumeration();
-    }
-
-    private static void SetActTime(Chara chara, float num) =>
-        chara.actTime = num * Mathf.Max(0.1f, (float)RefSpeed / chara.Speed);
 }
