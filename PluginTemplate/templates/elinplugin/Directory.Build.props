@@ -1,4 +1,7 @@
 <Project>
+    <PropertyGroup Condition="'$(ElinGamePath.Trim())' == '' AND '$(OS)' == 'Windows_NT'">
+        <ElinGamePath>C:\Program Files (x86)\Steam\steamapps\common\Elin</ElinGamePath>
+    </PropertyGroup>
     <PropertyGroup>
         <NoWarn>1701;1702;8620;8604</NoWarn>
     </PropertyGroup>
