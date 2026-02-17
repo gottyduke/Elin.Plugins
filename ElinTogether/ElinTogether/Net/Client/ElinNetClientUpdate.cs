@@ -1,4 +1,5 @@
 using ElinTogether.Models;
+using ElinTogether.Patches;
 
 namespace ElinTogether.Net;
 
@@ -90,10 +91,8 @@ internal partial class ElinNetClient
     /// </summary>
     public void StartWorldStateUpdate()
     {
-        // // 25hz delta dispatch
-        // Scheduler.Subscribe(WorldStateDeltaUpdate, 25f);
-        // // 50hz delta process
-        // Scheduler.Subscribe(WorldStateDeltaProcess, 50f);
+        // 50hz delta dispatch
+        Scheduler.Subscribe(() => Synchronization.CanSendDelta = true, 50f);
 
         _pauseUpdate = false;
     }
@@ -103,8 +102,7 @@ internal partial class ElinNetClient
     /// </summary>
     public void StopWorldStateUpdate()
     {
-        // Scheduler.Unsubscribe(WorldStateDeltaUpdate);
-        // Scheduler.Unsubscribe(WorldStateDeltaProcess);
+        Scheduler.Unsubscribe(WorldStateDeltaUpdate);
 
         _pauseUpdate = false;
 

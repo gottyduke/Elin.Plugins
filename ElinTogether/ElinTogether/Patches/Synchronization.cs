@@ -1,6 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection.Emit;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
+using UnityEngine;
 
 namespace ElinTogether.Patches;
 
@@ -8,6 +13,8 @@ namespace ElinTogether.Patches;
 internal static class Synchronization
 {
     internal static float GameDelta { get; set; }
+    internal static bool CanSendDelta { get; set; }
+    internal static int RefSpeed { get; set; }
 
     [HarmonyPatch(typeof(Core), nameof(Core.Update))]
     internal static class CoreSynchronizationContext
@@ -38,9 +45,14 @@ internal static class Synchronization
                         });
                     }
 
-                    host.WorldStateDeltaUpdate();
+                    if (CanSendDelta) {
+                        CanSendDelta = false;
+                        host.WorldStateDeltaUpdate();
+                    }
+
                     return;
-                case ElinNetClient client:
+                case ElinNetClient client when CanSendDelta:
+                    CanSendDelta = false;
                     client.WorldStateDeltaUpdate();
                     return;
             }
@@ -51,7 +63,7 @@ internal static class Synchronization
     internal static class GameSynchronizationContext
     {
         [HarmonyPrefix]
-        internal static void SetGameDelta()
+        internal static void OnGameOnUpdate()
         {
             switch (NetSession.Instance.Connection) {
                 // apply game delta as clients
@@ -62,7 +74,57 @@ internal static class Synchronization
                 case ElinNetHost when !EMono.scene.paused:
                     ActionMode.Adv.SetTurbo();
                     break;
+                default:
+                    RefSpeed = EClass.pc.Speed;
+                    return;
+            }
+
+            if (EmpConfig.Server.SharedAverageSpeed.Value) {
+                RefSpeed = NetSession.Instance.SharedSpeed;
+            } else {
+                var min = (float)NetSession.Instance.CurrentPlayers.Where(n => n.Speed > 0).Min(n => n.Speed);
+                var max = (float)NetSession.Instance.CurrentPlayers.Max(n => n.Speed);
+                var mult = Math.Sqrt(max / min);
+
+                mult = Math.Min(mult, 8f);
+
+                RefSpeed = (int)(max / mult);
             }
         }
     }
+
+    [HarmonyPatch]
+    [HarmonyTranspiler, HarmonyPatch(typeof(Chara), nameof(Chara._Move))]
+    internal static IEnumerable<CodeInstruction> OnCharaMove(IEnumerable<CodeInstruction> instructions)
+    {
+        return new CodeMatcher(instructions)
+            .MatchStartForward(
+                new CodeMatch(OpCodes.Stfld, AccessTools.Field(typeof(Chara), nameof(Chara.actTime))))
+            .RemoveInstruction()
+            .InsertAndAdvance(
+                Transpilers.EmitDelegate(SetActTime))
+            .InstructionEnumeration();
+    }
+
+    [HarmonyPatch]
+    [HarmonyTranspiler, HarmonyPatch(typeof(Chara), nameof(Chara.Tick))]
+    internal static IEnumerable<CodeInstruction> OnCharaTick(IEnumerable<CodeInstruction> instructions)
+    {
+        return new CodeMatcher(instructions)
+            .MatchStartForward(
+                new CodeMatch(OpCodes.Stfld, AccessTools.Field(typeof(Chara), nameof(Chara.actTime))))
+            .RemoveInstruction()
+            .InsertAndAdvance(
+                Transpilers.EmitDelegate(SetActTime))
+            .MatchStartForward(
+                new CodeMatch(OpCodes.Stfld, AccessTools.Field(typeof(Chara), nameof(Chara.actTime))))
+            .Advance(-10)
+            .RemoveInstructions(11)
+            .InsertAndAdvance(
+                Transpilers.EmitDelegate(SetActTime))
+            .InstructionEnumeration();
+    }
+
+    private static void SetActTime(Chara chara, float num) =>
+        chara.actTime = num * Mathf.Max(0.1f, (float)RefSpeed / chara.Speed);
 }

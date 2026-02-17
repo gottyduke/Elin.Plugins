@@ -1,6 +1,7 @@
 using System;
 using ElinTogether.Models;
 using ElinTogether.Net.Steam;
+using ElinTogether.Patches;
 
 namespace ElinTogether.Net;
 
@@ -141,10 +142,8 @@ internal partial class ElinNetHost
         Scheduler.Subscribe(UpdateRemotePlayerStates, 0.5f);
         // 5hz world snapshot reconciliation
         Scheduler.Subscribe(WorldStateSnapshotUpdate, 5f);
-        // // 25hz delta dispatch
-        // Scheduler.Subscribe(WorldStateDeltaUpdate, 25f);
-        // // 50hz delta process
-        // Scheduler.Subscribe(WorldStateDeltaProcess, 50f);
+        // 50hz delta dispatch
+        Scheduler.Subscribe(() => Synchronization.CanSendDelta = true, 50f);
 
         _pauseUpdate = false;
     }
@@ -156,8 +155,7 @@ internal partial class ElinNetHost
     {
         Scheduler.Unsubscribe(UpdateRemotePlayerStates);
         Scheduler.Unsubscribe(WorldStateSnapshotUpdate);
-        // Scheduler.Unsubscribe(WorldStateDeltaUpdate);
-        // Scheduler.Unsubscribe(WorldStateDeltaProcess);
+        Scheduler.Unsubscribe(WorldStateDeltaUpdate);
 
         Session.Tick = 0;
 
