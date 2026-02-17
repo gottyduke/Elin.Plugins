@@ -21,6 +21,10 @@ internal partial class CwlMod
             return;
         }
 
+#if !DEBUG
+        CustomAchievement.UnlockPersistent("cwl_first_exception");
+#endif
+
         var profile = ExceptionProfile.GetFromStackTrace(stackTrace, message);
         if (profile.Hidden) {
             return;

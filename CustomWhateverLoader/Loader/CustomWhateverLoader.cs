@@ -21,7 +21,7 @@ public static class ModInfo
     public const string Guid = "dk.elinplugins.customdialogloader";
     public const string Name = "Custom Whatever Loader";
 
-    public const string Version = "1.21.13";
+    public const string Version = "1.21.14";
 
     // for runtime versions
     public static string BuildVersion => field ??= CwlMod.Assembly.GetName().Version.ToString();
@@ -30,10 +30,10 @@ public static class ModInfo
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
 internal sealed partial class CwlMod : BaseUnityPlugin
 {
+    internal const bool IsModdingApiCompatible = false;
     internal static readonly Assembly Assembly = Assembly.GetExecutingAssembly();
     internal static readonly Harmony SharedHarmony = new(ModInfo.Guid);
     internal static readonly bool IsModdingApiAvailable = Type.GetType("EMod, Plugin.Modding") != null;
-    internal const bool IsModdingApiCompatible = false;
     internal static CwlMod? Instance { get; private set; }
 
     private void Awake()

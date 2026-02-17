@@ -116,6 +116,8 @@ internal sealed partial class CwlMod
 
         AddResourceRelocators();
 
+        CustomAchievement.ReimportAchievementDefinitions();
+
         DataLoader.PreloadDialog();
         DataLoader.MergeEffectSetting();
 

@@ -37,7 +37,7 @@
             <PrivateAssets>all</PrivateAssets>
             <ExcludeAssets>runtime</ExcludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="5.3.0-2.final" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="5.3.0-2.final"/>
         <PackageReference Include="PolySharp" Version="1.15.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -46,7 +46,7 @@
             <PrivateAssets>all</PrivateAssets>
             <ExcludeAssets>runtime</ExcludeAssets>
         </PackageReference>
-        <PackageReference Include="System.Collections.Immutable" Version="11.0.0-preview.1.26104.118" />
+        <PackageReference Include="System.Collections.Immutable" Version="11.0.0-preview.1.26104.118"/>
         <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.3"/>
     </ItemGroup>
     <ItemGroup>
@@ -64,29 +64,16 @@
         <None Remove="README.JP.md"/>
         <None Remove="scripts\**"/>
         <None Remove="packages.lock.json"/>
-        <None Update="LangMod\CN\Text\Help\help.txt">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="LangMod\CN\cwl_sources.xlsx">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="LangMod\EN\Text\Help\help.txt">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Update="LangMod\EN\cwl_sources.xlsx">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
         <None Remove="assets\**"/>
     </ItemGroup>
     <Target Name="CopyAssets" AfterTargets="AfterBuild">
         <ItemGroup>
-            <TextureFiles Include="assets\Texture\*.*"/>
+            <Assets Include="package\**\*.*"/>
         </ItemGroup>
         <Copy
-                SourceFiles="@(TextureFiles)"
-                DestinationFiles="@(TextureFiles->'$(TargetDir)Texture\%(Filename)%(Extension)')"
-                SkipUnchangedFiles="true"
-                OverwriteReadOnlyFiles="true"
+            SourceFiles="@(Assets)"
+            DestinationFiles="@(Assets->'$(OutDir)%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
         />
         <PropertyGroup>
             <SourcePreviewImage Condition="'$(Configuration)' == 'Debug' OR '$(Configuration)' == 'Release'">assets\preview_stable.jpg</SourcePreviewImage>
@@ -95,18 +82,18 @@
             <SourcePackageMeta Condition="'$(Configuration)' == 'DebugNightly' OR '$(Configuration)' == 'ReleaseNightly'">assets\package_nightly.xml</SourcePackageMeta>
         </PropertyGroup>
         <Copy
-                SourceFiles="$(SourcePreviewImage)"
-                DestinationFiles="$(TargetDir)preview.jpg"
-                SkipUnchangedFiles="true"
-                OverwriteReadOnlyFiles="true"
-                Condition="'$(SourcePreviewImage)' != ''"
+            SourceFiles="$(SourcePreviewImage)"
+            DestinationFiles="$(TargetDir)preview.jpg"
+            SkipUnchangedFiles="true"
+            OverwriteReadOnlyFiles="true"
+            Condition="'$(SourcePreviewImage)' != ''"
         />
         <Copy
-                SourceFiles="$(SourcePackageMeta)"
-                DestinationFiles="$(TargetDir)package.xml"
-                SkipUnchangedFiles="true"
-                OverwriteReadOnlyFiles="true"
-                Condition="'$(SourcePackageMeta)' != ''"
+            SourceFiles="$(SourcePackageMeta)"
+            DestinationFiles="$(TargetDir)package.xml"
+            SkipUnchangedFiles="true"
+            OverwriteReadOnlyFiles="true"
+            Condition="'$(SourcePackageMeta)' != ''"
         />
     </Target>
     <Target Name="RemovePdbFromRelease" AfterTargets="Build" Condition="'$(Configuration)' == 'Release' OR '$(Configuration)' == 'ReleaseNightly'">
