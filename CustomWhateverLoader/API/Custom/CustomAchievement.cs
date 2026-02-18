@@ -29,7 +29,7 @@ public class CustomAchievement
     {
         get => field ??= [];
         set {
-            field ??= [];
+            field = [];
 
             if (value is null) {
                 return;
@@ -145,7 +145,7 @@ public class CustomAchievement
     [ConsoleCommand("unlock_persistent")]
     public static void UnlockPersistent(string id)
     {
-        GetAchievement(id)?.Unlock(persistent: true);
+        GetAchievement(id)?.Unlock(true);
     }
 
     /// <summary>
