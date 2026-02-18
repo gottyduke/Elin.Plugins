@@ -39,12 +39,11 @@ public class CustomAchievement
                 if (_managedTemplates.TryGetValue(id, out var template)) {
                     field[id] = new() {
                         Achievement = template,
+                        IsUnlocked = achievement.IsUnlocked,
+                        TimeUnlocked = achievement.TimeUnlocked,
+                        Progress = achievement.Progress,
                     };
                 }
-
-                field[id].IsUnlocked = achievement.IsUnlocked;
-                field[id].TimeUnlocked = achievement.TimeUnlocked;
-                field[id].Progress = achievement.Progress;
             }
         }
     }
