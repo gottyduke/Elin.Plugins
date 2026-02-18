@@ -29,7 +29,7 @@ public class CustomAchievement
     {
         get => field ??= [];
         set {
-            field = [];
+            field ??= [];
 
             if (value is null) {
                 return;
@@ -39,12 +39,13 @@ public class CustomAchievement
                 if (_managedTemplates.TryGetValue(id, out var template)) {
                     field[id] = new() {
                         Achievement = template,
+                        IsUnlocked = achievement.IsUnlocked,
+                        TimeUnlocked = achievement.TimeUnlocked,
+                        Progress = achievement.Progress,
                     };
+                } else {
+                    field[id] = achievement;
                 }
-
-                field[id].IsUnlocked = achievement.IsUnlocked;
-                field[id].TimeUnlocked = achievement.TimeUnlocked;
-                field[id].Progress = achievement.Progress;
             }
         }
     }
