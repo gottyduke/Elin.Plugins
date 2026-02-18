@@ -125,7 +125,7 @@ internal static class Synchronization
                 return;
             }
 
-            if (NetSession.Instance.Rules?.UseSharedSpeed is true) {
+            if (NetSession.Instance.Rules.UseSharedSpeed) {
                 RefSpeed = NetSession.Instance.SharedSpeed;
             } else {
                 var min = (float)NetSession.Instance.CurrentPlayers.Where(n => n.Speed > 0).Min(n => n.Speed);

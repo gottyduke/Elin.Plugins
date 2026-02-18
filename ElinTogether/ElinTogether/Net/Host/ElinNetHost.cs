@@ -48,7 +48,7 @@ internal partial class ElinNetHost : ElinNetBase
         // setup session states
         Session.Player = pc;
         Session.CurrentPlayers.Add(selfState);
-        Session.SharedSpeed = EmpConfig.Server.SharedAverageSpeed.Value
+        Session.SharedSpeed = NetSession.Instance.Rules.UseSharedSpeed
             ? SharedSpeed
             : -1;
 

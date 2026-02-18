@@ -1,4 +1,5 @@
 using BepInEx.Configuration;
+using ElinTogether.Net;
 using ReflexCLI.Attributes;
 
 namespace ElinTogether;
@@ -60,6 +61,9 @@ internal partial class EmpConfig
             "Otherwise each player will have their own speed\n" +
             "所有玩家共享平均速度\n" +
             "否则所有人按各自速度行动");
+
+        Server.SharedAverageSpeed.SettingChanged += (_, _) =>
+            NetSession.Instance.Rules.UseSharedSpeed = Server.SharedAverageSpeed.Value;
 
         Reload();
     }

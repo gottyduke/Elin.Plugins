@@ -20,7 +20,7 @@ public class CharaStateSnapshot : EClass
     [Key(3)]
     public required int Hp { get; set; }
 
-    // client provided
+    // player provided
     [Key(4)]
     public PlayerCharaStateSnapshot? State { get; set; }
 

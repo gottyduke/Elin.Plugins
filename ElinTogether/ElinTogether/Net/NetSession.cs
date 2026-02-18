@@ -33,7 +33,7 @@ public class NetSession : EClass
     public Zone? CurrentZone { get; internal set; }
     public int Tick { get; internal set; }
     public ulong SessionId { get; internal set; }
-    public NetSessionRules? Rules { get; internal set; }
+    public NetSessionRules Rules { get; internal set; } = NetSessionRules.Default;
 
     public List<NetPeerState> CurrentPlayers => field ??= [];
     public SteamNetLobbyManager Lobby => field ??= new();

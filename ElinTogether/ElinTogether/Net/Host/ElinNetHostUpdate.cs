@@ -85,7 +85,7 @@ internal partial class ElinNetHost
     /// </summary>
     internal void UpdateRemoteSessionRules()
     {
-        Broadcast(NetSessionRules.Default);
+        Broadcast(NetSession.Instance.Rules);
     }
 
     /// <summary>
@@ -128,7 +128,7 @@ internal partial class ElinNetHost
         state.LastReceivedTick = response.State.LastReceivedTick;
 
         // if server disabled shared speed, we use -1
-        Session.SharedSpeed = EmpConfig.Server.SharedAverageSpeed.Value
+        Session.SharedSpeed = NetSession.Instance.Rules.UseSharedSpeed
             ? SharedSpeed
             : -1;
 
