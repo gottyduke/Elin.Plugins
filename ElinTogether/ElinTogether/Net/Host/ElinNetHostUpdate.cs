@@ -85,6 +85,7 @@ internal partial class ElinNetHost
     /// </summary>
     internal void UpdateRemoteSessionRules()
     {
+        NetSession.Instance.Rules = NetSessionRules.Default;
         Broadcast(NetSession.Instance.Rules);
     }
 
