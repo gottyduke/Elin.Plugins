@@ -22,7 +22,7 @@ public class CharaStateSnapshot : EClass
 
     // client provided
     [Key(4)]
-    public ClientCharaStateSnapshot? State { get; set; }
+    public PlayerCharaStateSnapshot? State { get; set; }
 
     public static CharaStateSnapshot Create(Chara chara)
     {

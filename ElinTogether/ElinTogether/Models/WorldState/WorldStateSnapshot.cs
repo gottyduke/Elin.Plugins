@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
+using ElinTogether.Patches;
 using MessagePack;
 
 namespace ElinTogether.Models;
@@ -29,6 +30,9 @@ public class WorldStateSnapshot : EClass
     public static WorldStateSnapshot Create()
     {
         CachedRemoteSnapshots.Add(CharaStateSnapshot.CreateSelf());
+
+        var selfState = NetSession.Instance.CurrentPlayers.Find(n => n.CharaUid == pc.uid);
+        selfState.Speed = pc.Stub_get_Speed();
 
         var snapshots = new Dictionary<int, CharaStateSnapshot>();
         foreach (var chara in _map.charas) {

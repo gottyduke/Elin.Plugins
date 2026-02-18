@@ -3,7 +3,7 @@ using MessagePack;
 namespace ElinTogether.Models;
 
 [MessagePackObject]
-public class ClientCharaStateSnapshot
+public class PlayerCharaStateSnapshot
 {
     [Key(0)]
     public required int LastAct { get; init; }
