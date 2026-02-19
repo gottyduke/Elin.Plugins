@@ -171,41 +171,41 @@ public partial class DramaExpansion : DramaOutcome
             return true;
         }
 
-        // import
-        if (expr.StartsWith("<<<")) {
-            var scriptFile = expr[3..].Trim();
-            var root = Path.GetDirectoryName(CurrentData!.path)!;
-            var filePath = Path.Combine(root, scriptFile);
-
-            if (!File.Exists(filePath)) {
-                throw new FileNotFoundException(scriptFile);
-            }
-
-            expr = File.ReadAllText(filePath);
-        }
-
         var submission = CwlScriptSubmission.Create(dm.setup.book);
-        var csharp = submission.CompileAndRun<DramaScriptState>(expr);
-
-        // failed to create for some reason
-        if (csharp is null) {
-            return true;
-        }
-
         var jump = line["jump"];
         var state = new DramaScriptState {
             dm = dm,
             line = line,
         };
-        var method = new DramaEventMethod(() => csharp(state));
 
-        if (!jump.IsEmptyOrNull) {
-            method.action = null;
-            method.jumpFunc = () => csharp(state) is true ? jump : "";
-        }
+        DramaEventMethod method = jump.IsEmptyOrNull
+            ? new(() => DeferredCompileAndRun())
+            : new(null) {
+                jumpFunc = () => DeferredCompileAndRun() is true ? jump : "",
+            };
 
         dm.AddEvent(method);
 
         return true;
+
+        // defer compilation until executed
+        object? DeferredCompileAndRun()
+        {
+            // import
+            if (expr.StartsWith("<<<")) {
+                var scriptFile = expr[3..].Trim();
+                var root = Path.GetDirectoryName(CurrentData!.path)!;
+                var filePath = Path.Combine(root, scriptFile);
+
+                if (!File.Exists(filePath)) {
+                    throw new FileNotFoundException(scriptFile);
+                }
+
+                expr = File.ReadAllText(filePath);
+            }
+
+            var csharp = submission.CompileAndRun<DramaScriptState>(expr);
+            return csharp?.Invoke(state);
+        }
     }
 }
