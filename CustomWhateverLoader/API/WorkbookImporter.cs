@@ -10,8 +10,10 @@ using Cwl.API.Processors;
 using Cwl.Helper;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.Extensions;
+using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
+using Cwl.Patches.Sources;
 using HarmonyLib;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
@@ -314,6 +316,21 @@ public class WorkbookImporter
         }
 
         CwlMod.Debug<WorkbookImporter>("finished resetting dirty data");
+    }
+
+    public static void LoadFromJson(SourceData source, FileInfo import)
+    {
+        if (!ConfigCereal.ReadData<SourceData.BaseRow[]>(import.FullName, out var rows)) {
+            return;
+        }
+
+        source.ImportRows(rows);
+
+        if (!SourceInitPatch.SafeToCreate) {
+            EMono.sources.Init();
+        } else {
+            source.Init();
+        }
     }
 
     private static PrefetchResult PrefetchWorkbook(FileInfo file)
