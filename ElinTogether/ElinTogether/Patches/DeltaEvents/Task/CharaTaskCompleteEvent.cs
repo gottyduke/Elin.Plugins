@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Cwl.Helper;
+using ElinTogether.Helper;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
@@ -26,8 +27,8 @@ internal class CharaTaskCompleteEvent
             return;
         }
 
-        // drop all other task completes and wait for delta
-        if (!connection.IsHost && !__instance.owner.IsPC) {
+        // drop all other task completed and wait for delta
+        if (!connection.IsHost && (!__instance.owner.IsPC || __instance is AIProgress)) {
             return;
         }
 
@@ -36,7 +37,7 @@ internal class CharaTaskCompleteEvent
         connection.Delta.AddRemote(new CharaTaskDelta {
             Owner = __instance.owner,
             TaskArgs = null,
-            Complete = true,
+            CompletedActId = SourceValidation.ActToIdMapping[__instance.GetType()],
         });
     }
 }

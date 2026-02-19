@@ -15,11 +15,34 @@ public class CharaTaskDelta : ElinDeltaBase
     public required TaskArgsBase? TaskArgs { get; init; }
 
     [Key(2)]
-    public bool Complete { get; init; }
+    public int CompletedActId { get; init; }
 
     public override void Apply(ElinNetBase net)
     {
-        if (Owner.Find() is not Chara { IsPC: false } chara) {
+        if (Owner.Find() is not Chara chara) {
+            return;
+        }
+
+        // complete remote tasks because we assigned them max value to prevent randomness
+        if (CompletedActId != 0) {
+            var type = SourceValidation.IdToActMapping[CompletedActId];
+            var ai = chara.ai.Current;
+            while (ai is not null && ai.GetType() != type) {
+                ai = ai.parent;
+            }
+
+            if (ai is null) {
+                return;
+            }
+
+            ai.OnProgressComplete();
+            if (ai is AIProgress) {
+                ai = ai.parent;
+            }
+            ai.Success();
+        }
+
+        if (chara.IsPC) {
             return;
         }
 
@@ -30,14 +53,6 @@ public class CharaTaskDelta : ElinDeltaBase
 
         if (chara.ai is not GoalRemote remote) {
             return;
-        }
-
-        // complete remote tasks because we assigned them max value to prevent randomness
-        if (Complete) {
-            remote.child?.OnProgressComplete();
-            if (chara.NetProfile.CurrentTask.TryGetTarget(out var progress)) {
-                progress.OnProgressComplete();
-            }
         }
 
         // now assign new task or reset

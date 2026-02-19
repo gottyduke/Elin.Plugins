@@ -1,4 +1,5 @@
 using System;
+using ElinTogether.Elements;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
@@ -8,8 +9,14 @@ namespace ElinTogether.Patches;
 [HarmonyPatch(typeof(Chara), nameof(Chara._Move))]
 internal static class CharaMoveEvent
 {
+    [HarmonyPrefix]
+    internal static bool OnCharaMove(Chara __instance)
+    {
+        return __instance.ai is not GoalRemote;
+    }
+
     [HarmonyPostfix]
-    internal static void OnCharaMove(Chara __instance, Card.MoveResult __result, Point newPoint, ref Card.MoveType type)
+    internal static void OnCharaMoveEnd(Chara __instance, Card.MoveResult __result, Point newPoint, ref Card.MoveType type)
     {
         if (__result == Card.MoveResult.Fail) {
             return;

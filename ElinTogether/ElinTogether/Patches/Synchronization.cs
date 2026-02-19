@@ -138,4 +138,16 @@ internal static class Synchronization
             }
         }
     }
+
+    public static void Trace()
+    {
+        var stackTrace = new System.Diagnostics.StackTrace(true);
+        Debug.Log($"StackTrace:");
+        foreach (var frame in stackTrace.GetFrames()) {
+            var method = frame.GetMethod();
+            if (method is not null) {
+                Debug.Log($"\t{method.DeclaringType?.Name}.{method}");
+            }
+        }
+    }
 }
