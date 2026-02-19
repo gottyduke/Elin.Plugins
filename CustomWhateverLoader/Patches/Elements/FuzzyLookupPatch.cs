@@ -14,6 +14,11 @@ internal class FuzzyLookup
     private static Dictionary<string, SourceElement.Row> _lookup = [];
     private static int _hash = -1;
 
+    internal static bool Prepare()
+    {
+        return !CwlMod.IsModdingApiAvailable || CwlMod.IsModdingApiCompatible;
+    }
+
     [HarmonyTranspiler]
     [HarmonyPatch(typeof(Core), nameof(Core.GetElement))]
     internal static IEnumerable<CodeInstruction> OnGetElementIl(IEnumerable<CodeInstruction> instructions)

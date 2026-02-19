@@ -246,6 +246,7 @@ public class CustomAchievement
                    DefaultAchievementIcon;
 
         EClass.ui.Say(popup, icon);
+        SE.Play("achievement");
 
         CwlMod.Log<CustomAchievement>("cwl_log_acv_unlock".Loc(Achievement.Id));
     }

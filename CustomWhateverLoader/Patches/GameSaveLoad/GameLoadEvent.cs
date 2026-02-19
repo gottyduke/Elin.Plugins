@@ -6,6 +6,11 @@ namespace Cwl.Patches.GameSaveLoad;
 [HarmonyPatch(typeof(Game))]
 internal class GameLoadEvent
 {
+    internal static bool Prepare()
+    {
+        return !CwlMod.IsModdingApiAvailable || CwlMod.IsModdingApiCompatible;
+    }
+
     [SwallowExceptions]
     [HarmonyPrefix]
     [HarmonyPatch(nameof(Game.Load))]
