@@ -20,7 +20,7 @@ internal class SourceInitPatch
 
     internal static bool Prepare()
     {
-        return !CwlMod.IsModdingApiAvailable || CwlMod.IsModdingApiCompatible;
+        return !CwlMod.IsModdingApiAvailable || !CwlMod.IsModdingApiCompatible;
     }
 
     [HarmonyPrefix]

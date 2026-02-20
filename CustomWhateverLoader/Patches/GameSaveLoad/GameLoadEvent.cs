@@ -8,7 +8,7 @@ internal class GameLoadEvent
 {
     internal static bool Prepare()
     {
-        return !CwlMod.IsModdingApiAvailable || CwlMod.IsModdingApiCompatible;
+        return !CwlMod.IsModdingApiAvailable || !CwlMod.IsModdingApiCompatible;
     }
 
     [SwallowExceptions]
