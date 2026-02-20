@@ -16,24 +16,24 @@ internal class CharaTaskProgressEvent
             return;
         }
 
-        var delta = new CharaProgressDelta {
-            Owner = owner,
-            ActId = SourceValidation.ActToIdMapping[__instance.parent.GetType()],
-        };
-
         switch (NetSession.Instance.Connection) {
-            case ElinNetHost host:
-                host.Delta.AddRemote(delta);
-                if (owner.IsRemotePlayer) {
+            case ElinNetHost:
+                if (!owner.IsPC && owner.IsRemotePlayer) {
                     // run it only when remote players run it
                     __instance.progress = -int.MaxValue;
                 }
-                return;
-            case ElinNetClient client:
+                break;
+            case ElinNetClient:
                 // we can only complete remote progress with delta
                 __instance.progress = -int.MaxValue;
-                client.Delta.AddRemote(delta);
+                break;
+            default:
                 return;
         }
+
+        NetSession.Instance.Connection.Delta.AddRemote(new CharaProgressDelta {
+            Owner = owner,
+            ActId = SourceValidation.ActToIdMapping[__instance.parent.GetType()],
+        });
     }
 }

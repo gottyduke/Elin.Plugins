@@ -12,10 +12,10 @@ internal static class CharaTaskRemoteEvent
 {
     [HarmonyPrefix]
     [HarmonyPatch(typeof(Chara), nameof(Chara.SetAI))]
-    internal static void OnSetAI(Chara __instance, ref AIAct g)
+    internal static bool OnSetAI(Chara __instance, ref AIAct g)
     {
         if (NetSession.Instance.Connection is not { } connection) {
-            return;
+            return true;
         }
 
         // propagate every host event and client player event
@@ -26,6 +26,10 @@ internal static class CharaTaskRemoteEvent
             case ElinNetClient when !__instance.IsPC:
                 g = __instance.NetProfile.GoalDefault;
                 break;
+        }
+
+        if (__instance.ai.GetType() == g.GetType() && g.IsNoGoal) {
+            return false;
         }
 
         // a switch case is inevitable for the mapping layer
@@ -69,5 +73,7 @@ internal static class CharaTaskRemoteEvent
             Owner = __instance,
             TaskArgs = args,
         });
+
+        return true;
     }
 }

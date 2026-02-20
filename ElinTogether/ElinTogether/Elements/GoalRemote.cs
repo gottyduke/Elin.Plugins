@@ -23,13 +23,16 @@ internal class GoalRemote : NoGoal
         }
     }
 
-    // took from AutoAct
     public void InsertAction(AIAct? action)
     {
         HaltChildAct();
 
         if (action is null) {
             return;
+        }
+
+        if (action is TaskMine t) {
+            t.SetTarget(owner);
         }
 
         child = action;
