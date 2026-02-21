@@ -20,11 +20,6 @@ public class CharaProgressDelta : ElinDeltaBase
             return;
         }
 
-        // relay to clients
-        if (net.IsHost) {
-            net.Delta.AddRemote(this);
-        }
-
         if (chara.ai is not GoalRemote remote) {
             return;
         }
@@ -35,10 +30,21 @@ public class CharaProgressDelta : ElinDeltaBase
             ai = ai.parent;
         }
 
-        if (ai?.child is AIProgress { status: AIAct.Status.Running } p) {
-            p.progress = 1;
-        } else {
-            ai?.DoProgress();
+        if (ai is null) {
+            return;
+        }
+
+        // advance to create progress
+        while (ai.child is not AIProgress { status: AIAct.Status.Running }) {
+            ai.Tick();
+        }
+
+        var child = ai.child as AIProgress;
+        child!.progress = 1;
+
+        // relay to clients
+        if (net.IsHost) {
+            net.Delta.AddRemote(this);
         }
     }
 }

@@ -35,10 +35,10 @@ public class CharaTaskDelta : ElinDeltaBase
                 return;
             }
 
-            ai.OnProgressComplete();
-            if (ai is AIProgress) {
-                ai = ai.parent;
+            if (ai.IsChildRunning) {
+                ai.child.OnProgressComplete();
             }
+
             ai.Success();
         }
 

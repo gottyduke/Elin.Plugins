@@ -9,7 +9,7 @@ using HarmonyLib;
 namespace ElinTogether.Patches;
 
 [HarmonyPatch]
-internal class CharaTaskCompleteEvent
+internal static class CharaTaskCompleteEvent
 {
     internal static IEnumerable<MethodBase> TargetMethods()
     {
@@ -19,16 +19,12 @@ internal class CharaTaskCompleteEvent
     [HarmonyPrefix]
     internal static void OnRemoteTaskComplete(AIAct __instance)
     {
-        if (__instance.owner is null) {
+        if (__instance is not AIProgress || __instance.owner is null) {
             return;
         }
 
-        if (NetSession.Instance.Connection is not { } connection) {
-            return;
-        }
-
-        // drop all other task completed and wait for delta
-        if (!connection.IsHost && (!__instance.owner.IsPC || __instance is AIProgress)) {
+        // only host can complete progress
+        if (NetSession.Instance.Connection is not ElinNetHost connection) {
             return;
         }
 
@@ -37,7 +33,7 @@ internal class CharaTaskCompleteEvent
         connection.Delta.AddRemote(new CharaTaskDelta {
             Owner = __instance.owner,
             TaskArgs = null,
-            CompletedActId = SourceValidation.ActToIdMapping[__instance.GetType()],
+            CompletedActId = SourceValidation.ActToIdMapping[__instance.parent.GetType()],
         });
     }
 }

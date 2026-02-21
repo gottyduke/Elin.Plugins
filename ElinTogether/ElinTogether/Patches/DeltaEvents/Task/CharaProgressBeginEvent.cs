@@ -7,21 +7,17 @@ using HarmonyLib;
 namespace ElinTogether.Patches;
 
 [HarmonyPatch(typeof(Progress_Custom), nameof(Progress_Custom.OnProgressBegin))]
-internal class CharaTaskProgressEvent
+internal static class CharaTaskProgressEvent
 {
     [HarmonyPrefix]
     internal static void OnProgressBegin(Progress_Custom __instance)
     {
-        if (__instance.owner is not { } owner || owner.ai is GoalRemote) {
+        if (__instance.owner is not { } owner) {
             return;
         }
 
         switch (NetSession.Instance.Connection) {
             case ElinNetHost:
-                if (!owner.IsPC && owner.IsRemotePlayer) {
-                    // run it only when remote players run it
-                    __instance.progress = -int.MaxValue;
-                }
                 break;
             case ElinNetClient:
                 // we can only complete remote progress with delta
@@ -29,6 +25,12 @@ internal class CharaTaskProgressEvent
                 break;
             default:
                 return;
+        }
+
+        if (owner.ai is GoalRemote) {
+            // for host, run it only when remote players run it
+            __instance.progress = -int.MaxValue;
+            return;
         }
 
         NetSession.Instance.Connection.Delta.AddRemote(new CharaProgressDelta {
