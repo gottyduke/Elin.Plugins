@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Reflection;
-using Cwl.Helper;
 using ElinTogether.Helper;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
@@ -8,18 +5,13 @@ using HarmonyLib;
 
 namespace ElinTogether.Patches;
 
-[HarmonyPatch]
-internal static class CharaTaskCompleteEvent
+[HarmonyPatch(typeof(Progress_Custom), nameof(Progress_Custom.OnProgressComplete))]
+internal static class CharaProgressCompleteEvent
 {
-    internal static IEnumerable<MethodBase> TargetMethods()
-    {
-        return OverrideMethodComparer.FindAllOverrides(typeof(AIAct), nameof(AIAct.OnProgressComplete));
-    }
-
     [HarmonyPrefix]
-    internal static void OnRemoteTaskComplete(AIAct __instance)
+    internal static void OnProgressComplete(AIAct __instance)
     {
-        if (__instance is not AIProgress || __instance.owner is null) {
+        if (__instance.owner is null) {
             return;
         }
 
