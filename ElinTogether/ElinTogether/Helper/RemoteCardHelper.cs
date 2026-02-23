@@ -18,10 +18,8 @@ internal static class RemoteCardHelper
         RemoteCardNetProfile.Clear();
     }
 
-    internal class RemoteCharaNetProfile(Chara chara)
+    internal class RemoteCharaNetProfile()
     {
-        public bool IsRemotePlayer => NetSession.Instance.CurrentPlayers.Find(s => s.CharaUid == chara.uid) is not null;
-
         public WeakReference<Thing> RemoteMainHand { get; set; } = new(null!, false);
         public WeakReference<Thing> RemoteOffHand { get; set; } = new(null!, false);
 
@@ -30,8 +28,17 @@ internal static class RemoteCardHelper
 
     extension(Chara chara)
     {
-        internal RemoteCharaNetProfile NetProfile => RemoteCardNetProfile.GetOrAdd(chara, chara => new(chara));
+        internal RemoteCharaNetProfile NetProfile => RemoteCardNetProfile.GetOrAdd(chara, chara => new());
 
-        internal bool IsRemotePlayer => NetSession.Instance.CurrentPlayers.Any(n => n.CharaUid == chara.uid);
+        internal bool IsRemotePlayer
+        {
+            get {
+                return NetSession.Instance.Connection switch {
+                    ElinNetHost => chara.ai is GoalRemote,
+                    ElinNetClient => NetSession.Instance.CurrentPlayers.Any(n => n.CharaUid == chara.uid),
+                    _ => false,
+                };
+            }
+        }
     }
 }

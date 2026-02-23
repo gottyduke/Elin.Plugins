@@ -138,4 +138,9 @@ internal static class Synchronization
             }
         }
     }
+
+    internal static void AllowDeltaSending()
+    {
+        CanSendDelta = true;
+    }
 }

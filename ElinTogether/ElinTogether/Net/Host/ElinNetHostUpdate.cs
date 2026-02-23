@@ -41,11 +41,6 @@ internal partial class ElinNetHost
         Broadcast(_lastTick);
     }
 
-    internal void AllowDeltaSending()
-    {
-        Synchronization.CanSendDelta = true;
-    }
-
     /// <summary>
     ///     Send out local deltas to remote clients
     /// </summary>
@@ -157,7 +152,7 @@ internal partial class ElinNetHost
         // 5hz world snapshot reconciliation
         Scheduler.Subscribe(WorldStateSnapshotUpdate, 5f);
         // 50hz delta dispatch
-        Scheduler.Subscribe(AllowDeltaSending, 50f);
+        Scheduler.Subscribe(Synchronization.AllowDeltaSending, 50f);
 
         _pauseUpdate = false;
     }
@@ -169,7 +164,7 @@ internal partial class ElinNetHost
     {
         Scheduler.Unsubscribe(UpdateRemotePlayerStates);
         Scheduler.Unsubscribe(WorldStateSnapshotUpdate);
-        Scheduler.Unsubscribe(AllowDeltaSending);
+        Scheduler.Unsubscribe(Synchronization.AllowDeltaSending);
 
         Session.Tick = 0;
 

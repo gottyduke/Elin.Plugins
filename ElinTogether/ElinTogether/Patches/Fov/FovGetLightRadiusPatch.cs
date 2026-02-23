@@ -12,7 +12,7 @@ internal class FovGetLightRadiusPatch
     internal static bool OnCardGetLightRadius(Card __instance, ref int __result)
     {
         // treat this card as pc
-        if (__instance is not Chara { NetProfile.IsRemotePlayer: true } chara) {
+        if (__instance is not Chara { IsRemotePlayer: true } chara) {
             return true;
         }
 
