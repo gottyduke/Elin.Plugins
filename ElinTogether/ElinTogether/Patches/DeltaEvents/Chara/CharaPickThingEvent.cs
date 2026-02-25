@@ -12,7 +12,7 @@ internal static class CharaPickThingEvent
     internal static bool OnCharaPickThingy(Chara __instance, Thing t)
     {
         if (CharaProgressCompleteEvent.IsHappening) {
-            if (!CharaProgressCompleteEvent.Actions.TryGetValue(t, out _)) {
+            if (NetSession.Instance.IsHost && !CharaProgressCompleteEvent.Actions.TryGetValue(t, out _)) {
                 CharaProgressCompleteEvent.Actions[t] = new CharaPickThingDelta {
                     Owner = __instance,
                     Thing = t,
@@ -42,15 +42,6 @@ internal static class CharaPickThingEvent
 
         return true;
     }
-
-    extension(Chara chara)
-    {
-        [HarmonyReversePatch(HarmonyReversePatchType.Snapshot)]
-        internal Thing Stub_Pick(Thing t, bool msg = true, bool tryStack = true)
-        {
-            throw new NotImplementedException("Chara.Pick");
-        }
-    }
 }
 
 [HarmonyPatch(typeof(Chara), nameof(Chara.PickOrDrop), [typeof(Point), typeof(Thing), typeof(bool)])]
@@ -59,7 +50,9 @@ internal static class CharaPickOrDropEvent
     [HarmonyPrefix]
     internal static bool OnCharaPickOrDrop(Chara __instance, Point p, Thing t)
     {
-        if (CharaProgressCompleteEvent.IsHappening && !CharaProgressCompleteEvent.Actions.TryGetValue(t, out _)) {
+        if (CharaProgressCompleteEvent.IsHappening
+            && NetSession.Instance.IsHost
+            && !CharaProgressCompleteEvent.Actions.TryGetValue(t, out _)) {
             CharaProgressCompleteEvent.Actions[t] = new CharaPickThingDelta {
                 Owner = __instance,
                 Thing = t,
@@ -67,19 +60,11 @@ internal static class CharaPickOrDropEvent
                 Type = CharaPickThingDelta.PickType.PickOrDrop,
             };
 
+            CardCache.KeepAlive(t);
             return false;
         }
 
         return true;
-    }
-
-    extension(Chara chara)
-    {
-        [HarmonyReversePatch(HarmonyReversePatchType.Snapshot)]
-        internal void Stub_PickOrDrop(Point p, Thing t, bool msg = true)
-        {
-            throw new NotImplementedException("Chara.PickOrDrop");
-        }
     }
 }
 
@@ -89,7 +74,9 @@ internal static class CharaTrySmoothPickEvent
     [HarmonyPrefix]
     internal static bool OnTrySmoothPick(Point p, Thing t, Chara c)
     {
-        if (CharaProgressCompleteEvent.IsHappening && !CharaProgressCompleteEvent.Actions.TryGetValue(t, out _)) {
+        if (CharaProgressCompleteEvent.IsHappening
+                && NetSession.Instance.IsHost
+                && !CharaProgressCompleteEvent.Actions.TryGetValue(t, out _)) {
             CharaProgressCompleteEvent.Actions[t] = new CharaPickThingDelta {
                 Owner = c,
                 Thing = t,
@@ -97,18 +84,10 @@ internal static class CharaTrySmoothPickEvent
                 Type = CharaPickThingDelta.PickType.TrySmoothPick,
             };
 
+            CardCache.KeepAlive(t);
             return false;
         }
 
         return true;
-    }
-
-    extension(Map map)
-    {
-        [HarmonyReversePatch(HarmonyReversePatchType.Snapshot)]
-        internal void Stub_TrySmoothPick(Point p, Thing t, Chara c)
-        {
-            throw new NotImplementedException("Map.TrySmoothPick");
-        }
     }
 }

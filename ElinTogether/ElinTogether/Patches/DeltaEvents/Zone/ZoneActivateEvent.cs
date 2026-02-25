@@ -10,7 +10,9 @@ internal static class ZoneActivateEvent
     [HarmonyPatch(typeof(Zone), nameof(Zone.Activate))]
     internal static void OnHostActivateZone(Zone __instance)
     {
-        CardCache.CacheCurrentZone();
+        if (NetSession.Instance.Connection is not null) {
+            CardCache.CacheCurrentZone();
+        }
 
         // we are not host
         if (NetSession.Instance.Connection is not ElinNetHost host) {

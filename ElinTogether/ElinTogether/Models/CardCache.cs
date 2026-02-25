@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +6,8 @@ using Cwl.API.Attributes;
 public static class CardCache
 {
     private static readonly Dictionary<int, WeakReference<Card>> _cards = [];
+    // prevent temporary item cache invalidation
+    private static readonly List<Card> _keepalive = [];
 
     internal static void Add(Card card)
     {
@@ -70,9 +71,15 @@ public static class CardCache
         }
     }
 
+    internal static void KeepAlive(Card card)
+    {
+        _keepalive.Add(card);
+    }
+
     internal static void Clean()
     {
         // clean invalid weak references
+        _keepalive.Clear();
         foreach (var (uid, reference) in _cards.ToArray()) {
             if (!reference.TryGetTarget(out _)) {
                 _cards.Remove(uid);
@@ -85,6 +92,7 @@ public static class CardCache
     private static void ClearCachedRefs()
     {
         _cards.Clear();
+        _keepalive.Clear();
     }
 
     extension(ThingContainer things)

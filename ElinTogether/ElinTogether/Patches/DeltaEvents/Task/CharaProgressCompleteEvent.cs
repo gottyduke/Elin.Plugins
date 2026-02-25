@@ -43,5 +43,7 @@ internal static class CharaProgressCompleteEvent
             CompletedActId = SourceValidation.ActToIdMapping[__instance.parent.GetType()],
             Actions = [..Actions.Values],
         });
+
+        Actions.Clear();
     }
 }

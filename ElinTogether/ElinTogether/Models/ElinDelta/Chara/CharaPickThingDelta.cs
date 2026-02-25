@@ -50,13 +50,13 @@ public class CharaPickThingDelta : ElinDeltaBase
 
         switch (Type) {
             case PickType.Pick:
-                chara.Stub_Pick(thing);
+                chara.Pick(thing);
                 break;
             case PickType.PickOrDrop:
-                chara.Stub_PickOrDrop(Pos, thing);
+                chara.PickOrDrop(Pos, thing);
                 break;
             case PickType.TrySmoothPick:
-                _map.Stub_TrySmoothPick(Pos, thing, chara);
+                _map.TrySmoothPick(Pos, thing, chara);
                 break;
         }
     }
