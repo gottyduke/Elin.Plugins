@@ -10,15 +10,21 @@ namespace ElinTogether.Patches;
 internal static class CharaProgressCompleteEvent
 {
     internal static Dictionary<Thing, CharaPickThingDelta> Actions = [];
+    internal static Chara? Chara { get; private set; }
     internal static bool IsHappening { get; private set; }
 
     [HarmonyPrefix]
     internal static void OnProgressComplete(AIAct __instance)
     {
-        if (__instance.owner is null || NetSession.Instance.Connection is null) {
-            return;
+        switch (NetSession.Instance.Connection) {
+            case ElinNetHost when __instance.owner?.IsRemotePlayer is true:
+            case ElinNetClient when __instance.owner is not null:
+                break;
+            default:
+                return;
         }
 
+        Chara = __instance.owner;
         IsHappening = true;
     }
 
@@ -29,6 +35,7 @@ internal static class CharaProgressCompleteEvent
             return;
         }
 
+        Chara = null;
         IsHappening = false;
 
         // only host can complete progress
@@ -41,7 +48,7 @@ internal static class CharaProgressCompleteEvent
         connection.Delta.AddRemote(new CharaProgressCompleteDelta {
             Owner = __instance.owner,
             CompletedActId = SourceValidation.ActToIdMapping[__instance.parent.GetType()],
-            Actions = [..Actions.Values],
+            Actions = [.. Actions.Values],
         });
 
         Actions.Clear();

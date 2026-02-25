@@ -31,7 +31,7 @@ public class CharaProgressBeginDelta : ElinDeltaBase
         }
 
         if (ai is null) {
-            EmpLogger.Debug("CharaProgressBeginDelta.Apply: ai is null");
+            EmpLogger.Debug($"CharaProgressBeginDelta.Apply: ai is null|current {remote.Current}|child {remote.child}");
             return;
         }
 
