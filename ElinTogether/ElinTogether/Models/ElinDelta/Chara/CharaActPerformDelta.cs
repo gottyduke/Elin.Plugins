@@ -18,6 +18,7 @@ public class CharaActPerformDelta : ElinDeltaBase
         [ABILITY.ActPick] = ACT.Pick,
         [ABILITY.ActItem] = ACT.Item,
     };
+    private static bool _staticMapped;
 
     [Key(0)]
     public required int ActId { get; init; }
@@ -33,6 +34,8 @@ public class CharaActPerformDelta : ElinDeltaBase
 
     public static CharaActPerformDelta Create(Act act)
     {
+        ApplyBuiltInMapping();
+
         return new() {
             ActId = act.id,
             Owner = Act.CC,
@@ -43,6 +46,8 @@ public class CharaActPerformDelta : ElinDeltaBase
 
     public override void Apply(ElinNetBase net)
     {
+        ApplyBuiltInMapping();
+
         // we do not apply to ourselves
         if (Owner.Find() is not Chara { IsPC: false } chara) {
             return;
@@ -53,5 +58,17 @@ public class CharaActPerformDelta : ElinDeltaBase
         act ??= chara.elements.GetElement(ActId)?.act ?? ACT.Create(ActId);
         act.id = ActId;
         act.Perform(chara, TargetCard, Pos);
+    }
+
+    private static void ApplyBuiltInMapping()
+    {
+        if (_staticMapped) {
+            return;
+        }
+
+        foreach (var (k, v) in _builtInMapping) {
+            v.id = k;
+        }
+        _staticMapped = true;
     }
 }
