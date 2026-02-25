@@ -14,35 +14,9 @@ public class CharaTaskDelta : ElinDeltaBase
     [Key(1)]
     public required TaskArgsBase? TaskArgs { get; init; }
 
-    [Key(2)]
-    public int CompletedActId { get; init; }
-
     public override void Apply(ElinNetBase net)
     {
-        if (Owner.Find() is not Chara chara) {
-            return;
-        }
-
-        // complete remote tasks because we assigned them max value to prevent randomness
-        if (CompletedActId != 0) {
-            var type = SourceValidation.IdToActMapping[CompletedActId];
-            var ai = chara.ai.Current;
-            while (ai is not null && ai.GetType() != type) {
-                ai = ai.parent;
-            }
-
-            if (ai is null) {
-                return;
-            }
-
-            if (ai.IsChildRunning) {
-                ai.child.OnProgressComplete();
-            }
-
-            ai.Success();
-        }
-
-        if (chara.IsPC) {
+        if (Owner.Find() is not Chara { IsPC: false } chara) {
             return;
         }
 

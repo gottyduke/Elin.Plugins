@@ -27,7 +27,7 @@ public class Position
     public static bool operator ==(Position? lhs, Point? rhs)
     {
         if (lhs is null || rhs is null) {
-            return false;
+            return lhs is null && rhs is null;;
         }
 
         return lhs.X == rhs.x && lhs.Z == rhs.z;

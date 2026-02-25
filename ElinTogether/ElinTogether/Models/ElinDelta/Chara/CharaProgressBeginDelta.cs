@@ -6,7 +6,7 @@ using MessagePack;
 namespace ElinTogether.Models.ElinDelta;
 
 [MessagePackObject]
-public class CharaProgressDelta : ElinDeltaBase
+public class CharaProgressBeginDelta : ElinDeltaBase
 {
     [Key(0)]
     public required RemoteCard Owner { get; init; }
@@ -31,6 +31,7 @@ public class CharaProgressDelta : ElinDeltaBase
         }
 
         if (ai is null) {
+            EmpLogger.Debug("CharaProgressBeginDelta.Apply: ai is null");
             return;
         }
 

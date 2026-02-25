@@ -55,6 +55,8 @@ internal partial class ElinNetHost : ElinNetBase
         EmpPop.Debug("Started server\nSource validations enabled: {SourceValidations}",
             SourceValidationsEnabled.Count);
 
+        CardCache.CacheCurrentZone();
+
         StartWorldStateUpdate();
     }
 

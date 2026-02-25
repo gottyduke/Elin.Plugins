@@ -33,7 +33,7 @@ internal static class CharaTaskProgressEvent
             return;
         }
 
-        NetSession.Instance.Connection.Delta.AddRemote(new CharaProgressDelta {
+        NetSession.Instance.Connection.Delta.AddRemote(new CharaProgressBeginDelta {
             Owner = owner,
             ActId = SourceValidation.ActToIdMapping[__instance.parent.GetType()],
         });

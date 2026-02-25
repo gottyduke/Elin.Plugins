@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Cwl.API.Attributes;
+using ElinTogether.Net;
 using ElinTogether.Patches;
 using MessagePack;
 
@@ -18,8 +19,6 @@ public class RemoteCard
         Thing,
         Chara,
     }
-
-    private static readonly Dictionary<int, WeakReference<Card>> _cached = [];
 
     [Key(0)]
     public required int Uid { get; init; }
@@ -38,6 +37,10 @@ public class RemoteCard
     {
         if (card is null) {
             return null;
+        }
+
+        if (NetSession.Instance.IsHost) {
+            CardCache.Add(card);
         }
 
         return new() {
@@ -72,19 +75,14 @@ public class RemoteCard
 
     public Card? Find()
     {
-        if (_cached.TryGetValue(Uid, out var reference) && reference.TryGetTarget(out var card)) {
+        var card = CardCache.Find(Uid);
+        if (card is not null) {
             return card;
         }
 
-        var map = EClass.game?.activeZone?.map;
-        card = Type switch {
-            CardType.Thing => map?.FindThing(Uid),
-            CardType.Chara => Uid == EClass.player.uidChara
-                ? EClass.pc
-                : map?.FindChara(Uid) ??
-                  EClass.game?.cards.globalCharas.GetValueOrDefault(Uid),
-            _ => null,
-        };
+        if (Type == CardType.Chara) {
+            card = EClass.game?.cards.globalCharas.GetValueOrDefault(Uid);   
+        }
 
         card ??= CardGenEvent.TryPop(Uid);
         card ??= Type switch {
@@ -97,7 +95,9 @@ public class RemoteCard
             card = Parent.Find()?.things.Find(Uid);
         }
 
-        _cached[Uid] = new(card, false);
+        if (card is not null) {
+            CardCache.Set(card);
+        }
 
         return card;
     }
@@ -105,12 +105,5 @@ public class RemoteCard
     public override string ToString()
     {
         return $"{Find()}";
-    }
-
-    [CwlPreLoad]
-    [CwlSceneInitEvent(Scene.Mode.Title, preInit: true)]
-    private static void ClearCachedRefs()
-    {
-        _cached.Clear();
     }
 }

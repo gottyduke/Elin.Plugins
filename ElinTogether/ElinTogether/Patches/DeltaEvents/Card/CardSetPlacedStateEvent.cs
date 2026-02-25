@@ -16,7 +16,7 @@ internal static class CardSetPlacedStateEvent
         }
 
         // avoid duplicate actions sending
-        if (CharaBuildCompleteEvent.Building) {
+        if (CharaBuildCompleteEvent.IsHappening) {
             return true;
         }
 

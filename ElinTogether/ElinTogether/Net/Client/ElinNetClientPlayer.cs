@@ -67,6 +67,8 @@ internal partial class ElinNetClient
 
         EmpPop.Debug("Waiting on zone state complete...");
 
+        CardCache.CacheCurrentZone();
+
         probeGame.isLoading = false;
     }
 
