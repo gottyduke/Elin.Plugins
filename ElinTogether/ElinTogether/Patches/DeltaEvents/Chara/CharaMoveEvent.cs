@@ -33,7 +33,7 @@ internal static class CharaMoveEvent
         // we are client, only ourselves should generate a delta
         // ignore all other relayed moves
 
-        if (!connection.IsHost && !__instance.IsPC) {
+        if (__instance.ai is GoalRemote) {
             return;
         }
 

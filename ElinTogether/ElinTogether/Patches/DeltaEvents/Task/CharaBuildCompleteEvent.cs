@@ -1,3 +1,4 @@
+using ElinTogether.Elements;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
@@ -28,8 +29,7 @@ internal static class CharaBuildCompleteEvent
             return;
         }
 
-        // drop all other task completed and wait for delta
-        if (!connection.IsHost && !taskBuild.owner.IsPC) {
+        if (taskBuild.owner.ai is GoalRemote) {
             return;
         }
 

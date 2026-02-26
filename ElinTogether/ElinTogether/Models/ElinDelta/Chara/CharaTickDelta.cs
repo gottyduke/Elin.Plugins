@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Diagnostics;
 using ElinTogether.Net;
 using ElinTogether.Patches;
 using MessagePack;
@@ -9,9 +7,6 @@ namespace ElinTogether.Models.ElinDelta;
 [MessagePackObject]
 public class CharaTickDelta : ElinDeltaBase
 {
-    private static readonly Dictionary<int, long> _lastTicked = [];
-    private static readonly Stopwatch _sw = Stopwatch.StartNew();
-
     [Key(0)]
     public required RemoteCard Owner { get; init; }
 
@@ -30,18 +25,6 @@ public class CharaTickDelta : ElinDeltaBase
         if (chara.IsPC) {
             return;
         }
-
-        var thisTick = _sw.ElapsedMilliseconds;
-        var lastTick = _lastTicked.GetValueOrDefault(chara.uid);
-        var elapsed = thisTick - lastTick;
-
-        // each slow tick is 240ms, each fast tick is 120ms
-        // we buffer it and avoid duplicate ticks
-        if (elapsed <= 235) {
-            return;
-        }
-
-        _lastTicked[chara.uid] = thisTick;
 
         // do a remote tick
         chara.Stub_Tick();

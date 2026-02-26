@@ -1,4 +1,5 @@
 using System;
+using ElinTogether.Elements;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
@@ -17,7 +18,7 @@ internal static class CharaTickConditionEvent
 
         // only host and clients can tick conditions
         // host also relays it to all other clients
-        if (!connection.IsHost && !__instance.IsPC) {
+        if (__instance.ai is GoalRemote) {
             return false;
         }
 

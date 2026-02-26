@@ -6,7 +6,6 @@ using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
 using UnityEngine;
-using ElinTogether.Helper;
 
 namespace ElinTogether.Patches;
 

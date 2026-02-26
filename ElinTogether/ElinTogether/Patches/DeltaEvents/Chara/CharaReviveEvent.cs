@@ -1,4 +1,5 @@
 using System;
+using ElinTogether.Elements;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
@@ -16,7 +17,7 @@ internal static class CharaReviveEvent
         }
 
         // drop all other character revives and wait for delta
-        if (!connection.IsHost && !__instance.IsPC) {
+        if (__instance.ai is GoalRemote) {
             return false;
         }
 

@@ -11,7 +11,7 @@ internal class GameSaveLoad
     [HarmonyPatch(typeof(GameIO), nameof(GameIO.SaveGame))]
     internal static bool OnSaveRemoteGame()
     {
-        if (NetSession.Instance.IsHost) {
+        if (NetSession.Instance.Connection is not ElinNetClient) {
             return true;
         }
 
@@ -23,7 +23,7 @@ internal class GameSaveLoad
     [HarmonyPatch(typeof(Game), nameof(Game.TryLoad))]
     internal static bool OnLoadRemoteGame()
     {
-        if (NetSession.Instance.IsHost) {
+        if (NetSession.Instance.Connection is not ElinNetClient) {
             return true;
         }
 

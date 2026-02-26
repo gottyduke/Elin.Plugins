@@ -1,5 +1,5 @@
 using System;
-using ElinTogether.Helper;
+using ElinTogether.Elements;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
@@ -20,7 +20,7 @@ internal static class CharaTickEvent
 
         // when any player tick, it should tick the host world
         // which should relay to all players again
-        if (!connection.IsHost && !__instance.IsPC) {
+        if (__instance.ai is GoalRemote) {
             return false;
         }
 

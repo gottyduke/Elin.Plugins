@@ -16,6 +16,9 @@ public class CharaProgressBeginDelta : ElinDeltaBase
     public required Position Pos { get; init; }
 
     [Key(2)]
+    public required int MaxProgress { get; init; }
+
+    [Key(3)]
     public required int ActId { get; init; }
 
     public override void Apply(ElinNetBase net)
@@ -46,6 +49,11 @@ public class CharaProgressBeginDelta : ElinDeltaBase
 
         var child = ai.child as AIProgress;
         child!.progress = 1;
+
+        // we don't want random max progress
+        if (child is Progress_Custom p) {
+            p.maxProgress = MaxProgress;
+        }
 
         // relay to clients
         if (net.IsHost) {
