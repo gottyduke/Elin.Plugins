@@ -19,6 +19,18 @@ internal class GameSaveLoad
         return false;
     }
 
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(Game), nameof(Game.TryLoad))]
+    internal static bool OnLoadRemoteGame()
+    {
+        if (NetSession.Instance.IsHost) {
+            return true;
+        }
+
+        EmpLog.Debug("Blocked loading game with active client connection");
+        return false;
+    }
+
     [CwlPreLoad]
     [CwlSceneInitEvent(Scene.Mode.Title, preInit: true)]
     internal static void TerminateConnectionOnLoad()
