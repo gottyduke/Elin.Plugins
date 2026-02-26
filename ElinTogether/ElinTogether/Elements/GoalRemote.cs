@@ -31,7 +31,7 @@ internal class GoalRemote : NoGoal
             return;
         }
 
-        if (action is TaskMine t) {
+        if (action is BaseTaskHarvest t) {
             t.SetTarget(owner);
         }
 

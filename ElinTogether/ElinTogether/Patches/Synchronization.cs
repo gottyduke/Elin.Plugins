@@ -6,6 +6,7 @@ using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
 using UnityEngine;
+using ElinTogether.Helper;
 
 namespace ElinTogether.Patches;
 
@@ -15,6 +16,11 @@ internal static class Synchronization
     internal static float GameDelta { get; set; }
     internal static bool CanSendDelta { get; set; }
     internal static int RefSpeed { get; set; }
+
+    internal static void AllowDeltaSending()
+    {
+        CanSendDelta = true;
+    }
 
     [HarmonyPatch]
     internal static class CharaSynchronizationContext
@@ -137,10 +143,5 @@ internal static class Synchronization
                 RefSpeed = (int)(max / mult);
             }
         }
-    }
-
-    internal static void AllowDeltaSending()
-    {
-        CanSendDelta = true;
     }
 }

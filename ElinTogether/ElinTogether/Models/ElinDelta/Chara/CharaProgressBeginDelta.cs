@@ -1,6 +1,7 @@
 using ElinTogether.Elements;
 using ElinTogether.Helper;
 using ElinTogether.Net;
+using ElinTogether.Patches;
 using MessagePack;
 
 namespace ElinTogether.Models.ElinDelta;
@@ -12,6 +13,9 @@ public class CharaProgressBeginDelta : ElinDeltaBase
     public required RemoteCard Owner { get; init; }
 
     [Key(1)]
+    public required Position Pos { get; init; }
+
+    [Key(2)]
     public required int ActId { get; init; }
 
     public override void Apply(ElinNetBase net)
@@ -31,11 +35,11 @@ public class CharaProgressBeginDelta : ElinDeltaBase
         }
 
         if (ai is null) {
-            EmpLogger.Debug($"CharaProgressBeginDelta.Apply: ai is null|current {remote.Current}|child {remote.child}");
             return;
         }
 
         // advance to create progress
+        chara.Stub_Move(Pos, Card.MoveType.Force);
         while (ai.child is not AIProgress { status: AIAct.Status.Running }) {
             ai.Tick();
         }
