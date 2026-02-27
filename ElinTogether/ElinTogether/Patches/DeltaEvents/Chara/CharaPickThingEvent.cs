@@ -10,15 +10,17 @@ internal static class CharaPickThingEvent
     [HarmonyPrefix]
     internal static bool OnCharaPickThingy(Chara __instance, Thing t)
     {
-        if (CharaProgressCompleteEvent.IsHappening) {
-            if (NetSession.Instance.IsHost) {
-                CharaProgressCompleteEvent.DeltaList.Add(new CharaPickThingDelta {
-                    Owner = CharaProgressCompleteEvent.Chara!,
-                    Thing = t,
-                    Pos = null,
-                    Type = CharaPickThingDelta.PickType.Pick,
-                });
-            }
+        if (!CardCache.Contains(t)) {
+            return false;
+        }
+
+        if (CharaProgressCompleteEvent.IsHappening && NetSession.Instance.IsHost) {
+            CharaProgressCompleteEvent.DeltaList.Add(new CharaPickThingDelta {
+                Owner = CharaProgressCompleteEvent.Chara!,
+                Thing = t,
+                Pos = null,
+                Type = CharaPickThingDelta.PickType.Pick,
+            });
 
             return false;
         }
@@ -49,20 +51,22 @@ internal static class CharaPickOrDropEvent
     [HarmonyPrefix]
     internal static bool OnCharaPickOrDrop(Chara __instance, Point p, Thing t)
     {
-        if (!CharaProgressCompleteEvent.IsHappening) {
+        if (!CardCache.Contains(t)) {
+            return false;
+        }
+
+        if (!CharaProgressCompleteEvent.IsHappening || !NetSession.Instance.IsHost) {
             return true;
         }
 
-        if (NetSession.Instance.IsHost) {
-            CharaProgressCompleteEvent.DeltaList.Add(new CharaPickThingDelta {
-                Owner = CharaProgressCompleteEvent.Chara!,
-                Thing = t,
-                Pos = p,
-                Type = CharaPickThingDelta.PickType.PickOrDrop,
-            });
+        CharaProgressCompleteEvent.DeltaList.Add(new CharaPickThingDelta {
+            Owner = CharaProgressCompleteEvent.Chara!,
+            Thing = t,
+            Pos = p,
+            Type = CharaPickThingDelta.PickType.PickOrDrop,
+        });
 
-            CardCache.KeepAlive(t);
-        }
+        CardCache.KeepAlive(t);
 
         return false;
     }
@@ -74,20 +78,22 @@ internal static class CharaTrySmoothPickEvent
     [HarmonyPrefix]
     internal static bool OnTrySmoothPick(Point p, Thing t, Chara c)
     {
-        if (!CharaProgressCompleteEvent.IsHappening) {
+        if (!CardCache.Contains(t)) {
+            return false;
+        }
+
+        if (!CharaProgressCompleteEvent.IsHappening || !NetSession.Instance.IsHost) {
             return true;
         }
 
-        if (NetSession.Instance.IsHost) {
-            CharaProgressCompleteEvent.DeltaList.Add(new CharaPickThingDelta {
-                Owner = CharaProgressCompleteEvent.Chara!,
-                Thing = t,
-                Pos = p,
-                Type = CharaPickThingDelta.PickType.TrySmoothPick,
-            });
+        CharaProgressCompleteEvent.DeltaList.Add(new CharaPickThingDelta {
+            Owner = CharaProgressCompleteEvent.Chara!,
+            Thing = t,
+            Pos = p,
+            Type = CharaPickThingDelta.PickType.TrySmoothPick,
+        });
 
-            CardCache.KeepAlive(t);
-        }
+        CardCache.KeepAlive(t);
 
         return false;
     }

@@ -1,10 +1,11 @@
 using ElinTogether.Helper;
 using HarmonyLib;
 
-[HarmonyPatch(typeof(AI_Goto), nameof(AI_Goto.TryGoTo))]
-internal static class AITryGoToPatch
+[HarmonyPatch]
+internal static class AIGotoPatch
 {
     [HarmonyPrefix]
+    [HarmonyPatch(typeof(AI_Goto), nameof(AI_Goto.TryGoTo))]
     internal static bool OnTryGoto(AI_Goto __instance, ref AIAct.Status __result)
     {
         if (__instance.owner is not { IsRemotePlayer: true } chara) {

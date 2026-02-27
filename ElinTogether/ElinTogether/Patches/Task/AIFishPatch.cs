@@ -7,7 +7,7 @@ using ElinTogether.Patches;
 using HarmonyLib;
 
 [HarmonyPatch]
-internal static class AI_FishPatch
+internal static class AIFishPatch
 {
     [HarmonyTranspiler]
     [HarmonyPatch(typeof(AI_Fish), nameof(AI_Fish.Run), MethodType.Enumerator)]

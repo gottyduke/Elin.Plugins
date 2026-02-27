@@ -74,8 +74,8 @@ public class CharaProgressCompleteDelta : ElinDeltaBase
     public Thing? TryGetProduct()
     {
         for (var i = 0; i < DeltaList.Count; i++) {
-            if (DeltaList[i] is ThingDelta delta) {
-                DeltaList.RemoveAt(i);
+            if (DeltaList[i] is ThingDelta { Valid: true } delta) {
+                delta.Valid = false;
                 return delta.Thing?.Find() as Thing;
             }
         }
