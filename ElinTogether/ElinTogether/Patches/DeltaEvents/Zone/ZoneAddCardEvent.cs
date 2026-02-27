@@ -10,10 +10,14 @@ namespace ElinTogether.Patches;
 internal static class ZoneAddCardEvent
 {
     [HarmonyPrefix]
-    internal static void OnAddCardToZone(Zone __instance, Card t, int x, int z)
+    internal static bool OnAddCardToZone(Zone __instance, Card t, int x, int z)
     {
         if (NetSession.Instance.Connection is not { } connection) {
-            return;
+            return true;
+        }
+
+        if (CharaProgressCompleteEvent.IsHappening && t is Thing && connection is ElinNetClient) {
+            return false;
         }
 
         // only host can propagate add card event to remotes
@@ -23,6 +27,8 @@ internal static class ZoneAddCardEvent
             ZoneUid = __instance.uid,
             Pos = new() { X = x, Z = z },
         });
+
+        return true;
     }
 
     extension(Zone zone)

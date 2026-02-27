@@ -1,4 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Cwl.Helper;
 using ElinTogether.Helper;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
@@ -6,18 +9,25 @@ using HarmonyLib;
 
 namespace ElinTogether.Patches;
 
-[HarmonyPatch(typeof(Progress_Custom), nameof(Progress_Custom.OnProgressComplete))]
+[HarmonyPatch]
 internal static class CharaProgressCompleteEvent
 {
-    internal static Dictionary<Thing, CharaPickThingDelta> Actions = [];
+    internal static List<ElinDeltaBase> DeltaList = [];
     internal static Chara? Chara { get; private set; }
     internal static bool IsHappening { get; private set; }
+
+    internal static IEnumerable<MethodBase> TargetMethods()
+    {
+        return OverrideMethodComparer
+            .FindAllOverrides(typeof(AIAct), nameof(AIAct.OnProgressComplete))
+            .Where(mi => typeof(AIProgress).IsAssignableFrom(mi.DeclaringType));
+    }
 
     [HarmonyPrefix]
     internal static void OnProgressComplete(AIAct __instance)
     {
         switch (NetSession.Instance.Connection) {
-            case ElinNetHost when __instance.owner?.IsRemotePlayer is true:
+            case ElinNetHost when __instance.owner?.IsPCOrRemotePlayer is true:
             case ElinNetClient when __instance.owner is not null:
                 break;
             default:
@@ -48,9 +58,9 @@ internal static class CharaProgressCompleteEvent
         connection.Delta.AddRemote(new CharaProgressCompleteDelta {
             Owner = __instance.owner,
             CompletedActId = SourceValidation.ActToIdMapping[__instance.parent.GetType()],
-            Actions = [.. Actions.Values],
+            DeltaList = [..DeltaList],
         });
 
-        Actions.Clear();
+        DeltaList.Clear();
     }
 }

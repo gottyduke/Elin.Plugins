@@ -3,7 +3,6 @@ using ElinTogether.Elements;
 using ElinTogether.Helper;
 using ElinTogether.Net;
 using MessagePack;
-using UnityEngine.Assertions;
 
 namespace ElinTogether.Models.ElinDelta;
 
@@ -14,10 +13,12 @@ public class CharaProgressCompleteDelta : ElinDeltaBase
     public required RemoteCard Owner { get; init; }
 
     [Key(1)]
-    public int CompletedActId { get; init; }
+    public required int CompletedActId { get; init; }
 
     [Key(2)]
-    public required List<CharaPickThingDelta> Actions { get; init; }
+    public required List<ElinDeltaBase> DeltaList { get; init; }
+
+    public static CharaProgressCompleteDelta? Current { get; private set; }
 
     public override void Apply(ElinNetBase net)
     {
@@ -36,13 +37,24 @@ public class CharaProgressCompleteDelta : ElinDeltaBase
             return;
         }
 
-        Assert.IsTrue(ai.IsChildRunning);
+        if (!ai.IsChildRunning) {
+            EmpLogger.Debug("CharaProgressCompleteDelta: child not running");
+        }
+
+        Current = this;
+
         ai.child.OnProgressComplete();
-        ai.Success();
+        ai.child.Success();
+
+        if (ai is Task) {
+            ai.Success();
+        }
 
         CharaPickThingDelta.CanApplyOnPC = true;
-        Actions.ForEach(action => action.Apply(net));
+        DeltaList.ForEach(action => action.Apply(net));
         CharaPickThingDelta.CanApplyOnPC = false;
+
+        Current = null;
 
         if (chara.IsPC) {
             return;
@@ -57,5 +69,17 @@ public class CharaProgressCompleteDelta : ElinDeltaBase
         }
 
         remote.InsertAction(null);
+    }
+
+    public Thing? TryGetProduct()
+    {
+        for (var i = 0; i < DeltaList.Count; i++) {
+            if (DeltaList[i] is ThingDelta delta) {
+                DeltaList.RemoveAt(i);
+                return delta.Thing?.Find() as Thing;
+            }
+        }
+
+        return null;
     }
 }

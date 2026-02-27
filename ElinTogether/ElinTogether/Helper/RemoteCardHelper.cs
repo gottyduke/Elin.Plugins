@@ -34,11 +34,13 @@ internal static class RemoteCardHelper
         {
             get {
                 return NetSession.Instance.Connection switch {
-                    ElinNetHost => chara.ai is GoalRemote || chara.IsPC,
-                    ElinNetClient => NetSession.Instance.CurrentPlayers.Any(n => n.CharaUid == chara.uid),
+                    ElinNetHost => chara.ai is GoalRemote,
+                    ElinNetClient => !chara.IsPC && NetSession.Instance.CurrentPlayers.Any(n => n.CharaUid == chara.uid),
                     _ => false,
                 };
             }
         }
+
+        internal bool IsPCOrRemotePlayer => chara.IsPC || chara.IsRemotePlayer;
     }
 }

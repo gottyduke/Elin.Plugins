@@ -23,7 +23,7 @@ internal class GameSaveLoad
     [HarmonyPatch(typeof(Game), nameof(Game.TryLoad))]
     internal static bool OnLoadRemoteGame()
     {
-        if (NetSession.Instance.Connection is not ElinNetClient) {
+        if (NetSession.Instance.Connection is not ElinNetClient || EClass.game?.player?.chara is null) {
             return true;
         }
 

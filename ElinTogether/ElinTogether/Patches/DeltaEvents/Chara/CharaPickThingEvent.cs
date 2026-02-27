@@ -1,7 +1,6 @@
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
-using UnityEngine;
 
 namespace ElinTogether.Patches;
 
@@ -12,13 +11,13 @@ internal static class CharaPickThingEvent
     internal static bool OnCharaPickThingy(Chara __instance, Thing t)
     {
         if (CharaProgressCompleteEvent.IsHappening) {
-            if (NetSession.Instance.IsHost && !CharaProgressCompleteEvent.Actions.TryGetValue(t, out _)) {
-                CharaProgressCompleteEvent.Actions[t] = new CharaPickThingDelta {
+            if (NetSession.Instance.IsHost) {
+                CharaProgressCompleteEvent.DeltaList.Add(new CharaPickThingDelta {
                     Owner = CharaProgressCompleteEvent.Chara!,
                     Thing = t,
                     Pos = null,
                     Type = CharaPickThingDelta.PickType.Pick,
-                };
+                });
             }
 
             return false;
@@ -54,13 +53,13 @@ internal static class CharaPickOrDropEvent
             return true;
         }
 
-        if (NetSession.Instance.IsHost && !CharaProgressCompleteEvent.Actions.TryGetValue(t, out _)) {
-            CharaProgressCompleteEvent.Actions[t] = new CharaPickThingDelta {
+        if (NetSession.Instance.IsHost) {
+            CharaProgressCompleteEvent.DeltaList.Add(new CharaPickThingDelta {
                 Owner = CharaProgressCompleteEvent.Chara!,
                 Thing = t,
                 Pos = p,
                 Type = CharaPickThingDelta.PickType.PickOrDrop,
-            };
+            });
 
             CardCache.KeepAlive(t);
         }
@@ -79,13 +78,13 @@ internal static class CharaTrySmoothPickEvent
             return true;
         }
 
-        if (NetSession.Instance.IsHost && !CharaProgressCompleteEvent.Actions.TryGetValue(t, out _)) {
-            CharaProgressCompleteEvent.Actions[t] = new CharaPickThingDelta {
+        if (NetSession.Instance.IsHost) {
+            CharaProgressCompleteEvent.DeltaList.Add(new CharaPickThingDelta {
                 Owner = CharaProgressCompleteEvent.Chara!,
                 Thing = t,
                 Pos = p,
                 Type = CharaPickThingDelta.PickType.TrySmoothPick,
-            };
+            });
 
             CardCache.KeepAlive(t);
         }

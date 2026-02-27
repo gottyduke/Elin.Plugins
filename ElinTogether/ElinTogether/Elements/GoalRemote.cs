@@ -19,6 +19,11 @@ internal class GoalRemote : NoGoal
     public override IEnumerable<Status> Run()
     {
         while (!owner.isDestroyed) {
+            if (!IsChildRunning) {
+                yield return Status.Running;
+                HaltChildAct();
+            }
+
             yield return Status.Running;
         }
     }

@@ -7,7 +7,7 @@ internal static class AITryGoToPatch
     [HarmonyPrefix]
     internal static bool OnTryGoto(AI_Goto __instance, ref AIAct.Status __result)
     {
-        if (__instance.owner is not { IsPC: false, IsRemotePlayer: true } chara) {
+        if (__instance.owner is not { IsRemotePlayer: true } chara) {
             return true;
         }
 

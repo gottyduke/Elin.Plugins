@@ -12,7 +12,7 @@ internal class FovCalculateFOVPatch
     {
         __state = false;
 
-        if (__instance is not Chara { IsRemotePlayer: true } chara) {
+        if (__instance is not Chara { IsPCOrRemotePlayer: true } chara) {
             return;
         }
 

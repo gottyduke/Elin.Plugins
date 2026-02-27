@@ -49,7 +49,7 @@ internal class FovCellLightOffsetPatch
         }
 
         var list = new HashSet<Fov>();
-        foreach (var chara in pc.party.members.Where(chara => chara.IsRemotePlayer)) {
+        foreach (var chara in pc.party.members.Where(chara => chara.IsPCOrRemotePlayer)) {
             list.Add(chara.fov ??= chara.CreateFov());
         }
 
