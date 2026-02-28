@@ -39,9 +39,9 @@
     </ItemGroup>
     <ItemGroup>
         <Reference Include="CustomWhateverLoader">
-            <HintPath Condition="Exists('$(SteamContentPath)\2135150\3370512305')">$(SteamContentPath)\2135150\3370512305\CustomWhateverLoader.dll</HintPath>
-            <HintPath Condition="Exists('$(SteamContentPath)\2135150\3544010094')">$(SteamContentPath)\2135150\3544010094\CustomWhateverLoader.dll</HintPath>
-            <HintPath Condition="Exists('$(ElinGamePath)\Package\Mod_CustomWhateverLoader')">$(ElinGamePath)\Package\Mod_CustomWhateverLoader\CustomWhateverLoader.dll</HintPath>
+            <HintPath Condition="Exists('$(SteamContentPath)\2135150\3370512305\CustomWhateverLoader.dll')">$(SteamContentPath)\2135150\3370512305\CustomWhateverLoader.dll</HintPath>
+            <HintPath Condition="Exists('$(SteamContentPath)\2135150\3544010094\CustomWhateverLoader.dll')">$(SteamContentPath)\2135150\3544010094\CustomWhateverLoader.dll</HintPath>
+            <HintPath Condition="Exists('$(ElinGamePath)\Package\Mod_CustomWhateverLoader\CustomWhateverLoader.dll')">$(ElinGamePath)\Package\Mod_CustomWhateverLoader\CustomWhateverLoader.dll</HintPath>
             <Private>false</Private>
         </Reference>
         <Reference Include="YKFramework">

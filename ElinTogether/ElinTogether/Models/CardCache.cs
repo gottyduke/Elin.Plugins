@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Cwl.API.Attributes;
 
+namespace ElinTogether.Models;
+
 public static class CardCache
 {
     private static readonly Dictionary<int, WeakReference<Card>> _cards = [];
@@ -41,7 +43,7 @@ public static class CardCache
         _cards[card.uid] = new(card);
     }
 
-    internal static bool Contains(Card card)
+    internal static bool Contains(Card? card)
     {
         return card is not null && Find(card.uid) == card;
     }

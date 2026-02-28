@@ -25,7 +25,7 @@ internal static class CardDestroyEvent
         }
 
         connection.Delta.AddRemote(new CardModNumDelta {
-            Card = RemoteCard.Create(__instance),
+            Card = __instance,
             Num = 0,
         });
     }

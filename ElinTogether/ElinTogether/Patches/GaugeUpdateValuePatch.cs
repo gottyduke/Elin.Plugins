@@ -2,7 +2,7 @@ using HarmonyLib;
 
 namespace ElinTogether.Patches;
 
-[HarmonyPatch(typeof(Gauge), nameof(Gauge.UpdateValue), [typeof(float), typeof(float)])]
+[HarmonyPatch(typeof(Gauge), nameof(Gauge.UpdateValue), typeof(float), typeof(float))]
 internal class GaugeUpdateValuePatch
 {
     [HarmonyPrefix]

@@ -26,5 +26,8 @@ public class NetPeerState
     [Key(6)]
     public int LastReceivedTick { get; set; } = -1;
 
-    internal Chara FindChara() => EClass.pc.party.members.Find(c => c.uid == CharaUid);
+    internal Chara FindChara()
+    {
+        return EClass.pc.party.members.Find(c => c.uid == CharaUid);
+    }
 }

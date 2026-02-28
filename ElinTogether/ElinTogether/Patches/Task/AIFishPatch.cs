@@ -3,8 +3,9 @@ using System.Reflection.Emit;
 using ElinTogether.Helper;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
-using ElinTogether.Patches;
 using HarmonyLib;
+
+namespace ElinTogether.Patches.Task;
 
 [HarmonyPatch]
 internal static class AIFishPatch

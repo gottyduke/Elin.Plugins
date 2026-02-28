@@ -1,6 +1,8 @@
 using ElinTogether.Helper;
 using HarmonyLib;
 
+namespace ElinTogether.Patches.Task;
+
 [HarmonyPatch]
 internal static class AIGotoPatch
 {

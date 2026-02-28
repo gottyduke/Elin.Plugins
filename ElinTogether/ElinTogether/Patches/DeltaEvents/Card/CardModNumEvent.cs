@@ -1,4 +1,3 @@
-using System;
 using ElinTogether.Models;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
@@ -21,7 +20,7 @@ internal static class CardModNumEvent
         }
 
         connection.Delta.AddRemote(new CardModNumDelta {
-            Card = RemoteCard.Create(__instance),
+            Card = __instance,
             Num = __instance.Num,
         });
     }

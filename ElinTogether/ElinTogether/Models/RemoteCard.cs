@@ -79,7 +79,7 @@ public class RemoteCard
         }
 
         if (Type == CardType.Chara) {
-            card = EClass.game?.cards.globalCharas.GetValueOrDefault(Uid);   
+            card = EClass.game?.cards.globalCharas.GetValueOrDefault(Uid);
         }
 
         card ??= CardGenEvent.TryPop(Uid);

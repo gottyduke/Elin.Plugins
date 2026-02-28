@@ -11,7 +11,7 @@ internal static class InvOwnerGrabEvent
     [HarmonyPrefix]
     internal static void OnInvOwnerGrab(DragItemCard.DragInfo from)
     {
-        if (NetSession.Instance.Connection is not {} connection) {
+        if (NetSession.Instance.Connection is not { } connection) {
             return;
         }
 
@@ -20,7 +20,7 @@ internal static class InvOwnerGrabEvent
         }
 
         connection.Delta.AddRemote(new CardRemoveThingDelta {
-            Thing = RemoteCard.Create(from.thing),
+            Thing = from.thing,
         });
     }
 }

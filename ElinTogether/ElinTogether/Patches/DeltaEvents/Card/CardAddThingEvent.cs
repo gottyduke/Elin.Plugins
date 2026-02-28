@@ -6,13 +6,13 @@ using HarmonyLib;
 
 namespace ElinTogether.Patches;
 
-[HarmonyPatch(typeof(Card), nameof(Card.AddThing), [typeof(Thing), typeof(bool), typeof(int), typeof(int)])]
+[HarmonyPatch(typeof(Card), nameof(Card.AddThing), typeof(Thing), typeof(bool), typeof(int), typeof(int))]
 internal static class CardAddThingEvent
 {
     [HarmonyPrefix]
     internal static void OnCardAddThing(Card __instance, Thing t, bool tryStack, int destInvX, int destInvY)
     {
-        if (NetSession.Instance.Connection is not {} connection) {
+        if (NetSession.Instance.Connection is not { } connection) {
             return;
         }
 
@@ -21,8 +21,8 @@ internal static class CardAddThingEvent
         }
 
         connection.Delta.AddRemote(new CardAddThingDelta {
-            Thing = RemoteCard.Create(t),
-            Parent = RemoteCard.Create(__instance),
+            Thing = t,
+            Parent = __instance,
             TryStack = tryStack,
             DestInvX = destInvX,
             DestInvY = destInvY,

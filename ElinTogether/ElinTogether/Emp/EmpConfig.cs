@@ -1,5 +1,4 @@
 using BepInEx.Configuration;
-using ElinTogether.Net;
 using ReflexCLI.Attributes;
 
 namespace ElinTogether;

@@ -1,3 +1,4 @@
+using ElinTogether.Models;
 using ElinTogether.Net;
 using HarmonyLib;
 

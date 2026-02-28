@@ -1,17 +1,20 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection.Emit;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace ElinTogether.Patches;
 
 [HarmonyPatch]
 internal static class Synchronization
 {
+    internal static Thing? Grab;
     internal static float GameDelta { get; set; }
     internal static bool CanSendDelta { get; set; }
     internal static int RefSpeed { get; set; }
@@ -19,6 +22,24 @@ internal static class Synchronization
     internal static void AllowDeltaSending()
     {
         CanSendDelta = true;
+    }
+
+    [HarmonyPrefix][HarmonyPatch(typeof(InvOwner), nameof(InvOwner.Grab))]
+    public static void Test(DragItemCard.DragInfo from)
+    {
+        Grab = from.thing;
+    }
+
+    public static void Trace(string msg = "")
+    {
+        var stackTrace = new StackTrace(true);
+        Debug.Log($"{msg} StackTrace:");
+        foreach (var frame in stackTrace.GetFrames()) {
+            var method = frame.GetMethod();
+            if (method is not null) {
+                Debug.Log($"\t{method.DeclaringType?.Name}.{method}");
+            }
+        }
     }
 
     [HarmonyPatch]
@@ -140,26 +161,6 @@ internal static class Synchronization
                 mult = Math.Min(mult, 8f);
 
                 RefSpeed = (int)(max / mult);
-            }
-        }
-    }
-
-    internal static Thing? Grab = null;
-
-    [HarmonyPrefix, HarmonyPatch(typeof(InvOwner), nameof(InvOwner.Grab))]
-    public static void Test(DragItemCard.DragInfo from)
-    {
-        Grab = from.thing; 
-    }
-
-    public static void Trace(string msg = "")
-    {
-        var stackTrace = new System.Diagnostics.StackTrace(true);
-        Debug.Log($"{msg} StackTrace:");
-        foreach (var frame in stackTrace.GetFrames()) {
-            var method = frame.GetMethod();
-            if (method is not null) {
-                Debug.Log($"\t{method.DeclaringType?.Name}.{method}");
             }
         }
     }

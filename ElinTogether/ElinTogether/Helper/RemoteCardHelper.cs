@@ -18,7 +18,7 @@ internal static class RemoteCardHelper
         RemoteCardNetProfile.Clear();
     }
 
-    internal class RemoteCharaNetProfile()
+    internal class RemoteCharaNetProfile
     {
         public WeakReference<Thing> RemoteMainHand { get; set; } = new(null!, false);
         public WeakReference<Thing> RemoteOffHand { get; set; } = new(null!, false);

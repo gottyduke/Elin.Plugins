@@ -12,7 +12,8 @@ public class CardModNumDelta : ElinDeltaBase
     [Key(1)]
     public required int Num { get; init; }
 
-    public override void Apply(ElinNetBase net) {
+    public override void Apply(ElinNetBase net)
+    {
         if (Card.Find() is not { isDestroyed: false } card) {
             return;
         }

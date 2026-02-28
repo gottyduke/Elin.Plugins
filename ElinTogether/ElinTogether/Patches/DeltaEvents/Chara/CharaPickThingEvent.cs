@@ -1,3 +1,4 @@
+using ElinTogether.Models;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
@@ -45,7 +46,7 @@ internal static class CharaPickThingEvent
     }
 }
 
-[HarmonyPatch(typeof(Chara), nameof(Chara.PickOrDrop), [typeof(Point), typeof(Thing), typeof(bool)])]
+[HarmonyPatch(typeof(Chara), nameof(Chara.PickOrDrop), typeof(Point), typeof(Thing), typeof(bool))]
 internal static class CharaPickOrDropEvent
 {
     [HarmonyPrefix]
@@ -72,7 +73,7 @@ internal static class CharaPickOrDropEvent
     }
 }
 
-[HarmonyPatch(typeof(Map), nameof(Map.TrySmoothPick), [typeof(Point), typeof(Thing), typeof(Chara)])]
+[HarmonyPatch(typeof(Map), nameof(Map.TrySmoothPick), typeof(Point), typeof(Thing), typeof(Chara))]
 internal static class CharaTrySmoothPickEvent
 {
     [HarmonyPrefix]
