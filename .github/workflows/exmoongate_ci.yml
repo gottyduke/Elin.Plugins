@@ -1,11 +1,11 @@
-name: Elin Together CI Deploy
+name: Expanded Moongate Elin CI Deploy
 
 on:
   push:
     branches: ["*"]
-    paths: ["ElinTogether/ElinTogether/**"]
+    paths: ["ExpandedMoongate/ExpandedMoongate/**"]
   pull_request_target:
-    paths: ["ElinTogether/ElinTogether/**"]
+    paths: ["ExpandedMoongate/ExpandedMoongate/**"]
   workflow_dispatch:
 
 permissions:
@@ -15,7 +15,7 @@ permissions:
 jobs:
   build-and-upload:
     name: Build
-    runs-on: windows-2025
+    runs-on: windows-latest
 
     strategy:
       matrix:
@@ -28,7 +28,7 @@ jobs:
           fetch-depth: 0
           sparse-checkout: |
             CustomWhateverLoader/
-            ElinTogether/
+            ExpandedMoongate/
             Directory.Build.props
             global.json
           sparse-checkout-cone-mode: false
@@ -48,12 +48,12 @@ jobs:
           cache: true
           cache-dependency-path: |
             ${{ github.workspace }}\CustomWhateverLoader\packages.lock.json
-            ${{ github.workspace }}\ElinTogether\ElinTogether\packages.lock.json
+            ${{ github.workspace }}\ExpandedMoongate\ExpandedMoongate\packages.lock.json
 
       - name: Setup Packages
         run: |
           dotnet restore ${{ github.workspace }}\CustomWhateverLoader\ --locked-mode
-          dotnet restore ${{ github.workspace }}\ElinTogether\ElinTogether\ --locked-mode
+          dotnet restore ${{ github.workspace }}\ExpandedMoongate\ExpandedMoongate\ --locked-mode
 
       - name: Build
         id: build
@@ -63,15 +63,15 @@ jobs:
         run: |
           $config = '${{ matrix.version }}' -eq 'stable' ? 'Debug' : 'DebugNightly'
           dotnet build ${{ github.workspace }}\CustomWhateverLoader\CustomWhateverLoader.csproj -o ${{ github.workspace }}\${{ matrix.version }}\Package\Mod_CustomWhateverLoader -c $config --no-restore
-          dotnet build ${{ github.workspace }}\ElinTogether\ElinTogether\ElinTogether.csproj -o ${{ github.workspace }}\out\${{ matrix.version }} -c $config --no-restore
+          dotnet build ${{ github.workspace }}\ExpandedMoongate\ExpandedMoongate\ExpandedMoongate.csproj -o ${{ github.workspace }}\out\${{ matrix.version }} -c $config --no-restore
 
-          $dllPath = Join-Path -Path "${{ github.workspace }}\out\${{ matrix.version }}" -ChildPath "ElinTogether.dll"
+          $dllPath = Join-Path -Path "${{ github.workspace }}\out\${{ matrix.version }}" -ChildPath "ExpandedMoongate.dll"
           $fileVersion = (Get-Item -Path $dllPath).VersionInfo.FileVersion
           $fileVersionShort = $fileVersion.Split('.')[0..2] -join '.'
 
           echo "file_version=$fileVersion" >> $env:GITHUB_OUTPUT
           echo "file_version_short=$fileVersionShort" >> $env:GITHUB_OUTPUT
-          echo "file_name=elintogether-ci-builds-$fileVersion-${{ matrix.version }}" >> $env:GITHUB_OUTPUT
+          echo "file_name=exmoongate-ci-builds-$fileVersion-${{ matrix.version }}" >> $env:GITHUB_OUTPUT
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -85,13 +85,13 @@ jobs:
         shell: pwsh
         run: |
           $source = "${{ github.workspace }}\out\${{ matrix.version }}"
-          $destination = "${{ github.workspace }}\out\${{ matrix.version }}\emp-ci-builds-${{ matrix.version }}.zip"
+          $destination = "${{ github.workspace }}\out\${{ matrix.version }}\exmoongate-ci-builds-${{ matrix.version }}.zip"
 
           Compress-Archive -Path "$source\*" -DestinationPath $destination -Force
           $path = $destination -Replace '\\', '/'
-
+      
           $repoUrl = "https://github.com/${{ github.repository }}"
-          $tag = "EMP-${{ steps.build.outputs.file_version_short }}"
+          $tag = "EXM-${{ steps.build.outputs.file_version_short }}"
 
           gh api repos/${{ github.repository }}/git/refs/tags/$tag -q "if .object then true else false" 2>$null
           if ($LASTEXITCODE -eq 0) {
@@ -102,10 +102,10 @@ jobs:
             git tag -d $tag
           }
           
-          $lastTag = git describe --tags --abbrev=0 --match="EMP-*"
+          $lastTag = git describe --tags --abbrev=0 --match="EXM-*"
           $lastTagSha = git rev-parse $lastTag
-          $commits = git log "$($lastTag)..HEAD" --date=format:"%y-%m-%d %H:%M" --pretty=format:"%cd;%h;%s" -- ElinTogether/ 
-          | ? {$_ -notmatch "cleanup"} 
+          $commits = git log "$($lastTag)..HEAD" --date=format:"%y-%m-%d %H:%M" --pretty=format:"%cd;%h;%s" -- ExpandedMoongate/ 
+          | ? {$_ -notmatch "cleanup"}
           | % {
               $parts = $_ -split ';', 3
               $date = $parts[0]
@@ -128,8 +128,9 @@ jobs:
         if: github.event_name != 'pull_request' && github.event_name != 'pull_request_target'
         uses: softprops/action-gh-release@5be0e66d93ac7ed76da52eca8bb058f665c3a5fe #2.4.2
         with:
-          tag_name: EMP-${{ steps.build.outputs.file_version_short }}
-          name: Elin Together - Preview ${{ steps.build.outputs.file_version }}
+          tag_name: EXM-${{ steps.build.outputs.file_version_short }}
+          name: Expanded Moongate - ${{ steps.build.outputs.file_version }}
+          draft: false
           prerelease: true
           generate_release_notes: false
           body_path: ${{ github.workspace }}\CHANGELOG.txt

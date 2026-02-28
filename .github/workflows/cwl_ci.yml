@@ -4,7 +4,7 @@ on:
   push:
     branches: ["*"]
     paths: ["CustomWhateverLoader/**"]
-  pull_request:
+  pull_request_target:
     paths: ["CustomWhateverLoader/**"]
   workflow_dispatch:
 
@@ -76,7 +76,7 @@ jobs:
           path: ${{ github.workspace }}\out\${{ matrix.version }}
 
       - name: Prepare Release
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && github.event_name != 'pull_request_target'
         id: artifact
         shell: pwsh
         env:
@@ -123,7 +123,7 @@ jobs:
           echo "artifact_path=$path" >> $env:GITHUB_OUTPUT
 
       - name: Create or Update Release
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && github.event_name != 'pull_request_target'
         uses: softprops/action-gh-release@5be0e66d93ac7ed76da52eca8bb058f665c3a5fe #2.4.2
         with:
           tag_name: CWL-${{ steps.build.outputs.file_version_short }}
