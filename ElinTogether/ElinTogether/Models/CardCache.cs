@@ -43,7 +43,7 @@ public static class CardCache
 
     internal static bool Contains(Card card)
     {
-        return Find(card.uid) == card;
+        return card is not null && Find(card.uid) == card;
     }
 
     internal static Card? Find(int uid)

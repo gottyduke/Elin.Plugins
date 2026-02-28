@@ -16,7 +16,7 @@ internal static class ZoneAddCardEvent
             return true;
         }
 
-        if (CharaProgressCompleteEvent.IsHappening && t is Thing && connection is ElinNetClient) {
+        if (!CardCache.Contains(t)) {
             return false;
         }
 

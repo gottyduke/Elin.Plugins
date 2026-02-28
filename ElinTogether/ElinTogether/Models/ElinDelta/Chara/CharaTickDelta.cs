@@ -16,14 +16,14 @@ public class CharaTickDelta : ElinDeltaBase
             return;
         }
 
-        // we are host, relay the client tick to other players
-        if (net.IsHost) {
-            net.Delta.AddRemote(this);
-        }
-
         // do not remote tick a client
         if (chara.IsPC) {
             return;
+        }
+
+        // we are host, relay the client tick to other players
+        if (net.IsHost) {
+            net.Delta.AddRemote(this);
         }
 
         // do a remote tick

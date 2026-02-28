@@ -143,4 +143,24 @@ internal static class Synchronization
             }
         }
     }
+
+    internal static Thing? Grab = null;
+
+    [HarmonyPrefix, HarmonyPatch(typeof(InvOwner), nameof(InvOwner.Grab))]
+    public static void Test(DragItemCard.DragInfo from)
+    {
+        Grab = from.thing; 
+    }
+
+    public static void Trace(string msg = "")
+    {
+        var stackTrace = new System.Diagnostics.StackTrace(true);
+        Debug.Log($"{msg} StackTrace:");
+        foreach (var frame in stackTrace.GetFrames()) {
+            var method = frame.GetMethod();
+            if (method is not null) {
+                Debug.Log($"\t{method.DeclaringType?.Name}.{method}");
+            }
+        }
+    }
 }

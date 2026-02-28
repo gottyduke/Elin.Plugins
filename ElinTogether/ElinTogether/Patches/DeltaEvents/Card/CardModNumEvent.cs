@@ -1,3 +1,4 @@
+using System;
 using ElinTogether.Models;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
@@ -5,13 +6,13 @@ using HarmonyLib;
 
 namespace ElinTogether.Patches;
 
-[HarmonyPatch(typeof(Card), nameof(Card.Destroy))]
-internal static class CardDestroyEvent
+[HarmonyPatch(typeof(Card), nameof(Card.ModNum))]
+internal static class CardModNumEvent
 {
-    [HarmonyPrefix]
-    internal static void OnCardModNum(Card __instance)
+    [HarmonyPostfix]
+    internal static void OnCardModNumEnd(Card __instance, int a)
     {
-        if (NetSession.Instance.Connection is not { } connection) {
+        if (NetSession.Instance.Connection is not { } connection || a == 0) {
             return;
         }
 
@@ -19,14 +20,9 @@ internal static class CardDestroyEvent
             return;
         }
 
-        // delta will be sent in CardModNumEvent
-        if (__instance.Num <= 0) {
-            return;
-        }
-
         connection.Delta.AddRemote(new CardModNumDelta {
             Card = RemoteCard.Create(__instance),
-            Num = 0,
+            Num = __instance.Num,
         });
     }
 }
