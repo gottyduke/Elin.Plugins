@@ -64,6 +64,14 @@ public class CharaContext(Chara chara) : ContextProviderBase
                         data["faith"] = chara.faith.Name;
                     }
 
+                    if (chara.c_love?.dateMarriage is not (null or 0)) {
+                        if (chara.c_love.dateWedding != 0) {
+                            data["wed"] = true;
+                        } else {
+                            data["married"] = true;
+                        }
+                    }
+
                     data["affinity"] = $"{chara.affinity.Name}";
 
                     break;
