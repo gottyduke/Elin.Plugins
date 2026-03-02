@@ -1,0 +1,6 @@
+[submodule "ExpandedMoongate/ExpandedMoongate.CFGateway"]
+	path = ExpandedMoongate/ExpandedMoongate.CFGateway
+	url = https://github.com/gottyduke/Elin.ExpandedMoongate.CFGateway
+[submodule "ExpandedMoongate/ExpandedMoongate.GCPWorker"]
+	path = ExpandedMoongate/ExpandedMoongate.GCPWorker
+	url = https://github.com/gottyduke/Elin.ExpandedMoongate.GCPWorker
