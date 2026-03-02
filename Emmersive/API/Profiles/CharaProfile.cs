@@ -23,9 +23,12 @@ public class CharaProfile(Chara chara)
         (chara.IsPCFaction || (!chara.IsAnimal && (chara.IsUnique || chara.IsGlobal)));
 
     public bool CanTrigger =>
-        (!EmConfig.Context.NearbyImportantOnly.Value || IsImportant) &&
-        (!EmConfig.Context.WhitelistMode.Value || OnWhitelist) &&
-        !OnBlacklist;
+        IsPC ||
+        ((!EmConfig.Context.NearbyImportantOnly.Value || IsImportant) &&
+         (!EmConfig.Context.WhitelistMode.Value || OnWhitelist) &&
+         !OnBlacklist);
+
+    public bool IsPC => chara.IsPC;
 
     public Queue<string> LastTalks { get; set; } = [];
 

@@ -108,23 +108,24 @@ internal class RendererPopPatch
             return;
         }
 
-        if (!EmScheduler.CanMakeRequest) {
-            if (!profile.OnTalkCooldown) {
-                AllowOriginalPop();
-            }
+        if (EmScheduler.CanMakeRequest) {
+            EmScheduler.OnTalkTrigger(new() {
+                Chara = chara,
+                Trigger = text,
+            });
+
+            EmScheduler.AddBufferDelay(EmConfig.Scene.SceneBufferWindow.Value);
 
             return;
         }
 
-        // make a new trigger
-        EmScheduler.OnTalkTrigger(new() {
-            Chara = chara,
-            Trigger = text,
-        });
-
-        EmScheduler.AddBufferDelay(EmConfig.Scene.SceneBufferWindow.Value);
+        if (!profile.OnTalkCooldown || profile.IsPC) {
+            AllowOriginalPop();
+        }
 
         return;
+
+        // make a new trigger
 
         void AllowOriginalPop()
         {
