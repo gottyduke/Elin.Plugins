@@ -58,14 +58,14 @@ internal class RendererPopPatch
             return "";
         }
 
-        if (EmScheduler.IsInProgress) {
+        if (EmScheduler.IsInProgress && !profile.IsPC) {
             // block all talks during scene request
             Msg.SetColor();
             return "";
         }
 
-        if (profile.LockedInRequest && !EmConfig.Scene.BlockCharaTalk.Value && !profile.OnTalkCooldown ||
-            !EmScheduler.CanMakeRequest && !profile.OnTalkCooldown) {
+        if ((profile.LockedInRequest && !EmConfig.Scene.BlockCharaTalk.Value && !profile.OnTalkCooldown) ||
+            (!EmScheduler.CanMakeRequest && !profile.OnTalkCooldown)) {
             // let non-blocked gc talk
             AllowOriginalText();
             return "";
@@ -98,7 +98,7 @@ internal class RendererPopPatch
         }
 
         // block if chara is locked in scheduler
-        if (profile.LockedInRequest) {
+        if (profile.LockedInRequest && !profile.IsPC) {
             if (!EmConfig.Scene.BlockCharaTalk.Value && !profile.OnTalkCooldown) {
                 AllowOriginalPop();
             } else {
@@ -115,8 +115,6 @@ internal class RendererPopPatch
             });
 
             EmScheduler.AddBufferDelay(EmConfig.Scene.SceneBufferWindow.Value);
-
-            return;
         }
 
         if (!profile.OnTalkCooldown || profile.IsPC) {

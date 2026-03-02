@@ -16,6 +16,9 @@
         <Deterministic>false</Deterministic>
         <PackageId>Emmersive</PackageId>
     </PropertyGroup>
+    <PropertyGroup>
+        <NoWarn>$(NoWarn);NU1904</NoWarn>
+    </PropertyGroup>
     <ItemGroup>
         <None Remove="Directory.Build.props"/>
         <None Remove="LICENSE"/>
@@ -39,10 +42,10 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.SemanticKernel" Version="1.71.0" />
-        <PackageReference Include="Microsoft.SemanticKernel.Connectors.Google" Version="1.71.0-alpha" />
-        <PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.71.0" />
-        <PackageReference Include="Microsoft.SemanticKernel.Core" Version="1.71.0" />
+        <PackageReference Include="Microsoft.SemanticKernel" Version="1.66.0"/>
+        <PackageReference Include="Microsoft.SemanticKernel.Connectors.Google" Version="1.66.0-alpha"/>
+        <PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.66.0"/>
+        <PackageReference Include="Microsoft.SemanticKernel.Core" Version="1.66.0"/>
         <PackageReference Include="GitVersion.MsBuild" Version="6.6.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -66,9 +69,9 @@
             <Assets Include="package\**\*.*"/>
         </ItemGroup>
         <Copy
-                SourceFiles="@(Assets)"
-                DestinationFiles="@(Assets->'$(OutDir)%(RecursiveDir)%(Filename)%(Extension)')"
-                SkipUnchangedFiles="true"
+            SourceFiles="@(Assets)"
+            DestinationFiles="@(Assets->'$(OutDir)%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
         />
     </Target>
     <Target Name="RemoveDebugKeys" AfterTargets="CopyAssets" Condition="'$(Configuration)' == 'Release' OR '$(Configuration)' == 'ReleaseNightly'">

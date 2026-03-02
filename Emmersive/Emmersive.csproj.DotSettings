@@ -2,17 +2,17 @@
                         xmlns:s="clr-namespace:System;assembly=mscorlib"
                         xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xml:space="preserve">
 	<s:Boolean
-            x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=api_005Cplugins_005Cscenedirector/@EntryIndexedValue">True</s:Boolean>
+        x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=api_005Cplugins_005Cscenedirector/@EntryIndexedValue">True</s:Boolean>
     <s:Boolean
-            x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=components_005Cscheduler/@EntryIndexedValue">True</s:Boolean>
+        x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=components_005Cscheduler/@EntryIndexedValue">True</s:Boolean>
     <s:Boolean
-            x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=components_005Ctabs/@EntryIndexedValue">True</s:Boolean>
+        x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=components_005Ctabs/@EntryIndexedValue">True</s:Boolean>
     <s:Boolean
-            x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=contexts_005Ccharacontext/@EntryIndexedValue">True</s:Boolean>
+        x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=contexts_005Ccharacontext/@EntryIndexedValue">True</s:Boolean>
     <s:Boolean
-            x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=contexts_005Ccharacter/@EntryIndexedValue">True</s:Boolean>
+        x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=contexts_005Ccharacter/@EntryIndexedValue">True</s:Boolean>
     <s:Boolean
-            x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=contexts_005Cenvironment/@EntryIndexedValue">True</s:Boolean>
+        x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=contexts_005Cenvironment/@EntryIndexedValue">True</s:Boolean>
     <s:Boolean
-            x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=contexts_005Cenvironmentcontext/@EntryIndexedValue">True</s:Boolean>
+        x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=contexts_005Cenvironmentcontext/@EntryIndexedValue">True</s:Boolean>
     <s:Boolean x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=emmersive/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>
