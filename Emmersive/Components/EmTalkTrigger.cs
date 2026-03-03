@@ -1,5 +1,6 @@
 using System.Linq;
-using Cwl.API.Attributes;
+using System.Text;
+using System.Text.RegularExpressions;
 using Cwl.Helper;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
@@ -9,10 +10,11 @@ using UnityEngine.UI;
 
 namespace Emmersive.Components;
 
-internal class EmTalkTrigger : EMono
+internal class EmTalkTrigger : EClass
 {
     private bool _defer;
 
+    // DISABLED: 23.282 Stable
     private void Update()
     {
         if (!Input.GetKeyDown(EmConfig.Policy.PlayerTalkKey.Value)) {
@@ -33,7 +35,7 @@ internal class EmTalkTrigger : EMono
         _defer = true;
     }
 
-    internal void ShowPlayerTalkDialog()
+    internal static Dialog ShowPlayerTalkDialog()
     {
         var d = Dialog.InputName(
             pc.Name,
@@ -43,13 +45,37 @@ internal class EmTalkTrigger : EMono
                     return;
                 }
 
-                EmKernel.Kernel!.GetRequiredService<SceneDirector>()
-                    .DoPopText(player.uidChara, text);
 
-                if (EmConfig.Policy.PlayerTalkTrigger.Value &&
-                    EmScheduler.Mode != EmScheduler.SchedulerMode.Stop) {
+                var chara = pc;
+                var canRequest = EmConfig.Policy.PlayerTalkTrigger.Value &&
+                                 EmScheduler.Mode != EmScheduler.SchedulerMode.Stop;
+
+                var m = Regex.Match(text, "^[＠@](?<idx>[0-9０-９])(.*)$");
+                if (m.Success) {
+                    var index = m.Groups["idx"].Value.Normalize(NormalizationForm.FormKC);
+                    if (int.TryParse(index, out var result)) {
+                        text = text[2..];
+                        chara = pc.party.members.TryGet(result);
+                    }
+                }
+
+                if (text.StartsWith("@")) {
+                    text = text[1..];
+                }
+
+                chara ??= pc;
+                if (text == "nyan") {
+                    Msg.SetColor("save");
+                    text = $"*{player.stats.lastChuryu} nyan*";
+                    canRequest = false;
+                }
+
+                EmKernel.Kernel!.GetRequiredService<SceneDirector>()
+                    .DoPopText(chara.uid, text);
+
+                if (canRequest) {
                     // trigger immediately
-                    this.StartDeferredCoroutine(() => EmScheduler.RequestScenePlayImmediate(), 0.01f);
+                    core.StartDeferredCoroutine(() => EmScheduler.RequestScenePlayImmediate(), 0.01f);
                 }
             },
             Dialog.InputType.None);
@@ -60,9 +86,12 @@ internal class EmTalkTrigger : EMono
 
         // disable dark screen
         d.transform.GetChild(0).SetActive(false);
+
+        return d;
     }
 
-    [CwlPostLoad]
+    // DISABLED: 23.282 Stable
+    //[CwlPostLoad]
     private static void ShowModWarning()
     {
         const string chilemiaoId = "me.chilemiao.plugin.SaySomething";
