@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using Cwl.API.Migration;
 using Cwl.Helper;
-using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;
@@ -28,7 +27,7 @@ internal class RethrowParsePatch
 
     internal static bool Prepare()
     {
-        return CwlConfig.RethrowException;
+        return !CwlMod.IsModdingApiAvailable;
     }
 
     internal static IEnumerable<MethodInfo> TargetMethods()

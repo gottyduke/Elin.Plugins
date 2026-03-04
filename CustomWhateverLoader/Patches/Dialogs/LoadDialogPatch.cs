@@ -12,6 +12,11 @@ internal class LoadDialogPatch
     private static readonly Dictionary<string, WeakReference<Dictionary<string, ExcelData.Sheet>>> _built =
         new(StringComparer.Ordinal);
 
+    internal static bool Prepare()
+    {
+        return !CwlMod.IsModdingApiAvailable;
+    }
+
     [Time]
     [HarmonyPrefix]
     [HarmonyPatch(typeof(Lang), nameof(Lang.GetDialogSheet))]
@@ -39,16 +44,12 @@ internal class LoadDialogPatch
         }
     }
 
-    [HarmonyPatch]
-    internal class CachedDramaDialogPatch
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(DramaCustomSequence), nameof(DramaCustomSequence.HasTopic))]
+    internal static bool OnGetCachedDialog(string idSheet, string idTopic, ref bool __result)
     {
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(DramaCustomSequence), nameof(DramaCustomSequence.HasTopic))]
-        internal static bool OnGetCachedDialog(string idSheet, string idTopic, ref bool __result)
-        {
-            var sheet = Lang.GetDialogSheet(idSheet);
-            __result = sheet.map.ContainsKey(idTopic);
-            return false;
-        }
+        var sheet = Lang.GetDialogSheet(idSheet);
+        __result = sheet.map.ContainsKey(idTopic);
+        return false;
     }
 }

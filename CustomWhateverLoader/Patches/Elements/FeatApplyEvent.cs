@@ -37,8 +37,14 @@ internal class FeatApplyEvent
             .InstructionEnumeration();
     }
 
-    [SwallowExceptions]
-    [HarmonyPostfix]
+    internal static void Prepare()
+    {
+        BaseModManager.SubscribeEvent(EVENT.FeatApply, args => {
+            var fe = args as EVENT.ElinFeatApplyEventArgs;
+            OnApply(fe!.feat, fe.data, fe.owner, fe.hint);
+        });
+    }
+
     internal static void OnApply(Feat __instance, int a, ElementContainer owner, bool hint)
     {
         if (!CustomElement.Managed.ContainsKey(__instance.id)) {

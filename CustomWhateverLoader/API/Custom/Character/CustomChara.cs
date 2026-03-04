@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Cwl.API.Attributes;
 using Cwl.Helper.Extensions;
-using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using MethodTimer;
@@ -87,7 +86,7 @@ public partial class CustomChara : Chara
 
                     var drama = sanitized[(action.Length + 1)..];
                     if (drama != "" &&
-                        PackageIterator.GetRelocatedFilesFromPackage($"Dialog/Drama/{drama}.xlsx").Any()) {
+                        PackageIterator.GetFiles($"Dialog/Drama/{drama}.xlsx").Any()) {
                         DramaRoutes[r.id] = drama;
                     }
 
@@ -98,7 +97,7 @@ public partial class CustomChara : Chara
                     }
 
                     var bio = sanitized[(action.Length + 1)..];
-                    var data = PackageIterator.GetRelocatedFilesFromPackage($"Data/bio_{bio}.json").ToArray();
+                    var data = PackageIterator.GetFiles($"Data/bio_{bio}.json").ToArray();
                     if (bio != "" && data.Length > 0) {
                         BioOverride[r.id] = data[^1].FullName;
                     }

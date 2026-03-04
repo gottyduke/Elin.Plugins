@@ -6,7 +6,6 @@ using System.Reflection.Emit;
 using Cwl.API;
 using Cwl.API.Migration;
 using Cwl.Helper;
-using Cwl.Helper.Exceptions;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
 using HarmonyLib;
@@ -14,6 +13,7 @@ using NPOI.SS.UserModel;
 
 namespace Cwl.Patches.Sources;
 
+[HarmonyPatch]
 internal class NamedImportPatch
 {
     private static readonly Dictionary<Type, Dictionary<string, int>> _expected = [];
@@ -21,12 +21,12 @@ internal class NamedImportPatch
 
     internal static bool Prepare()
     {
-        return CwlConfig.NamedImport;
+        return !CwlMod.IsModdingApiAvailable && CwlConfig.NamedImport;
     }
 
     internal static IEnumerable<MethodBase> TargetMethods()
     {
-        return WorkbookImporter.Sources!.Values
+        return WorkbookImporter.Sources.Values
             .Select(MethodInfo? (sd) => sd?.GetType().GetRuntimeMethod("CreateRow", []))
             .OfType<MethodInfo>()
             .Distinct(OverrideMethodComparer.Default);

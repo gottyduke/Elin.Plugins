@@ -5,7 +5,6 @@ using Cwl.API;
 using Cwl.API.Attributes;
 using Cwl.API.Custom;
 using Cwl.Helper.FileUtil;
-using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using HarmonyLib;
@@ -32,8 +31,9 @@ internal partial class DataLoader
         var map = godTalk.sheets[DefaultSheet].map;
 
         // 1.21.0 changes to Dialog/god_talk.xlsx
-        var dialogs = PackageIterator.GetExcelsFromPackage("Data/god_talk.xlsx", 3)
-            .Concat(PackageIterator.GetExcelsFromPackage("Dialog/god_talk.xlsx", 3));
+        var dialogs = PackageIterator.GetFiles("Data/god_talk.xlsx")
+            .Concat(PackageIterator.GetFiles("Dialog/god_talk.xlsx"))
+            .Select(f => new ExcelData(f.FullName, 3));
         foreach (var talk in dialogs) {
             try {
                 foreach (var (topic, _) in map) {
@@ -61,8 +61,11 @@ internal partial class DataLoader
     [CwlSourceReloadEvent]
     internal static void MergeFactionElements()
     {
-        var elements = PackageIterator.GetJsonsFromPackage<SerializableReligionElement>("Data/religion_elements.json")
-            .SelectMany(json => json.Item2)
+        var elements = PackageIterator.GetFiles("Data/religion_elements.json")
+            .SelectMany(f => {
+                ConfigCereal.ReadConfig<SerializableReligionElement>(f.FullName, out var data);
+                return data;
+            })
             .GroupBy(kv => kv.Key, kv => kv.Value)
             .ToDictionary(g => g.Key, g => g.SelectMany(values => values).ToArray());
         foreach (var (id, custom) in CustomReligion.Managed) {
@@ -81,11 +84,13 @@ internal partial class DataLoader
     [CwlSourceReloadEvent]
     internal static void MergeOfferingMultiplier()
     {
-        var offerings = PackageIterator.GetJsonsFromPackage<SerializableReligionOffering>("Data/religion_offerings.json")
-            .SelectMany(json => json.Item2)
+        var offerings = PackageIterator.GetFiles("Data/religion_offerings.json")
+            .SelectMany(f => {
+                ConfigCereal.ReadConfig<SerializableReligionOffering>(f.FullName, out var data);
+                return data;
+            })
             .GroupBy(kv => kv.Key, kv => kv.Value)
             .ToDictionary(g => g.Key, g => g.Last());
-
         foreach (var (id, custom) in CustomReligion.Managed) {
             if (!offerings.TryGetValue(id, out var offering)) {
                 continue;

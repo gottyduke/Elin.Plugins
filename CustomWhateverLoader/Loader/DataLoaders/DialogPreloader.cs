@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using MethodTimer;
@@ -17,7 +16,7 @@ internal partial class DataLoader
     {
         CachedDialogs.Clear();
 
-        var dialogs = PackageIterator.GetRelocatedFilesFromPackage("Dialog/dialog.xlsx");
+        var dialogs = PackageIterator.GetFiles("Dialog/dialog.xlsx");
 
         foreach (var book in dialogs) {
             var path = book.ShortPath();

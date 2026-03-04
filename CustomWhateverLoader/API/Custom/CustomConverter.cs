@@ -126,9 +126,9 @@ public class CustomConverter : TraitBrewery
 
         var dataId = card.sourceCard.trait.TryGet(5, true) ?? card.id;
         if (!_cached.TryGetValue(dataId, out var data)) {
-            var (_, serialized) = PackageIterator.GetJsonsFromPackage<SerializableConverterData>($"Data/converter_{dataId}.json")
+            var file = PackageIterator.GetFiles($"Data/converter_{dataId}.json")
                 .LastOrDefault();
-            if (serialized is null) {
+            if (file is null || !ConfigCereal.ReadConfig<SerializableConverterData>(file.FullName, out var serialized)) {
                 return false;
             }
 

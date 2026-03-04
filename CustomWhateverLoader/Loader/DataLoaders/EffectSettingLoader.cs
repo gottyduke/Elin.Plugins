@@ -36,8 +36,11 @@ internal partial class DataLoader
         var guns = Core.Instance.gameSetting.effect.guns;
         using var sb = StringBuilderPool.Get();
 
-        var effects = PackageIterator.GetJsonsFromPackage<SerializableEffectSetting>("Data/EffectSetting.guns.json");
-        foreach (var (path, gunData) in effects) {
+        var effects = PackageIterator.GetFiles("Data/EffectSetting.guns.json");
+        foreach (var path in effects) {
+            if (!ConfigCereal.ReadConfig<SerializableEffectSetting>(path.FullName, out var gunData)) {
+                continue;
+            }
             foreach (var (id, read) in gunData) {
                 try {
                     read.spriteId = read.spriteId.OrIfEmpty(read.idSprite);

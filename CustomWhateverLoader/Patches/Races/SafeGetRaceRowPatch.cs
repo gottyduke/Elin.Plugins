@@ -5,6 +5,11 @@ namespace Cwl.Patches.Races;
 [HarmonyPatch]
 internal class SafeGetRaceRowPatch
 {
+    internal static bool Prepare()
+    {
+        return !CwlMod.IsModdingApiAvailable;
+    }
+
     [HarmonyPrefix]
     [HarmonyPatch(typeof(SourceChara.Row), nameof(SourceChara.Row.race_row), MethodType.Getter)]
     internal static void OnSafeGetRaceRow(SourceChara.Row __instance)

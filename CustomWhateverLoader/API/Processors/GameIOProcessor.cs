@@ -21,8 +21,8 @@ namespace Cwl.API.Processors;
 public class GameIOProcessor
 {
     private static readonly Dictionary<string, PropertyInfo> _contextVars = new(StringComparer.Ordinal);
+    private static bool _registered;
     public static GameIOContext? LastUsedContext { get; private set; }
-
 
     public static GameIOContext PersistentContext => field ??= new(Application.persistentDataPath);
 
@@ -103,6 +103,8 @@ public class GameIOProcessor
     [Time]
     internal static void RegisterEvents(MethodInfo method, CwlGameIOEvent io)
     {
+        RegisterModdingApi();
+
         var (save, post) = io switch {
             CwlPreLoad => (false, false),
             CwlPostLoad => (false, true),
@@ -120,6 +122,31 @@ public class GameIOProcessor
         var state = post ? "post" : "pre";
         var type = save ? "save" : "load";
         CwlMod.Log<GameIOContext>("cwl_log_processor_add".Loc(state, type, method.GetAssemblyDetail(false)));
+    }
+
+    internal static void RegisterModdingApi()
+    {
+        if (_registered) {
+            return;
+        }
+
+        BaseModManager.SubscribeEvent(EVENT.PreLoad,
+            args => Load((args as global::GameIOContext)!.ChunkDir.Parent!.FullName, false));
+
+        BaseModManager.SubscribeEvent(EVENT.PostLoad,
+            args => Load((args as global::GameIOContext)!.ChunkDir.Parent!.FullName, true));
+
+        BaseModManager.SubscribeEvent(EVENT.NewGame,
+            args => Load((args as global::GameIOContext)!.ChunkDir.Parent!.FullName, true));
+
+        BaseModManager.SubscribeEvent(EVENT.PreSave,
+            args => Save((args as global::GameIOContext)!.ChunkDir.Parent!.FullName, false));
+
+        BaseModManager.SubscribeEvent(EVENT.PostSave,
+            args => Save((args as global::GameIOContext)!.ChunkDir.Parent!.FullName, true));
+
+        _registered = true;
+
     }
 
     internal static void RegisterContextVars()
@@ -188,6 +215,7 @@ public class GameIOProcessor
         private const string ChunkExt = ".chunk";
         private const string BinaryChunkExt = ".chunkb";
         private const string CompressedChunkExt = ".chunkc";
+        private readonly global::GameIOContext _compatContext;
 
         private readonly string _path;
 
@@ -198,6 +226,7 @@ public class GameIOProcessor
             }
 
             _path = path;
+            _compatContext = new(path);
 
             ChunkDir = new(Path.Combine(path, Storage));
             ChunkDir.Create();
@@ -230,7 +259,11 @@ public class GameIOProcessor
         /// <param name="chunkName">unique identifier, omit/null will use full qualified type name</param>
         public void Save<T>(T data, string? chunkName = null)
         {
-            SaveImpl(data, chunkName, CompressedChunkExt, ConfigCereal.WriteDataCompressed);
+            if (CwlMod.IsModdingApiAvailable) {
+                _compatContext.Save(chunkName, data);
+            } else {
+                SaveImpl(data, chunkName, CompressedChunkExt, ConfigCereal.WriteDataCompressed);
+            }
         }
 
         /// <summary>
@@ -240,7 +273,11 @@ public class GameIOProcessor
         /// <param name="chunkName">unique identifier, omit/null will use full qualified type name</param>
         public void SaveUncompressed<T>(T data, string? chunkName = null)
         {
-            SaveImpl(data, chunkName, ChunkExt, ConfigCereal.WriteConfig);
+            if (CwlMod.IsModdingApiAvailable) {
+                _compatContext.SaveUncompressed(chunkName, data);
+            } else {
+                SaveImpl(data, chunkName, ChunkExt, ConfigCereal.WriteConfig);
+            }
         }
 
         /// <summary>
@@ -249,8 +286,12 @@ public class GameIOProcessor
         /// <param name="inferred">arbitrary data, default(null) for class type and default({}) for value type</param>
         /// <param name="chunkName">unique identifier, omit/null will use full qualified type name</param>
         /// <returns>bool indicating success</returns>
-        public bool Load<T>([NotNullWhen(true)] out T? inferred, string? chunkName = null)
+        public bool Load<T>([NotNullWhen(true)] out T? inferred, string? chunkName = null) where T : notnull
         {
+            if (CwlMod.IsModdingApiAvailable) {
+                return _compatContext.Load<T>(chunkName, out inferred);
+            }
+
             inferred = default;
 
             var type = typeof(T);

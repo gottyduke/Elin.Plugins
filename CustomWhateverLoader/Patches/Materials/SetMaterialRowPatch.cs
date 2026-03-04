@@ -13,6 +13,11 @@ namespace Cwl.Patches.Materials;
 [HarmonyPatch]
 internal class SetMaterialRowPatch
 {
+    internal static bool Prepare()
+    {
+        return !CwlMod.IsModdingApiAvailable;
+    }
+
     [HarmonyPrefix]
     [HarmonyPatch(typeof(SourceMaterial), nameof(SourceMaterial.SetRow))]
     internal static void OnSetRow(SourceMaterial.Row r)

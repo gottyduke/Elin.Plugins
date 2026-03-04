@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using Cwl.Helper;
 using Cwl.Helper.Extensions;
-using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using HarmonyLib;
 
@@ -35,11 +34,13 @@ internal class LoadZonePatch
 
         // we use Maps instead of Map or Map Piece to avoid tangling with saved moongate maps
         string[] fileNames = [
+            $"Map/{__instance.idExport}.z",
+            $"Map/{__instance.ZoneFullName}.z",
             $"Maps/{__instance.idExport}.z",
             $"Maps/{__instance.ZoneFullName}.z",
         ];
         var candidate = fileNames
-            .SelectMany(PackageIterator.GetRelocatedFilesFromPackage)
+            .SelectMany(f => PackageIterator.GetFiles(f))
             .LastOrDefault();
 
         if (candidate is not null) {

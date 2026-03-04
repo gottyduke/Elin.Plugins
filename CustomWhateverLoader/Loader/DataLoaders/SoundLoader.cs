@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Cwl.API;
 using Cwl.API.Attributes;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
-using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using MethodTimer;
 using ReflexCLI.Attributes;
@@ -37,7 +35,7 @@ internal partial class DataLoader
             ClearSoundCache();
         }
 
-        foreach (var dir in PackageIterator.GetSoundFilesFromPackage()) {
+        foreach (var dir in PackageIterator.GetDirectories("Sound")) {
             foreach (var file in dir.EnumerateFiles(SoundExtPattern, SearchOption.AllDirectories)) {
                 try {
                     var audioType = GetAudioType(file.Extension);
@@ -58,12 +56,12 @@ internal partial class DataLoader
         }
 
         foreach (var (id, file) in CachedSounds) {
-            var metafile = $"{file.DirectoryName}/{Path.GetFileNameWithoutExtension(file.Name)}.json";
+            var metafile = Path.ChangeExtension(file.FullName, ".json");
             if (File.Exists(metafile)) {
                 continue;
             }
 
-            // generate meta for first time sounds
+            // generate meta for newly added sounds
             _ = SoundManager.current.GetData(id);
         }
     }
@@ -135,9 +133,9 @@ internal partial class DataLoader
                 bgm._name = name.Capitalize();
                 bgm.song = new();
 
-                meta.bgmDataOptional.IntrospectCopyTo(bgm);
-                meta.bgmDataOptional.parts.RemoveAt(0);
-                meta.bgmDataOptional.IntrospectCopyTo(bgm.song);
+                meta.bgmDataOptional?.IntrospectCopyTo(bgm);
+                meta.bgmDataOptional?.parts.RemoveAt(0);
+                meta.bgmDataOptional?.IntrospectCopyTo(bgm.song);
 
                 Object.Destroy(data);
                 data = bgm;

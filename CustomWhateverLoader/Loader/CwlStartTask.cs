@@ -8,7 +8,6 @@ using Cwl.API.Migration;
 using Cwl.API.Processors;
 using Cwl.Components;
 using Cwl.Helper;
-using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
@@ -101,9 +100,11 @@ internal sealed partial class CwlMod
     private static void LoadLoc()
     {
         // load CWL own localization first
-        var loc = PackageIterator.GetRelocatedFileFromPackage("cwl_sources.xlsx", ModInfo.InternalGuid);
+        var mod = ModUtil.GetModPackage(ModInfo.InternalGuid);
+        var loc = mod.Mapping!.RelocateFile("~cwl_sources.xlsx");
         if (loc is not null) {
-            ModUtil.ImportExcel(loc.FullName, "General", EMono.sources.langGeneral);
+            ModUtil.sourceImporter.fileProviders[loc.FullName] = mod;
+            ModUtil.sourceImporter.ImportFilesCached([loc.FullName]);
         }
     }
 
@@ -118,7 +119,6 @@ internal sealed partial class CwlMod
 
         CustomAchievement.ReimportAchievementDefinitions();
 
-        DataLoader.PreloadDialog();
         DataLoader.MergeEffectSetting();
 
         AddSoundsAndBGM();
@@ -126,9 +126,12 @@ internal sealed partial class CwlMod
         // post init tasks
         yield return null;
 
-        DataLoader.MergeGodTalk();
-        DataLoader.MergeCharaTalk();
-        DataLoader.MergeCharaTone();
+        if (!IsModdingApiAvailable) {
+            DataLoader.PreloadDialog();
+            DataLoader.MergeGodTalk();
+            DataLoader.MergeCharaTalk();
+            DataLoader.MergeCharaTone();
+        }
         //DataLoader.MergeCustomAlias();
         //DataLoader.MergeCustomName();
 
@@ -175,7 +178,9 @@ internal sealed partial class CwlMod
 
     private static void AddResourceRelocators()
     {
-        LoadResourcesPatch.AddHandler<SoundData>(DataLoader.RelocateSound); // can be removed
+        if (!IsModdingApiAvailable) {
+            LoadResourcesPatch.AddHandler<SoundData>(DataLoader.RelocateSound);
+        }
         LoadResourcesPatch.AddHandler<Sprite>(DataLoader.RelocateSprite);
 
         DataLoader.SetupEffectTemplate();

@@ -15,34 +15,23 @@ internal class RerouteDramaPatch
     internal static IEnumerable<CodeInstruction> OnSwitchIdIl(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
         return new CodeMatcher(instructions, generator)
-            .MatchEndForward(
-                new(OpCodes.Ldarg_0),
-                new OperandContains(OpCodes.Ldfld, nameof(Card.id)),
-                new(OpCodes.Stloc_S),
-                new(OpCodes.Ldloc_S))
-            .EnsureValid("load card id")
-            .CreateLabel(out var label)
-            .InsertAndAdvance(
-                new(OpCodes.Ldarg_0),
-                Transpilers.EmitDelegate(TryRerouteDialog),
-                new(OpCodes.Brfalse, label),
-                new(OpCodes.Ret))
+            .End()
+            .MatchEndBackwards(
+                new OperandContains(OpCodes.Call, nameof(Chara.ShowDialog)))
+            .SetInstruction(
+                Transpilers.EmitDelegate(TryRerouteDialog))
             .InstructionEnumeration();
     }
 
-    // TODO: this only reroutes if it's actually going to show
-    // subject to change for drama expansion
-    private static bool TryRerouteDialog(Chara chara)
+    private static LayerDrama TryRerouteDialog(Chara chara, string book, string step, string tag)
     {
         DramaExpansion.ResetStates();
 
-        if (!CustomChara.DramaRoutes.TryGetValue(chara.id, out var drama) &&
-            !chara.mapStr.TryGetValue("drama_route", out drama)) {
-            return false;
+        if (CustomChara.DramaRoutes.TryGetValue(chara.id, out var drama) ||
+            chara.mapStr.TryGetValue("drama_route", out drama)) {
+            return chara.ShowDialog(drama);
         }
 
-        chara.ShowDialog(drama);
-
-        return true;
+        return chara.ShowDialog(book, step, tag);
     }
 }

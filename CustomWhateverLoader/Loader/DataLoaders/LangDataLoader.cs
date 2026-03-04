@@ -1,8 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Cwl.Helper.Extensions;
-using Cwl.Helper.FileUtil;
-using Cwl.Helper.String;
 using Cwl.LangMod;
 using MethodTimer;
 
@@ -13,7 +12,9 @@ internal partial class DataLoader
     [Time]
     internal static void MergeCharaTalk()
     {
-        foreach (var charaTalk in PackageIterator.GetExcelsFromPackage("Data/chara_talk.xlsx")) {
+        var excels = PackageIterator.GetFiles("Data/chara_talk.xlsx")
+            .Select(f => new ExcelData(f.FullName));
+        foreach (var charaTalk in excels) {
             try {
                 MOD.listTalk.items.Add(charaTalk);
                 CwlMod.Log<DataLoader>("cwl_preload_chara_talk".Loc(charaTalk.path.ShortPath()));
@@ -27,7 +28,9 @@ internal partial class DataLoader
     [Time]
     internal static void MergeCharaTone()
     {
-        foreach (var charaTone in PackageIterator.GetExcelsFromPackage("Data/chara_tone.xlsx")) {
+        var excels = PackageIterator.GetFiles("Data/chara_tone.xlsx")
+            .Select(f => new ExcelData(f.FullName));
+        foreach (var charaTone in excels) {
             try {
                 MOD.tones.items.Add(charaTone);
                 CwlMod.Log<DataLoader>("cwl_preload_chara_tone".Loc(charaTone.path.ShortPath()));
@@ -44,7 +47,9 @@ internal partial class DataLoader
         AliasGen.list = null!;
         AliasGen.Init();
 
-        foreach (var alias in PackageIterator.GetExcelsFromPackage("Data/Alias.xlsx")) {
+        var excels = PackageIterator.GetFiles("Data/Alias.xlsx")
+            .Select(f => new ExcelData(f.FullName));
+        foreach (var alias in excels) {
             try {
                 var newRules = alias.BuildList();
                 AliasGen.list.AddRange(newRules);
@@ -74,7 +79,9 @@ internal partial class DataLoader
         NameGen.list = null!;
         NameGen.Init();
 
-        foreach (var names in PackageIterator.GetExcelsFromPackage("Data/Name.xlsx")) {
+        var excels = PackageIterator.GetFiles("Data/Name.xlsx")
+            .Select(f => new ExcelData(f.FullName));
+        foreach (var names in excels) {
             try {
                 var newNames = names.BuildList();
                 NameGen.list.AddRange(newNames);

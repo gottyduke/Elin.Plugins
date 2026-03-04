@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using Cwl.Helper;
 using Cwl.Helper.FileUtil;
-using Cwl.Helper.String;
 using Cwl.LangMod;
 using MethodTimer;
 using ReflexCLI.Attributes;
@@ -13,13 +12,12 @@ namespace Cwl.API.Custom;
 
 public partial class CustomPlaylist
 {
-    public static bool AddOrReplaceBGM(string bgmName)
+    public static bool AddOrReplaceBGM(string bgmId)
     {
         var bgms = Core.Instance.refs.bgms;
         var dict = Core.Instance.refs.dictBGM;
         var sm = SoundManager.current;
 
-        var bgmId = bgmName[4..];
         var data = sm.GetData(bgmId) as BGMData;
         if (data == null) {
             return false;
@@ -76,7 +74,7 @@ public partial class CustomPlaylist
     {
         ClearPlaylistCache();
 
-        foreach (var dir in PackageIterator.GetSoundFilesFromPackage()) {
+        foreach (var dir in PackageIterator.GetDirectories("Sound")) {
             try {
                 var playlistDir = new DirectoryInfo(Path.Combine(dir.FullName, "BGM/Playlist"));
                 if (!playlistDir.Exists) {

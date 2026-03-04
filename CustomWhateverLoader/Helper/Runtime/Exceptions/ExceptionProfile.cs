@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -7,7 +8,6 @@ using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
-using Cysharp.Threading.Tasks;
 using HarmonyLib;
 using HarmonyLib.Public.Patching;
 using UnityEngine;
@@ -24,6 +24,11 @@ public class ExceptionProfile(string message)
     }
 
     private static readonly Dictionary<int, ExceptionProfile> _cached = [];
+    private static readonly string[] _missingMemberType = [
+        nameof(MissingMethodException),
+        nameof(MissingFieldException),
+        nameof(MissingMemberException),
+    ];
     private ProgressIndicator? _progressIndicator;
 
     public List<MonoFrame> Frames => field ??= [];
@@ -94,10 +99,10 @@ public class ExceptionProfile(string message)
 
         // missing method exception
         display ??= message;
-        IsMissingMethod = display.Contains(nameof(MissingMethodException));
+        IsMissingMethod = _missingMemberType.Any(display.Contains);
         if (IsMissingMethod) {
-            display = display.Replace(nameof(MissingMethodException),
-                "cwl_warn_missing_method".Loc(nameof(MissingMethodException)));
+            display = _missingMemberType.Aggregate(display, (current, missingMember) =>
+                current.Replace(missingMember, "cwl_warn_missing_method".Loc(missingMember)));
         }
 
         using var scopeExit =
@@ -131,7 +136,7 @@ public class ExceptionProfile(string message)
 
         State = AnalyzeState.InProgress;
 
-        DeferredAnalyzer().Forget();
+        EClass.core.StartCoroutine(DeferredAnalyzer());
     }
 
     private void ClickHandler(ProgressIndicator progress, Event eventData)
@@ -158,10 +163,8 @@ public class ExceptionProfile(string message)
         return $"<color=black><b>({text})</b></color> ";
     }
 
-    private async UniTaskVoid DeferredAnalyzer()
+    private IEnumerator DeferredAnalyzer()
     {
-        await UniTask.SwitchToThreadPool();
-
         try {
             Frames.Clear();
 
@@ -204,6 +207,7 @@ public class ExceptionProfile(string message)
                                 info.DumpPatchDetails(sb.StringBuilder);
                             }
                         } catch {
+                            sb.AppendLine(mono.SanitizedMethodCall.ToTruncateString(150));
                             // noexcept
                         }
 
@@ -217,8 +221,11 @@ public class ExceptionProfile(string message)
             Result = Result.TruncateAllLines(150);
 
             State = AnalyzeState.Completed;
-        } finally {
-            await UniTask.Yield();
+        } catch {
+            State = AnalyzeState.Completed;
+            // noexcept
         }
+
+        yield break;
     }
 }

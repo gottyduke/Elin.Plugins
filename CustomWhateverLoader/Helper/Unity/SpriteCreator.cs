@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using UnityEngine;
@@ -46,8 +44,7 @@ public static class SpriteCreator
             }
 
             if (!File.Exists(spritePath)) {
-                var candidates = PackageIterator.GetRelocatedFilesFromPackage(Path.Combine("Texture", spritePath))
-                    .ToArray();
+                var candidates = PackageIterator.GetFiles(Path.Combine("Texture", spritePath));
                 if (candidates.Length == 0) {
                     return null;
                 }

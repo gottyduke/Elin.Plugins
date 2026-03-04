@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using Cwl.API.Attributes;
 using Cwl.Helper.String;
 using UnityEngine;
 
@@ -61,7 +60,7 @@ internal class FigureRenderer : CardRenderer
         return true;
     }
 
-    [CwlThingOnCreateEvent]
+    //[CwlThingOnCreateEvent]
     internal static void OnCreateFigure(Thing thing)
     {
         if (thing.trait is not TraitFigure) {

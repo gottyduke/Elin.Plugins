@@ -7,6 +7,11 @@ namespace Cwl.Patches.Dialogs;
 [HarmonyPatch]
 internal class SafePopTalkPatch
 {
+    internal static bool Prepare()
+    {
+        return !CwlMod.IsModdingApiAvailable;
+    }
+
     [HarmonyPrefix]
     [HarmonyPatch(typeof(TCText), nameof(TCText.Say))]
     internal static bool ShouldSafePop(TCText __instance, string s)

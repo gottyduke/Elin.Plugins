@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection.Emit;
 using Cwl.API.Drama;
 using Cwl.Helper.Extensions;
-using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;
@@ -18,6 +17,11 @@ internal class LoadDramaPatch
 {
     private const string CacheEntry = "Dialog/Drama/";
     private const string Pattern = "*.xlsx";
+
+    internal static bool Prepare()
+    {
+        return !CwlMod.IsModdingApiAvailable;
+    }
 
     [HarmonyTranspiler]
     [HarmonyPatch(typeof(DramaManager), nameof(DramaManager.Load))]
@@ -46,13 +50,13 @@ internal class LoadDramaPatch
         var lang = Lang.langCode;
 
         var cachedBookName = $"{CacheEntry}{book}_{lang}";
-        if (PackageIterator.TryLoadFromPackageCache(cachedBookName, out var cachedPath)) {
+        if (Helper.FileUtil.PackageIterator.TryLoadFromPackageCache(cachedBookName, out var cachedPath)) {
             data.path = cachedPath;
             // force a list text sync
             return SyncTexts(data.BuildList(sheet));
         }
 
-        var books = PackageIterator.GetLangFilesFromPackage(Pattern)
+        var books = Helper.FileUtil.PackageIterator.GetLangFilesFromPackage(Pattern)
             .Where(b => b.Contains(CacheEntry))
             .Where(s => Path.GetFileNameWithoutExtension(s) == book)
             .OrderBy(b => b)
@@ -71,7 +75,7 @@ internal class LoadDramaPatch
             CwlMod.Log<DramaManager>("cwl_relocate_drama".Loc(cachedBookName, Pattern, localized.ShortPath()));
         }
 
-        PackageIterator.AddCachedPath(cachedBookName, localized);
+        Helper.FileUtil.PackageIterator.AddCachedPath(cachedBookName, localized);
         data.path = localized;
 
         // force a list text sync

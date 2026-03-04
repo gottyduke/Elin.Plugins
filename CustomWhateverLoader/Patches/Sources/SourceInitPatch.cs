@@ -6,8 +6,6 @@ using Cwl.API.Attributes;
 using Cwl.API.Migration;
 using Cwl.Helper;
 using Cwl.Helper.Exceptions;
-using Cwl.Helper.FileUtil;
-using Cwl.Helper.String;
 using HarmonyLib;
 
 namespace Cwl.Patches.Sources;
@@ -15,12 +13,11 @@ namespace Cwl.Patches.Sources;
 [HarmonyPatch]
 internal class SourceInitPatch
 {
-    private static bool _patched;
-    internal static bool SafeToCreate;
+    internal static bool SafeToCreate = true;
 
     internal static bool Prepare()
     {
-        return !CwlMod.IsModdingApiAvailable || !CwlMod.IsModdingApiCompatible;
+        return !CwlMod.IsModdingApiAvailable;
     }
 
     [HarmonyPrefix]
@@ -30,30 +27,17 @@ internal class SourceInitPatch
         // FIXME! 23.267 stable: init called during Lang process
         __instance.initialized = false;
 
-        if (_patched) {
-            // dispatch reload event
-            foreach (var (sr, _) in AttributeQuery.MethodsWith<CwlSourceReloadEvent>()) {
-                try {
-                    sr.FastInvokeStatic();
-                } catch (Exception ex) {
-                    DebugThrow.Void(ex);
-                    // noexcept
-                }
-            }
-        } else {
+        // dispatch reload event
+        foreach (var (sr, _) in AttributeQuery.MethodsWith<CwlSourceReloadEvent>()) {
             try {
-                Harmony.CreateAndPatchAll(typeof(NamedImportPatch), ModInfo.Guid);
+                sr.FastInvokeStatic();
             } catch (Exception ex) {
-                CwlMod.Warn<SourceManager>($"failed to patch Source.NamedImport, disabled\n" +
-                                           $"{ex.Message.SplitLines()[0]}");
                 DebugThrow.Void(ex);
                 // noexcept
             }
-
-            _patched = true;
         }
-
-        var imports = PackageIterator.GetSourcesFromPackage()
+        var imports = PackageIterator.GetAllMappings()
+            .SelectMany(m => m.SourceSheets)
             .Where(f => !f.Name.StartsWith("cwl_") && !f.Name.StartsWith(".") && !f.Name.Contains("~"))
             .ToArray();
 

@@ -67,7 +67,7 @@ public class TypeQualifier
         packageAsm = packageAsm.Replace(" ", "").Replace(baseAsm, "");
         packageAsm = packageAsm.IsWhiteSpaceOrNull
             ? baseAsm
-            : StringHelper.MergeOverlap(packageAsm, baseAsm);
+            : String.StringHelper.MergeOverlap(packageAsm, baseAsm);
 
         return MappedAssemblyNames[assembly] = packageAsm;
     }

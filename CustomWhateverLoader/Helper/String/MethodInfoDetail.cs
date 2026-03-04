@@ -9,8 +9,7 @@ namespace Cwl.Helper.String;
 public static class MethodInfoDetail
 {
     private static readonly HarmonyMethod _testStub = new(typeof(MethodInfoDetail), nameof(StubILPatch));
-
-    internal static readonly HashSet<MethodBase> IncompatibleCalls = [];
+    internal static readonly Dictionary<MethodBase, bool> IncompatibleCalls = [];
 
     private static bool _nestedStub;
 
@@ -18,12 +17,18 @@ public static class MethodInfoDetail
     {
         foreach (var instruction in instructions) {
             if (instruction.operand is MethodBase method && !_nestedStub) {
-                _nestedStub = true;
-                var invalidSubCall = method.TestIncompatibleIl();
-                _nestedStub = false;
-
-                if (invalidSubCall) {
+                if (IncompatibleCalls.GetValueOrDefault(method)) {
                     throw new MissingMethodException();
+                }
+
+                _nestedStub = true;
+                try {
+                    var invalidSubCall = method.TestIncompatibleIl();
+                    if (invalidSubCall) {
+                        throw new MissingMethodException();
+                    }
+                } finally {
+                    _nestedStub = false;
                 }
             }
 
@@ -35,16 +40,17 @@ public static class MethodInfoDetail
     {
         public bool TestIncompatibleIl()
         {
-            if (IncompatibleCalls.Contains(methodInfo)) {
+            if (IncompatibleCalls.GetValueOrDefault(methodInfo)) {
                 return true;
             }
 
+            IncompatibleCalls[methodInfo] = false;
             var processor = CwlMod.SharedHarmony.CreateProcessor(methodInfo);
             try {
                 processor.AddTranspiler(_testStub);
                 processor.Patch();
             } catch {
-                IncompatibleCalls.Add(methodInfo);
+                IncompatibleCalls[methodInfo] = true;
                 return true;
                 // noexcept
             } finally {
@@ -68,7 +74,7 @@ public static class MethodInfoDetail
                 name += $"<{genericArgs}>";
             }
 
-            if (IncompatibleCalls.Contains(methodInfo)) {
+            if (IncompatibleCalls.GetValueOrDefault(methodInfo)) {
                 name = "cwl_ui_invalid_patch".lang() + name;
             }
 

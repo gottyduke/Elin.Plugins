@@ -175,7 +175,11 @@ public class CustomQuest : CustomQuestStorage
 
     public static SerializableQuestData? GetQuestData(string id)
     {
-        return PackageIterator.GetJsonsFromPackage<SerializableQuestData>($"Data/quest_{id}.json").LastOrDefault().Item2;
+        var file = PackageIterator.GetFiles($"Data/quest_{id}.json").LastOrDefault();
+        if (file is null || !ConfigCereal.ReadConfig<SerializableQuestData>(file.FullName, out var data)) {
+            return null;
+        }
+        return data;
     }
 
     public static CustomQuest? Get(string id)

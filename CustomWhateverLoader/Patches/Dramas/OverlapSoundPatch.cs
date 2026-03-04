@@ -14,7 +14,7 @@ internal class OverlapSoundPatch
 
     internal static bool Prepare()
     {
-        return CwlConfig.NoOverlappingSounds;
+        return !CwlMod.IsModdingApiAvailable && CwlConfig.NoOverlappingSounds;
     }
 
     // patch so that sounds don't overlap in dialogs

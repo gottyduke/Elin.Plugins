@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
 using Cwl.Helper.Extensions;
-using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;
@@ -22,8 +21,7 @@ internal class LoadBookPatch
     [HarmonyPatch(typeof(BookList), nameof(BookList.Init))]
     internal static void OnBookListInit(BookList __instance)
     {
-        var sources = PackageIterator.GetLangModFilesFromPackage()
-            .SelectMany(d => d.GetDirectories(CacheEntry))
+        var sources = PackageIterator.GetDirectories(CacheEntry)
             .SelectMany(d => d.GetDirectories())
             .ToArray();
 
@@ -46,8 +44,6 @@ internal class LoadBookPatch
                 };
 
                 BookList.dict[category][item.id] = item;
-                PackageIterator.AddCachedPath($"{category}/{item.id}", book.FullName);
-
                 CwlMod.Log<BookList>($"{category}: {book.Name}|{book.Directory?.Parent?.Parent?.Name}");
             }
         }
@@ -73,16 +69,15 @@ internal class LoadBookPatch
     [Time]
     private static string[] BuildRelocatedPages(string[]? textArray, UIBook book)
     {
-        var id = book.idFile;
         if (textArray?.Length is > 0) {
             return textArray;
         }
 
-        if (!PackageIterator.TryLoadFromPackageCache(id, out var cachedPath)) {
+        if (PackageIterator.GetFiles($"Text/{book.idFile}").LastOrDefault() is not { } bookPath) {
             return [];
         }
 
-        CwlMod.Log<BookList>("cwl_relocate_book".Loc(id, Pattern, cachedPath.ShortPath()));
-        return IO.LoadTextArray(cachedPath);
+        CwlMod.Log<BookList>("cwl_relocate_book".Loc(book.idFile, Pattern, bookPath.ShortPath()));
+        return IO.LoadTextArray(bookPath.FullName);
     }
 }

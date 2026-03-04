@@ -9,6 +9,11 @@ namespace Cwl.Patches.Sounds;
 [HarmonyPatch]
 internal class CustomInstrumentPatch
 {
+    internal static bool Prepare()
+    {
+        return !CwlMod.IsModdingApiAvailable;
+    }
+
     [HarmonyTranspiler]
     [HarmonyPatch(typeof(AI_PlayMusic), nameof(AI_PlayMusic.Run), MethodType.Enumerator)]
     internal static IEnumerable<CodeInstruction> OnSetIdSongIl(IEnumerable<CodeInstruction> instructions)

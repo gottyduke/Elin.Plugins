@@ -8,7 +8,7 @@ internal class ClassCacheThunk
 {
     internal static bool Prepare()
     {
-        return CwlConfig.CacheTypes;
+        return !CwlMod.IsModdingApiAvailable;
     }
 
     internal static MethodInfo TargetMethod()

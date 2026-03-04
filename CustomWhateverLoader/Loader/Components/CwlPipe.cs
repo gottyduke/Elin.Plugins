@@ -17,7 +17,7 @@ internal class CwlPipe : EMono
     private static readonly CancellationTokenSource _cts = new();
     private readonly List<NamedPipeServerStream> _activeServers = [];
 
-    private readonly ConcurrentQueue<string> _commands = new();
+    private readonly ConcurrentQueue<(NamedPipeServerStream server, string cmd)> _commands = new();
     private readonly List<UniTask> _connections = [];
 
     private void Awake()
@@ -69,9 +69,12 @@ internal class CwlPipe : EMono
     {
         var wait = new WaitForSeconds(0.2f);
 
-        while (!_cts.IsCancellationRequested) {
-            while (_commands.TryDequeue(out var cmd)) {
-                cmd.ExecuteAsCommand(true);
+        while (_commands.TryDequeue(out var item)) {
+            var (server, cmd) = item;
+            var result = cmd.ExecuteAsCommand(true);
+
+            if (!result.IsEmptyOrNull) {
+                Notify(server, result).Forget();
             }
 
             yield return wait;
@@ -147,7 +150,7 @@ internal class CwlPipe : EMono
                 while ((newline = current.IndexOf('\n')) >= 0) {
                     var line = current[..newline].TrimEnd('\r');
                     if (!line.IsEmptyOrNull) {
-                        _commands.Enqueue(line);
+                        _commands.Enqueue((server, line));
                     }
 
                     current = current[(newline + 1)..];

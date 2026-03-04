@@ -39,6 +39,13 @@ internal class CardOnCreateEvent
         };
     }
 
+    internal static bool Prepare()
+    {
+        BaseModManager.SubscribeEvent(EVENT.CharaCreated, OnCreate);
+        BaseModManager.SubscribeEvent(EVENT.ThingCreated, OnCreate);
+        return !CwlMod.IsModdingApiAvailable;
+    }
+
     internal static IEnumerable<MethodBase> TargetMethods()
     {
         return [
@@ -48,7 +55,7 @@ internal class CardOnCreateEvent
     }
 
     [HarmonyPostfix]
-    internal static void OnCreate(Card __instance)
+    internal static void OnCreate(object __instance)
     {
         switch (__instance) {
             case Chara chara:

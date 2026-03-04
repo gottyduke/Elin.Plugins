@@ -198,7 +198,7 @@ public class CustomAchievement
     {
         _managedTemplates.Clear();
 
-        var definitions = PackageIterator.GetRelocatedFilesFromPackage("Data/achievement.json");
+        var definitions = PackageIterator.GetFiles("Data/achievement.json");
         foreach (var definition in definitions) {
             if (!ConfigCereal.ReadConfig<SerializableAchievement[]>(definition.FullName, out var achievements)) {
                 continue;

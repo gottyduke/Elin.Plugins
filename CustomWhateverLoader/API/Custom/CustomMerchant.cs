@@ -61,8 +61,11 @@ public class CustomMerchant : TraitMerchant
 
     public static SerializableStockData? GetStockData(string stockId)
     {
-        var stocks = PackageIterator.GetJsonsFromPackage<SerializableStockData>($"Data/stock_{stockId}.json");
-        return stocks.LastOrDefault().Item2;
+        var stocks = PackageIterator.GetFiles($"Data/stock_{stockId}.json").LastOrDefault();
+        if (stocks is null || !ConfigCereal.ReadConfig<SerializableStockData>(stocks.FullName, out var data)) {
+            return null;
+        }
+        return data;
     }
 
     public static void GenerateStock(Card owner, IEnumerable<SerializableStockItem> items, bool clear = false)
