@@ -14,16 +14,18 @@ internal class DramaExpansionPatch
 {
     internal static bool Prepare()
     {
+#if EXAMPLE_DRAMA_EVENT
         BaseModManager.SubscribeEvent(EVENT.DramaParseAction, args => {
             var dae = args as EVENT.ElinDramaParseActionEventArgs;
             if (ExternalInvoke(dae!.dm, dae.line)) {
                 dae.Use();
             }
         });
+#endif
         return CwlConfig.ExpandedActions;
     }
 
-    //[HarmonyTranspiler]
+    [HarmonyTranspiler]
     internal static IEnumerable<CodeInstruction> OnParseActionIl(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
         return new CodeMatcher(instructions, generator)
