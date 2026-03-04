@@ -21,7 +21,7 @@ internal class NamedImportPatch
 
     internal static bool Prepare()
     {
-        return !CwlMod.IsModdingApiAvailable && CwlConfig.NamedImport;
+        return CwlConfig.NamedImport;
     }
 
     internal static IEnumerable<MethodBase> TargetMethods()
@@ -102,7 +102,7 @@ internal class NamedImportPatch
             }
 
             var sheet = SourceData.row.Sheet;
-            var migrate = MigrateDetail.GetFromWorkbook(sheet.Workbook);
+            var migrate = MigrateDetail.GetOrAdd(new(ExcelParser.path)).SetWorkbook(sheet.Workbook);
             var expected = _expected[rowCreator];
 
             if (!_cached.TryGetValue(sheet, out var header)) {
@@ -116,9 +116,9 @@ internal class NamedImportPatch
                 }
 
                 _cached[sheet] = header;
-                migrate?.StartNewSheet(sheet, expected);
+                migrate.StartNewSheet(sheet, expected);
 
-                var strategy = migrate?.CurrentSheet?.MigrateStrategy ?? MigrateDetail.Strategy.Unknown;
+                var strategy = migrate.CurrentSheet?.MigrateStrategy ?? MigrateDetail.Strategy.Unknown;
                 if (strategy == MigrateDetail.Strategy.Unknown) {
                     strategy = expected.All(header.Contains) &&
                                expected.Count <= header.Count
@@ -126,7 +126,7 @@ internal class NamedImportPatch
                         : MigrateDetail.Strategy.Missing;
                 }
 
-                migrate?.SetStrategy(strategy).SetGiven(header);
+                migrate.SetStrategy(strategy).SetGiven(header);
             }
 
             var useFallback = false;
@@ -163,5 +163,12 @@ internal class NamedImportPatch
             CwlMod.Debug($"{parseDetail.Loc(id, readPos)}:{field.Name}:{parser.Name}");
         }
         /**/
+    }
+
+    internal static void ClearDetail()
+    {
+        MigrateDetail.Clear();
+        _expected.Clear();
+        _cached.Clear();
     }
 }
