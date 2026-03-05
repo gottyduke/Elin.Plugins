@@ -73,7 +73,7 @@ internal class LoadBookPatch
             return textArray;
         }
 
-        if (PackageIterator.GetFiles($"Text/{book.idFile}").LastOrDefault() is not { } bookPath) {
+        if (PackageIterator.GetFiles($"Text/{book.idFile}.txt").LastOrDefault() is not { } bookPath) {
             return [];
         }
 
