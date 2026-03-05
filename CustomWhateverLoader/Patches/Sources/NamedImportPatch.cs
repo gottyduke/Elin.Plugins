@@ -29,6 +29,7 @@ internal class NamedImportPatch
         return WorkbookImporter.Sources.Values
             .Select(MethodInfo? (sd) => sd?.GetType().GetRuntimeMethod("CreateRow", []))
             .OfType<MethodInfo>()
+            .Where(mi => !mi.DeclaringType!.Name.StartsWith("Lang"))
             .Distinct(OverrideMethodComparer.Default);
     }
 
@@ -153,7 +154,7 @@ internal class NamedImportPatch
 
             field.SetValue(row, parsed);
         } catch (Exception ex) {
-            RethrowParsePatch.RethrowParseInvoke(ex, extraParser ?? parser, id);
+            // RethrowParsePatch.RethrowParseInvoke(ex, extraParser ?? parser, id);
             // noexcept
         }
 

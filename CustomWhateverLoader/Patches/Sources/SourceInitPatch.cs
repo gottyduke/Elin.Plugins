@@ -9,13 +9,12 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Sources;
 
-[HarmonyPatch]
+[HarmonyPatch(typeof(SourceManager), nameof(SourceManager.Init))]
 internal class SourceInitPatch
 {
     internal static bool SafeToCreate = true;
 
     [HarmonyPrefix]
-    [HarmonyPatch(typeof(SourceManager), nameof(SourceManager.Init))]
     internal static void ImportAllSheets(SourceManager __instance)
     {
         // FIXME! 23.267 stable: init called during Lang process
