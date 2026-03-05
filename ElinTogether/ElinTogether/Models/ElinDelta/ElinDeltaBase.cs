@@ -26,6 +26,7 @@ namespace ElinTogether.Models.ElinDelta;
 [Union(212, typeof(CharaProgressCompleteDelta))]
 [Union(213, typeof(CharaTaskCancelDelta))]
 [Union(214, typeof(CharaHitFishDelta))]
+[Union(215, typeof(CharaGiveGiftDelta))]
 // Thing
 [Union(300, typeof(ThingDelta))]
 // Zone

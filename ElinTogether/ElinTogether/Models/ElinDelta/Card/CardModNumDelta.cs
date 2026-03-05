@@ -18,6 +18,10 @@ public class CardModNumDelta : ElinDeltaBase
             return;
         }
 
+        if (net.IsHost) {
+            net.Delta.AddRemote(this);
+        }
+
         card.SetNum(Num);
     }
 }

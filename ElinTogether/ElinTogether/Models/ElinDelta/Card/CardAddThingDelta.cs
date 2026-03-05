@@ -28,6 +28,10 @@ public class CardAddThingDelta : ElinDeltaBase
             return;
         }
 
+        if (net.IsHost) {
+            net.Delta.AddRemote(this);
+        }
+
         if (thing.parent != parent) {
             parent.Stub_AddThing(thing, TryStack, DestInvX, DestInvY);
         }

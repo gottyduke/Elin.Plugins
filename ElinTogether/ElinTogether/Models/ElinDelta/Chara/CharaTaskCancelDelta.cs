@@ -30,11 +30,11 @@ public class CharaTaskCancelDelta : ElinDeltaBase
             return;
         }
 
-        ai.Stub_Cancel();
-
         // relay to clients
         if (net.IsHost) {
             net.Delta.AddRemote(this);
         }
+
+        ai.Stub_Cancel();
     }
 }

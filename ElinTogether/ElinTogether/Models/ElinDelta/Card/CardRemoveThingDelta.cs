@@ -15,6 +15,10 @@ public class CardRemoveThingDelta : ElinDeltaBase
             return;
         }
 
+        if (net.IsHost) {
+            net.Delta.AddRemote(this);
+        }
+
         thing.parent?.RemoveCard(thing);
 
         CardCache.KeepAlive(thing);
