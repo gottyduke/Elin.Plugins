@@ -154,7 +154,7 @@ internal class NamedImportPatch
 
             field.SetValue(row, parsed);
         } catch (Exception ex) {
-            // RethrowParsePatch.RethrowParseInvoke(ex, extraParser ?? parser, id);
+            RethrowParsePatch.RethrowParseInvoke(ex, extraParser ?? parser, id);
             // noexcept
         }
 

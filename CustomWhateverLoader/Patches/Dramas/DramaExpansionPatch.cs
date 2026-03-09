@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection.Emit;
 using Cwl.API.Drama;
 using Cwl.Helper.Exceptions;
@@ -42,6 +43,16 @@ internal class DramaExpansionPatch
                 new(OpCodes.Pop),
                 new(OpCodes.Ret))
             .InstructionEnumeration();
+    }
+
+    [HarmonyPrefix]
+    internal static void AbsolutelyNeededWhitespaceTrimmer(Dictionary<string, string> item)
+    {
+        foreach (var (k, v) in item.ToArray()) {
+            if (v is not null) {
+                item[k] = v.Trim();
+            }
+        }
     }
 
     [HarmonyFinalizer]

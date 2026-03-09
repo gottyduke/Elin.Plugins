@@ -55,12 +55,12 @@ internal class RethrowParsePatch
         }
 
         var expectedType = __originalMethod.ReturnType.Name;
-        var rawValue = row.Cells.TryGet(id, true);
-        sb.Append("cwl_error_source_rethrow".Loc(row.RowNum + 1, id + 1, ToLetterId(id), expectedType, rawValue));
+        var rawValue = row?.Cells.TryGet(id, true);
+        sb.Append("cwl_error_source_rethrow".Loc(row?.RowNum + 1, id + 1, ToLetterId(id), expectedType, rawValue));
 
-        var defValue = row.RowNum < 3
+        var defValue = row?.RowNum < 3
             ? "cwl_error_source_rethrow_row".lang()
-            : "cwl_error_source_rethrow_def".Loc(ExcelParser.rowDefault.Cells.TryGet(id, true));
+            : "cwl_error_source_rethrow_def".Loc(ExcelParser.rowDefault?.Cells.TryGet(id, true));
         sb.AppendLine(defValue);
         sb.AppendLine(__exception.GetType().Name);
 
