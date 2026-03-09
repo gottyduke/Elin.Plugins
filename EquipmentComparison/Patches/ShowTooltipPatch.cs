@@ -17,8 +17,7 @@ internal class ShowTooltipPatch
             .MatchEndForward(
                 new CodeMatch(OpCodes.Callvirt, AccessTools.Method(
                     typeof(TooltipManager),
-                    nameof(TooltipManager.ShowTooltip))),
-                new CodeMatch(OpCodes.Ret))
+                    nameof(TooltipManager.ShowTooltip))))
             .InsertAndAdvance(
                 new(OpCodes.Ldarg_0),
                 Transpilers.EmitDelegate(AuxTooltip.TryDrawAuxTooltip))
