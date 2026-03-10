@@ -18,6 +18,8 @@ public abstract partial class ElinNetBase : EMono
 
     public abstract bool IsHost { get; }
 
+    public bool IsClient => !IsHost;
+
     public bool IsConnected => Socket.IsConnected;
 
     private void Awake()

@@ -16,7 +16,7 @@ internal static class CardSetPlacedStateEvent
         }
 
         // avoid duplicate actions sending
-        if (CharaBuildCompleteEvent.IsHappening) {
+        if (CharaProgressCompleteEvent.IsHappening && CharaProgressCompleteEvent.Action is TaskBuild) {
             return true;
         }
 

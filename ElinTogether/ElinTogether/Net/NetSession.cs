@@ -40,6 +40,7 @@ public class NetSession : EClass
 
     public bool HasActiveConnection => Connection != null && Connection.IsConnected;
     public bool IsHost => Connection?.IsHost is not false;
+    public bool IsClient => !IsHost;
     public bool ShouldSimulate => IsHost || SyncMode == Mode.PartialSync;
 
     public void RemoveComponent()

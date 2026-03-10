@@ -41,6 +41,6 @@ internal static class RemoteCardHelper
             }
         }
 
-        internal bool IsPCOrRemotePlayer => chara.IsPC || chara.IsRemotePlayer;
+        internal bool IsPlayer => chara.IsPC || chara.IsRemotePlayer;
     }
 }

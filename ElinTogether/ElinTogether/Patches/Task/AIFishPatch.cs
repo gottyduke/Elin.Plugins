@@ -20,13 +20,13 @@ internal static class AIFishPatch
                 new CodeMatch(OpCodes.Ldfld),
                 new CodeMatch(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(Card), nameof(Card.IsPC))))
             .SetInstructionAndAdvance(
-                Transpilers.EmitDelegate((Chara chara) => chara.IsPCOrRemotePlayer))
+                Transpilers.EmitDelegate((Chara chara) => chara.IsPlayer))
             .MatchEndForward(
                 new CodeMatch(OpCodes.Ldloc_2),
                 new CodeMatch(OpCodes.Ldfld),
                 new CodeMatch(OpCodes.Call, AccessTools.PropertyGetter(typeof(EClass), nameof(EClass.pc))))
             .SetInstructionAndAdvance(
-                Transpilers.EmitDelegate((Chara chara) => chara.IsPCOrRemotePlayer))
+                Transpilers.EmitDelegate((Chara chara) => chara.IsPlayer))
             .SetOpcodeAndAdvance(OpCodes.Brfalse_S)
             .InstructionEnumeration();
     }
@@ -47,7 +47,7 @@ internal static class AIFishPatch
     [HarmonyPatch(typeof(AI_Fish), nameof(AI_Fish.Makefish))]
     internal static void OnMakefishEnd(Thing? __result)
     {
-        if (!CharaProgressCompleteEvent.IsHappening || !NetSession.Instance.IsHost) {
+        if (!CharaProgressCompleteEvent.IsHappening || NetSession.Instance.IsClient) {
             return;
         }
 

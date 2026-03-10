@@ -45,7 +45,7 @@ internal static class CardGenEvent
         }
 
         // we use negative uid to avoid conflicting with host
-        if (!connection.IsHost) {
+        if (connection.IsClient) {
             __result.uid = -__result.uid;
         }
 
