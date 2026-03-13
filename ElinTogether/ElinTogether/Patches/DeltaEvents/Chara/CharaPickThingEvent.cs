@@ -2,6 +2,7 @@ using ElinTogether.Models;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
+using UnityEngine;
 
 namespace ElinTogether.Patches;
 
@@ -11,6 +12,11 @@ internal static class CharaPickThingEvent
     [HarmonyPrefix]
     internal static bool OnCharaPickThingy(Chara __instance, Thing t)
     {
+        var session = NetSession.Instance;
+        if (session.Connection is not { } connection) {
+            return true;
+        }
+
         if (!CardCache.Contains(t)) {
             return false;
         }
@@ -24,11 +30,6 @@ internal static class CharaPickThingEvent
             });
 
             return false;
-        }
-
-        var session = NetSession.Instance;
-        if (session.Connection is not { } connection) {
-            return true;
         }
 
         // we are host, propagate to everyone
@@ -52,11 +53,15 @@ internal static class CharaPickOrDropEvent
     [HarmonyPrefix]
     internal static bool OnCharaPickOrDrop(Chara __instance, Point p, Thing t)
     {
+        if (NetSession.Instance.Connection is not { } connection) {
+            return true;
+        }
+
         if (!CardCache.Contains(t)) {
             return false;
         }
 
-        if (!CharaProgressCompleteEvent.IsHappening || !NetSession.Instance.IsHost) {
+        if (!CharaProgressCompleteEvent.IsHappening || connection.IsClient) {
             return true;
         }
 
@@ -79,11 +84,15 @@ internal static class CharaTrySmoothPickEvent
     [HarmonyPrefix]
     internal static bool OnTrySmoothPick(Point p, Thing t, Chara c)
     {
+        if (NetSession.Instance.Connection is not { } connection) {
+            return true;
+        }
+
         if (!CardCache.Contains(t)) {
             return false;
         }
 
-        if (!CharaProgressCompleteEvent.IsHappening || !NetSession.Instance.IsHost) {
+        if (!CharaProgressCompleteEvent.IsHappening || connection.IsClient) {
             return true;
         }
 

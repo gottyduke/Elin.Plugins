@@ -12,22 +12,22 @@ public class ElinDeltaManager
     /// <summary>
     ///     Coming in
     /// </summary>
-    private readonly ConcurrentQueue<ElinDeltaBase> _inBuffer = [];
+    private readonly ConcurrentQueue<ElinDelta> _inBuffer = [];
 
     /// <summary>
     ///     Local deferred
     /// </summary>
-    private readonly ConcurrentQueue<ElinDeltaBase> _inBufferDeferred = [];
+    private readonly ConcurrentQueue<ElinDelta> _inBufferDeferred = [];
 
     /// <summary>
     ///     Sending out
     /// </summary>
-    private readonly ConcurrentQueue<ElinDeltaBase> _outBuffer = [];
+    private readonly ConcurrentQueue<ElinDelta> _outBuffer = [];
 
     /// <summary>
     ///     Remote deferred
     /// </summary>
-    private readonly ConcurrentQueue<ElinDeltaBase> _outBufferDeferred = [];
+    private readonly ConcurrentQueue<ElinDelta> _outBufferDeferred = [];
 
     private float _averageIn;
 
@@ -41,7 +41,7 @@ public class ElinDeltaManager
     /// <summary>
     ///     Sending out
     /// </summary>
-    public void AddRemote(ElinDeltaBase delta)
+    public void AddRemote(ElinDelta delta)
     {
         _outBuffer.Enqueue(delta);
     }
@@ -49,7 +49,7 @@ public class ElinDeltaManager
     /// <summary>
     ///     Sending out, next flush
     /// </summary>
-    public void DeferRemote(ElinDeltaBase delta)
+    public void DeferRemote(ElinDelta delta)
     {
         _outBufferDeferred.Enqueue(delta);
     }
@@ -57,7 +57,7 @@ public class ElinDeltaManager
     /// <summary>
     ///     Coming in to process
     /// </summary>
-    public void AddLocal(ElinDeltaBase delta)
+    public void AddLocal(ElinDelta delta)
     {
         _inBuffer.Enqueue(delta);
     }
@@ -65,7 +65,7 @@ public class ElinDeltaManager
     /// <summary>
     ///     Local defer, next flush
     /// </summary>
-    public void DeferLocal(ElinDeltaBase delta)
+    public void DeferLocal(ElinDelta delta)
     {
         _inBufferDeferred.Enqueue(delta);
     }
@@ -88,9 +88,9 @@ public class ElinDeltaManager
         }
     }
 
-    public List<ElinDeltaBase> FlushOutBuffer(int batchSize = -1)
+    public List<ElinDelta> FlushOutBuffer(int batchSize = -1)
     {
-        var batch = new List<ElinDeltaBase>();
+        var batch = new List<ElinDelta>();
         if (_outBuffer.IsEmpty) {
             return batch;
         }
@@ -110,9 +110,9 @@ public class ElinDeltaManager
         return batch;
     }
 
-    public List<ElinDeltaBase> FlushInBuffer(int batchSize = -1)
+    public List<ElinDelta> FlushInBuffer(int batchSize = -1)
     {
-        var batch = new List<ElinDeltaBase>();
+        var batch = new List<ElinDelta>();
         if (_inBuffer.IsEmpty) {
             return batch;
         }

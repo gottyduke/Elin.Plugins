@@ -2,18 +2,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Cwl.Helper;
-using ElinTogether.Elements;
 using ElinTogether.Helper;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
+using UnityEngine;
 
 namespace ElinTogether.Patches;
 
 [HarmonyPatch]
 internal static class CharaProgressCompleteEvent
 {
-    internal static List<ElinDeltaBase> DeltaList = [];
+    internal static List<ElinDelta> DeltaList = [];
     internal static Chara? Chara { get; private set; }
     internal static bool IsHappening { get; private set; }
     internal static AIAct? Action { get; private set; }
@@ -28,41 +28,47 @@ internal static class CharaProgressCompleteEvent
     [HarmonyPrefix]
     internal static bool OnProgressComplete(AIAct __instance)
     {
-        switch (NetSession.Instance.Connection) {
-            case ElinNetHost when __instance.owner?.IsPlayer is true:
-            case ElinNetClient when __instance.owner is not null:
-                break;
-            default:
-                return true;
+        if (NetSession.Instance.Connection is not { } connection || __instance.owner is null) {
+            return true;
         }
 
         Chara = __instance.owner;
         Action = __instance;
         IsHappening = true;
 
-        if (__instance is TaskBuild taskBuild) {
-            BeforeTaskBuildComplte(taskBuild);
-            OnTaskBuildComplete(taskBuild);
-            IsHappening = false;
-            return false;
+        if (__instance is not TaskBuild taskBuild) {
+            return true;
         }
 
-        return true;
+        if (Chara.IsPC && !ElinDelta.IsApplying) {
+            SendCharaBuildDelta(taskBuild);
+        }
+
+        if (connection.IsHost || ElinDelta.IsApplying) {
+            OnTaskBuildComplete(taskBuild);
+        }
+
+        IsHappening = false;
+        return false;
     }
 
     [HarmonyPostfix]
     internal static void OnProgressCompleteEnd(AIAct __instance)
     {
-        if (__instance.owner is null) {
-            return;
-        }
-
         Chara = null;
         Action = null;
         IsHappening = false;
 
+        if (__instance.owner is null) {
+            return;
+        }
+
         // only host can complete progress
         if (NetSession.Instance.Connection is not ElinNetHost connection) {
+            return;
+        }
+
+        if (__instance is TaskBuild) {
             return;
         }
 
@@ -77,13 +83,9 @@ internal static class CharaProgressCompleteEvent
         DeltaList.Clear();
     }
 
-    internal static void BeforeTaskBuildComplte(TaskBuild taskBuild)
+    internal static void SendCharaBuildDelta(TaskBuild taskBuild)
     {
         if (taskBuild.held is null) {
-            return;
-        }
-
-        if (taskBuild.owner.ai is GoalRemote) {
             return;
         }
 
@@ -105,7 +107,7 @@ internal static class CharaProgressCompleteEvent
                 return;
             }
 
-            if (thiz.CanRotateBlock()) {
+            if (CanRotateBlock(thiz)) {
                 SE.Rotate();
                 thiz.pos.cell.RotateBlock(1);
                 thiz.disableRotateBlock = true;
@@ -191,5 +193,27 @@ internal static class CharaProgressCompleteEvent
         if (EClass.game.IsSurvival && EClass._zone is Zone_StartSiteSky) {
             EClass.game.survival.OnExpandFloor(thiz.pos);
         }
+    }
+
+    public static bool CanRotateBlock(TaskBuild thiz)
+    {
+        if (!EInput.rightMouse.pressing) {
+            thiz.disableRotateBlock = false;
+        }
+        if (thiz.useHeld && thiz.owner.held != null) {
+            if (EClass._zone.IsRegion) {
+                return false;
+            }
+            if (EClass._zone is not Zone_Tent && !EClass._zone.IsPCFactionOrTent && thiz.owner.held.trait.CanBeOnlyBuiltInHome) {
+                return false;
+            }
+            if (EClass._zone.RestrictBuild && !thiz.owner.held.trait.CanBuildInTown) {
+                return false;
+            }
+            if (thiz.owner.held.trait is TraitBlock && thiz.pos.HasBlock && !thiz.owner.held.trait.IsDoor && !thiz.disableRotateBlock) {
+                return true;
+            }
+        }
+        return false;
     }
 }

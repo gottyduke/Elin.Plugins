@@ -1,0 +1,63 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using ElinTogether.Net;
+using MessagePack;
+
+namespace ElinTogether.Models.ElinDelta;
+
+[MessagePackObject]
+public class TypeDeltaBase : ElinDelta
+{
+    [Key(0)]
+    public required string TypeName { get; init; }
+
+    [Key(1)]
+    public List<int> ChangedIndices { get; set; } = [];
+
+    [Key(2)]
+    public List<byte[]> ChangedValues { get; set; } = [];
+
+    protected override void OnApply(ElinNetBase net)
+    {
+    }
+
+    private static class TypeDeltaCache
+    {
+        private const BindingFlags TypeFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic |
+                                               BindingFlags.DeclaredOnly;
+
+        private static readonly Dictionary<Type, MemberInfo[]> _cache = [];
+
+        public static MemberInfo[] GetMembers(Type type)
+        {
+            if (!_cache.TryGetValue(type, out var members)) {
+                members = _cache[type] = GetAllMembers(type);
+            }
+
+            return members;
+
+            static MemberInfo[] GetAllMembers(Type? type)
+            {
+                if (type == null) {
+                    return [];
+                }
+
+                return GetBaseTypes(type)
+                    .Reverse()
+                    .SelectMany(t => t.GetMembers(TypeFlags))
+                    .Where(m => m is FieldInfo { IsInitOnly: false } ||
+                                (m is PropertyInfo { CanRead: true, CanWrite: true } p && p.GetIndexParameters().Length == 0))
+                    .ToArray();
+
+                static IEnumerable<Type> GetBaseTypes(Type t)
+                {
+                    for (var cur = t; cur != null; cur = cur.BaseType) {
+                        yield return cur;
+                    }
+                }
+            }
+        }
+    }
+}

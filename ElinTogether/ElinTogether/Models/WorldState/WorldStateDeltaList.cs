@@ -8,5 +8,5 @@ namespace ElinTogether.Models;
 public class WorldStateDeltaList
 {
     [Key(0)]
-    public List<ElinDeltaBase> DeltaList { get; set; } = [];
+    public List<ElinDelta.ElinDelta> DeltaList { get; set; } = [];
 }
