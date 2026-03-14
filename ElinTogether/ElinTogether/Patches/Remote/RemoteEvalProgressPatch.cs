@@ -3,7 +3,7 @@ using HarmonyLib;
 namespace ElinTogether.Patches;
 
 [HarmonyPatch(typeof(Gauge), nameof(Gauge.UpdateValue), typeof(float), typeof(float))]
-internal class GaugeUpdateValuePatch
+internal class RemoteEvalProgressPatch
 {
     [HarmonyPrefix]
     internal static void OnGaugeUpdateValue(ref float now)

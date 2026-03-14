@@ -3,7 +3,7 @@ using HarmonyLib;
 namespace ElinTogether.Patches;
 
 [HarmonyPatch(typeof(Card), nameof(Card.Tool), MethodType.Getter)]
-internal class CardToolPatch
+internal class RemoteGetToolPatch
 {
     [HarmonyPrefix]
     internal static bool OnGetTool(Card __instance, ref Thing? __result)

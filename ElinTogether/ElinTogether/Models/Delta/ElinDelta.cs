@@ -35,6 +35,8 @@ namespace ElinTogether.Models.ElinDelta;
 [Union(401, typeof(ZoneAddCardDelta))]
 // World
 [Union(500, typeof(GameDelta))]
+// Misc
+[Union(600, typeof(InvRerollDelta))]
 public abstract class ElinDelta : EClass
 {
     public static bool IsApplying { get; private set; }
