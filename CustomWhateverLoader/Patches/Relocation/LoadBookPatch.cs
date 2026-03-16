@@ -7,20 +7,27 @@ using Cwl.Helper.String;
 using Cwl.LangMod;
 using HarmonyLib;
 using MethodTimer;
+using ReflexCLI.Attributes;
 
 namespace Cwl.Patches.Relocation;
 
 [HarmonyPatch]
+[ConsoleCommandClassCustomizer("cwl.data")]
 internal class LoadBookPatch
 {
     private const string CacheEntry = "Text";
     private const string Pattern = "*.txt";
+    private static bool _init;
 
     [Time]
     [HarmonyPostfix]
     [HarmonyPatch(typeof(BookList), nameof(BookList.Init))]
     internal static void OnBookListInit(BookList __instance)
     {
+        if (_init) {
+            return;
+        }
+
         var sources = PackageIterator.GetDirectories(CacheEntry)
             .SelectMany(d => d.GetDirectories())
             .ToArray();
@@ -47,6 +54,8 @@ internal class LoadBookPatch
                 CwlMod.Log<BookList>($"{category}: {book.Name}|{book.Directory?.Parent?.Parent?.Name}");
             }
         }
+
+        _init = true;
     }
 
     [HarmonyTranspiler]
@@ -79,5 +88,11 @@ internal class LoadBookPatch
 
         CwlMod.Log<BookList>("cwl_relocate_book".Loc(book.idFile, Pattern, bookPath.ShortPath()));
         return IO.LoadTextArray(bookPath.FullName);
+    }
+
+    [ConsoleCommand("clear_book_init")]
+    internal static void ResetBookInit()
+    {
+        _init = false;
     }
 }
