@@ -18,8 +18,9 @@ jobs:
     runs-on: windows-2025
 
     strategy:
+      fail-fast: false
       matrix:
-        version: [stable, nightly]
+        version: [nightly, stable]
     env:
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 

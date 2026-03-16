@@ -18,8 +18,9 @@ jobs:
     runs-on: windows-latest
 
     strategy:
+      fail-fast: false
       matrix:
-        version: [stable, nightly]
+        version: [nightly, stable]
 
     steps:
       - name: Checkout Code
