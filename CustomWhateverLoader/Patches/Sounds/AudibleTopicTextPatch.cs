@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using Cwl.Helper.Extensions;
+﻿using System;
 using HarmonyLib;
 
 namespace Cwl.Patches.Sounds;
@@ -7,38 +6,57 @@ namespace Cwl.Patches.Sounds;
 [HarmonyPatch]
 internal class AudibleTopicTextPatch
 {
+    private const string SoundTagPrefix = "<sound=";
+
     [HarmonyPrefix]
     [HarmonyPatch(typeof(CardRenderer), nameof(CardRenderer.Say))]
     internal static void OnExtractSoundTags(CardRenderer __instance, ref string text)
     {
-        var match = Regex.Match(text, "<sound=([^>]+)>");
-
-        if (!match.Success || match.Groups.Count <= 1) {
-            return;
+        while (TryExtractSoundTag(ref text, out var soundId, out var chance)) {
+            if (EClass.rndf(1f) <= chance) {
+                __instance.owner.PlaySound(soundId);
+            }
         }
-
-        var soundExpr = match.Groups[1].Value.Split(',');
-        var soundId = soundExpr[0];
-
-        if (soundExpr.TryGet(1, true) is not { } chance ||
-            EClass.rndf(1f) <= chance.AsFloat(1f)) {
-
-            __instance.owner.PlaySound(soundId);
-        }
-
-        text = text.Remove(match.Index, match.Length);
     }
 
     [HarmonyPrefix]
     [HarmonyPatch(typeof(Msg), nameof(Msg.SayRaw))]
     internal static void OnSayRawTaggedMsg(ref string text)
     {
-        var match = Regex.Match(text, "<sound=([^>]+)>");
+        TryExtractSoundTag(ref text, out _, out _);
+    }
 
-        if (!match.Success || match.Groups.Count <= 1) {
-            return;
+    private static bool TryExtractSoundTag(ref string text, out string? id, out float chance)
+    {
+        id = null;
+        chance = 1f;
+
+        var start = text.IndexOf(SoundTagPrefix, StringComparison.Ordinal);
+        if (start == -1) {
+            return false;
         }
 
-        text = text.Remove(match.Index, match.Length);
+        var end = text.IndexOf('>', start);
+        if (end == -1) {
+            return false;
+        }
+
+        var soundId = start + SoundTagPrefix.Length;
+        var expr = text.Substring(soundId, end - soundId);
+
+        var comma = expr.IndexOf(',');
+        if (comma == -1) {
+            id = expr;
+        } else {
+            id = expr[..comma];
+            var chanceStr = expr[(comma + 1)..];
+
+            if (float.TryParse(chanceStr, out var c)) {
+                chance = c;
+            }
+        }
+
+        text = text.Remove(start, end - start + 1);
+        return true;
     }
 }

@@ -49,9 +49,12 @@ public static class MethodInfoDetail
             try {
                 processor.AddTranspiler(_testStub);
                 processor.Patch();
-            } catch {
+            } catch (MissingMemberException) {
                 IncompatibleCalls[methodInfo] = true;
                 return true;
+                // noexcept
+            } catch {
+                return false;
                 // noexcept
             } finally {
                 processor.Unpatch(_testStub.method);
