@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using HarmonyLib;
@@ -8,61 +7,8 @@ namespace Cwl.Helper.String;
 
 public static class MethodInfoDetail
 {
-    private static readonly HarmonyMethod _testStub = new(typeof(MethodInfoDetail), nameof(StubILPatch));
-    internal static readonly Dictionary<MethodBase, bool> IncompatibleCalls = [];
-
-    private static bool _nestedStub;
-
-    private static IEnumerable<CodeInstruction> StubILPatch(IEnumerable<CodeInstruction> instructions)
-    {
-        foreach (var instruction in instructions) {
-            if (instruction.operand is MethodBase method && !_nestedStub) {
-                if (IncompatibleCalls.GetValueOrDefault(method)) {
-                    throw new MissingMethodException();
-                }
-
-                _nestedStub = true;
-                try {
-                    var invalidSubCall = method.TestIncompatibleIl();
-                    if (invalidSubCall) {
-                        throw new MissingMethodException();
-                    }
-                } finally {
-                    _nestedStub = false;
-                }
-            }
-
-            yield return instruction;
-        }
-    }
-
     extension(MethodBase methodInfo)
     {
-        public bool TestIncompatibleIl()
-        {
-            if (IncompatibleCalls.GetValueOrDefault(methodInfo)) {
-                return true;
-            }
-
-            IncompatibleCalls[methodInfo] = false;
-            var processor = CwlMod.SharedHarmony.CreateProcessor(methodInfo);
-            try {
-                processor.AddTranspiler(_testStub);
-                processor.Patch();
-            } catch (MissingMemberException) {
-                IncompatibleCalls[methodInfo] = true;
-                return true;
-                // noexcept
-            } catch {
-                return false;
-                // noexcept
-            } finally {
-                processor.Unpatch(_testStub.method);
-            }
-
-            return false;
-        }
-
         public string GetDetail(bool full = true)
         {
             var decl = methodInfo.DeclaringType;
@@ -77,7 +23,7 @@ public static class MethodInfoDetail
                 name += $"<{genericArgs}>";
             }
 
-            if (IncompatibleCalls.GetValueOrDefault(methodInfo)) {
+            if (MethodCompatibility.CheckedCalls.GetValueOrDefault(methodInfo)) {
                 name = "cwl_ui_invalid_patch".lang() + name;
             }
 

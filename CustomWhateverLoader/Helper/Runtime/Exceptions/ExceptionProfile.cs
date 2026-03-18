@@ -11,6 +11,7 @@ using Cwl.LangMod;
 using HarmonyLib;
 using HarmonyLib.Public.Patching;
 using UnityEngine;
+using Logger = HarmonyLib.Tools.Logger;
 
 namespace Cwl.Helper.Exceptions;
 
@@ -168,6 +169,9 @@ public class ExceptionProfile(string message)
         try {
             Frames.Clear();
 
+            var oldFilter = Logger.ChannelFilter;
+            Logger.ChannelFilter = Logger.LogChannel.None;
+
             using var sb = StringBuilderPool.Get();
             sb.AppendLine("cwl_ui_callstack".lang());
 
@@ -221,6 +225,8 @@ public class ExceptionProfile(string message)
             Result = Result.TruncateAllLines(150);
 
             State = AnalyzeState.Completed;
+
+            Logger.ChannelFilter = oldFilter;
         } catch {
             State = AnalyzeState.Completed;
             // noexcept

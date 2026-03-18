@@ -15,7 +15,6 @@
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <GenerateDependencyFile>false</GenerateDependencyFile>
         <GenerateRuntimeConfigurationFiles>false</GenerateRuntimeConfigurationFiles>
-        <NoWarn>1701;1702;8620;8604</NoWarn>
         <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     </PropertyGroup>
 

@@ -82,7 +82,7 @@ public static class CachedMethods
             return method.ValidateParameterTypes(warn, types.Select(t => (t?.FullName, (string?)null)).ToArray());
         }
 
-        public bool ValidateParameterTypes(bool warn, IReadOnlyList<(string?, string?)> types)
+        public bool ValidateParameterTypes(bool warn, IReadOnlyList<(string? type, string? name)> types)
         {
             var parameters = method.GetParameters();
 

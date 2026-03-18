@@ -38,7 +38,7 @@ public static class PatchInfoExt
             invalids = info.AllPatches
                 .SelectMany(kv => kv.Value)
                 .Select(p => p.PatchMethod)
-                .Where(MethodInfoDetail.TestIncompatibleIl)
+                .Where(MethodCompatibility.TestIncompatibleIl)
                 .ToList();
 
             return _tested[info] = invalids;
