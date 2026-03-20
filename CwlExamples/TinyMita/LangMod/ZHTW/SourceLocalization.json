@@ -1,0 +1,11 @@
+{
+  "SourceChara.tinymita.aka": "破損的",
+  "SourceChara.tinymita.name": "小米塔",
+  "SourceCharaText.tinymita_talks.aggro": "\"我不覺得發生過什麼壞事…\"\n\"我好害怕…\"\n\"從現在開始我不會再痛苦了，對嗎？\"",
+  "SourceCharaText.tinymita_talks.calm": "\"玩家…你看起來不一樣了…<sound=tinymita/61,0.25>\"\n\"你的手臂變短了，臉也不那麼兇狠了…<sound=tinymita/62,0.25>\"\n\"我們一起玩吧！<sound=tinymita/83,0.25>\"",
+  "SourceCharaText.tinymita_talks.dead": "\"如果我還有力氣的話，我們一定要一起玩。\"\n\"好事越來越少了…\"\n\"我好痛苦…<sound=tinymita/57,0.5>\"",
+  "SourceCharaText.tinymita_talks.fov": "\"玩家…你是玩家，對吧？<sound=tinymita/33,0.25>\"\n\"我們可以一起玩…<sound=tinymita/34,0.25>\"\n\"你好像很著急…\"\n\"你為什麼要離開這裡，然後去別的地方呢？\"",
+  "SourceCharaText.tinymita_talks.kill": "\"就這麼急著逃跑嗎？\"\n\"一直這樣兜圈子是救不了你的。\"\n\"看看窗外吧…\"",
+  "SourceRace.mita.detail": "「破損的」米塔是幼年米塔的一個特殊版本。曾經因為過分可愛而引起瘋狂米塔的注意。瘋狂米塔幾乎摧毀了幼年版的米塔，讓她永遠落下了殘疾。在經歷了多次死亡後，這個米塔變成了「破損的」，失去了再生能力，陷入憔悴而殘缺的狀態：她的身體和頭部都有傷疤，而且失去了左臂。此外，「破損的」米塔對周圍環境的感知也產生了錯覺。她不太能意識到眼前的人是誰，但她不斷地想要得到關注和照顧。如今的她已經封閉自己的內心，只會用微弱的聲音訴說孤獨、痛苦和恐懼。",
+  "SourceRace.mita.name": "米塔"
+}

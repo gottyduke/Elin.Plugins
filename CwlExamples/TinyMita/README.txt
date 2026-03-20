@@ -13,10 +13,7 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=3370512305
 https://github.com/gottyduke/Elin.Plugins/tree/master/CustomWhateverLoader
 
 - How to Import Custom Adventurer
-https://github.com/gottyduke/Elin.Plugins/blob/master/CustomWhateverLoader/Docs/CustomAdventurer.md
-
-- How to Assign Custom Drama
-https://github.com/gottyduke/Elin.Plugins/blob/master/CustomWhateverLoader/Docs/CustomDrama.md
+https://elin-modding-resources.github.io/Elin.Docs/articles/100_Mod%20Documentation/Custom%20Whatever%20Loader/EN/Character/0_character
 
 - Elin Modding Wiki
 https://elin-modding-resources.github.io/Elin.Docs/
