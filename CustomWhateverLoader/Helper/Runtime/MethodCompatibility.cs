@@ -24,10 +24,8 @@ public static class MethodCompatibility
                 return incompatible;
             }
 
-            CheckedCalls[methodInfo] = incompatible;
-
             if (methodInfo.DeclaringType is null) {
-                return false;
+                return CheckedCalls[methodInfo] = false;
             }
 
             try {
