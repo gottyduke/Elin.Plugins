@@ -1,4 +1,5 @@
 using ElinTogether.Models;
+using ElinTogether.Models.ElinDelta;
 using ElinTogether.Patches;
 
 namespace ElinTogether.Net;
@@ -22,8 +23,19 @@ internal partial class ElinNetClient
             return;
         }
 
+        if (Delta.FlushOutBuffer() is not { Count: > 0 } deltaList) {
+            return;
+        }
+
+        deltaList.ForEach(delta => {
+            if (delta is CardGenDelta cardGenDelta) {
+                var card = cardGenDelta.Card.Find();
+                cardGenDelta.Card.Data = LZ4Bytes.Create(card);
+            }
+        });
+
         Socket.FirstPeer.Send(new WorldStateDeltaList {
-            DeltaList = Delta.FlushOutBuffer(),
+            DeltaList = deltaList,
         });
     }
 

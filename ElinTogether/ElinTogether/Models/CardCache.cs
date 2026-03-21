@@ -67,9 +67,14 @@ public static class CardCache
         Clean();
         foreach (var card in map.Cards) {
             Add(card);
-            foreach (var thing in card.things.Flatten()) {
-                Add(thing);
-            }
+            CacheContainer(card.things);
+        }
+    }
+
+    internal static void CacheContainer(ThingContainer container)
+    {
+        foreach (var thing in container.Flatten()) {
+            Add(thing);
         }
     }
 

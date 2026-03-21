@@ -2,14 +2,13 @@ using System.Reflection;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
-using UnityEngine;
 
 namespace ElinTogether.Patches;
 
 [HarmonyPatch]
 internal static class InvRerollEvent
 {
-    private static InvRerollDelta? ToSend;
+    private static InvRerollDelta? DeferredDelta;
 
     internal static MethodInfo TargetMethod()
     {
@@ -31,8 +30,8 @@ internal static class InvRerollEvent
             return true;
         }
 
-        ToSend = new InvRerollDelta {
-            Owner = owner,
+        DeferredDelta = new InvRerollDelta {
+            ShopOwner = owner,
         };
 
         return connection.IsHost;
@@ -41,11 +40,11 @@ internal static class InvRerollEvent
     [HarmonyPostfix]
     internal static void OnInvRerollEnd()
     {
-        if (ToSend is null) {
+        if (DeferredDelta is null) {
             return;
         }
 
-        NetSession.Instance.Connection?.Delta.AddRemote(ToSend);
-        ToSend = null;
+        NetSession.Instance.Connection?.Delta.AddRemote(DeferredDelta);
+        DeferredDelta = null;
     }
 }

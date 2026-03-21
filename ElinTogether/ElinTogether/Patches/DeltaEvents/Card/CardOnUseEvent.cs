@@ -24,7 +24,7 @@ internal static class CardOnUseEvent
 
         var card = __instance.owner;
         if (!CardCache.Contains(card)) {
-            return true;
+            return false;
         }
 
         connection.Delta.AddRemote(new CardOnUseDelta {

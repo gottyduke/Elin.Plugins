@@ -17,8 +17,7 @@ public class CardOnUseDelta : ElinDelta
 
     protected override void OnApply(ElinNetBase net)
     {
-        if (Card.Find() is not { isDestroyed: false } card
-            || User.Find() is not Chara user) {
+        if (Card.Find() is not { isDestroyed: false } card || User.Find() is not Chara user) {
             return;
         }
 

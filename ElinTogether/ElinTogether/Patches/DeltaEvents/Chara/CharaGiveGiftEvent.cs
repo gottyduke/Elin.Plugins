@@ -23,7 +23,7 @@ internal static class CharaGiveGiftEvent
         connection.Delta.AddRemote(new CharaGiveGiftDelta {
             From = __instance,
             To = c,
-            Thing = RemoteCard.Create(t),
+            Thing = t,
         });
     }
 

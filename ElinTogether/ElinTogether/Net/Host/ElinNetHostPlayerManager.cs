@@ -75,6 +75,9 @@ internal partial class ElinNetHost
             CharaUid = chara.uid,
         };
 
+        CardCache.Add(chara);
+        CardCache.CacheContainer(chara.things);
+
         Session.CurrentPlayers.Add(state);
 
         game.Save(silent: true);

@@ -1,6 +1,5 @@
 using ElinTogether.Net;
 using MessagePack;
-using UnityEngine;
 
 namespace ElinTogether.Models.ElinDelta;
 
@@ -8,19 +7,19 @@ namespace ElinTogether.Models.ElinDelta;
 public class InvRerollDelta : ElinDelta
 {
     [Key(0)]
-    public required RemoteCard Owner { get; init; }
+    public required RemoteCard ShopOwner { get; init; }
 
     protected override void OnApply(ElinNetBase net)
     {
-        if (Owner.Find() is not { } owner) {
+        if (ShopOwner.Find() is not { } shopOwner) {
             return;
         }
 
-        var cost = owner.trait.CostRerollShop;
-        var inv = LayerInventory.listInv.Find(l => l.invs[0].owner.owner == owner)?.invs[0];
+        var cost = shopOwner.trait.CostRerollShop;
+        var inv = LayerInventory.listInv.Find(l => l.invs[0].owner.owner == shopOwner)?.invs[0];
         if (net.IsClient) {
             EMono._zone.influence -= cost;
-            owner.c_dateStockExpire = world.date.GetRaw(24 * owner.trait.RestockDay);
+            shopOwner.c_dateStockExpire = world.date.GetRaw(24 * shopOwner.trait.RestockDay);
             if (inv is null) {
                 return;
             }
@@ -38,8 +37,8 @@ public class InvRerollDelta : ElinDelta
         }
 
         EMono._zone.influence -= cost;
-        owner.c_dateStockExpire = 0;
-        owner.trait.OnBarter(reroll: true);
+        shopOwner.c_dateStockExpire = 0;
+        shopOwner.trait.OnBarter(reroll: true);
 
         net.Delta.AddRemote(this);
 

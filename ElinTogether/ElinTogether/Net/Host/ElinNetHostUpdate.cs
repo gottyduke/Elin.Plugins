@@ -1,5 +1,6 @@
 using System;
 using ElinTogether.Models;
+using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net.Steam;
 using ElinTogether.Patches;
 
@@ -57,6 +58,13 @@ internal partial class ElinNetHost
         if (Delta.FlushOutBuffer() is not { Count: > 0 } deltaList) {
             return;
         }
+
+        deltaList.ForEach(delta => {
+            if (delta is CardGenDelta cardGenDelta) {
+                var card = cardGenDelta.Card.Find();
+                cardGenDelta.Card.Data = LZ4Bytes.Create(card);
+            }
+        });
 
         Broadcast(new WorldStateDeltaList {
             DeltaList = deltaList,

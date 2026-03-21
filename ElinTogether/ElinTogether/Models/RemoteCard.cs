@@ -37,7 +37,9 @@ public class RemoteCard
             return null;
         }
 
-        if (NetSession.Instance.IsHost) {
+        if (NetSession.Instance.IsHost
+         && withData
+         ) {
             CardCache.Add(card);
         }
 

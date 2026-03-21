@@ -10,14 +10,14 @@ namespace ElinTogether.Patches;
 internal static class CardAddThingEvent
 {
     [HarmonyPrefix]
-    internal static void OnCardAddThing(Card __instance, Thing t, bool tryStack, int destInvX, int destInvY)
+    internal static bool OnCardAddThing(Card __instance, Thing t, bool tryStack, int destInvX, int destInvY)
     {
         if (NetSession.Instance.Connection is not { } connection) {
-            return;
+            return true;
         }
 
         if (!CardCache.Contains(__instance)) {
-            return;
+            return false;
         }
 
         connection.Delta.AddRemote(new CardAddThingDelta {
@@ -27,6 +27,8 @@ internal static class CardAddThingEvent
             DestInvX = destInvX,
             DestInvY = destInvY,
         });
+
+        return true;
     }
 
     extension(Card card)
