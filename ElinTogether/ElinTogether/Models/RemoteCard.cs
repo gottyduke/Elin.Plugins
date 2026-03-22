@@ -80,11 +80,14 @@ public class RemoteCard
             return card;
         }
 
+        if (NetSession.Instance.IsHost) {
+            return null;
+        }
+
         if (Type == CardType.Chara) {
             card = EClass.game?.cards.globalCharas.GetValueOrDefault(Uid);
         }
 
-        card ??= CardGenEvent.TryPop(Uid);
         card ??= Type switch {
             CardType.Thing => Data?.Decompress<Thing>(),
             CardType.Chara => Data?.Decompress<Chara>(),

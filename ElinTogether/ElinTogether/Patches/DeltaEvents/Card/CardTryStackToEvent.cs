@@ -11,10 +11,12 @@ internal static class CardTryStackEvent
     [HarmonyPrefix]
     internal static bool OnCardTryStackTo(Card __instance, Thing to, ref bool __result)
     {
-        if (NetSession.Instance.Connection is not ElinNetClient client
-            || ElinDelta.IsApplying
-            || !CardCache.Contains(__instance)) {
+        if (NetSession.Instance.Connection is not ElinNetClient client) {
             return true;
+        }
+
+        if (!CardCache.Contains(to) != !CardCache.Contains(__instance)) {
+            return false;
         }
 
         if (!__instance.CanStackTo(to)) {

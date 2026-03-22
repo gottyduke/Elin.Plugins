@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
+using ElinTogether.Models;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
@@ -84,6 +85,7 @@ internal static class Synchronization
         [HarmonyPostfix]
         internal static void OnCoreUpdateEnd()
         {
+            CardCache.Update();
             switch (NetSession.Instance.Connection) {
                 case ElinNetHost host:
                     if (!EMono.scene.paused) {

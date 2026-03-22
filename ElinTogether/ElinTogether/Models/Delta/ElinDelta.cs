@@ -39,6 +39,8 @@ namespace ElinTogether.Models.ElinDelta;
 [Union(500, typeof(GameDelta))]
 // Misc
 [Union(600, typeof(InvRerollDelta))]
+[Union(601, typeof(OnBarterDelta))]
+
 public abstract class ElinDelta : EClass
 {
     public static bool IsApplying { get; private set; }

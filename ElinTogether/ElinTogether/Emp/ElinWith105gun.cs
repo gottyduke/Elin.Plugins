@@ -14,7 +14,7 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.elintogether";
     internal const string Name = "Elin Together";
-    internal const string Version = "0.9.114";
+    internal const string Version = "0.10.0";
 
     internal static string BuildVersion => field ??= EmpMod.Assembly.GetName().Version.ToString();
 }
@@ -64,7 +64,6 @@ internal sealed class EmpMod : BaseUnityPlugin
     [CwlPostLoad]
     private static void ClearRef()
     {
-        CardGenEvent.HeldRefCards.Clear();
         SpatialGenEvent.HeldRefZones.Clear();
     }
 }

@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using ElinTogether.Net;
+using ElinTogether.Net.Steam;
 using ElinTogether.Patches;
 using MessagePack;
 
@@ -17,13 +19,57 @@ public class CardGenDelta : ElinDelta
             return;
         }
 
+        var maxId = Math.Max(Math.Abs(Card.Uid), game.cards.uidNext);
         Card card = Card.Type == RemoteCard.CardType.Thing
             ? Card.Data.Decompress<Thing>()
             : Card.Data.Decompress<Chara>();
 
-        card.uid = Card.Uid;
-        game.cards.uidNext = Math.Max(Math.Abs(card.uid), game.cards.uidNext);
+        foreach (var thing in card.things.Flatten()) {
+            maxId = Math.Max(maxId, thing.uid);
+        }
 
-        CardGenEvent.HeldRefCards[Card.Uid] = card;
+        game.cards.uidNext = maxId;
+
+        CardCache.Add(card);
+        CardCache.CacheContainer(card.things);
+    }
+
+    internal static void Trim(List<ElinDelta> deltaList)
+    {
+        var alreadySent = new List<int>();
+        deltaList.RemoveAll(delta => {
+            if (delta is not CardGenDelta cardGenDelta) {
+                return false;
+            }
+
+            var card = cardGenDelta.Card.Find();
+            if (card is null || card.isDestroyed) {
+                return true;
+            }
+
+            card.things.Flatten().ForEach(thing => {
+                alreadySent.Add(thing.uid);
+            });
+
+            return false;
+        });
+
+        deltaList.RemoveAll(delta => {
+            if (delta is not CardGenDelta cardGenDelta) {
+                return false;
+            }
+
+            if (alreadySent.Contains(cardGenDelta.Card.Uid)) {
+                return true;
+            }
+
+            var card = cardGenDelta.Card.Find()!;
+            if (card.parent is null && card.things.Count == 0 && !card.IsKeptAlive) {
+                return true;
+            }
+
+            cardGenDelta.Card.Data = LZ4Bytes.Create(card);
+            return false;
+        });
     }
 }

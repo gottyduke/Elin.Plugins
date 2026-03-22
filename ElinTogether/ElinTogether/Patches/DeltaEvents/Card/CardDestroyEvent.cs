@@ -9,7 +9,7 @@ namespace ElinTogether.Patches;
 internal static class CardDestroyEvent
 {
     [HarmonyPrefix]
-    internal static void OnCardModNum(Card __instance)
+    internal static void OnDestroy(Card __instance)
     {
         if (NetSession.Instance.Connection is not { } connection) {
             return;

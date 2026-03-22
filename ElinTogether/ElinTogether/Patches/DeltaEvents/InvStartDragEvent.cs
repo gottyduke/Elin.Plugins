@@ -30,7 +30,7 @@ internal static class InvStartDragEvent
             return false;
         }
 
-        if (thing.parent is null) {
+        if (thing.parent is null && __instance.nextDrag != item) {
             return true;
         }
 

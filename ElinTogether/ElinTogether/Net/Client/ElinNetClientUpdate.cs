@@ -27,13 +27,6 @@ internal partial class ElinNetClient
             return;
         }
 
-        deltaList.ForEach(delta => {
-            if (delta is CardGenDelta cardGenDelta) {
-                var card = cardGenDelta.Card.Find();
-                cardGenDelta.Card.Data = LZ4Bytes.Create(card);
-            }
-        });
-
         Socket.FirstPeer.Send(new WorldStateDeltaList {
             DeltaList = deltaList,
         });

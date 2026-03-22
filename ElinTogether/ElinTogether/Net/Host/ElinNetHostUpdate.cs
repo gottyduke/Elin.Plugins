@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using ElinTogether.Models;
 using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net.Steam;
@@ -59,12 +60,7 @@ internal partial class ElinNetHost
             return;
         }
 
-        deltaList.ForEach(delta => {
-            if (delta is CardGenDelta cardGenDelta) {
-                var card = cardGenDelta.Card.Find();
-                cardGenDelta.Card.Data = LZ4Bytes.Create(card);
-            }
-        });
+        CardGenDelta.Trim(deltaList);
 
         Broadcast(new WorldStateDeltaList {
             DeltaList = deltaList,

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cwl.API.Attributes;
+using ElinTogether.Net;
 
 namespace ElinTogether.Models;
 
@@ -11,11 +12,15 @@ public static class CardCache
     // prevent temporary item cache invalidation
     private static readonly List<Card> _keepalive = [];
 
+    private static bool IsHost { get; set; }
+
+    private static bool IsClient => !IsHost;
+
     internal static void Add(Card card)
     {
         var stored = Find(card.uid);
         if (stored is null) {
-            _cards[card.uid] = new(card);
+            Set(card);
             return;
         }
 
@@ -31,7 +36,7 @@ public static class CardCache
             return;
         }
 
-        _cards[card.uid] = new(card);
+        Set(card);
 
         stored.uid++;
         Add(stored);
@@ -41,6 +46,9 @@ public static class CardCache
     internal static void Set(Card card)
     {
         _cards[card.uid] = new(card);
+        if (IsClient && card.parent is null) {
+            KeepAlive(card);
+        }
     }
 
     internal static bool Contains(Card? card)
@@ -64,7 +72,6 @@ public static class CardCache
             return;
         }
 
-        Clean();
         foreach (var card in map.Cards) {
             Add(card);
             CacheContainer(card.things);
@@ -83,17 +90,6 @@ public static class CardCache
         _keepalive.Add(card);
     }
 
-    internal static void Clean()
-    {
-        // clean invalid weak references
-        _keepalive.Clear();
-        foreach (var (uid, reference) in _cards.ToArray()) {
-            if (!reference.TryGetTarget(out _)) {
-                _cards.Remove(uid);
-            }
-        }
-    }
-
     [CwlPreLoad]
     [CwlSceneInitEvent(Scene.Mode.Title, preInit: true)]
     private static void ClearCachedRefs()
@@ -102,20 +98,19 @@ public static class CardCache
         _keepalive.Clear();
     }
 
-    extension(ThingContainer things)
+    public static void Update()
     {
-        internal IEnumerable<Thing> Flatten()
-        {
-            foreach (var t1 in things) {
-                if (t1.things.Count == 0) {
-                    yield return t1;
-                    continue;
-                }
-
-                foreach (var t2 in t1.things.Flatten()) {
-                    yield return t2;
-                }
+        IsHost = NetSession.Instance.IsHost;
+        _keepalive.RemoveAll(card => card.parent is not null);
+        foreach (var (uid, reference) in _cards.ToArray()) {
+            if (!reference.TryGetTarget(out _)) {
+                _cards.Remove(uid);
             }
         }
+    }
+
+    extension(Card card)
+    {
+        internal bool IsKeptAlive => _keepalive.Contains(card);
     }
 }

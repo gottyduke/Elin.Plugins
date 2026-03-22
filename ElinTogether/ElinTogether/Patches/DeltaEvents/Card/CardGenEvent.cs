@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using ElinTogether.Models;
 using ElinTogether.Models.ElinDelta;
@@ -11,29 +10,12 @@ namespace ElinTogether.Patches;
 [HarmonyPatch]
 internal static class CardGenEvent
 {
-    internal static readonly Dictionary<int, Card> HeldRefCards = [];
-
     internal static IEnumerable<MethodBase> TargetMethods()
     {
         return [
             AccessTools.Method(typeof(CharaGen), nameof(CharaGen.Create)),
             AccessTools.Method(typeof(ThingGen), nameof(ThingGen._Create)),
         ];
-    }
-
-    internal static Card? TryPop(int uid)
-    {
-        if (!HeldRefCards.Remove(uid, out var card)) {
-            return null;
-        }
-
-        foreach (var staleUid in HeldRefCards.Keys.ToArray()) {
-            if (staleUid < uid) {
-                HeldRefCards.Remove(staleUid, out _);
-            }
-        }
-
-        return card;
     }
 
     [HarmonyPostfix]
@@ -47,6 +29,7 @@ internal static class CardGenEvent
         // we use negative uid to avoid conflicting with host
         if (connection.IsClient) {
             __result.uid = -__result.uid;
+            return;
         }
 
         connection.Delta.AddRemote(new CardGenDelta {
