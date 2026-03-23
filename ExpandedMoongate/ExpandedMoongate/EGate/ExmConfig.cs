@@ -1,14 +1,14 @@
 using BepInEx.Configuration;
 using ReflexCLI.Attributes;
 
-namespace EGate;
+namespace Exm;
 
 [ConsoleCommandClassCustomizer("eg")]
-internal partial class EgConfig
+internal partial class ExmConfig
 {
     internal static void Bind()
     {
-        var config = EgMod.Instance.Config;
+        var config = ExmMod.Instance.Config;
 
         Policy.Verbose = config.Bind(
             "RuntimePolicy",

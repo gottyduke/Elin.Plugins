@@ -1,10 +1,10 @@
 using System.Reflection;
 using BepInEx;
-using EGate.Components;
+using Exm.Components;
 using HarmonyLib;
 using UnityEngine;
 
-namespace EGate;
+namespace Exm;
 
 public static class ModInfo
 {
@@ -12,15 +12,15 @@ public static class ModInfo
     public const string Name = "Expanded Moongate Server";
     public const string Version = "0.9.5";
 
-    public static string BuildVersion => field ??= EgMod.Assembly.GetName().Version.ToString();
+    public static string BuildVersion => field ??= ExmMod.Assembly.GetName().Version.ToString();
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
-internal partial class EgMod : BaseUnityPlugin
+internal partial class ExmMod : BaseUnityPlugin
 {
     internal static readonly Assembly Assembly = Assembly.GetExecutingAssembly();
 
-    internal static EgMod Instance { get; private set; } = null!;
+    internal static ExmMod Instance { get; private set; } = null!;
 
     private void Awake()
     {
@@ -30,8 +30,8 @@ internal partial class EgMod : BaseUnityPlugin
 
     private void Start()
     {
-        EgConfig.InvalidateConfigs();
-        EgConfig.EnableReloadWatcher();
+        ExmConfig.InvalidateConfigs();
+        ExmConfig.EnableReloadWatcher();
     }
 
     #if DEBUG

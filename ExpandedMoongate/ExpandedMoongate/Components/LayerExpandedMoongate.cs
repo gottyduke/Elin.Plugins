@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using Cwl.API.Attributes;
 using Cwl.Helper.String;
-using EGate.Components.Tabs;
+using Exm.Components.Tabs;
 using ReflexCLI.Attributes;
 using UnityEngine;
 using YKF;
 
-namespace EGate.Components;
+namespace Exm.Components;
 
 [ConsoleCommandClassCustomizer("eg")]
 internal class LayerExpandedMoongate : YKLayer<LayerCreationData>

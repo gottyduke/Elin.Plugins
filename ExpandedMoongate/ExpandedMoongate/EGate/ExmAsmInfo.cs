@@ -1,6 +1,6 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using EGate;
+using Exm;
 
 [assembly: AssemblyVersion($"{ModInfo.Version}.*")]
 [assembly: AssemblyFileVersion($"{ModInfo.Version}.{GitVersionInformation.CommitsSinceVersionSource}")]

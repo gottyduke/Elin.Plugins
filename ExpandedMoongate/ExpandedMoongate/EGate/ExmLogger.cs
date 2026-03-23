@@ -7,9 +7,9 @@ using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using UnityEngine;
 
-namespace EGate;
+namespace Exm;
 
-internal sealed partial class EgMod
+internal sealed partial class ExmMod
 {
     private static readonly Color _warningColor = new(237f / 255, 96f / 255, 71f / 255);
     private static readonly ConcurrentQueue<string> _logs = [];
@@ -35,7 +35,7 @@ internal sealed partial class EgMod
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Debug(object? payload, [CallerMemberName] string caller = "")
     {
-        if (!EgConfig.Policy.Verbose.Value) {
+        if (!ExmConfig.Policy.Verbose.Value) {
             return;
         }
 

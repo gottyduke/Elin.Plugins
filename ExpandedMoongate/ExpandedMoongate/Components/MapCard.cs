@@ -1,14 +1,15 @@
 using System;
+using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cysharp.Threading.Tasks;
-using EGate.API;
-using EGate.Helper;
-using EGate.Model.Map;
+using Exm.API;
+using Exm.Helper;
+using Exm.Model.Map;
 using Steamworks;
 using UnityEngine;
 using YKF;
 
-namespace EGate.Components;
+namespace Exm.Components;
 
 internal class MapCard(IMapService service, MapMeta meta)
 {
@@ -29,7 +30,7 @@ internal class MapCard(IMapService service, MapMeta meta)
         var mapInfoGroup = bannerGroup.Vertical();
         mapInfoGroup.Layout.childAlignment = TextAnchor.UpperCenter;
 
-        var mapName = mapInfoGroup.Header(meta.Title);
+        var mapName = mapInfoGroup.Header(meta.Title.Truncate(20));
         mapName.text1.fontSize *= 2;
 
         var mapStatGroup = mapInfoGroup.Horizontal();

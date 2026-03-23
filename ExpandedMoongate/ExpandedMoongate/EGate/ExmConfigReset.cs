@@ -1,25 +1,24 @@
 using System.IO;
-using Cwl.Helper.FileUtil;
 using Cwl.LangMod;
-using EGate.Helper;
+using Exm.Helper;
 using ReflexCLI.Attributes;
 
-namespace EGate;
+namespace Exm;
 
-internal partial class EgConfig
+internal partial class ExmConfig
 {
     private const EgConfigVersion CurrentVersion = EgConfigVersion.V1;
 
     [ConsoleCommand("reload_cfg")]
     internal static void Reload()
     {
-        EgMod.Instance.Config.Reload();
+        ExmMod.Instance.Config.Reload();
     }
 
     [ConsoleCommand("reset_cfg")]
     internal static void Reset()
     {
-        var config = EgMod.Instance.Config;
+        var config = ExmMod.Instance.Config;
 
         foreach (var entry in config.Values) {
             entry.SetSerializedValue(entry.DefaultValue.ToString());
@@ -28,7 +27,7 @@ internal partial class EgConfig
         config.Save();
         Reload();
 
-        EgMod.Popup<EgConfig>("eg_ui_config_reset".Loc(CurrentVersion));
+        ExmMod.Popup<ExmConfig>("eg_ui_config_reset".Loc(CurrentVersion));
     }
 
     internal static void InvalidateConfigs()
@@ -45,7 +44,7 @@ internal partial class EgConfig
 
     internal static void EnableReloadWatcher()
     {
-        var config = EgMod.Instance.Config;
+        var config = ExmMod.Instance.Config;
 
         FileWatcherHelper.Register(
             "eg_config",
@@ -56,7 +55,7 @@ internal partial class EgConfig
                     return;
                 }
 
-                EgMod.Popup<EgConfig>("eg_ui_config_changed".lang());
+                ExmMod.Popup<ExmConfig>("eg_ui_config_changed".lang());
 
                 config.SaveOnConfigSet = false;
                 config.Reload();

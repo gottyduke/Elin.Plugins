@@ -1,4 +1,4 @@
-namespace EGate.Components;
+namespace Exm.Components;
 
 internal class LayerCreationData(string startingTab = "")
 {

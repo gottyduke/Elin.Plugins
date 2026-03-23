@@ -1,6 +1,6 @@
 using Cwl.API.Processors;
 
-namespace EGate.Helper;
+namespace Exm.Helper;
 
 public class ResourceFetch
 {

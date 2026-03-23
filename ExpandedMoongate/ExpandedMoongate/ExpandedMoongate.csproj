@@ -4,7 +4,7 @@
         <Platforms>AnyCPU</Platforms>
         <LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>
-        <RootNamespace>EGate</RootNamespace>
+        <RootNamespace>Exm</RootNamespace>
         <AssemblyName>ExpandedMoongate</AssemblyName>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <GenerateDependencyFile>false</GenerateDependencyFile>

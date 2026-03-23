@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using Cwl.Helper.Unity;
 using Cysharp.Threading.Tasks;
-using EGate.API;
-using EGate.Service;
+using Exm.API;
+using Exm.Service;
 
-namespace EGate.Components.Tabs;
+namespace Exm.Components.Tabs;
 
 internal class TabMapBrowser : TabExMoongateBase
 {
@@ -49,14 +49,16 @@ internal class TabMapBrowser : TabExMoongateBase
         Header("Map Browser");
         TextFlavor("Loading maps...");
 
-        LoadMapsAsyncFunctor().AttachExternalCancellation(this.GetCancellationTokenOnDestroy()).ForgetEx();
+        LoadMapsAsyncFunctor()
+            .AttachExternalCancellation(this.GetCancellationTokenOnDestroy())
+            .ForgetEx();
 
         return;
 
         async UniTask LoadMapsAsyncFunctor()
         {
             try {
-                var maps = await _service.GetTopMapsAsync(_sort, 25, 0);
+                var maps = await _service.GetTopMapsAsync(_sort, 25);
 
                 foreach (var map in maps) {
                     if (!map.IsValidVersion) {
@@ -72,7 +74,7 @@ internal class TabMapBrowser : TabExMoongateBase
 
                 _dirty = true;
             } catch (Exception ex) {
-                EgMod.WarnWithPopup<TabMapBrowser>(ex.Message, ex);
+                ExmMod.WarnWithPopup<TabMapBrowser>(ex.Message, ex);
                 // noexcept
             }
         }

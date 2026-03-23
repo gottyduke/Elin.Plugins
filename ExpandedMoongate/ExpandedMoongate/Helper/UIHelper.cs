@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using YKF;
 
-namespace EGate.Helper;
+namespace Exm.Helper;
 
 public static class UIHelper
 {

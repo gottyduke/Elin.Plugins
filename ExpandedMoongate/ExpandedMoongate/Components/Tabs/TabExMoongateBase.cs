@@ -1,6 +1,6 @@
 using YKF;
 
-namespace EGate.Components.Tabs;
+namespace Exm.Components.Tabs;
 
 internal abstract class TabExMoongateBase : YKLayout<LayerCreationData>
 {

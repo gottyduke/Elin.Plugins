@@ -1,9 +1,10 @@
+using System;
 using Cwl.Helper.String;
 using Cysharp.Threading.Tasks;
 using Steamworks;
 using UnityEngine.Networking;
 
-namespace EGate.Helper;
+namespace Exm.Helper;
 
 public static class UnityWebRequester
 {
@@ -15,12 +16,50 @@ public static class UnityWebRequester
             await UniTask.WaitUntil(() => req.isDone);
         }
 
-        public void SetStandardHandler(string contentType)
+        public UnityWebRequest SetStandardHandler(string contentType)
         {
             req.downloadHandler = new DownloadHandlerBuffer();
             req.SetRequestHeader("Content-Type", contentType);
             req.SetRequestHeader("x-request-id", SteamUser.GetSteamID().ToString());
             req.SetRequestHeader("x-debugging-key", "EGateDebuggingAuthorKey".EnvVar);
+
+            return req;
+        }
+
+        public UnityWebRequest SetUploaderBytes(byte[] bytes)
+        {
+            req.uploadHandler = new UploadHandlerRaw(bytes);
+            return req;
+        }
+
+        public UnityWebRequest SetParams(object query)
+        {
+            var ub = new UriBuilder(req.uri);
+            using var sb = StringBuilderPool.Get();
+
+            var first = true;
+            foreach (var (k, v) in query.Tokenize()) {
+                if (v is null) {
+                    continue;
+                }
+
+                if (!first) {
+                    sb.Append("&");
+                }
+
+                sb.Append(UnityWebRequest.EscapeURL(k));
+                sb.Append("=");
+                sb.Append(UnityWebRequest.EscapeURL(v));
+
+                first = false;
+            }
+
+            ub.Query = sb.ToString();
+
+            req.uri = ub.Uri;
+            req.url = ub.Uri.ToString();
+
+            return req;
         }
     }
 }

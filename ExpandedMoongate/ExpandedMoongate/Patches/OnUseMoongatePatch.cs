@@ -1,7 +1,7 @@
-using EGate.Components;
+using Exm.Components;
 using HarmonyLib;
 
-namespace EGate.Patches;
+namespace Exm.Patches;
 
 [HarmonyPatch]
 internal class OnUseMoongatePatch

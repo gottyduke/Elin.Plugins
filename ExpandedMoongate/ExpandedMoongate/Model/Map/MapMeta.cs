@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace EGate.Model.Map;
+namespace Exm.Model.Map;
 
 public sealed record MapMeta
 {
