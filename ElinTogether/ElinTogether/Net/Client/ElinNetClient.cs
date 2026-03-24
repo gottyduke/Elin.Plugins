@@ -51,7 +51,6 @@ internal partial class ElinNetClient : ElinNetBase
             return;
         }
 
-        game.Kill();
         scene.Init(Scene.Mode.Title);
     }
 
@@ -86,7 +85,6 @@ internal partial class ElinNetClient : ElinNetBase
         StopAllCoroutines();
 
         if (core.IsGameStarted) {
-            game.Kill();
             scene.Init(Scene.Mode.Title);
         }
 

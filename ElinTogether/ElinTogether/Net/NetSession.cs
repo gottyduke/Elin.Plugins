@@ -47,6 +47,7 @@ public class NetSession : EClass
     {
         if (Connection != null) {
             if (!Connection.IsHost && core.IsGameStarted) {
+                ui.RemoveLayers();
                 game.Kill();
             }
 

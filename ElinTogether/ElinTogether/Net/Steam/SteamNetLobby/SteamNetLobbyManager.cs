@@ -70,7 +70,6 @@ public class SteamNetLobbyManager
         Challenge((ulong)SteamUser.GetSteamID());
 
         if (EClass.core.IsGameStarted) {
-            EClass.game.Kill();
             EMono.scene.Init(Scene.Mode.Title);
         }
 
@@ -223,7 +222,7 @@ public class SteamNetLobbyManager
                 State = state,
             }));
 
-        if (member != Current!.GetLobbyOwner()) {
+        if (member != Current?.GetLobbyOwner()) {
             return;
         }
 
