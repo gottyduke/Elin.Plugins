@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection.Emit;
 using ElinTogether.Helper;
 using ElinTogether.Models.ElinDelta;
@@ -18,9 +19,47 @@ internal static class AIFishPatch
             .MatchEndForward(
                 new CodeMatch(OpCodes.Ldloc_2),
                 new CodeMatch(OpCodes.Ldfld),
+                new CodeMatch(OpCodes.Brfalse))
+            .InsertAndAdvance(
+                new CodeInstruction(OpCodes.Ldloc_2),
+                Transpilers.EmitDelegate((AI_Fish thiz) => {
+                    if (NetSession.Instance.IsClient && thiz.owner.IsPC) {
+                        EClass.player.TryEquipBait();
+                    }
+                }))
+            // if (this.owner.IsPC)
+            .MatchEndForward(
+                new CodeMatch(OpCodes.Ldloc_2),
+                new CodeMatch(OpCodes.Ldfld),
                 new CodeMatch(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(Card), nameof(Card.IsPC))))
             .SetInstructionAndAdvance(
-                Transpilers.EmitDelegate((Chara chara) => chara.IsPlayer))
+                Transpilers.EmitDelegate((Chara chara) => NetSession.Instance.IsHost ? chara.IsPlayer : chara.IsPC))
+            // this.owner.TryEquipBait();
+            .MatchStartForward(
+                new CodeMatch(OpCodes.Call, AccessTools.PropertyGetter(typeof(EClass), nameof(EClass.player))),
+                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(typeof(Player), nameof(Player.TryEquipBait))))
+            .RemoveInstructions(2)
+            .InsertAndAdvance(
+                new CodeInstruction(OpCodes.Ldloc_2),
+                Transpilers.EmitDelegate((AI_Fish thiz) => {
+                    if (NetSession.Instance.IsClient) {
+                        EClass.player.TryEquipBait();
+                        return;
+                    }
+
+                    if (thiz.owner.IsPC) {
+                        EClass.player.TryEquipBait();
+                        return;
+                    }
+                }))
+            // if (EClass.player.eqBait == null)
+            .MatchStartForward(
+                new CodeMatch(OpCodes.Call, AccessTools.PropertyGetter(typeof(EClass), nameof(EClass.player))))
+            .RemoveInstructions(2)
+            .InsertAndAdvance(
+                new CodeInstruction(OpCodes.Ldloc_2),
+                Transpilers.EmitDelegate((AI_Fish thiz) => !thiz.owner.IsPC || EClass.player.eqBait is not null))
+            // if (this.owner == EClass.pc)
             .MatchEndForward(
                 new CodeMatch(OpCodes.Ldloc_2),
                 new CodeMatch(OpCodes.Ldfld),
@@ -45,7 +84,7 @@ internal static class AIFishPatch
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(AI_Fish), nameof(AI_Fish.Makefish))]
-    internal static void OnMakefishEnd(Thing? __result)
+    internal static void OnMakefishEnd(Chara c, Thing? __result)
     {
         if (!CharaProgressCompleteEvent.IsHappening || NetSession.Instance.IsClient) {
             return;
@@ -54,6 +93,11 @@ internal static class AIFishPatch
         CharaProgressCompleteEvent.DeltaList.Add(new ThingDelta {
             Thing = __result,
         });
+
+        if (c.IsRemotePlayer) {
+            var bait = c.things.Find(t => t.trait is TraitBait tb && tb.EQ == t);
+            bait.ModNum(-1);
+        }
     }
 
     [HarmonyPrefix]
@@ -117,5 +161,39 @@ internal static class AIFishPatch
                     }
                 }))
             .InstructionEnumeration();
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(TraitBait), nameof(TraitBait.EQ), MethodType.Getter)]
+    internal static bool OnGetEQ(TraitBait __instance, ref Thing __result)
+    {
+        if (__instance.owner.GetRootCard()?.IsPC is not false) {
+            return true;
+        }
+
+        var field = AccessTools.Field(__instance.GetType(), "<EQ>k__BackingField");
+        __result = (Thing)field.GetValue(__instance);
+        return false;
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(TraitBait), nameof(TraitBait.EQ), MethodType.Setter)]
+    internal static bool OnSetEQ(TraitBait __instance, Thing value)
+    {
+        if (__instance.owner.GetRootCard() is not Chara { IsPC: false } owner) {
+            return true;
+        }
+
+        owner.things
+            .Where(t => t.trait is TraitBait tb && tb.EQ == t && tb != __instance)
+            .Select(t => t.trait as TraitBait)
+            .ForEach(tb => {
+                tb!.EQ = null;
+            });
+
+        var field = AccessTools.Field(__instance.GetType(), "<EQ>k__BackingField");
+        field.SetValue(__instance, value);
+
+        return false;
     }
 }

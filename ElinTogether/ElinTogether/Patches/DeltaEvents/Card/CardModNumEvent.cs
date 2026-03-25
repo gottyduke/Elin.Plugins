@@ -9,10 +9,15 @@ namespace ElinTogether.Patches;
 internal static class CardModNumEvent
 {
     [HarmonyPrefix]
-    internal static bool OnCardModNum(Card __instance, int a)
+    internal static bool OnCardModNum(Card __instance, ref int a)
     {
         // return true if !CardCache.Contains(__instance) -> allow to mod the num of temp items
-        return NetSession.Instance.IsHost || CardModNumDelta.IsApplying || !CardCache.Contains(__instance);
+        if (NetSession.Instance.IsHost || CardModNumDelta.IsApplying || !CardCache.Contains(__instance)) {
+            return true;
+        }
+
+        a = 0;
+        return false;
     }
 
     [HarmonyPostfix]
@@ -26,9 +31,16 @@ internal static class CardModNumEvent
             return;
         }
 
-        connection.Delta.AddRemote(new CardModNumDelta {
+        var delta = new CardModNumDelta {
             Card = __instance,
             Num = __instance.Num,
-        });
+        };
+
+        if (CharaProgressCompleteEvent.IsHappening && NetSession.Instance.IsHost) {
+            CharaProgressCompleteEvent.DeltaList.Add(delta);
+            return;
+        }
+
+        connection.Delta.AddRemote(delta);
     }
 }

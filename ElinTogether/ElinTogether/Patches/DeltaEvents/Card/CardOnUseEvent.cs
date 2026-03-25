@@ -8,15 +8,16 @@ using HarmonyLib;
 
 namespace ElinTogether.Patches;
 
+[HarmonyPatch]
 internal static class CardOnUseEvent
 {
     internal static IEnumerable<MethodBase> TargetMethods()
     {
-        return OverrideMethodComparer.FindAllOverrides(typeof(Trait), nameof(Trait.OnUse));
+        return OverrideMethodComparer.FindAllOverrides(typeof(Trait), nameof(Trait.OnUse), [typeof(Chara)]);
     }
 
     [HarmonyPrefix]
-    internal static bool OnUseCard(Trait __instance, Chara chara)
+    internal static bool OnUseCard(Trait __instance, Chara c)
     {
         if (NetSession.Instance.Connection is not ElinNetClient connection || ElinDelta.IsApplying) {
             return true;
@@ -30,7 +31,7 @@ internal static class CardOnUseEvent
         connection.Delta.AddRemote(new CardOnUseDelta {
             Card = card,
             RootCard = card.GetRootCard(),
-            User = chara,
+            User = c,
         });
 
         return false;
