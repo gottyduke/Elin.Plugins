@@ -6,8 +6,6 @@ namespace Cwl.Helper.String;
 
 public static class Tokenizer
 {
-    private static readonly Dictionary<object, Dictionary<string, string>> _cached = [];
-
     public static int ComputeLevenshteinDistance(ReadOnlySpan<char> a, ReadOnlySpan<char> b)
     {
         if (a.Length == 0) {
@@ -49,11 +47,7 @@ public static class Tokenizer
                 return [];
             }
 
-            if (_cached.TryGetValue(args, out var tokens)) {
-                return tokens;
-            }
-
-            return _cached[args] = args.TokenizeObject().ToDictionary(k => k.Key, v => v.Value!.ToString());
+            return args.TokenizeObject().ToDictionary(k => k.Key, v => v.Value!.ToString());
         }
 
         public Dictionary<string, object> TokenizeObject()

@@ -41,8 +41,6 @@ internal partial class DataLoader
                         continue;
                     }
 
-                    CwlMod.CurrentLoading = $"[CWL] GodTalk/{talk.path.ShortPath()}";
-
                     talk.sheets[DefaultSheet].map.GetValueOrDefault(topic)?
                         .Where(kv => kv.Key != "id")
                         .Do(kv => map[topic][kv.Key] = kv.Value);

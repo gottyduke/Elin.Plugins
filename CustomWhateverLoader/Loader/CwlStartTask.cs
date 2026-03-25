@@ -128,9 +128,9 @@ internal sealed partial class CwlMod
 
         if (!IsModdingApiAvailable) {
             DataLoader.PreloadDialog();
-            DataLoader.MergeCharaTalk();
-            DataLoader.MergeCharaTone();
         }
+        DataLoader.MergeCharaTalk();
+        DataLoader.MergeCharaTone();
         DataLoader.MergeGodTalk();
         //DataLoader.MergeCustomAlias();
         //DataLoader.MergeCustomName();

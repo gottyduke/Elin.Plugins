@@ -11,6 +11,7 @@ using HarmonyLib;
 using MethodTimer;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using ReflexCLI;
 using ReflexCLI.Attributes;
 
 namespace Cwl.Scripting;
@@ -40,7 +41,9 @@ public static partial class CwlScriptLoader
 
         assembly.UnregisterScript();
         assembly.InvokeScriptMethod("CwlScriptUnload");
+
         ClassCache.assemblies.Remove(assembly.FullName);
+        CommandRegistry.assemblies.Add(assembly);
 
         return $"tried to unload {assemblyName}";
     }
@@ -56,7 +59,9 @@ public static partial class CwlScriptLoader
 
         assembly.RegisterScript(assembly.GetName().Name);
         assembly.InvokeScriptMethod("CwlScriptLoad");
+
         ClassCache.assemblies.Add(assembly.FullName);
+        CommandRegistry.assemblies.Remove(assembly);
 
         return "script loaded";
     }

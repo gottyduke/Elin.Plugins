@@ -15,6 +15,9 @@ internal class ReverseIdMapper
     internal static void OnGetIdMat(Card __instance, ref int __result)
     {
         ReverseIdMap(ref __result);
+        if (__result >= EMono.sources.materials.rows.Count || __result < 0) {
+            __result = 0;
+        }
     }
 
     [HarmonyPrefix]
@@ -22,6 +25,9 @@ internal class ReverseIdMapper
     internal static void OnSetIdMat(ref int _idMat)
     {
         ReverseIdMap(ref _idMat);
+        if (_idMat >= EMono.sources.materials.rows.Count) {
+            _idMat = -1;
+        }
     }
 
     [SwallowExceptions]
@@ -45,7 +51,6 @@ internal class ReverseIdMapper
         {
             return [
                 ..OverrideMethodComparer.FindAllOverrides(typeof(Recipe), nameof(Recipe.GetColorMaterial)),
-                ..OverrideMethodComparer.FindAllOverrides(typeof(Recipe), nameof(Recipe.GetMainMaterial)),
                 ..OverrideMethodComparer.FindAllOverrides(typeof(Recipe), nameof(Recipe.Build),
                     typeof(Chara), typeof(Card), typeof(Point), typeof(int), typeof(int), typeof(int), typeof(int)),
             ];
