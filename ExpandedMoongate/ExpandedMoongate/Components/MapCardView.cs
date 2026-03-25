@@ -1,5 +1,5 @@
 using System;
-using Cwl.Helper.String;
+using System.Net;
 using Cwl.Helper.Unity;
 using Cysharp.Threading.Tasks;
 using Exm.API;
@@ -11,9 +11,11 @@ using YKF;
 
 namespace Exm.Components;
 
-internal class MapCard(IMapService service, MapMeta meta)
+public class MapCardView(IMapService service, MapMeta meta)
 {
     public bool IsDirty { get; private set; } = true;
+
+    private bool _expanded;
 
     public void Refresh()
     {
@@ -26,19 +28,23 @@ internal class MapCard(IMapService service, MapMeta meta)
 
         var bannerGroup = card.Horizontal();
         BuildPreview(bannerGroup, bannerGroup.Layout);
+        bannerGroup.Layout.spacing = 15f;
 
         var mapInfoGroup = bannerGroup.Vertical();
         mapInfoGroup.Layout.childAlignment = TextAnchor.UpperCenter;
+        mapInfoGroup.Layout.spacing = 10f;
 
-        var mapName = mapInfoGroup.Header(meta.Title.Truncate(20));
+        var mapName = mapInfoGroup.Header(WebUtility.HtmlDecode(meta.Title));
         mapName.text1.fontSize *= 2;
+        mapName.text1.alignment = TextAnchor.MiddleCenter;
 
         var mapStatGroup = mapInfoGroup.Horizontal();
         mapStatGroup.Layout.childForceExpandWidth = true;
         mapStatGroup.Layout.childControlHeight = true;
+        mapStatGroup.Layout.spacing = 20f;
 
         BuildPrimaryStat(mapStatGroup);
-        BuildSecondaryStat(mapStatGroup);
+        BuildSecondaryStat(bannerGroup);
         BuildControlButtons(bannerGroup);
     }
 
@@ -68,11 +74,14 @@ internal class MapCard(IMapService service, MapMeta meta)
         var bgSprite = "eg_no_preview".LoadSprite(resizeHeight: 128, resizeWidth: 128);
         var bg = group.AddImageCard(parent, bgSprite);
         var bgRt = bg.rectTransform;
+
         bgRt.pivot = new(0f, 0.5f);
         bgRt.anchorMin = new(0f, 0.5f);
         bgRt.anchorMax = new(0f, 0.5f);
         bgRt.anchoredPosition = Vector2.zero;
-        group.Spacer(0, (int)bgRt.sizeDelta.x + 25);
+
+        bgRt.sizeDelta = new(110, 110);
+        group.Spacer(0, 140);
     }
 
     private void BuildPrimaryStat(YKLayout group)
@@ -81,7 +90,7 @@ internal class MapCard(IMapService service, MapMeta meta)
         primary.Layout.childAlignment = TextAnchor.UpperLeft;
         primary.Layout.spacing = 5f;
 
-        var mapAuthor = primary.TextFlavor(meta.Author, FontColor.Myth);
+        var mapAuthor = primary.TextFlavor(WebUtility.HtmlDecode(meta.Author), FontColor.Myth);
         BuildRatingBar(primary);
     }
 
@@ -91,27 +100,33 @@ internal class MapCard(IMapService service, MapMeta meta)
         barGroup.Layout.childForceExpandWidth = true;
 
         var sprite = UIHelper.FindSprite("Media/Graphics/Icon/icons_48 static", "icons_48 static_4");
-        barGroup.AddImageCard(barGroup.Layout, sprite);
-        barGroup.AddImageCard(barGroup.Layout, sprite);
-        barGroup.AddImageCard(barGroup.Layout, sprite);
-        barGroup.AddImageCard(barGroup.Layout, sprite);
-        barGroup.AddImageCard(barGroup.Layout, sprite);
+        for (var i = 0; i < 5; i++) {
+            var filled = i < meta.RatingAverage;
+            barGroup.AddImageCard(barGroup.Layout, sprite);
+        }
+        barGroup.Layout.spacing = 2f;
+        barGroup.Layout.childAlignment = TextAnchor.MiddleLeft;
     }
 
     private void BuildSecondaryStat(YKLayout group)
     {
         var mapStatSecondary = group.Vertical();
+        mapStatSecondary.Layout.childAlignment = TextAnchor.MiddleCenter;
 
+        mapStatSecondary.Text($"Visits: {meta.VisitCount}")
+            .alignment = TextAnchor.LowerRight;
+        mapStatSecondary.Text($"Rating: {meta.RatingAverage:f1} ({meta.RatingCount})")
+            .alignment = TextAnchor.LowerRight;
 
-        mapStatSecondary.TextFlavor($"Visits: {meta.VisitCount}");
-        mapStatSecondary.TextFlavor($"Rating: {meta.RatingAverage:f1} ({meta.RatingCount})");
-
-        var briefTime = meta.Date;
+        var createTime = meta.Date;
         if (DateTime.TryParse(meta.Date, out var date)) {
-            briefTime = date.ToString("yyyy-MM-dd");
+            createTime = date.ToString("yyyy-MM-dd");
         }
-        mapStatSecondary.Text(briefTime);
-        mapStatSecondary.Text(Version.Get(meta.Version).GetText());
+
+        mapStatSecondary.TextFlavor(createTime)
+            .alignment = TextAnchor.LowerRight;
+        mapStatSecondary.TextFlavor(Version.Get(meta.Version).GetText())
+            .alignment = TextAnchor.LowerRight;
     }
 
     private void BuildControlButtons(YKLayout group)
@@ -122,7 +137,16 @@ internal class MapCard(IMapService service, MapMeta meta)
         controlGroupLe.preferredWidth = 150f;
         controlGroupLe.flexibleWidth = 0f;
 
-        var btn = controlGroup.Button("enter", () => { });
-        var btn2 = controlGroup.Button("rate", () => { });
+        var detailGroup = group.transform.parent.GetComponent<YKLayout>().Vertical();
+
+        detailGroup.SetActive(false);
+
+        var enterBtn = controlGroup.Button("exm_ui_btn_enter".lang(), () => { });
+        var expandBtn = controlGroup.Button("exm_ui_btn_expand".lang(), () => {
+            detailGroup.SetActive(!_expanded);
+            _expanded = !_expanded;
+            Canvas.ForceUpdateCanvases();
+            group.transform.parent.Rect().RebuildLayout(true);
+        });
     }
 }

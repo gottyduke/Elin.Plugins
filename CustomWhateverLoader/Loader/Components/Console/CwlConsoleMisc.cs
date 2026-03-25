@@ -4,8 +4,8 @@ using System.Text;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using HeathenEngineering.SteamworksIntegration;
+using HeathenEngineering.SteamworksIntegration.API;
 using ReflexCLI.Attributes;
-using Steamworks;
 using UnityEngine;
 
 namespace Cwl.Components;
@@ -28,7 +28,8 @@ internal partial class CwlConsole
         void OnQueryComplete(UgcQuery q)
         {
             var list = q.ResultsList;
-            var header = $"Me: {SteamUser.GetSteamID()}\n" +
+            var owner = App.Client.Owner.id;
+            var header = $"Me:\t{owner} \n" +
                          $"Published Items: {list.Count}";
 
             if (list.Count == 0) {
@@ -44,11 +45,16 @@ internal partial class CwlConsole
 
                 // the spaces from id might be trimmed during initial ugc upload
                 if (!string.Equals(id, meta, StringComparison.Ordinal)) {
-                    sb.AppendLineColor("MISMATCH", 0xff0000);
+                    sb.AppendLineColor("ID MISMATCH", 0xff0000);
+                }
+
+                if (ugc.Owner.id != owner) {
+                    sb.AppendLineColor("STEAM MISMATCH", 0xff0000);
                 }
 
                 sb.AppendLine($" meta\t'{meta.TagColor(0xcc5500)}'");
                 sb.AppendLine($" id\t'{id.TagColor(0x008b8b)}'");
+                sb.AppendLine($" owner\t'{ugc.Owner.id.TagColor(0x7a59ff)}'");
             }
 
             var scrollPosition = Vector2.zero;

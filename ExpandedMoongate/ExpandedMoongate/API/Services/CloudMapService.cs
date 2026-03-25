@@ -2,13 +2,12 @@ using System;
 using System.Text;
 using Cwl.Helper.String;
 using Cysharp.Threading.Tasks;
-using Exm.API;
 using Exm.Helper;
 using Exm.Model.Map;
 using Newtonsoft.Json;
 using UnityEngine.Networking;
 
-namespace Exm.Service;
+namespace Exm.API.Services;
 
 public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdingEndPoint) : IMapService
 {
@@ -91,11 +90,13 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
     // &sort=[created|rating|visits]
     // &limit=[10, 300]
     // &page=[0]
+    // &lang=[null|EN|JP|CN]
+    // &noTags=[adult]
     // &version
-    public async UniTask<MapMeta[]> GetTopMapsAsync(IMapService.SortType sort, int limit, int page)
+    public async UniTask<MapMeta[]> GetTopMapsAsync(IMapService.SortType sort, int count, int page, string? lang, string? noTags)
     {
         var sortType = sort.ToString().ToLower();
-        ExmMod.Log($"getting top {limit} {sortType} maps");
+        ExmMod.Log($"getting top {count} {sortType} maps");
 
         var url = $"{_baseUrl}/maps/top";
 
@@ -103,19 +104,21 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
             .SetStandardHandler("application/json")
             .SetParams(new {
                 sort = sort.ToString().ToLowerInvariant(),
-                limit,
+                count,
                 page,
+                lang,
+                noTags,
                 version = GameVersion.Int(),
             });
         await req.SendRequestEx();
 
         if (req.result != UnityWebRequest.Result.Success) {
-            ExmMod.Warn($"failed to get top {limit} {sortType} maps: {req.responseCode}\n{req.downloadHandler.text}");
+            ExmMod.Warn($"failed to get top {count} {sortType} maps: {req.responseCode}\n{req.downloadHandler.text}");
             return [];
         }
 
         var maps = JsonConvert.DeserializeObject<MapMeta[]>(req.downloadHandler.text, _settings);
-        ExmMod.Log($"finished getting top {limit} {sortType} maps");
+        ExmMod.Log($"finished getting top {count} {sortType} maps");
         return maps;
     }
 
