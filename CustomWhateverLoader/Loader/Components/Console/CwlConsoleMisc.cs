@@ -29,8 +29,11 @@ internal partial class CwlConsole
         {
             var list = q.ResultsList;
             var owner = App.Client.Owner.id;
-            var header = $"Me:\t{owner} \n" +
-                         $"Published Items: {list.Count}";
+            var login = User.Client.Id;
+
+            var header = $"Owner:\t{owner} \n" +
+                         $"Login:\t{login}\n" +
+                         $"Items: {list.Count}";
 
             if (list.Count == 0) {
                 return;
@@ -48,7 +51,7 @@ internal partial class CwlConsole
                     sb.AppendLineColor("ID MISMATCH", 0xff0000);
                 }
 
-                if (ugc.Owner.id != owner) {
+                if (ugc.Owner.id != login) {
                     sb.AppendLineColor("STEAM MISMATCH", 0xff0000);
                 }
 

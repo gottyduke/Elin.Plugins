@@ -16,6 +16,13 @@ namespace Cwl.Scripting;
 [ConsoleCommandClassCustomizer("cwl.csc")]
 public class CwlScriptSubmission(string submissionKey)
 {
+    public enum CwlScriptSubmissionVersion
+    {
+        V1, // 1.22.7
+    }
+
+    public const CwlScriptSubmissionVersion SubmissionVersion = CwlScriptSubmissionVersion.V1;
+
     private const string CacheStorage = $"{ModInfo.Name}/ScriptSubmissions";
 
     private static readonly Dictionary<string, CwlScriptSubmission> _submissions = new(StringComparer.Ordinal);

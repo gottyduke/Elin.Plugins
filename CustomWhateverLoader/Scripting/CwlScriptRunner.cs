@@ -45,6 +45,14 @@ public partial class CwlScriptLoader
     [Description("reflex_greedy_args")] // path may contain spaces
     public static string EvaluateFile(string filePath)
     {
+        if (!Path.IsPathFullyQualified(filePath)) {
+            filePath = Path.Combine(CorePath.rootExe, filePath);
+        }
+
+        if (!File.Exists(filePath)) {
+            return "file does not exist";
+        }
+
         return EvaluateScript(File.ReadAllText(filePath));
     }
 
