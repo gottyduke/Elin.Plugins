@@ -93,7 +93,11 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
     // &lang=[null|EN|JP|CN]
     // &noTags=[adult]
     // &version
-    public async UniTask<MapMeta[]> GetTopMapsAsync(IMapService.SortType sort, int count, int page, string? lang, string? noTags)
+    public async UniTask<MapMeta[]> GetTopMapsAsync(IMapServiceV1.SortType sort,
+                                                    int count,
+                                                    int page,
+                                                    string? lang,
+                                                    string? noTags)
     {
         var sortType = sort.ToString().ToLower();
         ExmMod.Log($"getting top {count} {sortType} maps");
@@ -208,34 +212,6 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
 
         ExmMod.Log($"finished updating map rating '{mapId}'");
         return true;
-    }
-
-    // GET
-    // /ratings/:mapId
-    // &limit
-    // &page
-    public async UniTask<MapRating[]> GetMapRatingsAsync(string mapId, int limit, int page)
-    {
-        ExmMod.Log($"querying top {limit} ratings of map '{mapId}'");
-
-        var url = $"{_baseUrl}/ratings/top/{UnityWebRequest.EscapeURL(mapId)}";
-
-        using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET)
-            .SetStandardHandler("application/json")
-            .SetParams(new {
-                limit,
-                page,
-            });
-        await req.SendRequestEx();
-
-        if (req.result != UnityWebRequest.Result.Success) {
-            ExmMod.Warn($"failed to get top {limit} ratings of map '{mapId}': {req.responseCode}\n{req.downloadHandler.text}");
-            return [];
-        }
-
-        var ratings = JsonConvert.DeserializeObject<MapRating[]>(req.downloadHandler.text, _settings);
-        ExmMod.Log($"finished getting top {limit} ratings of map '{mapId}'");
-        return ratings;
     }
 
     // GET

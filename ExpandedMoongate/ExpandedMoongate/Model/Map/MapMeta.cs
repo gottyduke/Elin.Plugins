@@ -46,9 +46,6 @@ public sealed record MapMeta
     [JsonProperty("rating_count")]
     public int RatingCount { get; init; }
 
-    [JsonProperty("rating_average")]
-    public float RatingAverage { get; init; }
-
     // d1 -> r2
     [JsonProperty("file_key")]
     public string? FileKey { get; init; }

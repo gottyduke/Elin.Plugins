@@ -10,7 +10,7 @@ public static class ModInfo
 {
     public const string Guid = "dk.elinplugins.expandedmoongate";
     public const string Name = "Expanded Moongate Server";
-    public const string Version = "0.9.5";
+    public const string Version = "0.9.114";
 
     public static string BuildVersion => field ??= ExmMod.Assembly.GetName().Version.ToString();
 }
@@ -25,6 +25,9 @@ internal partial class ExmMod : BaseUnityPlugin
     private void Awake()
     {
         Instance = this;
+
+        ExmService.Build();
+
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), ModInfo.Guid);
     }
 

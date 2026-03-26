@@ -19,7 +19,7 @@ public static class UnityWebRequester
         public UnityWebRequest SetStandardHandler(string contentType)
         {
             req.downloadHandler = new DownloadHandlerBuffer();
-            req.SetRequestHeader("Content-Type", contentType);
+            req.SetRequestHeader("content-type", contentType);
             req.SetRequestHeader("x-request-id", SteamUser.GetSteamID().ToString());
             req.SetRequestHeader("x-debugging-key", "EGateDebuggingAuthorKey".EnvVar);
 
@@ -39,7 +39,7 @@ public static class UnityWebRequester
 
             var first = true;
             foreach (var (k, v) in query.Tokenize()) {
-                if (v is null) {
+                if (v.IsEmptyOrNull) {
                     continue;
                 }
 

@@ -3,7 +3,7 @@ using ReflexCLI.Attributes;
 
 namespace Exm;
 
-[ConsoleCommandClassCustomizer("eg")]
+[ConsoleCommandClassCustomizer("exm")]
 internal partial class ExmConfig
 {
     internal static void Bind()

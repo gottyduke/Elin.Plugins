@@ -27,18 +27,18 @@ internal partial class ExmConfig
         config.Save();
         Reload();
 
-        ExmMod.Popup<ExmConfig>("eg_ui_config_reset".Loc(CurrentVersion));
+        ExmMod.Popup<ExmConfig>("exm_ui_config_reset".Loc(CurrentVersion));
     }
 
     internal static void InvalidateConfigs()
     {
         var context = ResourceFetch.Context;
-        if (context.Load<EgConfigVersion>(out var version, "config_version") &&
+        if (context.Load<EgConfigVersion>("config_version", out var version) &&
             version >= CurrentVersion) {
             return;
         }
 
-        context.SaveUncompressed(CurrentVersion, "config_version");
+        context.SaveUncompressed("config_version", CurrentVersion);
         Reset();
     }
 
@@ -47,7 +47,7 @@ internal partial class ExmConfig
         var config = ExmMod.Instance.Config;
 
         FileWatcherHelper.Register(
-            "eg_config",
+            "exm_config",
             Path.GetDirectoryName(config.ConfigFilePath)!,
             $"{ModInfo.Guid}.cfg",
             args => {
@@ -55,7 +55,7 @@ internal partial class ExmConfig
                     return;
                 }
 
-                ExmMod.Popup<ExmConfig>("eg_ui_config_changed".lang());
+                ExmMod.Popup<ExmConfig>("exm_ui_config_changed".lang());
 
                 config.SaveOnConfigSet = false;
                 config.Reload();

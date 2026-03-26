@@ -13,11 +13,17 @@ public static class UIHelper
     public static Sprite? FindSprite(string path, string name)
     {
         if (!_lookup.TryGetValue(name, out var sprite)) {
-            sprite = _lookup[name] = Resources.LoadAll<Sprite>(path)?
-                .FirstOrDefault(s => s.name == name)!;
+            sprite = _lookup[name] = Resources.LoadAll<Sprite>(path)?.FirstOrDefault(s => s.name == name)!;
         }
 
         return sprite;
+    }
+
+    public static Rect FitWindow()
+    {
+        var scaler = EMono.ui.canvasScaler.scaleFactor;
+        var size = new Vector2(Screen.width / 1.5f, Screen.height / 1.5f) / scaler;
+        return new(Vector2.zero, size);
     }
 
     extension<T>(T layout) where T : YKLayout
@@ -65,17 +71,18 @@ public static class UIHelper
             return group;
         }
 
-        public Image AddImageCard(Component parent, Sprite sprite)
+        public UIItem AddImageCard(Component parent, Sprite sprite)
         {
-            var bg = Util.Instantiate<UIItem>("UI/Element/Deco/ImageNote", parent).image1;
+            var item = Util.Instantiate<UIItem>("UI/Element/Deco/ImageNote", parent);
+            var bg = item.image1;
+            var rt = bg.rectTransform;
+
             bg.sprite = sprite;
             if (bg.sprite != null) {
                 bg.SetNativeSize();
-
-                var rt = bg.rectTransform;
                 (rt.parent as RectTransform)?.sizeDelta = rt.sizeDelta;
             }
-            return bg;
+            return item;
         }
     }
 }

@@ -13,14 +13,8 @@ public sealed record MapRating
     /// <summary>
     ///     Rating author
     /// </summary>
-    [JsonProperty("author")]
-    public required string Author { get; init; }
-
-    /// <summary>
-    ///     Rating score, 1 - 5
-    /// </summary>
-    [JsonProperty("score")]
-    public required int Score { get; init; }
+    [JsonProperty("user_id")]
+    public required string UserId { get; init; }
 
     /// <summary>
     ///     Rating date
@@ -29,12 +23,8 @@ public sealed record MapRating
     public string? RatedAt { get; init; }
 
     /// <summary>
-    ///     Rating comment
+    ///     Visit date
     /// </summary>
-    [JsonProperty("comment")]
-    public string? Comment { get; init; }
-
-    // d1
-    [JsonProperty("uuid")]
-    public string? RatingUuid { get; init; }
+    [JsonProperty("visited_at")]
+    public string? VisitedAt { get; init; }
 }

@@ -2,13 +2,14 @@ using System.Collections.Generic;
 using Cwl.API.Attributes;
 using Cwl.Helper.String;
 using Exm.Components.Tabs;
+using Exm.Helper;
 using ReflexCLI.Attributes;
 using UnityEngine;
 using YKF;
 
 namespace Exm.Components;
 
-[ConsoleCommandClassCustomizer("eg")]
+[ConsoleCommandClassCustomizer("exm")]
 internal class LayerExpandedMoongate : YKLayer<LayerCreationData>
 {
     private static Vector2 _browsedPosition = Vector2.zero;
@@ -17,7 +18,7 @@ internal class LayerExpandedMoongate : YKLayer<LayerCreationData>
 
     private readonly List<TabExMoongateBase> _tabs = [];
     public override string Title => "Expanded Moongate Server";
-    public override Rect Bound => FitWindow();
+    public override Rect Bound => UIHelper.FitWindow();
 
     public static LayerExpandedMoongate? Instance { get; private set; }
 
@@ -29,7 +30,8 @@ internal class LayerExpandedMoongate : YKLayer<LayerCreationData>
             Lang.setting.hyphenation = false;
         }
 
-        _tabs.Add(CreateTab<TabMapBrowser>("eg_ui_tab_map_browser", "eg_tab_map_browser"));
+        _tabs.Add(CreateTab<TabMapBrowser>("exm_ui_tab_map_browser", "exm_tab_map_browser"));
+        _tabs.Add(CreateTab<TabMapHistory>("exm_ui_tab_map_history", "exm_tab_map_history"));
     }
 
     public override void OnAfterAddLayer()
@@ -75,7 +77,7 @@ internal class LayerExpandedMoongate : YKLayer<LayerCreationData>
         _browsedPosition = Window.transform.localPosition;
     }
 
-    [CwlContextMenu("eg_ui_open_sesame")]
+    [CwlContextMenu("exm_ui_open_sesame")]
     private static void OpenInternal()
     {
         OpenPanelSesame();
@@ -85,12 +87,5 @@ internal class LayerExpandedMoongate : YKLayer<LayerCreationData>
     internal static void OpenPanelSesame(string targetTab = "")
     {
         YK.CreateLayer<LayerExpandedMoongate, LayerCreationData>(new(targetTab));
-    }
-
-    private static Rect FitWindow()
-    {
-        var scaler = ui.canvasScaler.scaleFactor;
-        var size = new Vector2(Screen.width / 1.5f, Screen.height / 1.5f) / scaler;
-        return new(Vector2.zero, size);
     }
 }
