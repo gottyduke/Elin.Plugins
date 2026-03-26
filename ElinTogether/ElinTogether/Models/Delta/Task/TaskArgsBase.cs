@@ -34,6 +34,12 @@ namespace ElinTogether.Models.ElinDelta;
 [Union(213, typeof(AIFarmArgs))]
 [Union(214, typeof(AIFishArgs))]
 [Union(215, typeof(AIPlayMusicArgs))]
+[Union(216, typeof(AIOpenLockArgs))]
+[Union(217, typeof(AIReadArgs))]
+[Union(218, typeof(AIShearArgs))]
+[Union(219, typeof(AISlaughterArgs))]
+[Union(220, typeof(AIStealArgs))]
+[Union(221, typeof(AIFuckArgs))]
 public abstract class TaskArgsBase
 {
     public abstract AIAct CreateSubAct();

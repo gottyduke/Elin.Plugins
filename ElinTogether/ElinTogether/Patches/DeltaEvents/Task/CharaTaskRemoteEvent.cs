@@ -65,6 +65,8 @@ internal static class CharaTaskRemoteEvent
             AI_Farm ai => AIFarmArgs.Create(ai),
             AI_Fish ai => AIFishArgs.Create(ai),
             AI_PlayMusic ai => AIPlayMusicArgs.Create(ai),
+            AI_Shear ai => AIShearArgs.Create(ai),
+            AI_Slaughter ai => AISlaughterArgs.Create(ai),
             // default
             _ => FakeTask.Default,
         };

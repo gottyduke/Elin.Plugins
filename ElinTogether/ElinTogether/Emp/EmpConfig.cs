@@ -55,7 +55,7 @@ internal partial class EmpConfig
         Server.SharedAverageSpeed = config.Bind(
             "Server",
             "SharedAverageSpeed",
-            true,
+            false,
             "Share an averaged speed for all players\n" +
             "Otherwise each player will have their own speed\n" +
             "所有玩家共享平均速度\n" +
