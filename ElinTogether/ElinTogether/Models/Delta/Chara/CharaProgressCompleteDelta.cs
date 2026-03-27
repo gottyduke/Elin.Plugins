@@ -45,10 +45,7 @@ public class CharaProgressCompleteDelta : ElinDelta
 
         ai.child.OnProgressComplete();
         ai.child.Success();
-
-        if (ai is Task) {
-            ai.Success();
-        }
+        ai.Success();
 
         CharaPickThingDelta.CanApplyOnPC = true;
         DeltaList.ForEach(action => action.Apply(net));
