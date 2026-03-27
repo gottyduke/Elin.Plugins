@@ -23,10 +23,23 @@ internal partial class ExmConfig
             "Enabled for beta testing by default\n" +
             "Debug用的信息输出\n" +
             "Beta测试版默认启用");
+
+
+        Policy.Timeout = config.Bind(
+            "RuntimePolicy",
+            "Timeout",
+            15f,
+            new ConfigDescription(
+                "Timeout in seconds for a query request\n" +
+                "一次请求的最大超时",
+                new AcceptableValueRange<float>(1f, 60f)));
+
+        Reload();
     }
 
     internal static class Policy
     {
         internal static ConfigEntry<bool> Verbose { get; set; } = null!;
+        internal static ConfigEntry<float> Timeout { get; set; } = null!;
     }
 }

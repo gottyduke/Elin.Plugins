@@ -20,6 +20,29 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
 
     private readonly string _baseUrl = endpoint.TrimEnd('/');
 
+    // POST
+    // /maps/overview
+    public async UniTask<MapServiceOverview?> GetMapsOverviewAsync()
+    {
+        ExmMod.Log("querying map server overview");
+
+        var url = $"{_baseUrl}/maps/overview";
+
+        using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET)
+            .SetStandardHandler("application/json");
+        await req.SendRequestEx();
+
+        if (req.result != UnityWebRequest.Result.Success) {
+            ExmMod.WarnWithPopup<IMapService>(
+                $"failed to query map server overview: {req.responseCode}\n{req.downloadHandler.text}");
+            return null;
+        }
+
+        var overview = JsonConvert.DeserializeObject<MapServiceOverview?>(req.downloadHandler.text, _settings);
+        ExmMod.Log("finished querying map server overview");
+        return overview;
+    }
+
     public record UploadFileKeySurrogate(string FileKey);
 
     #region Map Meta
@@ -31,7 +54,7 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
         ExmMod.Log($"uploading map '{meta.Id}'");
 
         var json = JsonConvert.SerializeObject(meta, _settings);
-        var url = $"{_baseUrl}/maps/upload/{UnityWebRequest.EscapeURL(meta.Id)}";
+        var url = $"{_baseUrl}/maps/upload/{Uri.EscapeDataString(meta.Id)}";
 
         using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST)
             .SetStandardHandler("application/json")
@@ -59,7 +82,7 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
                 break;
         }
 
-        ExmMod.Warn($"failed to upload map '{meta.Id}': {req.responseCode}\n{req.downloadHandler.text}");
+        ExmMod.WarnWithPopup<IMapService>($"failed to upload map '{meta.Id}': {req.responseCode}\n{req.downloadHandler.text}");
         return false;
     }
 
@@ -69,14 +92,14 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
     {
         ExmMod.Log($"querying map '{mapId}'");
 
-        var url = $"{_baseUrl}/maps/query/{UnityWebRequest.EscapeURL(mapId)}";
+        var url = $"{_baseUrl}/maps/query/{Uri.EscapeDataString(mapId)}";
 
         using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET)
             .SetStandardHandler("application/json");
         await req.SendRequestEx();
 
         if (req.result != UnityWebRequest.Result.Success) {
-            ExmMod.Warn($"failed to query map '{mapId}': {req.responseCode}\n{req.downloadHandler.text}");
+            ExmMod.WarnWithPopup<IMapService>($"failed to query map '{mapId}': {req.responseCode}\n{req.downloadHandler.text}");
             return null;
         }
 
@@ -117,7 +140,8 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
         await req.SendRequestEx();
 
         if (req.result != UnityWebRequest.Result.Success) {
-            ExmMod.Warn($"failed to get top {count} {sortType} maps: {req.responseCode}\n{req.downloadHandler.text}");
+            ExmMod.WarnWithPopup<IMapService>(
+                $"failed to get top {count} {sortType} maps: {req.responseCode}\n{req.downloadHandler.text}");
             return [];
         }
 
@@ -136,7 +160,7 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
     {
         ExmMod.Log($"uploading map file '{fileKey}'");
 
-        var url = $"{_baseUrl}/files/upload/{UnityWebRequest.EscapeURL(fileKey)}";
+        var url = $"{_baseUrl}/files/upload/{Uri.EscapeDataString(fileKey)}";
 
         using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST)
             .SetStandardHandler("application/octet-stream")
@@ -144,7 +168,8 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
         await req.SendRequestEx();
 
         if (req.result != UnityWebRequest.Result.Success) {
-            ExmMod.Warn($"failed to upload map file '{fileKey}': {req.responseCode}\n{req.downloadHandler.text}");
+            ExmMod.WarnWithPopup<IMapService>(
+                $"failed to upload map file '{fileKey}': {req.responseCode}\n{req.downloadHandler.text}");
             return false;
         }
 
@@ -158,14 +183,15 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
     {
         ExmMod.Log($"downloading map '{mapId}'");
 
-        var url = $"{_baseUrl}/maps/download/{UnityWebRequest.EscapeURL(mapId)}";
+        var url = $"{_baseUrl}/maps/download/{Uri.EscapeDataString(mapId)}";
 
         using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET)
             .SetStandardHandler("application/octet-stream");
         await req.SendRequestEx();
 
         if (req.result != UnityWebRequest.Result.Success) {
-            ExmMod.Warn($"failed to download map '{mapId}': {req.responseCode}\n{req.downloadHandler.text}");
+            ExmMod.WarnWithPopup<IMapService>(
+                $"failed to download map '{mapId}': {req.responseCode}\n{req.downloadHandler.text}");
             return null;
         }
 
@@ -206,7 +232,7 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
         await req.SendRequestEx();
 
         if (req.result != UnityWebRequest.Result.Success) {
-            ExmMod.Warn($"failed to rate map '{mapId}': {req.responseCode}\n{req.downloadHandler.text}");
+            ExmMod.WarnWithPopup<IMapService>($"failed to rate map '{mapId}': {req.responseCode}\n{req.downloadHandler.text}");
             return false;
         }
 
@@ -220,14 +246,15 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
     {
         ExmMod.Log($"querying user rating '{userId}' for '{mapId}'");
 
-        var url = $"{_baseUrl}/ratings/{UnityWebRequest.EscapeURL(userId)}/{UnityWebRequest.EscapeURL(mapId)}";
+        var url = $"{_baseUrl}/ratings/{Uri.EscapeDataString(userId)}/{Uri.EscapeDataString(mapId)}";
 
         using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET)
             .SetStandardHandler("application/json");
         await req.SendRequestEx();
 
         if (req.result != UnityWebRequest.Result.Success) {
-            ExmMod.Warn($"failed to query map rating '{mapId}' by '{userId}': {req.responseCode}\n{req.downloadHandler.text}");
+            ExmMod.WarnWithPopup<IMapService>(
+                $"failed to query map rating '{mapId}' by '{userId}': {req.responseCode}\n{req.downloadHandler.text}");
             return null;
         }
 

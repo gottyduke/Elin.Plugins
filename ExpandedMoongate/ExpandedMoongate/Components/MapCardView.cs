@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using Cwl.Helper.Unity;
-using Cysharp.Threading.Tasks;
+using Cwl.LangMod;
 using Exm.API;
+using Exm.API.Services;
 using Exm.Helper;
 using Exm.Model.Map;
-using Steamworks;
+using Microsoft.Extensions.DependencyInjection;
 using UnityEngine;
 using UnityEngine.UI;
 using YKF;
@@ -16,6 +17,7 @@ namespace Exm.Components;
 public class MapCardView(IMapService service, MapMeta meta)
 {
     private static Rect _refSize = UIHelper.FitWindow();
+    private readonly List<UIItem> _ratingBar = [];
     private UIText? _author;
     private UIItem? _bg;
     private UIText? _date;
@@ -26,7 +28,6 @@ public class MapCardView(IMapService service, MapMeta meta)
     private UIItem? _name;
     // secondary
     private UIText? _rating;
-    private readonly List<UIItem> _ratingBar = [];
     private UIText? _visits;
 
     public void OnLayout(YKLayout layout)
@@ -45,31 +46,16 @@ public class MapCardView(IMapService service, MapMeta meta)
         BuildControlButtons(bannerGroup);
     }
 
-    public void UpdateRating(bool good)
+    public void EnterMap()
     {
-        UpdateRatingAsync().ForgetEx();
-
-        return;
-
-        async UniTask UpdateRatingAsync()
-        {
-            var success = await service.UploadMapRatingAsync(meta.Id, new() {
-                MapId = meta.Id,
-                UserId = SteamUser.GetSteamID().ToString(),
-                RatedAt = good ? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") : null,
-            });
-
-            if (success) {
-
-            } else {
-                ExmMod.WarnWithPopup<MapCardView>("exm_ui_map_rate_update_failed".lang());
-            }
-        }
+        var controller = ExmService.Provider.GetRequiredService<MapController>();
+        controller.LoadMap(meta);
     }
 
     private void BuildPreview(YKLayout group, Component parent)
     {
-        var bgSprite = "eg_no_preview".LoadSprite(resizeHeight: 128, resizeWidth: 128);
+        // TODO api v2 load preview key
+        var bgSprite = "exm_no_preview".LoadSprite(resizeHeight: 128, resizeWidth: 128);
         _bg = group.AddImageCard(parent, bgSprite)
             .WithMinWidth(128)
             .WithMinHeight(128)
@@ -96,15 +82,46 @@ public class MapCardView(IMapService service, MapMeta meta)
 
         _author = primary.TextFlavor(WebUtility.HtmlDecode(meta.Author), FontColor.Myth);
 
-        BuildRatingBar(primary);
+        BuildSubStatBar(primary);
+        //BuildRatingBar(primary);
+    }
+
+    private void BuildSubStatBar(YKLayout group)
+    {
+        var subStat = group.Horizontal();
+        subStat.Layout.childAlignment = TextAnchor.MiddleLeft;
+        subStat.Fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+        subStat.Fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+        var visitSprite = UIHelper.FindSprite("Media/Graphics/Icon/icons_48", "icon_toGlobalMap");
+        var visit = subStat.AddImageCard(subStat.Layout, visitSprite);
+
+        var le = visit.LayoutElement();
+        le.preferredHeight = 48f;
+        le.preferredWidth = 48f;
+        le.flexibleWidth = 0f;
+
+        _visits = subStat.Text("exm_ui_visits".Loc(meta.VisitCount));
+        _visits.alignment = TextAnchor.MiddleLeft;
+
+        //subStat.Spacer(0, (int)(_refSize.width * 0.075f));
+
+        var ratingSprite = UIHelper.FindSprite("Media/Graphics/Icon/icons_48 static", "icons_48 static_4");
+        var rating = subStat.AddImageCard(subStat.Layout, ratingSprite);
+
+        le = rating.LayoutElement();
+        le.preferredHeight = 48f;
+        le.preferredWidth = 48f;
+        le.flexibleWidth = 0f;
+
+        _rating = subStat.Text("exm_ui_likes".Loc(meta.RatingCount));
+        _rating.alignment = TextAnchor.MiddleLeft;
     }
 
     private void BuildRatingBar(YKLayout group)
     {
         var barGroup = group.Horizontal();
-        barGroup.Layout.childForceExpandWidth = false;
         barGroup.Layout.childAlignment = TextAnchor.MiddleLeft;
-
         barGroup.Fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
         barGroup.Fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
@@ -113,7 +130,8 @@ public class MapCardView(IMapService service, MapMeta meta)
         var sprite = UIHelper.FindSprite("Media/Graphics/Icon/icons_48 static", "icons_48 static_4");
         for (var i = 0; i < 5; i++) {
             var rating = barGroup.AddImageCard(barGroup.Layout, sprite);
-            var le = rating.transform.parent.LayoutElement();
+
+            var le = rating.LayoutElement();
             le.preferredHeight = 48f;
             le.preferredWidth = 48f;
             le.flexibleWidth = 0f;
@@ -127,12 +145,6 @@ public class MapCardView(IMapService service, MapMeta meta)
         var statGroup = group.Vertical();
         statGroup.Layout.childAlignment = TextAnchor.MiddleCenter;
         statGroup.Layout.spacing = 2f;
-
-        _visits = statGroup.Text($"Visits: {meta.VisitCount}");
-        _visits.alignment = TextAnchor.LowerRight;
-
-        _rating = statGroup.Text($"Likes: {meta.RatingCount}");
-        _rating.alignment = TextAnchor.LowerRight;
 
         var createTime = meta.Date;
         if (DateTime.TryParse(meta.Date, out var date)) {
@@ -157,7 +169,7 @@ public class MapCardView(IMapService service, MapMeta meta)
 
         _detailGroup.SetActive(false);
 
-        var enterBtn = controlGroup.Button("exm_ui_btn_enter".lang(), () => { });
+        var enterBtn = controlGroup.Button("exm_ui_btn_enter".lang(), EnterMap);
         var expandBtn = controlGroup.Button("exm_ui_btn_expand".lang(), () => {
             _detailGroup.SetActive(!_expanded);
             _expanded = !_expanded;

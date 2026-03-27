@@ -47,9 +47,9 @@ public static class UnityWebRequester
                     sb.Append("&");
                 }
 
-                sb.Append(UnityWebRequest.EscapeURL(k));
+                sb.Append(Uri.EscapeDataString(k));
                 sb.Append("=");
-                sb.Append(UnityWebRequest.EscapeURL(v));
+                sb.Append(Uri.EscapeDataString(v));
 
                 first = false;
             }

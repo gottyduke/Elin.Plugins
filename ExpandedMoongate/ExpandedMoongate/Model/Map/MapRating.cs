@@ -11,7 +11,7 @@ public sealed record MapRating
     public required string MapId { get; init; }
 
     /// <summary>
-    ///     Rating author
+    ///     Rating user
     /// </summary>
     [JsonProperty("user_id")]
     public required string UserId { get; init; }
