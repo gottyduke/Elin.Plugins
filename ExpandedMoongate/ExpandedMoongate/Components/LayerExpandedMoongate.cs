@@ -14,12 +14,12 @@ internal class LayerExpandedMoongate : YKLayer<LayerCreationData>
 {
     private static Vector2 _browsedPosition = Vector2.zero;
     private static string _lastOpenedTab = "";
+    private readonly bool _enableModeration = !"EGateDebuggingAuthorKey".EnvVar.IsEmptyOrNull;
     private readonly bool _resetHyp = Lang.setting.hyphenation;
 
     private readonly List<TabExMoongateBase> _tabs = [];
     public override string Title => "Expanded Moongate Server";
     public override Rect Bound => UIHelper.FitWindow();
-
     public static LayerExpandedMoongate? Instance { get; private set; }
 
     public override void OnLayout()
@@ -32,6 +32,10 @@ internal class LayerExpandedMoongate : YKLayer<LayerCreationData>
 
         _tabs.Add(CreateTab<TabMapBrowser>("exm_ui_tab_map_browser", "exm_tab_map_browser"));
         _tabs.Add(CreateTab<TabMapHistory>("exm_ui_tab_map_history", "exm_tab_map_history"));
+
+        if (_enableModeration) {
+            _tabs.Add(CreateTab<TabModeration>("exm_ui_tab_moderation", "exm_tab_moderation"));
+        }
     }
 
     public override void OnAfterAddLayer()

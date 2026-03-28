@@ -43,21 +43,24 @@ public sealed record MapMeta
 
     // stats
     [JsonProperty("visit_count")]
-    public int VisitCount { get; init; }
+    public uint VisitCount { get; init; }
 
     [JsonProperty("rating_count")]
-    public int RatingCount { get; init; }
+    public uint RatingCount { get; init; }
 
     // d1 -> r2
     [JsonProperty("file_key")]
     public string? FileKey { get; init; }
 
     [JsonProperty("file_size")]
-    public int FileSize { get; init; }
+    public uint FileSize { get; init; }
 
     [JsonProperty("preview_key")]
     public string? PreviewKey { get; init; }
 
     [JsonIgnore]
     public bool IsValidVersion => BaseCore.Instance.version.GetInt() >= Version;
+
+    [JsonProperty("user_rating")]
+    public MapRating? MyRating { get; init; }
 }

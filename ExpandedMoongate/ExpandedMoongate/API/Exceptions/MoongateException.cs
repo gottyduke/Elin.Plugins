@@ -1,5 +1,5 @@
 using System;
 
-namespace Exm.Helper;
+namespace Exm.API.Exceptions;
 
 public class MoongateException(string message) : Exception(message);

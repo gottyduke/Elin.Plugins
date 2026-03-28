@@ -34,6 +34,15 @@ internal partial class ExmConfig
                 "一次请求的最大超时",
                 new AcceptableValueRange<float>(1f, 60f)));
 
+        Display.MapsPerPage = config.Bind(
+            "Display",
+            "MapsPerPage",
+            25,
+            new ConfigDescription(
+                "Maximum number of maps to display per page\n" +
+                "一次显示的最大地图数量",
+                new AcceptableValueRange<int>(1, 100)));
+
         Reload();
     }
 
@@ -41,5 +50,10 @@ internal partial class ExmConfig
     {
         internal static ConfigEntry<bool> Verbose { get; set; } = null!;
         internal static ConfigEntry<float> Timeout { get; set; } = null!;
+    }
+
+    internal static class Display
+    {
+        internal static ConfigEntry<int> MapsPerPage { get; set; } = null!;
     }
 }

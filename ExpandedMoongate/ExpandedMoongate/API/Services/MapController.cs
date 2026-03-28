@@ -6,7 +6,6 @@ using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using Cysharp.Threading.Tasks;
-using Exm.Components;
 using Exm.Model.Map;
 using Steamworks;
 
@@ -100,7 +99,7 @@ public class MapController(IMapService service) : EClass
         {
             CoroutineHelper.Deferred(() =>
                 Dialog.YesNo(
-                    "exm_ui_rate_map_dialog",
+                    "exm_ui_rate_map_dialog".Loc(WebUtility.HtmlDecode(meta.Title)),
                     () => UpdateRating(true),
                     () => UpdateRating(false),
                     "exm_ui_rate_map_dialog_yes"));
@@ -120,17 +119,11 @@ public class MapController(IMapService service) : EClass
 
             async UniTask UpdateRatingAsync()
             {
-                var success = await service.UploadMapRatingAsync(meta.Id, new() {
+                await service.UploadMapRatingAsync(meta.Id, new() {
                     MapId = meta.Id,
                     UserId = SteamUser.GetSteamID().ToString(),
                     RatedAt = like ? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") : null,
                 });
-
-                if (success) {
-
-                } else {
-                    ExmMod.WarnWithPopup<MapCardView>("exm_ui_map_rate_update_failed".lang());
-                }
             }
         }
     }

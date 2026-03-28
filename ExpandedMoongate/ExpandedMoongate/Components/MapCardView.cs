@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
-using Exm.API;
 using Exm.Helper;
 using Exm.Model.Map;
 using UnityEngine;
@@ -12,7 +11,7 @@ using YKF;
 
 namespace Exm.Components;
 
-public class MapCardView(IMapService service, MapMeta meta)
+public class MapCardView(MapMeta meta)
 {
     private static Rect _refSize = UIHelper.FitWindow();
     private readonly List<UIItem> _ratingBar = [];
@@ -42,12 +41,6 @@ public class MapCardView(IMapService service, MapMeta meta)
         BuildPrimaryStat(bannerGroup);
         BuildSecondaryStat(bannerGroup);
         BuildControlButtons(bannerGroup);
-    }
-
-    public void EnterMap()
-    {
-        var controller = ExmService.MapController;
-        controller.LoadMap(meta);
     }
 
     private void BuildPreview(YKLayout group, Component parent)
@@ -81,20 +74,22 @@ public class MapCardView(IMapService service, MapMeta meta)
         _author = primary.TextFlavor(WebUtility.HtmlDecode(meta.Author), FontColor.Myth);
 
         BuildSubStatBar(primary);
-        //BuildRatingBar(primary);
     }
 
     private void BuildSubStatBar(YKLayout group)
     {
         var subStat = group.Horizontal();
+        subStat.Layout.childForceExpandWidth = false;
         subStat.Layout.childAlignment = TextAnchor.MiddleLeft;
-        subStat.Fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
-        subStat.Fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+        var le = subStat.LayoutElement();
+        le.preferredWidth = _refSize.width * 0.35f;
+        le.flexibleWidth = 0f;
 
         var visitSprite = UIHelper.FindSprite("Media/Graphics/Icon/icons_48", "icon_toGlobalMap");
         var visit = subStat.AddImageCard(subStat.Layout, visitSprite);
 
-        var le = visit.LayoutElement();
+        le = visit.LayoutElement();
         le.preferredHeight = 48f;
         le.preferredWidth = 48f;
         le.flexibleWidth = 0f;
@@ -102,7 +97,9 @@ public class MapCardView(IMapService service, MapMeta meta)
         _visits = subStat.Text("exm_ui_visits".Loc(meta.VisitCount));
         _visits.alignment = TextAnchor.MiddleLeft;
 
-        //subStat.Spacer(0, (int)(_refSize.width * 0.075f));
+        le = _visits.LayoutElement();
+        le.preferredWidth = 80f;
+        le.flexibleWidth = 0f;
 
         var ratingSprite = UIHelper.FindSprite("Media/Graphics/Icon/icons_48 static", "icons_48 static_4");
         var rating = subStat.AddImageCard(subStat.Layout, ratingSprite);
@@ -114,8 +111,13 @@ public class MapCardView(IMapService service, MapMeta meta)
 
         _rating = subStat.Text("exm_ui_likes".Loc(meta.RatingCount));
         _rating.alignment = TextAnchor.MiddleLeft;
+
+        le = _rating.LayoutElement();
+        le.preferredWidth = 80f;
+        le.flexibleWidth = 0f;
     }
 
+    // NOT USED - changed rating system to likes only
     private void BuildRatingBar(YKLayout group)
     {
         var barGroup = group.Horizontal();
@@ -141,12 +143,12 @@ public class MapCardView(IMapService service, MapMeta meta)
     private void BuildSecondaryStat(YKLayout group)
     {
         var statGroup = group.Vertical();
-        statGroup.Layout.childAlignment = TextAnchor.MiddleCenter;
+        statGroup.Layout.childAlignment = TextAnchor.LowerCenter;
         statGroup.Layout.spacing = 2f;
 
         var createTime = meta.Date;
         if (DateTime.TryParse(meta.Date, out var date)) {
-            createTime = date.ToString("yyyy-MM-dd");
+            createTime = date.ToString("yyyy-MM-dd HH:mm");
         }
 
         _date = statGroup.TextFlavor(createTime);
@@ -154,21 +156,41 @@ public class MapCardView(IMapService service, MapMeta meta)
 
         statGroup.TextFlavor(Version.Get(meta.Version).GetText())
             .alignment = TextAnchor.LowerRight;
+
+        if (meta.MyRating is null) {
+            return;
+        }
+
+        if (DateTime.TryParse(meta.MyRating.RatedAt, out _)) {
+            statGroup.TextFlavor("exm_ui_last_liked", FontColor.Good)
+                .alignment = TextAnchor.LowerRight;
+        }
+
+        if (DateTime.TryParse(meta.MyRating.VisitedAt, out var visitDate)) {
+            statGroup.TextFlavor("exm_ui_last_visit".Loc(visitDate.ToString("yyyy-MM-dd")), FontColor.Great)
+                .alignment = TextAnchor.LowerRight;
+        }
     }
 
     private void BuildControlButtons(YKLayout group)
     {
-        var controlGroup = group.Vertical();
-        var le = controlGroup.LayoutElement();
-        le.preferredWidth = _refSize.width * 0.2f;
-        le.flexibleWidth = 0f;
+        var controlGroup = group.Vertical()
+            .WithMinWidth(128)
+            .WithMinHeight(128)
+            .WithWidth(128)
+            .WithHeight(128);
+        controlGroup.LayoutElement().flexibleWidth = 0f;
 
-        _detailGroup ??= group.transform.parent.GetComponent<YKLayout>().Vertical();
+        if (_detailGroup == null) {
+            _detailGroup = group.transform.parent.GetComponent<YKLayout>().Vertical();
+        }
 
         _detailGroup.SetActive(false);
 
-        var enterBtn = controlGroup.Button("exm_ui_btn_enter".lang(), EnterMap);
-        var expandBtn = controlGroup.Button("exm_ui_btn_expand".lang(), () => {
+        controlGroup.Button("exm_ui_btn_enter".lang(), () => {
+            ExmService.MapController.LoadMap(meta);
+        });
+        controlGroup.Button("exm_ui_btn_expand".lang(), () => {
             _detailGroup.SetActive(!_expanded);
             _expanded = !_expanded;
             Canvas.ForceUpdateCanvases();

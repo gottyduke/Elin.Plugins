@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 using Exm.Helper;
 using Exm.Model.Map;
 using Newtonsoft.Json;
+using Steamworks;
 using UnityEngine.Networking;
 
 namespace Exm.API.Services;
@@ -22,14 +23,19 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
 
     // POST
     // /maps/overview
-    public async UniTask<MapServiceOverview?> GetMapsOverviewAsync()
+    public async UniTask<MapServiceOverview?> GetMapsOverviewAsync(IMapServiceV1.LangFilter lang, string? noTags)
     {
         ExmMod.Log("querying map server overview");
 
         var url = $"{_baseUrl}/maps/overview";
 
         using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET)
-            .SetStandardHandler("application/json");
+            .SetStandardHandler("application/json")
+            .SetParams(new {
+                lang = lang.ToString(),
+                noTags,
+                version = GameVersion.Int(),
+            });
         await req.SendRequestEx();
 
         if (req.result != UnityWebRequest.Result.Success) {
@@ -48,17 +54,21 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
     #region Map Meta
 
     // POST
-    // /maps/upload/:mapId
+    // /maps/upload
+    // &mapId
     public async UniTask<bool> UploadMapAsync(MapMeta meta, byte[] bytes)
     {
         ExmMod.Log($"uploading map '{meta.Id}'");
 
         var json = JsonConvert.SerializeObject(meta, _settings);
-        var url = $"{_baseUrl}/maps/upload/{Uri.EscapeDataString(meta.Id)}";
+        var url = $"{_baseUrl}/maps/upload";
 
         using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST)
             .SetStandardHandler("application/json")
-            .SetUploaderBytes(Encoding.UTF8.GetBytes(json));
+            .SetUploaderBytes(Encoding.UTF8.GetBytes(json))
+            .SetParams(new {
+                mapId = meta.Id,
+            });
         await req.SendRequestEx();
 
         if (req.result == UnityWebRequest.Result.Success) {
@@ -87,15 +97,19 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
     }
 
     // GET
-    // /maps/query/:mapId
+    // /maps/query
+    // &mapId
     public async UniTask<MapMeta?> GetMapMetaAsync(string mapId)
     {
         ExmMod.Log($"querying map '{mapId}'");
 
-        var url = $"{_baseUrl}/maps/query/{Uri.EscapeDataString(mapId)}";
+        var url = $"{_baseUrl}/maps/query";
 
         using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET)
-            .SetStandardHandler("application/json");
+            .SetStandardHandler("application/json")
+            .SetParams(new {
+                mapId,
+            });
         await req.SendRequestEx();
 
         if (req.result != UnityWebRequest.Result.Success) {
@@ -109,6 +123,34 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
     }
 
     // GET
+    // /maps/history
+    // &userId
+    public async UniTask<MapMeta[]?> GetMapHistoryByUserAsync(string userId)
+    {
+        ExmMod.Log($"querying user history for '{userId}'");
+
+        var url = $"{_baseUrl}/maps/history";
+
+        using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET)
+            .SetStandardHandler("application/json")
+            .SetParams(new {
+                userId,
+            });
+        await req.SendRequestEx();
+
+        if (req.result != UnityWebRequest.Result.Success) {
+            ExmMod.WarnWithPopup<IMapService>(
+                $"failed to query user map history by '{userId}': {req.responseCode}\n{req.downloadHandler.text}");
+            return null;
+        }
+
+        var history = JsonConvert.DeserializeObject<MapMeta[]>(req.downloadHandler.text, _settings);
+        ExmMod.Log($"finished querying user rating '{userId}'");
+        return history;
+    }
+
+
+    // GET
     // /maps/top
     // &sort=[created|rating|visits]
     // &limit=[10, 300]
@@ -116,11 +158,11 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
     // &lang=[null|EN|JP|CN]
     // &noTags=[adult]
     // &version
-    public async UniTask<MapMeta[]> GetTopMapsAsync(IMapServiceV1.SortType sort,
-                                                    int count,
-                                                    int page,
-                                                    string? lang,
-                                                    string? noTags)
+    public async UniTask<MapMeta[]?> GetTopMapsAsync(IMapServiceV1.SortType sort,
+                                                     int count,
+                                                     int page,
+                                                     IMapServiceV1.LangFilter lang,
+                                                     string? noTags)
     {
         var sortType = sort.ToString().ToLower();
         ExmMod.Log($"getting top {count} {sortType} maps");
@@ -133,16 +175,17 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
                 sort = sort.ToString().ToLowerInvariant(),
                 count,
                 page,
-                lang,
+                lang = lang.ToString(),
                 noTags,
                 version = GameVersion.Int(),
+                userId = SteamUser.GetSteamID().ToString(),
             });
         await req.SendRequestEx();
 
         if (req.result != UnityWebRequest.Result.Success) {
             ExmMod.WarnWithPopup<IMapService>(
                 $"failed to get top {count} {sortType} maps: {req.responseCode}\n{req.downloadHandler.text}");
-            return [];
+            return null;
         }
 
         var maps = JsonConvert.DeserializeObject<MapMeta[]>(req.downloadHandler.text, _settings);
@@ -155,38 +198,46 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
     #region Map File
 
     // POST
-    // /files/upload/:fileKey
-    public async UniTask<bool> UploadMapFileAsync(string fileKey, byte[] bytes)
+    // /files/upload
+    // &fileKeyId
+    public async UniTask<bool> UploadMapFileAsync(string fileKeyId, byte[] bytes)
     {
-        ExmMod.Log($"uploading map file '{fileKey}'");
+        ExmMod.Log($"uploading map file '{fileKeyId}'");
 
-        var url = $"{_baseUrl}/files/upload/{Uri.EscapeDataString(fileKey)}";
+        var url = $"{_baseUrl}/files/upload";
 
         using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST)
             .SetStandardHandler("application/octet-stream")
-            .SetUploaderBytes(bytes);
+            .SetUploaderBytes(bytes)
+            .SetParams(new {
+                fileKeyId,
+            });
         await req.SendRequestEx();
 
         if (req.result != UnityWebRequest.Result.Success) {
             ExmMod.WarnWithPopup<IMapService>(
-                $"failed to upload map file '{fileKey}': {req.responseCode}\n{req.downloadHandler.text}");
+                $"failed to upload map file '{fileKeyId}': {req.responseCode}\n{req.downloadHandler.text}");
             return false;
         }
 
-        ExmMod.Log($"finished uploading map file '{fileKey}'");
+        ExmMod.Log($"finished uploading map file '{fileKeyId}'");
         return true;
     }
 
     // GET
-    // /maps/download/:mapId
+    // /maps/download
+    // &mapId
     public async UniTask<byte[]?> GetMapFileAsync(string mapId)
     {
         ExmMod.Log($"downloading map '{mapId}'");
 
-        var url = $"{_baseUrl}/maps/download/{Uri.EscapeDataString(mapId)}";
+        var url = $"{_baseUrl}/maps/download";
 
         using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET)
-            .SetStandardHandler("application/octet-stream");
+            .SetStandardHandler("application/octet-stream")
+            .SetParams(new {
+                mapId,
+            });
         await req.SendRequestEx();
 
         if (req.result != UnityWebRequest.Result.Success) {
@@ -218,17 +269,21 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
     #region Map Rating
 
     // POST
-    // /ratings/:mapId
+    // /ratings
+    // &mapId
     public async UniTask<bool> UploadMapRatingAsync(string mapId, MapRating rating)
     {
         ExmMod.Log($"updating map rating '{mapId}'");
 
         var json = JsonConvert.SerializeObject(rating, _settings);
-        var url = $"{_baseUrl}/ratings/{Uri.EscapeDataString(mapId)}";
+        var url = $"{_baseUrl}/ratings";
 
         using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST)
             .SetStandardHandler("application/json")
-            .SetUploaderBytes(Encoding.UTF8.GetBytes(json));
+            .SetUploaderBytes(Encoding.UTF8.GetBytes(json))
+            .SetParams(new {
+                mapId,
+            });
         await req.SendRequestEx();
 
         if (req.result != UnityWebRequest.Result.Success) {
@@ -241,15 +296,21 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
     }
 
     // GET
-    // /ratings/:userId/:mapId
+    // /ratings
+    // &userId
+    // &mapId
     public async UniTask<MapRating?> GetMapRatingByUserAsync(string userId, string mapId)
     {
         ExmMod.Log($"querying user rating '{userId}' for '{mapId}'");
 
-        var url = $"{_baseUrl}/ratings/{Uri.EscapeDataString(userId)}/{Uri.EscapeDataString(mapId)}";
+        var url = $"{_baseUrl}/ratings";
 
         using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET)
-            .SetStandardHandler("application/json");
+            .SetStandardHandler("application/json")
+            .SetParams(new {
+                userId,
+                mapId,
+            });
         await req.SendRequestEx();
 
         if (req.result != UnityWebRequest.Result.Success) {
@@ -258,7 +319,7 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
             return null;
         }
 
-        var rating = JsonConvert.DeserializeObject<MapRating?>(req.downloadHandler.text, _settings);
+        var rating = JsonConvert.DeserializeObject<MapRating>(req.downloadHandler.text, _settings);
         ExmMod.Log($"finished querying user rating '{userId}' for '{mapId}'");
         return rating;
     }
