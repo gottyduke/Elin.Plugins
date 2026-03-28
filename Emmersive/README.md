@@ -20,6 +20,7 @@ This is a **beta test** version, mainly for gathering reports and feedback.
 + [x] Support Google AI Studio (gemini)
 + [x] Support OpenAI chatGPT
 + [x] Support OpenAI-compatible providers (DeepSeek, Qwen, etc)
++ [x] Support Player2
 + [x] Support Local LLM (webui, ollama, etc)
   + [x] Custom model parameters 
 + [x] Test services at runtime

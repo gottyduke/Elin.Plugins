@@ -11,7 +11,7 @@ namespace Emmersive.ChatProviders;
 
 public class Player2Provider() : OpenAIProvider("")
 {
-    public const string ElinGameClientId = "019aca4e-d3d8-72e7-a827-84d7378dfdf3";
+    public const string ElinGameClientId = "019d3468-2e95-7c1f-afa2-e3cd0fab3a88";
 
     private DateTime _lastPing = DateTime.MinValue;
 
