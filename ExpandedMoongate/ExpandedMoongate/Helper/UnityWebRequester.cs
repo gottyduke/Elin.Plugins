@@ -57,7 +57,6 @@ public static class UnityWebRequester
             ub.Query = sb.ToString();
 
             req.uri = ub.Uri;
-            req.url = ub.Uri.ToString();
 
             return req;
         }

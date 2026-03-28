@@ -28,8 +28,6 @@ internal partial class ExmMod : BaseUnityPlugin
 
         ExmConfig.Bind();
 
-        ExmService.Build();
-
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), ModInfo.Guid);
     }
 

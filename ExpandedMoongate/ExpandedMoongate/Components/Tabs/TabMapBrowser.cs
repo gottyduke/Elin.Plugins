@@ -6,7 +6,6 @@ using Cwl.LangMod;
 using Cysharp.Threading.Tasks;
 using Exm.API;
 using Exm.Model.Map;
-using Microsoft.Extensions.DependencyInjection;
 using UnityEngine;
 
 namespace Exm.Components.Tabs;
@@ -84,7 +83,7 @@ internal class TabMapBrowser : TabExMoongateBase
         async UniTask LoadMapsAsyncFunctor()
         {
             try {
-                var service = ExmService.Provider.GetRequiredService<IMapService>();
+                var service = ExmService.MapService;
 
                 var overviewTask = service.GetMapsOverviewAsync()
                     .Preserve();

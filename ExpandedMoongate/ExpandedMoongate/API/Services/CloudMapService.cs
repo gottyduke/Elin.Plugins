@@ -38,7 +38,7 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
             return null;
         }
 
-        var overview = JsonConvert.DeserializeObject<MapServiceOverview?>(req.downloadHandler.text, _settings);
+        var overview = JsonConvert.DeserializeObject<MapServiceOverview>(req.downloadHandler.text, _settings);
         ExmMod.Log("finished querying map server overview");
         return overview;
     }
@@ -224,7 +224,7 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
         ExmMod.Log($"updating map rating '{mapId}'");
 
         var json = JsonConvert.SerializeObject(rating, _settings);
-        var url = $"{_baseUrl}/ratings";
+        var url = $"{_baseUrl}/ratings/{Uri.EscapeDataString(mapId)}";
 
         using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST)
             .SetStandardHandler("application/json")

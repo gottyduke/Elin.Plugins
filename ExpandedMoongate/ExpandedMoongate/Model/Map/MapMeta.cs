@@ -11,10 +11,12 @@ public sealed record MapMeta
 
     // 1 normal id
     // 2
+    // Decode required!
     [JsonProperty("author")]
     public required string Author { get; init; }
 
     // 3
+    // Decode required!
     [JsonProperty("title")]
     public required string Title { get; init; }
 

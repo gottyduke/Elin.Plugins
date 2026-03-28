@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Net;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
@@ -38,7 +39,7 @@ public class MapController(IMapService service) : EClass
 
         await UniTask.Yield();
         await File.WriteAllBytesAsync(filePath, blob);
-        ExmMod.Log<MapController>("exm_log_map_saved".Loc(meta.Id, filePath.ShortPath()));
+        ExmMod.Log<MapController>($"cloud map '{meta.Id}' saved at {filePath.ShortPath()}");
 
         core.actionsNextFrame.Add(() => MoveMap(meta, filePath));
 
@@ -55,7 +56,7 @@ public class MapController(IMapService service) : EClass
             return;
         }
 
-        ExmMod.Log<MapController>("exm_log_map_loading".Loc(meta.TryToString()));
+        ExmMod.Log<MapController>($"loading cloud map\n{meta.TryToString()}");
 
         var userMap = SpatialGen.Create("user", world.region, true) as Zone_User;
         if (userMap is null) {
@@ -97,9 +98,18 @@ public class MapController(IMapService service) : EClass
     {
         public override void OnLeaveZone()
         {
-            Dialog.YesNo("rate map?",
-                () => UpdateRating(true),
-                () => UpdateRating(false));
+            CoroutineHelper.Deferred(() =>
+                Dialog.YesNo(
+                    "exm_ui_rate_map_dialog",
+                    () => UpdateRating(true),
+                    () => UpdateRating(false),
+                    "exm_ui_rate_map_dialog_yes"));
+        }
+
+        public override void OnVisit()
+        {
+            UpdateRating(false);
+            ui.Say(WebUtility.HtmlDecode("exm_ui_visit_map".Loc(meta.Title, meta.Author)));
         }
 
         public void UpdateRating(bool like)

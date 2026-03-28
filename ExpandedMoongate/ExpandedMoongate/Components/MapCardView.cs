@@ -4,10 +4,8 @@ using System.Net;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using Exm.API;
-using Exm.API.Services;
 using Exm.Helper;
 using Exm.Model.Map;
-using Microsoft.Extensions.DependencyInjection;
 using UnityEngine;
 using UnityEngine.UI;
 using YKF;
@@ -48,7 +46,7 @@ public class MapCardView(IMapService service, MapMeta meta)
 
     public void EnterMap()
     {
-        var controller = ExmService.Provider.GetRequiredService<MapController>();
+        var controller = ExmService.MapController;
         controller.LoadMap(meta);
     }
 
