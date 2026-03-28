@@ -11,6 +11,8 @@ It's built with 3 modules working together:
 ## TODO
 
 - Map ID deduplication - this requires Elin base code change to accept Steam User ID instead of IP address.
-- Complete the base module.
 - Moderation API.
-- Better UI design.
+
+## Server Spec
+
+See `API` folder for providing custom server endpoints.
