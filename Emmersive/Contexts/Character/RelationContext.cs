@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Emmersive.Helper;
 using HarmonyLib;
@@ -109,9 +108,9 @@ public class RelationContext(IList<Chara> charas) : ContextProviderBase
 
     public static List<RelationPrompt> BuildLookup()
     {
-        using var _ = PackageIterator.AddTempLookupPaths(ResourceFetch.CustomFolder);
+        using var _ = PackageIterator.AddTempLookup(ResourceFetch.CustomFolder);
         return PackageIterator
-            .GetRelocatedDirsFromPackage("Emmersive/Relations")
+            .GetDirectories("Emmersive/Relations")
             .SelectMany(d => d.GetFiles("*.txt", SearchOption.TopDirectoryOnly))
             .Select(LoadFromFile)
             .OfType<RelationPrompt>()

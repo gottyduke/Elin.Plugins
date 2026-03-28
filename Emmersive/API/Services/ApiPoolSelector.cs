@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Cwl.Helper.FileUtil;
 using Emmersive.ChatProviders;
 using Emmersive.Helper;
 using Microsoft.SemanticKernel;
@@ -103,8 +102,11 @@ public sealed class ApiPoolSelector : IAIServiceSelector
     internal static void MockTestServices()
     {
         var apiPool = Instance;
-        var (_, keys) = PackageIterator
-            .GetJsonFromPackage<Dictionary<string, string[]>>("Emmersive/DebugKeys.json", ModInfo.Guid);
+        var keyFile = PackageIterator
+            .GetMapping(ModInfo.Guid)
+            .RelocateFile("Emmersive/DebugKey.json");
+
+        var keys = IO.LoadFile<Dictionary<string, string[]>>(keyFile.FullName);
 
         if (keys is null) {
             return;

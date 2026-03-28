@@ -8,14 +8,9 @@ using YKF;
 namespace Emmersive.ChatProviders;
 
 [JsonObject(MemberSerialization.OptIn)]
-internal sealed class PiexianProvider : OpenAIProvider
+internal sealed class PiexianProvider() : OpenAIProvider("")
 {
     private UIInputText? _apiInput;
-
-    internal PiexianProvider()
-        : base("")
-    {
-    }
 
     [JsonProperty]
     public override string Alias { get; set; } = "氕氙";

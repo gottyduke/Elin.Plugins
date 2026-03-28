@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using Cwl.API.Processors;
 using Cwl.Helper.FileUtil;
-using Cwl.Helper.String;
 using UnityEngine;
 
 namespace Emmersive.Helper;
@@ -22,10 +21,10 @@ public class ResourceFetch
 
     public static IEnumerable<ResourceDescriptor> GetAvailableResources(string path)
     {
-        using var _ = PackageIterator.AddTempLookupPathsEx(ModInfo.Guid, CustomFolder);
+        using var _ = PackageIterator.AddTempLookup(CustomFolder);
         return PackageIterator
-            .GetRelocatedFilesFromPackageEx(path.NormalizePath())
-            .Select(fm => new ResourceDescriptor(fm.Item1, fm.Item2?.title ?? "Custom"))
+            .GetFilesEx(path.NormalizePath())
+            .Select(fm => new ResourceDescriptor(fm.file, fm.package?.title ?? "Custom"))
             .ToArray();
     }
 
