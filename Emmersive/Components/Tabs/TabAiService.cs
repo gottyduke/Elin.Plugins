@@ -83,6 +83,12 @@ internal class TabAiService : TabEmmersiveBase
         AddServiceButton("em_ui_add_service_google", apiKey => new GoogleProvider(apiKey));
         AddServiceButton("em_ui_add_service_openai", apiKey => new OpenAIProvider(apiKey));
 
+        // Player2
+        btnGroup.Button("em_ui_add_service_player2".lang(),
+            () => Dialog.YesNo("em_ui_p2_desc", () => {
+                AddService(new Player2Provider());
+            }));
+
         // CN treat: piexian free API
         if (Lang.langCode == "CN") {
             btnGroup.Button("em_ui_add_service_piexian".lang(),
