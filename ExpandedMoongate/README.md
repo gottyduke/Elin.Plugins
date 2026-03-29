@@ -1,5 +1,7 @@
 ## Expanded Moongate Project(WIP)
 
+![](https://img.shields.io/endpoint?url=https://api.exmoongate.elin-modding.net/maps/badge)
+
 `ExpandedMoongate` adds support for external moongate servers and an optional rating/comment system for Elin.
 
 It's built with 3 modules working together:
@@ -12,6 +14,7 @@ It's built with 3 modules working together:
 
 - Map ID deduplication - this requires Elin base code change to accept Steam User ID instead of IP address.
 - Moderation API.
+- Map Preview.
 
 ## Server Spec
 

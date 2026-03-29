@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Net;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
@@ -13,18 +12,17 @@ namespace Exm.Components;
 
 public class MapCardView(MapMeta meta)
 {
-    private static Rect _refSize = UIHelper.FitWindow();
-    private readonly List<UIItem> _ratingBar = [];
     private UIText? _author;
     private UIItem? _bg;
     private UIText? _date;
-    private YKLayout? _detailGroup;
+    private YKVertical? _detailGroup;
 
     private bool _expanded;
     // primary
     private UIItem? _name;
     // secondary
     private UIText? _rating;
+    private Rect _refSize = LayerExpandedMoongate.Instance!.Bound;
     private UIText? _visits;
 
     public void OnLayout(YKLayout layout)
@@ -47,11 +45,12 @@ public class MapCardView(MapMeta meta)
     {
         // TODO api v2 load preview key
         var bgSprite = "exm_no_preview".LoadSprite(resizeHeight: 128, resizeWidth: 128);
+        var bgSize = (int)(_refSize.width * 0.15f);
         _bg = group.AddImageCard(parent, bgSprite)
-            .WithMinWidth(128)
-            .WithMinHeight(128)
-            .WithWidth(128)
-            .WithHeight(128);
+            .WithMinWidth(bgSize)
+            .WithMinHeight(bgSize)
+            .WithWidth(bgSize)
+            .WithHeight(bgSize);
         _bg.LayoutElement().flexibleWidth = 0f;
         _bg.image1.preserveAspect = false;
     }
@@ -89,55 +88,36 @@ public class MapCardView(MapMeta meta)
         var visitSprite = UIHelper.FindSprite("Media/Graphics/Icon/icons_48", "icon_toGlobalMap");
         var visit = subStat.AddImageCard(subStat.Layout, visitSprite);
 
+        var size = _refSize.width * 0.055f;
+
         le = visit.LayoutElement();
-        le.preferredHeight = 48f;
-        le.preferredWidth = 48f;
+        le.preferredHeight = size;
+        le.preferredWidth = size;
         le.flexibleWidth = 0f;
 
         _visits = subStat.Text("exm_ui_visits".Loc(meta.VisitCount));
         _visits.alignment = TextAnchor.MiddleLeft;
 
+        var width = _refSize.width * 0.093f;
+
         le = _visits.LayoutElement();
-        le.preferredWidth = 80f;
+        le.preferredWidth = width;
         le.flexibleWidth = 0f;
 
         var ratingSprite = UIHelper.FindSprite("Media/Graphics/Icon/icons_48 static", "icons_48 static_4");
         var rating = subStat.AddImageCard(subStat.Layout, ratingSprite);
 
         le = rating.LayoutElement();
-        le.preferredHeight = 48f;
-        le.preferredWidth = 48f;
+        le.preferredHeight = size;
+        le.preferredWidth = size;
         le.flexibleWidth = 0f;
 
         _rating = subStat.Text("exm_ui_likes".Loc(meta.RatingCount));
         _rating.alignment = TextAnchor.MiddleLeft;
 
         le = _rating.LayoutElement();
-        le.preferredWidth = 80f;
+        le.preferredWidth = width;
         le.flexibleWidth = 0f;
-    }
-
-    // NOT USED - changed rating system to likes only
-    private void BuildRatingBar(YKLayout group)
-    {
-        var barGroup = group.Horizontal();
-        barGroup.Layout.childAlignment = TextAnchor.MiddleLeft;
-        barGroup.Fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
-        barGroup.Fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
-        _ratingBar.Clear();
-
-        var sprite = UIHelper.FindSprite("Media/Graphics/Icon/icons_48 static", "icons_48 static_4");
-        for (var i = 0; i < 5; i++) {
-            var rating = barGroup.AddImageCard(barGroup.Layout, sprite);
-
-            var le = rating.LayoutElement();
-            le.preferredHeight = 48f;
-            le.preferredWidth = 48f;
-            le.flexibleWidth = 0f;
-
-            _ratingBar.Add(rating);
-        }
     }
 
     private void BuildSecondaryStat(YKLayout group)
@@ -174,16 +154,20 @@ public class MapCardView(MapMeta meta)
 
     private void BuildControlButtons(YKLayout group)
     {
+        var btnSize = (int)(_refSize.width * 0.15f);
         var controlGroup = group.Vertical()
-            .WithMinWidth(128)
-            .WithMinHeight(128)
-            .WithWidth(128)
-            .WithHeight(128);
+            .WithMinWidth(btnSize)
+            .WithMinHeight(btnSize)
+            .WithWidth(btnSize)
+            .WithHeight(btnSize);
         controlGroup.LayoutElement().flexibleWidth = 0f;
 
         if (_detailGroup == null) {
             _detailGroup = group.transform.parent.GetComponent<YKLayout>().Vertical();
+            _detailGroup.Layout.childAlignment = TextAnchor.MiddleCenter;
         }
+
+        BuildDetailGroup();
 
         _detailGroup.SetActive(false);
 
@@ -194,7 +178,34 @@ public class MapCardView(MapMeta meta)
             _detailGroup.SetActive(!_expanded);
             _expanded = !_expanded;
             Canvas.ForceUpdateCanvases();
-            group.transform.parent.Rect().RebuildLayout(true);
+            group.transform.parent.RebuildLayout(true);
         });
+    }
+
+    private void BuildDetailGroup()
+    {
+        var copyGroup = _detailGroup!.Horizontal();
+        copyGroup.Layout.childAlignment = TextAnchor.MiddleCenter;
+        copyGroup.Layout.childForceExpandWidth = true;
+
+        copyGroup.Text("exm_ui_map_view".Loc(meta.ViewId))
+            .alignment = TextAnchor.MiddleCenter;
+        copyGroup.Button("exm_ui_copy_view".lang(), () => {
+            GUIUtility.systemCopyBuffer = meta.ViewId;
+        });
+
+        copyGroup.Button("exm_ui_copy_name".lang(), () => {
+            GUIUtility.systemCopyBuffer = meta.Title;
+        });
+
+        copyGroup.Button("exm_ui_copy_author".lang(), () => {
+            GUIUtility.systemCopyBuffer = meta.Author;
+        });
+
+        var miscGroup = _detailGroup!.Horizontal();
+        miscGroup.Layout.childAlignment = TextAnchor.MiddleCenter;
+        miscGroup.Layout.childForceExpandWidth = true;
+
+        miscGroup.Text("exm_ui_file_size".Loc(StringHelper.ToAllocateString(meta.FileSize)));
     }
 }

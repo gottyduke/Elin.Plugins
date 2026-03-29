@@ -1,34 +1,45 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using Cysharp.Threading.Tasks;
 using Exm.API;
-using Exm.API.Exceptions;
+using Exm.Helper;
 using Exm.Model.Map;
 using UnityEngine;
+using UnityEngine.UI;
 using YKF;
 
 namespace Exm.Components.Tabs;
 
 internal class TabMapBrowser : TabExMoongateBase
 {
-    private static readonly List<string> _sortNames = Enum
+    protected readonly Dictionary<string, MapCardView> _cachedCards = [];
+    protected readonly List<MapCardView> _cards = [];
+    private Rect _refSize = LayerExpandedMoongate.Instance!.Bound;
+    protected bool DirtyData;
+    protected bool DirtyLayout;
+    protected MapServiceOverview? Overview;
+
+    private static List<string> SortNames => field ??= Enum
         .GetNames(typeof(IMapServiceV1.SortType))
         .Select(n => $"exm_ui_sort_type_{n}".lang())
         .ToList();
-    private static readonly List<string> _langFilterNames = Enum
+
+    private static List<string> LangFilterNames => field ??= Enum
         .GetNames(typeof(IMapServiceV1.LangFilter))
         .Select(n => $"exm_ui_lang_filter_{n}".lang())
         .ToList();
 
-    protected readonly Dictionary<string, MapCardView> _cachedCards = [];
-    protected readonly List<MapCardView> _cards = [];
-    protected int CurrentPage;
-    protected bool DirtyData;
-    protected bool DirtyLayout;
-    protected MapServiceOverview? Overview;
+    private static List<string> TimePeriodNames => field ??= Enum
+        .GetNames(typeof(IMapServiceV1.TimePeriod))
+        .Select(n => $"exm_ui_time_period_{n}".lang())
+        .ToList();
+
+    private static Array DaysValues => field ??= Enum
+        .GetValues(typeof(IMapServiceV1.TimePeriod));
 
     protected virtual void Update()
     {
@@ -40,14 +51,21 @@ internal class TabMapBrowser : TabExMoongateBase
         if (DirtyLayout) {
             this.DestroyChildren(true);
 
-            BuildHeaders();
+            BuildHeaderGroup();
             BuildControlButtons();
 
-            foreach (var card in _cards) {
-                card.OnLayout(this);
+            if (_cards.Count > 0) {
+                foreach (var card in _cards) {
+                    card.OnLayout(this);
+                }
+            } else {
+                Header("exm_ui_no_map_data");
             }
 
             DirtyLayout = false;
+
+            Canvas.ForceUpdateCanvases();
+            transform.RebuildLayout(true);
         }
     }
 
@@ -60,53 +78,108 @@ internal class TabMapBrowser : TabExMoongateBase
     {
     }
 
-    private void BuildHeaders()
+    private void BuildHeaderGroup()
     {
         var headerGroup = Horizontal();
-        headerGroup.Layout.childAlignment = TextAnchor.MiddleCenter;
+        BuildServerOverview(headerGroup);
+    }
 
-        if (Overview is null) {
-            headerGroup.Text("exm_ui_null_overview");
+    private void BuildServerOverview(YKLayout group)
+    {
+        var card = group.MakeCard();
+
+        var overviewGroup = card.Horizontal();
+        overviewGroup.Layout.childAlignment = TextAnchor.MiddleCenter;
+
+        overviewGroup.FlexWidth();
+
+        if (SearchMode) {
+            overviewGroup.Text($"{"exm_ui_maps_total".Loc(_cards.Count)}")
+                .alignment = TextAnchor.MiddleCenter;
+            overviewGroup.FlexWidth();
             return;
         }
 
-        headerGroup.Spacer(0).LayoutElement().flexibleWidth = 1f;
+        if (Overview is null) {
+            overviewGroup.Text("exm_ui_null_overview")
+                .alignment = TextAnchor.MiddleCenter;
+            overviewGroup.FlexWidth();
+            return;
+        }
 
-        headerGroup.Text($"{"exm_ui_maps_total".Loc(Overview.MapsCount)}\n" +
-                         $"{"exm_ui_visits_total".Loc(Overview.VisitsCount)}")
+        overviewGroup.Text($"{"exm_ui_maps_total".Loc(Overview.MapsCount)}\n" +
+                           $"{"exm_ui_visits_total".Loc(Overview.VisitsCount)}")
             .alignment = TextAnchor.MiddleCenter;
 
-        headerGroup.Spacer(0).LayoutElement().flexibleWidth = 1f;
+        overviewGroup.FlexWidth();
 
-        headerGroup.Text($"{"exm_ui_maps_today".Loc(Overview.MapsToday)}\n" +
-                         $"{"exm_ui_visits_today".Loc(Overview.VisitsToday)}")
+        overviewGroup.Text($"{"exm_ui_maps_today".Loc(Overview.MapsToday)}\n" +
+                           $"{"exm_ui_visits_today".Loc(Overview.VisitsToday)}")
             .alignment = TextAnchor.MiddleCenter;
 
-        headerGroup.Spacer(0).LayoutElement().flexibleWidth = 1f;
+        overviewGroup.FlexWidth();
     }
 
     private void BuildControlButtons()
     {
-        var btnGroup = Horizontal();
-        btnGroup.Layout.spacing = 10f;
+        var controlGroup = this.MakeCard();
+        controlGroup.Layout.spacing = 10f;
 
-        BuildSortGroup(btnGroup);
-        BuildFilterGroup(btnGroup);
+        if (SearchMode) {
+            var cancelGroup = controlGroup.Horizontal();
 
-        btnGroup.Spacer(0).LayoutElement().flexibleWidth = 1f;
+            BuildSearchGroup(cancelGroup);
 
-        BuildPageGroup(btnGroup);
+            cancelGroup.FlexWidth();
+
+            cancelGroup.Button("exm_ui_btn_search_clear".lang(), ClearSearch)
+                .WithMinWidth((int)(_refSize.width * 0.25f))
+                .GetComponent<Image>().color = Color.red;
+        } else {
+            BuildFilterGroup(controlGroup);
+
+            var naviGroup = controlGroup.Horizontal();
+
+            BuildSearchGroup(naviGroup);
+
+            naviGroup.FlexWidth();
+
+            BuildPageGroup(naviGroup);
+        }
+
+        return;
+
+        void ClearSearch()
+        {
+            SearchMode = false;
+            DirtyData = true;
+        }
     }
 
-    private void BuildSortGroup(YKLayout group)
+    private void BuildFilterGroup(YKLayout group)
     {
-        var sortGroup = group.Horizontal();
+        var filterGroup = group.Horizontal();
+        filterGroup.Layout.spacing = 10f;
 
-        sortGroup.Text("exm_ui_sort_type")
+        filterGroup.Text("exm_ui_sort_type")
             .WithMinWidth(0)
             .alignment = TextAnchor.MiddleLeft;
-        sortGroup.Dropdown(_sortNames, SwitchSort, (int)Sort)
-            .WithMinWidth(200);
+        filterGroup.Dropdown(SortNames, SwitchSort, (int)Sort)
+            .WithMinWidth((int)(_refSize.width * 0.2f));
+
+        filterGroup.Text("exm_ui_time_period")
+            .WithMinWidth(0)
+            .alignment = TextAnchor.MiddleLeft;
+        filterGroup.Dropdown(TimePeriodNames, SwitchTime, Array.IndexOf(DaysValues, Days))
+            .WithMinWidth((int)(_refSize.width * 0.15f));
+
+        filterGroup.Text("exm_ui_lang_filter")
+            .WithMinWidth(0)
+            .alignment = TextAnchor.MiddleLeft;
+        filterGroup.Dropdown(LangFilterNames, SwitchLang, (int)Lang)
+            .WithMinWidth((int)(_refSize.width * 0.06f));
+
+        filterGroup.Toggle("exm_ui_adult_filter", NoAdult, SwitchAdult);
 
         return;
 
@@ -117,24 +190,16 @@ internal class TabMapBrowser : TabExMoongateBase
             DirtyData = true;
         }
 
-    }
-
-    private void BuildFilterGroup(YKLayout group)
-    {
-        var filterGroup = group.Horizontal();
-
-        filterGroup.Text("exm_ui_lang_filter")
-            .WithMinWidth(0)
-            .alignment = TextAnchor.MiddleLeft;
-        filterGroup.Dropdown(_langFilterNames, SwitchFilter, (int)LangFilter)
-            .WithMinWidth(50);
-        filterGroup.Toggle("exm_ui_adult_filter", NoAdult, SwitchAdult);
-
-        return;
-
-        void SwitchFilter(int filterType)
+        void SwitchTime(int timePeriod)
         {
-            LangFilter = (IMapServiceV1.LangFilter)filterType;
+            Days = (IMapServiceV1.TimePeriod)DaysValues.GetValue(timePeriod);
+            CurrentPage = 0;
+            DirtyData = true;
+        }
+
+        void SwitchLang(int langFilter)
+        {
+            Lang = (IMapServiceV1.LangFilter)langFilter;
             CurrentPage = 0;
             DirtyData = true;
         }
@@ -144,6 +209,36 @@ internal class TabMapBrowser : TabExMoongateBase
             NoAdult = on;
             CurrentPage = 0;
             DirtyData = true;
+        }
+    }
+
+    private void BuildSearchGroup(YKLayout group)
+    {
+        var searchGroup = group.Horizontal();
+        var search = searchGroup.InputText(Search)
+            .WithWidth((int)(_refSize.width * 0.5f));
+
+        if (Search.IsEmptyOrNull) {
+            Search = "exm_ui_search_hint".lang();
+        }
+
+        search.field.characterLimit = 100;
+        search.field.contentType = InputField.ContentType.Standard;
+        search.field.text = Search;
+        search.field.onValueChanged.AddListener(query => Search = query);
+
+        searchGroup.Button("exm_ui_btn_search".lang(), RunSearch)
+            .WithMinWidth((int)(_refSize.width * 0.25f))
+            .GetComponent<Image>().color = Color.green;
+
+        return;
+
+        void RunSearch()
+        {
+            if (!Search.IsEmptyOrNull) {
+                SearchMode = true;
+                DirtyData = true;
+            }
         }
     }
 
@@ -157,18 +252,24 @@ internal class TabMapBrowser : TabExMoongateBase
         CurrentPage = Mathf.Clamp(CurrentPage, 0, TotalPages);
 
         var pageGroup = group.Horizontal();
+
         if (CurrentPage > 0) {
-            pageGroup.Button($"{CurrentPage}", () => SwitchPage(CurrentPage - 1));
+            pageGroup.Button($"{CurrentPage}", () => SwitchPage(CurrentPage - 1))
+                .WithMinWidth(0)
+                .GetComponent<Image>().color = Color.cyan;
         }
 
         var pages = Enumerable
             .Range(1, TotalPages)
             .Select(i => i.ToString())
             .ToList();
-        pageGroup.Dropdown(pages, SwitchPage, CurrentPage);
+        pageGroup.Dropdown(pages, SwitchPage, CurrentPage)
+            .WithMinWidth(0);
 
         if (CurrentPage < TotalPages - 1) {
-            pageGroup.Button($"{CurrentPage + 2}", () => SwitchPage(CurrentPage + 1));
+            pageGroup.Button($"{CurrentPage + 2}", () => SwitchPage(CurrentPage + 1))
+                .WithMinWidth(0)
+                .GetComponent<Image>().color = Color.cyan;
         }
 
         return;
@@ -201,27 +302,37 @@ internal class TabMapBrowser : TabExMoongateBase
 
             var pageSize = ExmConfig.Display.MapsPerPage.Value;
             var adultFilter = NoAdult ? "adult" : null;
-            var topMapTask = service.GetTopMapsAsync(Sort, pageSize, CurrentPage, LangFilter, adultFilter)
-                .Preserve();
-            var overviewTask = service.GetMapsOverviewAsync(LangFilter, adultFilter)
-                .Preserve();
-            var queryTask = UniTask.WhenAll(overviewTask, topMapTask);
 
-            var timeout = Mathf.Max(ExmConfig.Policy.Timeout.Value, 3f);
-            var results = await UniTask.WhenAny(queryTask,
-                UniTask.Delay(TimeSpan.FromSeconds(timeout)));
+            MapMeta[]? maps;
 
-            if (!results.hasResultLeft) {
-                throw new TimeoutException("exm_error_service_timeout".lang());
+            if (SearchMode) {
+                var searchTask = service.GetMapMetaByQueryAsync(Search);
+
+                var results = await UniTask.WhenAny(searchTask,
+                    UniTask.Delay(TimeSpan.FromSeconds(ExmConfig.Policy.Timeout.Value)));
+                if (!results.hasResultLeft) {
+                    throw new TimeoutException("exm_error_service_timeout".lang());
+                }
+
+                maps = results.result;
+            } else {
+                var topMapTask = service.GetTopMapsAsync(Sort, pageSize, CurrentPage, Lang, Days, adultFilter)
+                    .Preserve();
+                var overviewTask = service.GetMapsOverviewAsync(Lang, Days, adultFilter)
+                    .Preserve();
+                var refreshMetaTask = UniTask.WhenAll(overviewTask, topMapTask)
+                    .Preserve();
+
+                var results = await UniTask.WhenAny(refreshMetaTask,
+                    UniTask.Delay(TimeSpan.FromSeconds(ExmConfig.Policy.Timeout.Value)));
+                if (!results.hasResultLeft) {
+                    throw new TimeoutException("exm_error_service_timeout".lang());
+                }
+
+                (Overview, maps) = results.result;
             }
 
-            (Overview, var maps) = results.result;
-
-            if (maps is not { Length: > 0 }) {
-                throw new MoongateException("server responds with empty data");
-            }
-
-            foreach (var map in maps) {
+            foreach (var map in maps ?? []) {
                 if (!map.IsValidVersion) {
                     continue;
                 }
@@ -245,10 +356,14 @@ internal class TabMapBrowser : TabExMoongateBase
 
     #region Options
 
-    protected IMapServiceV1.SortType Sort = IMapServiceV1.SortType.Created;
-    protected IMapServiceV1.LangFilter LangFilter = IMapServiceV1.LangFilter.All;
+    protected static IMapServiceV1.SortType Sort = IMapServiceV1.SortType.Created;
+    protected static IMapServiceV1.LangFilter Lang = IMapServiceV1.LangFilter.All;
+    protected static IMapServiceV1.TimePeriod Days = IMapServiceV1.TimePeriod.AllTime;
+    protected static bool NoAdult = EClass.core.config.net.noAdult;
+    protected int CurrentPage;
     protected int TotalPages;
-    protected bool NoAdult = EClass.core.config.net.noAdult;
+    protected string Search = "";
+    protected bool SearchMode;
 
     #endregion
 }

@@ -1,7 +1,6 @@
 using System;
 using Cysharp.Threading.Tasks;
 using Steamworks;
-using UnityEngine;
 
 namespace Exm.Components.Tabs;
 
@@ -38,9 +37,8 @@ internal class TabMapHistory : TabMapBrowser
             var topMapTask = service.GetMapHistoryByUserAsync(SteamUser.GetSteamID().ToString())
                 .Preserve();
 
-            var timeout = Mathf.Max(ExmConfig.Policy.Timeout.Value, 3f);
             var (hasResultLeft, maps) = await UniTask.WhenAny(topMapTask,
-                UniTask.Delay(TimeSpan.FromSeconds(timeout)));
+                UniTask.Delay(TimeSpan.FromSeconds(ExmConfig.Policy.Timeout.Value)));
 
             if (!hasResultLeft) {
                 throw new TimeoutException("exm_error_service_timeout".lang());

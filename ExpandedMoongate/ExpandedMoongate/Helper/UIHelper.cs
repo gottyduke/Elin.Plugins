@@ -28,6 +28,18 @@ public static class UIHelper
 
     extension<T>(T layout) where T : YKLayout
     {
+        public T FlexWidth()
+        {
+            layout.Spacer(0).LayoutElement().flexibleWidth = 1f;
+            return layout;
+        }
+
+        public T FlexHeight()
+        {
+            layout.Spacer(0).LayoutElement().flexibleHeight = 1f;
+            return layout;
+        }
+
         public UIInputText AddPair(string idLang, string text)
         {
             var pair = layout.Horizontal();

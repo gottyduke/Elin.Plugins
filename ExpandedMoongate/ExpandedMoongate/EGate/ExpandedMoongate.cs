@@ -10,7 +10,7 @@ public static class ModInfo
 {
     public const string Guid = "dk.elinplugins.expandedmoongate";
     public const string Name = "Expanded Moongate Server";
-    public const string Version = "0.114.514";
+    public const string Version = "1.0.7";
 
     public static string BuildVersion => field ??= ExmMod.Assembly.GetName().Version.ToString();
 }

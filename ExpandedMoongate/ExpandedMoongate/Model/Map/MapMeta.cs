@@ -55,12 +55,16 @@ public sealed record MapMeta
     [JsonProperty("file_size")]
     public uint FileSize { get; init; }
 
+    // d1 -> r2
     [JsonProperty("preview_key")]
     public string? PreviewKey { get; init; }
 
-    [JsonIgnore]
-    public bool IsValidVersion => BaseCore.Instance.version.GetInt() >= Version;
-
     [JsonProperty("user_rating")]
     public MapRating? MyRating { get; init; }
+
+    [JsonProperty("view_id")]
+    public string? ViewId { get; init; }
+
+    [JsonIgnore]
+    public bool IsValidVersion => BaseCore.Instance.version.GetInt() >= Version;
 }

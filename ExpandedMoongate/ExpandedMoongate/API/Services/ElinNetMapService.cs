@@ -10,7 +10,7 @@ using UnityEngine.Networking;
 
 namespace Exm.API.Services;
 
-public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdingEndPoint) : IMapService
+public class ElinNetMapService(string endpoint = ElinNetMapService.DefaultElinModdingEndPoint) : IMapService
 {
     public const string DefaultElinModdingEndPoint = "https://api.exmoongate.elin-modding.net";
 
@@ -23,7 +23,9 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
 
     // POST
     // /maps/overview
-    public async UniTask<MapServiceOverview?> GetMapsOverviewAsync(IMapServiceV1.LangFilter lang, string? noTags)
+    public async UniTask<MapServiceOverview?> GetMapsOverviewAsync(IMapServiceV1.LangFilter lang,
+                                                                   IMapServiceV1.TimePeriod days,
+                                                                   string? noTags)
     {
         ExmMod.Log("querying map server overview");
 
@@ -34,6 +36,7 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
             .SetParams(new {
                 lang = lang.ToString(),
                 noTags,
+                days = (int)days,
                 version = GameVersion.Int(),
             });
         await req.SendRequestEx();
@@ -46,6 +49,35 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
 
         var overview = JsonConvert.DeserializeObject<MapServiceOverview>(req.downloadHandler.text, _settings);
         ExmMod.Log("finished querying map server overview");
+        return overview;
+    }
+
+    // POST
+    // /maps/search
+    // &query
+    public async UniTask<MapMeta[]?> GetMapMetaByQueryAsync(string query)
+    {
+        ExmMod.Log($"querying maps meta by '{query}'");
+
+        var url = $"{_baseUrl}/maps/search";
+
+        using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET)
+            .SetStandardHandler("application/json")
+            .SetParams(new {
+                query,
+                userId = SteamUser.GetSteamID(),
+                version = GameVersion.Int(),
+            });
+        await req.SendRequestEx();
+
+        if (req.result != UnityWebRequest.Result.Success) {
+            ExmMod.WarnWithPopup<IMapService>(
+                $"failed to query maps: {req.responseCode}\n{req.downloadHandler.text}");
+            return null;
+        }
+
+        var overview = JsonConvert.DeserializeObject<MapMeta[]>(req.downloadHandler.text, _settings);
+        ExmMod.Log("finished querying maps");
         return overview;
     }
 
@@ -162,6 +194,7 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
                                                      int count,
                                                      int page,
                                                      IMapServiceV1.LangFilter lang,
+                                                     IMapServiceV1.TimePeriod days,
                                                      string? noTags)
     {
         var sortType = sort.ToString().ToLower();
@@ -178,6 +211,7 @@ public class CloudMapService(string endpoint = CloudMapService.DefaultElinModdin
                 lang = lang.ToString(),
                 noTags,
                 version = GameVersion.Int(),
+                days = (int)days,
                 userId = SteamUser.GetSteamID().ToString(),
             });
         await req.SendRequestEx();

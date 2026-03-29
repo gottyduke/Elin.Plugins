@@ -7,9 +7,9 @@ public class ExmService
 {
     public static IMapService MapService => field ??=
 #if DEBUG
-        new CloudMapService();
+        new ElinNetMapService();
 #else
-        new CloudMapService();
+        new ElinNetMapService();
 #endif
 
     public static MapController MapController => field ??= new(MapService);

@@ -32,7 +32,7 @@ internal partial class ExmConfig
             new ConfigDescription(
                 "Timeout in seconds for a query request\n" +
                 "一次请求的最大超时",
-                new AcceptableValueRange<float>(1f, 60f)));
+                new AcceptableValueRange<float>(3f, 20f)));
 
         Display.MapsPerPage = config.Bind(
             "Display",
