@@ -1,6 +1,6 @@
 ## Expanded Moongate Project(WIP)
 
-![](https://img.shields.io/endpoint?url=https://api.exmoongate.elin-modding.net/maps/badge)
+![](https://img.shields.io/endpoint?url=https://api.exmoongate.elin-modding.net/badge/maps)
 
 `ExpandedMoongate` adds support for external moongate servers and an optional rating/comment system for Elin.
 
@@ -18,4 +18,4 @@ It's built with 3 modules working together:
 
 ## Server Spec
 
-See `API` folder for providing custom server endpoints.
+See [Expanded Moongate Server API](https://docs.exmoongate.elin-modding.net/)
