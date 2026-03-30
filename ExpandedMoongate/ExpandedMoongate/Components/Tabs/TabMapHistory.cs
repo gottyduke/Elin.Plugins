@@ -61,7 +61,7 @@ internal class TabMapHistory : TabMapBrowser
             }
         } catch (Exception ex) {
             await UniTask.Yield();
-            ExmMod.WarnWithPopup<TabMapBrowser>(ex.Message, ex);
+            ExmMod.WarnWithPopup<TabMapHistory>(ex.Message, ex);
             // noexcept
         } finally {
             await UniTask.Yield();

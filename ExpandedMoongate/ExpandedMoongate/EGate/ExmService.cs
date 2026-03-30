@@ -7,7 +7,7 @@ public class ExmService
 {
     public static IMapService MapService => field ??=
 #if DEBUG
-        new ElinNetMapService();
+        new ElinNetModerationService();
 #else
         new ElinNetMapService();
 #endif
