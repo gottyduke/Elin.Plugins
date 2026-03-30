@@ -40,7 +40,7 @@ public class CustomReligion : Religion, IChunkable
 
             CustomReligion custom;
             try {
-                custom = ClassCache.Create<CustomReligion>(type, CwlMod.Assembly.FullName);
+                custom = ClassCache.Create<Religion>(type) as CustomReligion ?? new CustomReligion();
                 if (custom is null) {
                     throw new InvalidCastException(type);
                 }
