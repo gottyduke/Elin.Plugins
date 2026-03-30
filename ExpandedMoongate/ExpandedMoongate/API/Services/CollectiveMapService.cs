@@ -62,27 +62,11 @@ public class CollectiveMapService : IMapService
         return null;
     }
 
-    public async UniTask<bool> UploadMapAsync(MapMeta meta, byte[] bytes)
+    public async UniTask<MapRating?> GetMapRatingByUserAsync(string mapId, string userId)
     {
         foreach (var service in _services) {
             try {
-                var result = await service.UploadMapAsync(meta, bytes);
-                if (result) {
-                    return result;
-                }
-            } catch (Exception ex) {
-                ExmMod.WarnWithPopup<IMapService>($"{service.GetType().Name} failed\n{ex}");
-                // noexcept
-            }
-        }
-        return false;
-    }
-
-    public async UniTask<MapRating?> GetMapRatingByUserAsync(string userId, string mapId)
-    {
-        foreach (var service in _services) {
-            try {
-                var result = await service.GetMapRatingByUserAsync(userId, mapId);
+                var result = await service.GetMapRatingByUserAsync(mapId, userId);
                 if (result is not null) {
                     return result;
                 }
@@ -94,11 +78,11 @@ public class CollectiveMapService : IMapService
         return null;
     }
 
-    public async UniTask<bool> UploadMapRatingAsync(string mapId, MapRating rating)
+    public async UniTask<bool> PostMapRatingAsync(string mapId, MapRating rating)
     {
         foreach (var service in _services) {
             try {
-                var result = await service.UploadMapRatingAsync(mapId, rating);
+                var result = await service.PostMapRatingAsync(mapId, rating);
                 if (result) {
                     return result;
                 }
@@ -142,6 +126,22 @@ public class CollectiveMapService : IMapService
             }
         }
         return results.ToArray();
+    }
+
+    public async UniTask<byte[]?> GetMapPreviewAsync(string mapId)
+    {
+        foreach (var service in _services) {
+            try {
+                var result = await service.GetMapPreviewAsync(mapId);
+                if (result is { Length: > 0 }) {
+                    return result;
+                }
+            } catch (Exception ex) {
+                ExmMod.WarnWithPopup<IMapService>($"{service.GetType().Name} failed\n{ex}");
+                // noexcept
+            }
+        }
+        return null;
     }
 
     /*

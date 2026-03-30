@@ -14,12 +14,12 @@ public class ElinNetMapService(string endpoint = ElinNetMapService.DefaultElinMo
 {
     public const string DefaultElinModdingEndPoint = "https://api.exmoongate.elin-modding.net";
 
-    private static readonly JsonSerializerSettings _settings = new() {
+    protected static readonly JsonSerializerSettings Settings = new() {
         Formatting = Formatting.None,
         PreserveReferencesHandling = PreserveReferencesHandling.None,
     };
 
-    private readonly string _baseUrl = endpoint.TrimEnd('/');
+    public string BaseUrl { get; } = endpoint.TrimEnd('/');
 
     // POST
     // /maps/overview
@@ -29,7 +29,7 @@ public class ElinNetMapService(string endpoint = ElinNetMapService.DefaultElinMo
     {
         ExmMod.Log("querying map server overview");
 
-        var url = $"{_baseUrl}/maps/overview";
+        var url = $"{BaseUrl}/maps/overview";
 
         using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET)
             .SetStandardHandler("application/json")
@@ -47,7 +47,7 @@ public class ElinNetMapService(string endpoint = ElinNetMapService.DefaultElinMo
             return null;
         }
 
-        var overview = JsonConvert.DeserializeObject<MapServiceOverview>(req.downloadHandler.text, _settings);
+        var overview = JsonConvert.DeserializeObject<MapServiceOverview>(req.downloadHandler.text, Settings);
         ExmMod.Log("finished querying map server overview");
         return overview;
     }
@@ -59,7 +59,7 @@ public class ElinNetMapService(string endpoint = ElinNetMapService.DefaultElinMo
     {
         ExmMod.Log($"querying maps meta by '{query}'");
 
-        var url = $"{_baseUrl}/maps/search";
+        var url = $"{BaseUrl}/maps/search";
 
         using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET)
             .SetStandardHandler("application/json")
@@ -76,57 +76,42 @@ public class ElinNetMapService(string endpoint = ElinNetMapService.DefaultElinMo
             return null;
         }
 
-        var overview = JsonConvert.DeserializeObject<MapMeta[]>(req.downloadHandler.text, _settings);
+        var overview = JsonConvert.DeserializeObject<MapMeta[]>(req.downloadHandler.text, Settings);
         ExmMod.Log("finished querying maps");
         return overview;
     }
 
-    public record UploadFileKeySurrogate(string FileKey);
+    #region Map File
 
-    #region Map Meta
-
-    // POST
-    // /maps/upload
+    // GET
+    // /maps/download
     // &mapId
-    public async UniTask<bool> UploadMapAsync(MapMeta meta, byte[] bytes)
+    public async UniTask<byte[]?> GetMapFileAsync(string mapId)
     {
-        ExmMod.Log($"uploading map '{meta.Id}'");
+        ExmMod.Log($"downloading map '{mapId}'");
 
-        var json = JsonConvert.SerializeObject(meta, _settings);
-        var url = $"{_baseUrl}/maps/upload";
+        var url = $"{BaseUrl}/maps/download";
 
-        using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST)
-            .SetStandardHandler("application/json")
-            .SetUploaderBytes(Encoding.UTF8.GetBytes(json))
+        using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET)
+            .SetStandardHandler("application/octet-stream")
             .SetParams(new {
-                mapId = meta.Id,
+                mapId,
             });
         await req.SendRequestEx();
 
-        if (req.result == UnityWebRequest.Result.Success) {
-            ExmMod.Log($"finished uploading map '{meta.Id}'");
-            return true;
+        if (req.result != UnityWebRequest.Result.Success) {
+            ExmMod.WarnWithPopup<IMapService>(
+                $"failed to download map '{mapId}': {req.responseCode}\n{req.downloadHandler.text}");
+            return null;
         }
 
-        switch (req.responseCode) {
-            case 409:
-                // this should never be hit at runtime
-                // only used by gcp job
-                ExmMod.Log($"map is already present '{meta.Id}'");
-                return true;
-            case 424:
-                // wait for file
-                var surrogate = JsonConvert.DeserializeObject<UploadFileKeySurrogate>(req.downloadHandler.text, _settings);
-                var success = await UploadMapFileAsync(surrogate.FileKey, bytes);
-                if (success) {
-                    return await UploadMapAsync(meta, bytes);
-                }
-                break;
-        }
-
-        ExmMod.WarnWithPopup<IMapService>($"failed to upload map '{meta.Id}': {req.responseCode}\n{req.downloadHandler.text}");
-        return false;
+        ExmMod.Log($"finished downloading map '{mapId}' with {StringHelper.ToAllocateString(req.downloadHandler.data.Length)}");
+        return req.downloadHandler.data;
     }
+
+    #endregion
+
+    #region Map Meta
 
     // GET
     // /maps/query
@@ -135,7 +120,7 @@ public class ElinNetMapService(string endpoint = ElinNetMapService.DefaultElinMo
     {
         ExmMod.Log($"querying map '{mapId}'");
 
-        var url = $"{_baseUrl}/maps/query";
+        var url = $"{BaseUrl}/maps/query";
 
         using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET)
             .SetStandardHandler("application/json")
@@ -149,7 +134,7 @@ public class ElinNetMapService(string endpoint = ElinNetMapService.DefaultElinMo
             return null;
         }
 
-        var meta = JsonConvert.DeserializeObject<MapMeta>(req.downloadHandler.text, _settings);
+        var meta = JsonConvert.DeserializeObject<MapMeta>(req.downloadHandler.text, Settings);
         ExmMod.Log($"finished querying map '{mapId}'");
         return meta;
     }
@@ -161,7 +146,7 @@ public class ElinNetMapService(string endpoint = ElinNetMapService.DefaultElinMo
     {
         ExmMod.Log($"querying user history for '{userId}'");
 
-        var url = $"{_baseUrl}/maps/history";
+        var url = $"{BaseUrl}/maps/history";
 
         using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET)
             .SetStandardHandler("application/json")
@@ -176,7 +161,7 @@ public class ElinNetMapService(string endpoint = ElinNetMapService.DefaultElinMo
             return null;
         }
 
-        var history = JsonConvert.DeserializeObject<MapMeta[]>(req.downloadHandler.text, _settings);
+        var history = JsonConvert.DeserializeObject<MapMeta[]>(req.downloadHandler.text, Settings);
         ExmMod.Log($"finished querying user rating '{userId}'");
         return history;
     }
@@ -200,19 +185,19 @@ public class ElinNetMapService(string endpoint = ElinNetMapService.DefaultElinMo
         var sortType = sort.ToString().ToLower();
         ExmMod.Log($"getting top {count} {sortType} maps");
 
-        var url = $"{_baseUrl}/maps/top";
+        var url = $"{BaseUrl}/maps/top";
 
         using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET)
             .SetStandardHandler("application/json")
             .SetParams(new {
-                sort = sort.ToString().ToLowerInvariant(),
                 count,
                 page,
-                lang = lang.ToString(),
-                noTags,
-                version = GameVersion.Int(),
+                sort = sort.ToString().ToLowerInvariant(),
+                lang,
                 days = (int)days,
-                userId = SteamUser.GetSteamID().ToString(),
+                noTags,
+                userId = SteamUser.GetSteamID(),
+                version = GameVersion.Int(),
             });
         await req.SendRequestEx();
 
@@ -222,66 +207,9 @@ public class ElinNetMapService(string endpoint = ElinNetMapService.DefaultElinMo
             return null;
         }
 
-        var maps = JsonConvert.DeserializeObject<MapMeta[]>(req.downloadHandler.text, _settings);
+        var maps = JsonConvert.DeserializeObject<MapMeta[]>(req.downloadHandler.text, Settings);
         ExmMod.Log($"finished getting top {count} {sortType} maps");
         return maps;
-    }
-
-    #endregion
-
-    #region Map File
-
-    // POST
-    // /files/upload
-    // &fileKeyId
-    public async UniTask<bool> UploadMapFileAsync(string fileKeyId, byte[] bytes)
-    {
-        ExmMod.Log($"uploading map file '{fileKeyId}'");
-
-        var url = $"{_baseUrl}/files/upload";
-
-        using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST)
-            .SetStandardHandler("application/octet-stream")
-            .SetUploaderBytes(bytes)
-            .SetParams(new {
-                fileKeyId,
-            });
-        await req.SendRequestEx();
-
-        if (req.result != UnityWebRequest.Result.Success) {
-            ExmMod.WarnWithPopup<IMapService>(
-                $"failed to upload map file '{fileKeyId}': {req.responseCode}\n{req.downloadHandler.text}");
-            return false;
-        }
-
-        ExmMod.Log($"finished uploading map file '{fileKeyId}'");
-        return true;
-    }
-
-    // GET
-    // /maps/download
-    // &mapId
-    public async UniTask<byte[]?> GetMapFileAsync(string mapId)
-    {
-        ExmMod.Log($"downloading map '{mapId}'");
-
-        var url = $"{_baseUrl}/maps/download";
-
-        using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET)
-            .SetStandardHandler("application/octet-stream")
-            .SetParams(new {
-                mapId,
-            });
-        await req.SendRequestEx();
-
-        if (req.result != UnityWebRequest.Result.Success) {
-            ExmMod.WarnWithPopup<IMapService>(
-                $"failed to download map '{mapId}': {req.responseCode}\n{req.downloadHandler.text}");
-            return null;
-        }
-
-        ExmMod.Log($"finished downloading map '{mapId}' with {StringHelper.ToAllocateString(req.downloadHandler.data.Length)}");
-        return req.downloadHandler.data;
     }
 
     #endregion
@@ -305,12 +233,12 @@ public class ElinNetMapService(string endpoint = ElinNetMapService.DefaultElinMo
     // POST
     // /ratings
     // &mapId
-    public async UniTask<bool> UploadMapRatingAsync(string mapId, MapRating rating)
+    public async UniTask<bool> PostMapRatingAsync(string mapId, MapRating rating)
     {
         ExmMod.Log($"updating map rating '{mapId}'");
 
-        var json = JsonConvert.SerializeObject(rating, _settings);
-        var url = $"{_baseUrl}/ratings";
+        var json = JsonConvert.SerializeObject(rating, Settings);
+        var url = $"{BaseUrl}/ratings";
 
         using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST)
             .SetStandardHandler("application/json")
@@ -333,17 +261,17 @@ public class ElinNetMapService(string endpoint = ElinNetMapService.DefaultElinMo
     // /ratings
     // &userId
     // &mapId
-    public async UniTask<MapRating?> GetMapRatingByUserAsync(string userId, string mapId)
+    public async UniTask<MapRating?> GetMapRatingByUserAsync(string mapId, string userId)
     {
         ExmMod.Log($"querying user rating '{userId}' for '{mapId}'");
 
-        var url = $"{_baseUrl}/ratings";
+        var url = $"{BaseUrl}/ratings";
 
         using var req = new UnityWebRequest(url, UnityWebRequest.kHttpVerbGET)
             .SetStandardHandler("application/json")
             .SetParams(new {
-                userId,
                 mapId,
+                userId,
             });
         await req.SendRequestEx();
 
@@ -353,7 +281,7 @@ public class ElinNetMapService(string endpoint = ElinNetMapService.DefaultElinMo
             return null;
         }
 
-        var rating = JsonConvert.DeserializeObject<MapRating>(req.downloadHandler.text, _settings);
+        var rating = JsonConvert.DeserializeObject<MapRating>(req.downloadHandler.text, Settings);
         ExmMod.Log($"finished querying user rating '{userId}' for '{mapId}'");
         return rating;
     }

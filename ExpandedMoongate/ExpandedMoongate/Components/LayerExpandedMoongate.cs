@@ -34,7 +34,7 @@ internal class LayerExpandedMoongate : YKLayer<LayerCreationData>
         _tabs.Add(CreateTab<TabMapHistory>("exm_ui_tab_map_history", "exm_tab_map_history"));
         _tabs.Add(CreateTab<TabDebugPanel>("exm_ui_tab_debug_panel", "exm_tab_debug_panel"));
 
-        if (_enableModeration) {
+        if (ExmService.MapService is IModerationService && !"EGateDebuggingAuthorKey".EnvVar.IsEmptyOrNull) {
             _tabs.Add(CreateTab<TabModeration>("exm_ui_tab_moderation", "exm_tab_moderation"));
         }
     }

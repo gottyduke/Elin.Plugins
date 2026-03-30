@@ -119,7 +119,7 @@ public class MapController(IMapService service) : EClass
 
             async UniTask UpdateRatingAsync()
             {
-                await service.UploadMapRatingAsync(meta.Id, new() {
+                await service.PostMapRatingAsync(meta.Id, new() {
                     MapId = meta.Id,
                     UserId = SteamUser.GetSteamID().ToString(),
                     RatedAt = like ? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") : null,

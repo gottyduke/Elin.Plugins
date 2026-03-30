@@ -6,17 +6,12 @@ namespace Exm.API;
 
 public interface IMapService : IMapServiceV2;
 
-public interface IMapServiceV3 : IMapServiceV2
-{
-    public UniTask<byte[]?> GetMapPreviewAsync(string mapId);
-    public UniTask<bool> UploadMapPreviewAsync(string mapId, byte[] bytes);
-}
-
 public interface IMapServiceV2 : IMapServiceV1
 {
     public UniTask<MapMeta[]?> GetMapHistoryByUserAsync(string userId);
     public UniTask<MapServiceOverview?> GetMapsOverviewAsync(LangFilter lang, TimePeriod days, string? noTags);
     public UniTask<MapMeta[]?> GetMapMetaByQueryAsync(string query);
+    public UniTask<byte[]?> GetMapPreviewAsync(string mapId);
 }
 
 public interface IMapServiceV1
@@ -58,7 +53,6 @@ public interface IMapServiceV1
                                                TimePeriod days,
                                                string? noTags);
 
-    public UniTask<bool> UploadMapAsync(MapMeta meta, byte[] bytes);
-    public UniTask<MapRating?> GetMapRatingByUserAsync(string userId, string mapId);
-    public UniTask<bool> UploadMapRatingAsync(string mapId, MapRating rating);
+    public UniTask<MapRating?> GetMapRatingByUserAsync(string mapId, string userId);
+    public UniTask<bool> PostMapRatingAsync(string mapId, MapRating rating);
 }
