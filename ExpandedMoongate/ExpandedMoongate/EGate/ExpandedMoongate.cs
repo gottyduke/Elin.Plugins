@@ -2,6 +2,7 @@ using System.Reflection;
 using BepInEx;
 using Exm.Components;
 using HarmonyLib;
+using ReflexCLI;
 using UnityEngine;
 
 namespace Exm;
@@ -10,7 +11,7 @@ public static class ModInfo
 {
     public const string Guid = "dk.elinplugins.expandedmoongate";
     public const string Name = "Expanded Moongate Server";
-    public const string Version = "1.0.7";
+    public const string Version = "1.1.0";
 
     public static string BuildVersion => field ??= ExmMod.Assembly.GetName().Version.ToString();
 }
@@ -28,7 +29,11 @@ internal partial class ExmMod : BaseUnityPlugin
 
         ExmConfig.Bind();
 
+        CommandRegistry.assemblies.Add(Assembly);
+
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly(), ModInfo.Guid);
+
+        ExmExceptionHandler.SetupExceptionHook();
     }
 
     private void Start()
