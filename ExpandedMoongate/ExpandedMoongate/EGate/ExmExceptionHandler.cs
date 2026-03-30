@@ -16,19 +16,33 @@ internal class ExmExceptionHandler
             return;
         }
 
-        if (EClass.core.game?.player?.chara is { currentZone: Zone_User moongate } pc) {
-            if (moongate.mapInt.ContainsKey("on_exception")) {
+        if (EClass.core.game?.player?.chara is { } pc && pc.GetFlagValue("on_moongate") > 0) {
+            if (pc.GetFlagValue("on_exception") > 0) {
                 return;
             }
 
-            moongate.mapInt.Set("on_exception", 1);
+            pc.SetFlagValue("on_exception");
 
             Dialog.YesNo(
                 "exm_ui_moongate_failsafe_desc",
-                () => pc.MoveZone(pc.homeZone),
-                () => moongate.mapInt.Remove("on_exception"),
+                ReturnLastZone,
+                IgnoreException,
                 "exm_ui_moongate_failsafe_yes",
                 "exm_ui_moongate_failsafe_no");
+        }
+
+        return;
+
+        void ReturnLastZone()
+        {
+            pc.MoveZone(pc.homeZone);
+            pc.SetFlagValue("on_moongate", 0);
+            pc.SetFlagValue("on_exception", 0);
+        }
+
+        void IgnoreException()
+        {
+            pc.SetFlagValue("on_moongate", 0);
         }
     }
 }
