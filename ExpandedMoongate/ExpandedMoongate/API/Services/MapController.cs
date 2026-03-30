@@ -1,7 +1,7 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Net;
+using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
@@ -20,13 +20,14 @@ public class MapController(IMapService service) : EClass
             return;
         }
 
+        Directory.CreateDirectory(CorePath.ZoneSaveUser);
+
         var filePath = Path.Combine(CorePath.ZoneSaveUser, meta.FileKey.SanitizeFileName());
         if (!File.Exists(filePath)) {
             LayerProgress.StartAsync("Downloading", DownloadMap(meta, filePath));
         } else {
             MoveMap(meta, filePath);
         }
-
     }
 
     public async UniTask<bool> DownloadMap(MapMeta meta, string filePath)
@@ -47,18 +48,21 @@ public class MapController(IMapService service) : EClass
 
     public void MoveMap(MapMeta meta, string path)
     {
-        CleanupUserMaps();
-
         var elinMeta = Map.GetMetaData(path);
         if (elinMeta is null) {
             ExmMod.WarnWithPopup<MapController>("exm_error_elin_meta_failure".Loc(meta.Id));
             return;
         }
 
+        if (pc.currentZone is Zone_User) {
+            pc.MoveZone(pc.homeZone);
+            core.actionsNextFrame.Add(() => MoveMap(meta, path));
+            return;
+        }
+
         ExmMod.Log<MapController>($"loading cloud map\n{meta.TryToString()}");
 
-        var userMap = SpatialGen.Create("user", world.region, true) as Zone_User;
-        if (userMap is null) {
+        if (SpatialGen.Create("user", world.region, true) is not Zone_User userMap) {
             ExmMod.WarnWithPopup<MapController>("exm_error_zone_user".Loc(meta.Id));
             return;
         }
@@ -80,23 +84,16 @@ public class MapController(IMapService service) : EClass
 
         userMap.events.Add(new ZoneRatingUpdateEvent(service, meta));
 
+        pc.SetFlagValue("on_moongate");
         pc.MoveZone(userMap, ZoneTransition.EnterState.Moongate);
-    }
-
-    public void CleanupUserMaps()
-    {
-        var userMaps = game.spatials.map.Values
-            .OfType<Zone_User>()
-            .ToArray();
-        foreach (var userMap in userMaps) {
-            game.spatials.Remove(userMap);
-        }
     }
 
     private class ZoneRatingUpdateEvent(IMapService service, MapMeta meta) : ZoneEvent
     {
         public override void OnLeaveZone()
         {
+            pc.SetFlagValue("on_moongate", 0);
+
             CoroutineHelper.Deferred(() =>
                 Dialog.YesNo(
                     "exm_ui_rate_map_dialog".Loc(WebUtility.HtmlDecode(meta.Title)),

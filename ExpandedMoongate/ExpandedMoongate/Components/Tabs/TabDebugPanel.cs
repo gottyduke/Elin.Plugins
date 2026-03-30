@@ -10,6 +10,7 @@ internal class TabDebugPanel : TabExMoongateBase
     {
         Button("Clear All Map Cache", () => {
             Directory.Delete(CorePath.ZoneSaveUser, true);
+            Directory.CreateDirectory(CorePath.ZoneSaveUser);
         }).GetComponent<Image>().color = Color.red;
     }
 }
