@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Cwl.API.Attributes;
 using Cwl.Helper.String;
+using Exm.API;
 using Exm.Components.Tabs;
 using Exm.Helper;
 using ReflexCLI.Attributes;
@@ -14,7 +15,6 @@ internal class LayerExpandedMoongate : YKLayer<LayerCreationData>
 {
     private static Vector2 _browsedPosition = Vector2.zero;
     private static string _lastOpenedTab = "";
-    private readonly bool _enableModeration = !"EGateDebuggingAuthorKey".EnvVar.IsEmptyOrNull;
     private readonly bool _resetHyp = Lang.setting.hyphenation;
 
     private readonly List<TabExMoongateBase> _tabs = [];
@@ -32,6 +32,7 @@ internal class LayerExpandedMoongate : YKLayer<LayerCreationData>
 
         _tabs.Add(CreateTab<TabMapBrowser>("exm_ui_tab_map_browser", "exm_tab_map_browser"));
         _tabs.Add(CreateTab<TabMapHistory>("exm_ui_tab_map_history", "exm_tab_map_history"));
+        _tabs.Add(CreateTab<TabDebugPanel>("exm_ui_tab_debug_panel", "exm_tab_debug_panel"));
 
         if (_enableModeration) {
             _tabs.Add(CreateTab<TabModeration>("exm_ui_tab_moderation", "exm_tab_moderation"));
