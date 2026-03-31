@@ -1,5 +1,6 @@
 using System.Linq;
 using ElinTogether.Elements;
+using ElinTogether.Helper;
 using ElinTogether.Net;
 using HarmonyLib;
 
@@ -14,16 +15,13 @@ internal class PauseGame
     {
         __result |= ActionModeCombat.Paused;
 
-        // early exit
         if (!__result) {
             return;
         }
 
         // pause only if all players have no goal
-        __result &= NetSession.Instance.CurrentPlayers
-            .Where(n => n.CharaUid != EClass.pc.uid)
-            .All(n =>
-                EClass.pc.party.members
-                    .Find(c => c.uid == n.CharaUid)?.ai is not GoalRemote { child: not null });
+        __result &= EClass.pc.party.members
+            .Where(c => c.IsRemotePlayer)
+            .All(c => c.ai is GoalRemote { child: null });
     }
 }

@@ -83,7 +83,7 @@ public class CharaStateSnapshot : EClass
 
         // one more check for lingering death events
         if (chara.isDead && chara.pos != Pos) {
-            chara.Stub_Revive(Pos, true);
+            chara.Revive(Pos, true);
         }
 
         // fixes should only be applied to other remote charas

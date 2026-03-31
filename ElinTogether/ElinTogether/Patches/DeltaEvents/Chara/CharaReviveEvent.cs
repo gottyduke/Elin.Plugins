@@ -6,34 +6,41 @@ using HarmonyLib;
 
 namespace ElinTogether.Patches;
 
-[HarmonyPatch(typeof(Chara), nameof(Chara.Revive))]
+[HarmonyPatch]
 internal static class CharaReviveEvent
 {
+    private static string? LastWords;
+
     [HarmonyPrefix]
+    [HarmonyPatch(typeof(Chara), nameof(Chara.MakeGrave))]
+    internal static bool OnCharaMakeGrave(Chara __instance, string lastword)
+    {
+        if (NetSession.Instance.Connection is not ElinNetClient || !__instance.IsPC) {
+            return true;
+        }
+
+        LastWords = lastword;
+        return false;
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(Chara), nameof(Chara.Revive))]
     internal static bool OnCharaRevive(Chara __instance)
     {
-        if (NetSession.Instance.Connection is not { } connection) {
+        if (NetSession.Instance.Connection is not ElinNetClient client || ElinDelta.IsApplying) {
             return true;
         }
 
         // drop all other character revives and wait for delta
-        if (__instance.ai is GoalRemote) {
+        if (!__instance.IsPC) {
             return false;
         }
 
-        connection.Delta.AddRemote(new CharaReviveDelta {
+        client.Delta.AddRemote(new CharaReviveDelta {
             Owner = __instance,
+            LastWords = LastWords,
         });
 
         return true;
-    }
-
-    extension(Chara chara)
-    {
-        [HarmonyReversePatch(HarmonyReversePatchType.Snapshot)]
-        internal void Stub_Revive(Point? p = null, bool msg = false)
-        {
-            throw new NotImplementedException("Chara.Revive");
-        }
     }
 }

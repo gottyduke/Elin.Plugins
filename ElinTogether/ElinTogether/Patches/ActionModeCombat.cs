@@ -1,5 +1,6 @@
 using System.Linq;
 using ElinTogether.Elements;
+using ElinTogether.Helper;
 using ElinTogether.Net;
 using HarmonyLib;
 
@@ -37,8 +38,7 @@ internal class ActionModeCombat
             return;
         }
 
-        var hasAnyoneToDecide = NetSession.Instance.CurrentPlayers.Any(n =>
-            n.FindChara()?.ai is GoalRemote { child: null } g);
+        var hasAnyoneToDecide = EClass.pc.party.members.Any(c => c.IsRemotePlayer && c.ai is GoalRemote { child: null });
         if (hasAnyoneToDecide) {
             if (Paused && !WaitForSelf) {
                 return;

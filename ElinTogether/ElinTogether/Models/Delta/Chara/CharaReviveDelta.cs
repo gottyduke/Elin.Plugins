@@ -10,16 +10,20 @@ public class CharaReviveDelta : ElinDelta
     [Key(0)]
     public required RemoteCard Owner { get; init; }
 
+    [Key(1)]
+    public required string? LastWords { get; init; }
+
     protected override void OnApply(ElinNetBase net)
     {
         if (Owner.Find() is not Chara chara) {
             return;
         }
 
-        chara.Stub_Revive(msg: true);
+        chara.Revive(msg: true);
 
         if (net is ElinNetHost host) {
             host.Delta.AddRemote(this);
+            chara.MakeGrave(LastWords);
         }
 
         // add back to party
