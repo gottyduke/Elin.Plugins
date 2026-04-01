@@ -91,6 +91,10 @@ public class ExceptionProfile(string message)
 
     public void CreateAndPop(string? display = null)
     {
+#if !DEBUG
+        API.Custom.CustomAchievement.UnlockPersistent("cwl_first_exception");
+#endif
+
         EMono.ui?.hud?.imageCover?.SetActive(false);
 
         if (_progressIndicator is { IsKilled: false }) {

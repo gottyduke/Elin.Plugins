@@ -16,6 +16,7 @@
         <GenerateDependencyFile>false</GenerateDependencyFile>
         <GenerateRuntimeConfigurationFiles>false</GenerateRuntimeConfigurationFiles>
         <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+        <NoWarn>$(NoWarn);4014</NoWarn>
     </PropertyGroup>
 
     <!-- Scripting Kit -->

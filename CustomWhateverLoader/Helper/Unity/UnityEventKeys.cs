@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace Cwl.Helper.Extensions;
+namespace Cwl.Helper.Unity;
 
-public static class UnityEventExt
+public static class UnityEventKeys
 {
     extension(Event @event)
     {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Cwl.Helper.String;
@@ -72,6 +73,26 @@ public static class ZoneExt
                 return null;
                 // noexcept
             }
+        }
+
+
+        /// <summary>
+        ///     Get a flag value from zone, 0 if unset
+        /// </summary>
+        public int GetFlagValue(string flag)
+        {
+            var key = flag.GetHashCode();
+            var value = zone.mapInt.GetValueOrDefault(key);
+            return value;
+        }
+
+        /// <summary>
+        ///     Set a flag value on character
+        /// </summary>
+        public void SetFlagValue(string flag, int value = 1)
+        {
+            var key = flag.GetHashCode();
+            zone.mapInt[key] = value;
         }
     }
 
