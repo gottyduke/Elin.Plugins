@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using BepInEx;
+using Cwl.Components;
 using Cwl.Helper.FileUtil;
 using Cwl.LangMod;
 using HarmonyLib;
@@ -21,7 +22,7 @@ public static class ModInfo
     public const string Guid = "dk.elinplugins.customdialogloader";
     public const string Name = "Custom Whatever Loader";
 
-    public const string Version = "1.22.9";
+    public const string Version = "1.22.10";
 
     // for runtime versions
     public static string BuildVersion => field ??= CwlMod.Assembly.GetName().Version.ToString();
@@ -45,6 +46,8 @@ internal sealed partial class CwlMod : BaseUnityPlugin
 
         LoadLoc();
         BuildPatches();
+
+        gameObject.AddComponent<CwlDebugPanel>();
     }
 
     private void OnApplicationQuit()

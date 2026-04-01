@@ -1,3 +1,4 @@
+using System.Linq;
 using Cwl.API.Attributes;
 using Cwl.Helper.Unity;
 using ReflexCLI.Attributes;
@@ -6,19 +7,31 @@ using UnityEngine;
 namespace Cwl.Components;
 
 [ConsoleCommandClassCustomizer("cwl")]
-internal class CwlDebugPanel
+internal class CwlDebugPanel : EMono
 {
-    private static CwlDebugPanel? _panel;
     private ProgressIndicator? _progress;
-    private bool _reloadGame;
+
+    private void Update()
+    {
+        if (!EClass.core.IsGameStarted) {
+            Kill();
+            return;
+        }
+
+        var triggered = Input.GetKey(KeyCode.LeftAlt) && Input.GetKey(KeyCode.M);
+        if (triggered) {
+            if (_progress is null) {
+                Show();
+            }
+        } else {
+            Kill();
+        }
+    }
 
     [ConsoleCommand("enable_debug")]
     [CwlContextMenu("cwl_ui_debug_btn")]
     internal static void EnableDebugPanel()
     {
-        _panel ??= new();
-        //_panel.Show();
-
         ELayerCleanup.Cleanup<LayerDebug>();
         ELayer.ui.AddLayer<LayerDebug>();
     }
@@ -26,9 +39,8 @@ internal class CwlDebugPanel
     internal void Show()
     {
         Kill();
-        var title = $"CWL {ModInfo.BuildVersion} {ModInfo.TargetVersion}";
         _progress = ProgressIndicator
-            .CreateProgress(() => new(title), _ => false)
+            .CreateProgress(() => new("CWL Debug"), _ => false)
             .OnAfterGUI(DrawDebugPanel);
     }
 
@@ -38,16 +50,29 @@ internal class CwlDebugPanel
         _progress = null;
     }
 
-    private void DrawDebugPanel(ProgressIndicator progress)
+    private void DrawDebugPanel(ProgressIndicator p)
     {
-        GUILayout.BeginHorizontal();
+        GUILayout.BeginVertical(p.GUIStyle);
         {
-            _reloadGame = GUILayout.Toggle(_reloadGame, $"Reload Save: ({_reloadGame})");
-
-            if (GUILayout.Button("Reload Sources")) {
-                DataLoader.ReloadSources(_reloadGame);
+            var point = Scene.HitPoint;
+            if (point is { detail: { } detail }) {
+                var cards = detail.things
+                    .OfType<Card>()
+                    .Concat(detail.charas)
+                    .ToArray();
+                foreach (var card in cards) {
+                    DrawSourceInfo(card);
+                }
             }
         }
-        GUILayout.EndHorizontal();
+        GUILayout.EndVertical();
+
+        return;
+
+        void DrawSourceInfo(Card card)
+        {
+            GUILayout.Box($"{card.Name} '{card.id}'\n" +
+                          $"{ModUtil.FindSourceRowPackage(card.sourceCard)?.title ?? "-"}", p.GUIStyle);
+        }
     }
 }
