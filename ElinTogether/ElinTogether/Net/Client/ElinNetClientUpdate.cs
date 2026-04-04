@@ -1,5 +1,4 @@
 using ElinTogether.Models;
-using ElinTogether.Models.ElinDelta;
 using ElinTogether.Patches;
 
 namespace ElinTogether.Net;

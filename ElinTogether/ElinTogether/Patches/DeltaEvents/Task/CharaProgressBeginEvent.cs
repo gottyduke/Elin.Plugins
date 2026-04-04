@@ -4,7 +4,7 @@ using System.Reflection;
 using Cwl.Helper;
 using ElinTogether.Elements;
 using ElinTogether.Helper;
-using ElinTogether.Models.ElinDelta;
+using ElinTogether.Models;
 using ElinTogether.Net;
 using HarmonyLib;
 

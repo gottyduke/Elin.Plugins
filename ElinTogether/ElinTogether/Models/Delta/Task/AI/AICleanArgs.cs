@@ -1,6 +1,6 @@
 using MessagePack;
 
-namespace ElinTogether.Models.ElinDelta;
+namespace ElinTogether.Models.AI;
 
 [MessagePackObject]
 public class AICleanArgs : TaskArgsBase

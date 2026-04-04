@@ -1,4 +1,4 @@
-using ElinTogether.Models.ElinDelta;
+using ElinTogether.Models;
 using ElinTogether.Net;
 using HarmonyLib;
 
@@ -7,10 +7,11 @@ namespace ElinTogether.Patches;
 [HarmonyPatch(typeof(Trait), nameof(Trait.OnBarter))]
 internal class OnBarterEvent
 {
-    private static OnBarterDelta? DeferredDelta;
     [HarmonyPrefix]
-    internal static bool OnBarter(Trait __instance)
+    internal static bool OnBarter(Trait __instance, out OnBarterDelta? __state)
     {
+        __state = null;
+
         if (NetSession.Instance.Connection is not { } connection) {
             return true;
         }
@@ -23,7 +24,7 @@ internal class OnBarterEvent
             owner.things.Add(chest);
         }
 
-        DeferredDelta = new OnBarterDelta {
+        __state = new() {
             ShopOwner = owner,
         };
 
@@ -31,13 +32,12 @@ internal class OnBarterEvent
     }
 
     [HarmonyPostfix]
-    internal static void OnBarterEnd()
+    internal static void OnBarterEnd(OnBarterDelta? __state)
     {
-        if (DeferredDelta is null) {
+        if (__state is null) {
             return;
         }
 
-        NetSession.Instance.Connection?.Delta.AddRemote(DeferredDelta);
-        DeferredDelta = null;
+        NetSession.Instance.Connection?.Delta.AddRemote(__state);
     }
 }

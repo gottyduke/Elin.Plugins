@@ -1,7 +1,7 @@
 using ElinTogether.Net;
 using MessagePack;
 
-namespace ElinTogether.Models.ElinDelta;
+namespace ElinTogether.Models;
 
 [MessagePackObject]
 public class CardOnUseDelta : ElinDelta

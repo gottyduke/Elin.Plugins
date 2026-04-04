@@ -1,7 +1,6 @@
-using System;
 using MessagePack;
 
-namespace ElinTogether.Models.ElinDelta;
+namespace ElinTogether.Models.AI;
 
 [MessagePackObject]
 public class AIFuckArgs : TaskArgsBase

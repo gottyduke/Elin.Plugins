@@ -1,7 +1,7 @@
 using System;
 using ElinTogether.Net;
 
-namespace ElinTogether.Models.ElinDelta;
+namespace ElinTogether.Models;
 
 public class DynamicDelta : ElinDelta
 {

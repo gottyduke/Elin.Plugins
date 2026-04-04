@@ -1,7 +1,7 @@
 using ElinTogether.Net;
 using MessagePack;
 
-namespace ElinTogether.Models.ElinDelta;
+namespace ElinTogether.Models;
 
 [MessagePackObject]
 public class CardTryStackToDelta : ElinDelta
@@ -26,7 +26,7 @@ public class CardTryStackToDelta : ElinDelta
             return;
         }
 
-        if (Parent?.Find() is {} parent && parent != to.parent) {
+        if (Parent?.Find() is { } parent && parent != to.parent) {
             parent.AddCard(card);
             return;
         }

@@ -1,7 +1,7 @@
 using ElinTogether.Net;
 using MessagePack;
 
-namespace ElinTogether.Models.ElinDelta;
+namespace ElinTogether.Models;
 
 // Card
 [Union(100, typeof(CardGenDelta))]
@@ -37,10 +37,10 @@ namespace ElinTogether.Models.ElinDelta;
 [Union(401, typeof(ZoneAddCardDelta))]
 // World
 [Union(500, typeof(GameDelta))]
+[Union(510, typeof(QuestDelta))]
 // Misc
 [Union(600, typeof(InvRerollDelta))]
 [Union(601, typeof(OnBarterDelta))]
-
 public abstract class ElinDelta : EClass
 {
     public static bool IsApplying { get; private set; }

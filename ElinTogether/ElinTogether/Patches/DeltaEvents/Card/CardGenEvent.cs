@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using ElinTogether.Models;
-using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
 

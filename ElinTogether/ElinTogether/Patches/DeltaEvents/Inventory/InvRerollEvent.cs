@@ -1,5 +1,5 @@
 using System.Reflection;
-using ElinTogether.Models.ElinDelta;
+using ElinTogether.Models;
 using ElinTogether.Net;
 using HarmonyLib;
 
@@ -8,8 +8,6 @@ namespace ElinTogether.Patches;
 [HarmonyPatch]
 internal static class InvRerollEvent
 {
-    private static InvRerollDelta? DeferredDelta;
-
     internal static MethodInfo TargetMethod()
     {
         return AccessTools.Method(
@@ -17,8 +15,10 @@ internal static class InvRerollEvent
     }
 
     [HarmonyPrefix]
-    internal static bool OnInvReroll(object __instance)
+    internal static bool OnInvReroll(object __instance, out InvRerollDelta? __state)
     {
+        __state = null;
+
         if (NetSession.Instance.Connection is not { } connection) {
             return true;
         }
@@ -30,7 +30,7 @@ internal static class InvRerollEvent
             return true;
         }
 
-        DeferredDelta = new InvRerollDelta {
+        __state = new() {
             ShopOwner = owner,
         };
 
@@ -38,13 +38,10 @@ internal static class InvRerollEvent
     }
 
     [HarmonyPostfix]
-    internal static void OnInvRerollEnd()
+    internal static void OnInvRerollEnd(InvRerollDelta? __state)
     {
-        if (DeferredDelta is null) {
-            return;
+        if (__state is not null) {
+            NetSession.Instance.Connection?.Delta.AddRemote(__state);
         }
-
-        NetSession.Instance.Connection?.Delta.AddRemote(DeferredDelta);
-        DeferredDelta = null;
     }
 }

@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using ElinTogether.Helper;
 using ElinTogether.Net;
-using ElinTogether.Net.Steam;
-using ElinTogether.Patches;
 using MessagePack;
 
-namespace ElinTogether.Models.ElinDelta;
+namespace ElinTogether.Models;
 
 [MessagePackObject]
 public class CardGenDelta : ElinDelta
@@ -24,9 +24,11 @@ public class CardGenDelta : ElinDelta
             ? Card.Data.Decompress<Thing>()
             : Card.Data.Decompress<Chara>();
 
-        foreach (var thing in card.things.Flatten()) {
-            maxId = Math.Max(maxId, thing.uid);
-        }
+        maxId = card.things
+            .Flatten()
+            .Select(thing => thing.uid)
+            .Prepend(maxId)
+            .Max();
 
         game.cards.uidNext = maxId;
 

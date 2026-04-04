@@ -1,5 +1,4 @@
 using ElinTogether.Models;
-using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
 
@@ -20,7 +19,7 @@ internal static class InvStartDragEvent
         var thing = dragItemCard.from.thing;
         if (connection.IsHost) {
             connection.Delta.AddRemote(new CardRemoveThingDelta {
-                Thing = thing
+                Thing = thing,
             });
 
             return true;

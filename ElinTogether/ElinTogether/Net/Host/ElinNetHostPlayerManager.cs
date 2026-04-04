@@ -4,7 +4,6 @@ using Cwl.API.Attributes;
 using Cwl.Helper.Extensions;
 using ElinTogether.Helper;
 using ElinTogether.Models;
-using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net.Steam;
 using Newtonsoft.Json;
 

@@ -1,7 +1,8 @@
 using System.Linq;
 using ElinTogether.Elements;
 using ElinTogether.Helper;
-using ElinTogether.Models.ElinDelta;
+using ElinTogether.Models;
+using ElinTogether.Models.AI;
 using ElinTogether.Net;
 using HarmonyLib;
 

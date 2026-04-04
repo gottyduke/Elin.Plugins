@@ -1,7 +1,6 @@
 using System.Linq;
 using ElinTogether.Elements;
 using ElinTogether.Helper;
-using ElinTogether.Net;
 using HarmonyLib;
 
 namespace ElinTogether.Patches;
@@ -11,7 +10,7 @@ internal class PauseGame
 {
     [HarmonyPostfix]
     [HarmonyPatch(typeof(AM_Adv), nameof(AM_Adv.ShouldPauseGame), MethodType.Getter)]
-    internal static void ShouldPauseGame_Modified(ref bool __result)
+    internal static void OnGetShouldPauseGame(ref bool __result)
     {
         __result |= ActionModeCombat.Paused;
 

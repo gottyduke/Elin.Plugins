@@ -1,7 +1,7 @@
 using ElinTogether.Net;
 using MessagePack;
 
-namespace ElinTogether.Models.ElinDelta;
+namespace ElinTogether.Models;
 
 [MessagePackObject]
 public class InvRerollDelta : ElinDelta
@@ -38,7 +38,7 @@ public class InvRerollDelta : ElinDelta
 
         EMono._zone.influence -= cost;
         shopOwner.c_dateStockExpire = 0;
-        shopOwner.trait.OnBarter(reroll: true);
+        shopOwner.trait.OnBarter(true);
 
         net.Delta.AddRemote(this);
 

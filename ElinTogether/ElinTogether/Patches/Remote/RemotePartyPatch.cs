@@ -1,4 +1,3 @@
-using ElinTogether.Models;
 using HarmonyLib;
 
 namespace ElinTogether.Patches;

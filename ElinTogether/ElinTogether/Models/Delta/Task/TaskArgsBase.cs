@@ -1,6 +1,7 @@
+using ElinTogether.Models.AI;
 using MessagePack;
 
-namespace ElinTogether.Models.ElinDelta;
+namespace ElinTogether.Models;
 
 [MessagePackObject]
 [Union(0, typeof(NoTask))]

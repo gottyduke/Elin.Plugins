@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using ElinTogether.Net;
 using MessagePack;
 
-namespace ElinTogether.Models.ElinDelta;
+namespace ElinTogether.Models;
 
 [MessagePackObject]
 public class CharaActPerformDelta : ElinDelta

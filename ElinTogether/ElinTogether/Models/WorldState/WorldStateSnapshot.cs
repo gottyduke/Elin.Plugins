@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using ElinTogether.Patches;
 using MessagePack;

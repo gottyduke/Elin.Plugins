@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using ElinTogether.Models;
-using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net.Steam;
 using ElinTogether.Patches;
 

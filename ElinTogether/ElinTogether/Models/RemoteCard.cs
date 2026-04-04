@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using ElinTogether.Net;
-using ElinTogether.Patches;
 using MessagePack;
 
 namespace ElinTogether.Models;
@@ -38,8 +37,8 @@ public class RemoteCard
         }
 
         if (NetSession.Instance.IsHost
-         && withData
-         ) {
+            && withData
+        ) {
             CardCache.Add(card);
         }
 

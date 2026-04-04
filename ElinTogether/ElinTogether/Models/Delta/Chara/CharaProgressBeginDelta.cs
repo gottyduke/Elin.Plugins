@@ -4,7 +4,7 @@ using ElinTogether.Net;
 using ElinTogether.Patches;
 using MessagePack;
 
-namespace ElinTogether.Models.ElinDelta;
+namespace ElinTogether.Models;
 
 [MessagePackObject]
 public class CharaProgressBeginDelta : ElinDelta

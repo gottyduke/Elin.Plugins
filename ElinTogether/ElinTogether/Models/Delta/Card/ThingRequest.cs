@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using ElinTogether.Net;
 using MessagePack;
 
-namespace ElinTogether.Models.ElinDelta;
+namespace ElinTogether.Models;
 
 [MessagePackObject]
 public class ThingRequest : ElinDelta
 {
+    private static readonly Dictionary<int, (Action<Thing>, Action?)> _callbackList = [];
+
+    private static int _nextId;
+
     [Key(0)]
     public required int Id { get; init; }
 
@@ -16,10 +20,6 @@ public class ThingRequest : ElinDelta
 
     [Key(2)]
     public required int Num { get; init; }
-
-    private static readonly Dictionary<int, (Action<Thing>, Action?)> _callbackList = [];
-
-    private static int _nextId = 0;
 
     protected override void OnApply(ElinNetBase net)
     {
@@ -52,7 +52,7 @@ public class ThingRequest : ElinDelta
         NetSession.Instance.Connection?.Delta.AddRemote(new ThingRequest {
             Id = Id,
             Thing = thing,
-            Num = Num
+            Num = Num,
         });
     }
 
@@ -61,7 +61,7 @@ public class ThingRequest : ElinDelta
         NetSession.Instance.Connection?.Delta.AddRemote(new ThingRequest {
             Id = Id,
             Thing = null,
-            Num = Num
+            Num = Num,
         });
     }
 

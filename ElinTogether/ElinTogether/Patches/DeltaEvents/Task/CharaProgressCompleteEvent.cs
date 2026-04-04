@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Cwl.Helper;
 using ElinTogether.Helper;
-using ElinTogether.Models.ElinDelta;
+using ElinTogether.Models;
 using ElinTogether.Net;
 using HarmonyLib;
 
@@ -71,7 +71,7 @@ internal static class CharaProgressCompleteEvent
         connection.Delta.AddRemote(new CharaProgressCompleteDelta {
             Owner = __instance.owner,
             CompletedActId = SourceValidation.ActToIdMapping[__instance.parent.GetType()],
-            DeltaList = [.. DeltaList],
+            DeltaList = DeltaList.ToList(),
         });
 
         DeltaList.Clear();

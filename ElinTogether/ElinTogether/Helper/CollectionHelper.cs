@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 
+namespace ElinTogether.Helper;
+
 internal static class CollectionHelper
 {
     extension(ThingContainer things)

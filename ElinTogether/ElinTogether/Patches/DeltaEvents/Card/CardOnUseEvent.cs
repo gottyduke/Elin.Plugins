@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using Cwl.Helper;
 using ElinTogether.Models;
-using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
 
@@ -13,7 +12,7 @@ internal static class CardOnUseEvent
 {
     internal static IEnumerable<MethodBase> TargetMethods()
     {
-        return OverrideMethodComparer.FindAllOverrides(typeof(Trait), nameof(Trait.OnUse), [typeof(Chara)]);
+        return OverrideMethodComparer.FindAllOverrides(typeof(Trait), nameof(Trait.OnUse), typeof(Chara));
     }
 
     [HarmonyPrefix]

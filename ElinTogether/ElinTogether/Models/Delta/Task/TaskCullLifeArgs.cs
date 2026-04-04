@@ -1,7 +1,7 @@
 using System.Linq;
 using MessagePack;
 
-namespace ElinTogether.Models.ElinDelta;
+namespace ElinTogether.Models;
 
 [MessagePackObject]
 public class TaskCullLifeArgs : TaskArgsBase

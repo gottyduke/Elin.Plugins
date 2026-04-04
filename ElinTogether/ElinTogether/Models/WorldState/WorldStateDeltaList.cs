@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using ElinTogether.Models.ElinDelta;
 using MessagePack;
 
 namespace ElinTogether.Models;
@@ -8,5 +7,5 @@ namespace ElinTogether.Models;
 public class WorldStateDeltaList
 {
     [Key(0)]
-    public List<ElinDelta.ElinDelta> DeltaList { get; set; } = [];
+    public List<ElinDelta> DeltaList { get; set; } = [];
 }

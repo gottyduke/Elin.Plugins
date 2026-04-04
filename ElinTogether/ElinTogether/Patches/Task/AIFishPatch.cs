@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
 using ElinTogether.Helper;
-using ElinTogether.Models.ElinDelta;
+using ElinTogether.Models;
 using ElinTogether.Net;
 using HarmonyLib;
 
@@ -49,7 +49,6 @@ internal static class AIFishPatch
 
                     if (thiz.owner.IsPC) {
                         EClass.player.TryEquipBait();
-                        return;
                     }
                 }))
             // if (EClass.player.eqBait == null)

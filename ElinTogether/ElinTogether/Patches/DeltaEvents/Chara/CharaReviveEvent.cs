@@ -1,6 +1,4 @@
-using System;
-using ElinTogether.Elements;
-using ElinTogether.Models.ElinDelta;
+using ElinTogether.Models;
 using ElinTogether.Net;
 using HarmonyLib;
 
@@ -9,23 +7,23 @@ namespace ElinTogether.Patches;
 [HarmonyPatch]
 internal static class CharaReviveEvent
 {
-    private static string? LastWords;
-
     [HarmonyPrefix]
     [HarmonyPatch(typeof(Chara), nameof(Chara.MakeGrave))]
-    internal static bool OnCharaMakeGrave(Chara __instance, string lastword)
+    internal static bool OnCharaMakeGrave(Chara __instance, string lastword, out string? __state)
     {
+        __state = null;
+
         if (NetSession.Instance.Connection is not ElinNetClient || !__instance.IsPC) {
             return true;
         }
 
-        LastWords = lastword;
+        __state = lastword;
         return false;
     }
 
     [HarmonyPrefix]
     [HarmonyPatch(typeof(Chara), nameof(Chara.Revive))]
-    internal static bool OnCharaRevive(Chara __instance)
+    internal static bool OnCharaRevive(Chara __instance, string? __state)
     {
         if (NetSession.Instance.Connection is not ElinNetClient client || ElinDelta.IsApplying) {
             return true;
@@ -38,7 +36,7 @@ internal static class CharaReviveEvent
 
         client.Delta.AddRemote(new CharaReviveDelta {
             Owner = __instance,
-            LastWords = LastWords,
+            LastWords = __state,
         });
 
         return true;

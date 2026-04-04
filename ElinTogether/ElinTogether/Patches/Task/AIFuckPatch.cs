@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Net.Configuration;
 using HarmonyLib;
 using UnityEngine;
 
@@ -34,9 +32,11 @@ internal static class AIFuckPatch
         var tc = (thiz.sell ? thiz.owner : thiz.target)!;
         var destDist = (thiz.Type == AI_Fuck.FuckType.fuck) ? 1 : 1;
         if (thiz.owner.host != thiz.target) {
-            yield return thiz.DoGoto(thiz.target!.pos, destDist, ignoreConnection: true);
+            yield return thiz.DoGoto(thiz.target!.pos, destDist, true);
         }
-        cc.Say((thiz.variation == AI_Fuck.Variation.Slime) ? "slime_start" : ((thiz.variation == AI_Fuck.Variation.Bloodsuck) ? "suck_start" : (thiz.Type.ToString() + "_start")), cc, tc);
+        cc.Say(
+            (thiz.variation == AI_Fuck.Variation.Slime) ? "slime_start" : (thiz.variation == AI_Fuck.Variation.Bloodsuck)
+                ? "suck_start" : (thiz.Type + "_start"), cc, tc);
         thiz.isFail = () => !tc.IsAliveInCurrentZone || tc.Dist(thiz.owner) > 3;
         if (thiz.Type == AI_Fuck.FuckType.tame) {
             cc.SetTempHand(1104, -1);
@@ -50,7 +50,7 @@ internal static class AIFuckPatch
                 break;
             case AI_Fuck.Variation.Slime:
                 cc.PlaySound("slime");
-                thiz.target.AddCondition<ConEntangle>(500, force: true);
+                thiz.target.AddCondition<ConEntangle>(500, true);
                 break;
         }
         var maxProgress = (thiz.variation == AI_Fuck.Variation.NTR || thiz.variation == AI_Fuck.Variation.Bloodsuck) ? 10 : 25;
@@ -98,13 +98,14 @@ internal static class AIFuckPatch
                         }
                         if (EClass.rnd(3) == 0 || thiz.sell) {
                             if (thiz.variation == AI_Fuck.Variation.Slime) {
-                                thiz.target.AddCondition<ConSupress>(200, force: true);
+                                thiz.target.AddCondition<ConSupress>(200, true);
                             } else {
-                                thiz.target.AddCondition<ConWait>(50, force: true);
+                                thiz.target.AddCondition<ConWait>(50, true);
                             }
                         }
                         if (thiz.variation == AI_Fuck.Variation.Bloodsuck || thiz.variation == AI_Fuck.Variation.Slime) {
-                            thiz.owner.pos.TryWitnessCrime(cc, tc, 4, c => EClass.rnd(cc.HasCondition<ConTransmuteBat>() ? 50 : 20) == 0);
+                            thiz.owner.pos.TryWitnessCrime(cc, tc, 4,
+                                c => EClass.rnd(cc.HasCondition<ConTransmuteBat>() ? 50 : 20) == 0);
                         }
                         break;
                     case AI_Fuck.FuckType.tame:
@@ -134,7 +135,7 @@ internal static class AIFuckPatch
                             if (EClass.rnd(cc.CHA / 2 + cc.Evalue(237)) > EClass.rnd(tc.CHA * num / 100)) {
                                 num3 = 5 + Mathf.Clamp(num2 / 20, 0, 20);
                             } else {
-                                num3 = -5 + ((!tc.IsPCFaction) ? Mathf.Clamp(num2 / 10, -30, 0) : 0);
+                                num3 = -5 + (!tc.IsPCFaction ? Mathf.Clamp(num2 / 10, -30, 0) : 0);
                                 thiz.fails++;
                             }
                             var num4 = 20;
@@ -143,7 +144,7 @@ internal static class AIFuckPatch
                                 num4 = 10;
                             }
                             thiz.totalAffinity += num3;
-                            tc.ModAffinity(EClass.pc, num3, show: true, showOnlyEmo: true);
+                            tc.ModAffinity(EClass.pc, num3, true, true);
                             cc.elements.ModExp(237, num4);
                             if (EClass.rnd(4) == 0) {
                                 cc.stamina.Mod(-1);

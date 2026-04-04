@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
 using ElinTogether.Models;
-using ElinTogether.Models.ElinDelta;
 using ElinTogether.Net;
 using HarmonyLib;
 using UnityEngine;
@@ -13,7 +12,6 @@ namespace ElinTogether.Patches;
 [HarmonyPatch]
 internal static class Synchronization
 {
-    internal static Thing? Grab;
     internal static float GameDelta { get; set; }
     internal static bool CanSendDelta { get; set; }
     internal static int RefSpeed { get; set; }
