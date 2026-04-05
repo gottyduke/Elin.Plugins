@@ -305,11 +305,13 @@ internal class TabMapBrowser : TabExMoongateBase
 
             MapMeta[]? maps;
 
-            if (SearchMode) {
-                var searchTask = service.GetMapMetaByQueryAsync(Search);
+            var timeoutTask = UniTask.Delay(TimeSpan.FromSeconds(ExmConfig.Policy.Timeout.Value));
 
-                var results = await UniTask.WhenAny(searchTask,
-                    UniTask.Delay(TimeSpan.FromSeconds(ExmConfig.Policy.Timeout.Value)));
+            if (SearchMode) {
+                var searchTask = service.GetMapMetaByQueryAsync(Search)
+                    .Preserve();
+
+                var results = await UniTask.WhenAny(searchTask, timeoutTask);
                 if (!results.hasResultLeft) {
                     throw new TimeoutException("exm_error_service_timeout".lang());
                 }
@@ -323,8 +325,7 @@ internal class TabMapBrowser : TabExMoongateBase
                 var refreshMetaTask = UniTask.WhenAll(overviewTask, topMapTask)
                     .Preserve();
 
-                var results = await UniTask.WhenAny(refreshMetaTask,
-                    UniTask.Delay(TimeSpan.FromSeconds(ExmConfig.Policy.Timeout.Value)));
+                var results = await UniTask.WhenAny(refreshMetaTask, timeoutTask);
                 if (!results.hasResultLeft) {
                     throw new TimeoutException("exm_error_service_timeout".lang());
                 }

@@ -20,11 +20,11 @@
   "LangGeneral.exm_ui_lang_filter_JP.text": "日文",
   "LangGeneral.exm_ui_last_liked.text": "你点赞了这张地图",
   "LangGeneral.exm_ui_last_visit.text": "你上次访问于 {0}",
-  "LangGeneral.exm_ui_likes.text": "点赞：{0}",
+  "LangGeneral.exm_ui_likes.text": "点赞：{0:N0}",
   "LangGeneral.exm_ui_map_rating_failed.text": "更新地图评分失败",
   "LangGeneral.exm_ui_map_view.text": "地图 ID : {0}",
-  "LangGeneral.exm_ui_maps_today.text": "过去 24 小时新增 {0} 张地图",
-  "LangGeneral.exm_ui_maps_total.text": "地图总数：{0}",
+  "LangGeneral.exm_ui_maps_today.text": "过去 24 小时新增 {0:N0} 张地图",
+  "LangGeneral.exm_ui_maps_total.text": "地图总数：{0:N0}",
   "LangGeneral.exm_ui_moongate_failsafe_desc.text": "你似乎在这个月门地图中遇到了错误。\n要返回吗？",
   "LangGeneral.exm_ui_moongate_failsafe_no.text": "留下",
   "LangGeneral.exm_ui_moongate_failsafe_yes.text": "带我走",
@@ -51,7 +51,7 @@
   "LangGeneral.exm_ui_time_period_ThreeMonths.text": "3 个月",
   "LangGeneral.exm_ui_time_period_Today.text": "今天",
   "LangGeneral.exm_ui_visit_map.text": "{0}\n作者：{1}",
-  "LangGeneral.exm_ui_visits.text": "访问量：{0}",
-  "LangGeneral.exm_ui_visits_today.text": "过去 24 小时访问 {0} 次",
-  "LangGeneral.exm_ui_visits_total.text": "总访问量：{0}"
+  "LangGeneral.exm_ui_visits.text": "访问量：{0:N0}",
+  "LangGeneral.exm_ui_visits_today.text": "过去 24 小时访问 {0:N0} 次",
+  "LangGeneral.exm_ui_visits_total.text": "总访问量：{0:N0}"
 }

@@ -44,8 +44,8 @@ public class MapCardView(MapMeta meta)
     private void BuildPreview(YKLayout group, Component parent)
     {
         // TODO api v2 load preview key
-        var bgSprite = "exm_no_preview".LoadSprite(resizeHeight: 128, resizeWidth: 128);
         var bgSize = (int)(_refSize.width * 0.15f);
+        var bgSprite = "exm_no_preview".LoadSprite(resizeHeight: bgSize, resizeWidth: bgSize);
         _bg = group.AddImageCard(parent, bgSprite)
             .WithMinWidth(bgSize)
             .WithMinHeight(bgSize)
@@ -65,6 +65,7 @@ public class MapCardView(MapMeta meta)
         var le = primary.LayoutElement();
         le.flexibleWidth = 1f;
         le.minWidth = 0f;
+        le.preferredWidth = _refSize.width * 0.6f;
 
         _name = primary.Header(WebUtility.HtmlDecode(meta.Title));
         _name.text1.fontSize *= 2;
@@ -82,42 +83,41 @@ public class MapCardView(MapMeta meta)
         subStat.Layout.childAlignment = TextAnchor.MiddleLeft;
 
         var le = subStat.LayoutElement();
-        le.preferredWidth = _refSize.width * 0.35f;
-        le.flexibleWidth = 0f;
+        le.flexibleWidth = 1f;
+
+        var iconSize = _refSize.width * 0.055f;
 
         var visitSprite = UIHelper.FindSprite("Media/Graphics/Icon/icons_48", "icon_toGlobalMap");
         var visit = subStat.AddImageCard(subStat.Layout, visitSprite);
 
-        var size = _refSize.width * 0.055f;
-
         le = visit.LayoutElement();
-        le.preferredHeight = size;
-        le.preferredWidth = size;
+        le.preferredWidth = iconSize;
+        le.preferredHeight = iconSize;
         le.flexibleWidth = 0f;
 
         _visits = subStat.Text("exm_ui_visits".Loc(meta.VisitCount));
         _visits.alignment = TextAnchor.MiddleLeft;
-
-        var width = _refSize.width * 0.093f;
+        _visits.horizontalOverflow = HorizontalWrapMode.Overflow;
+        _visits.verticalOverflow = VerticalWrapMode.Overflow;
 
         le = _visits.LayoutElement();
-        le.preferredWidth = width;
-        le.flexibleWidth = 0f;
+        le.flexibleWidth = 1f;
 
         var ratingSprite = UIHelper.FindSprite("Media/Graphics/Icon/icons_48 static", "icons_48 static_4");
         var rating = subStat.AddImageCard(subStat.Layout, ratingSprite);
 
         le = rating.LayoutElement();
-        le.preferredHeight = size;
-        le.preferredWidth = size;
+        le.preferredWidth = iconSize;
+        le.preferredHeight = iconSize;
         le.flexibleWidth = 0f;
 
         _rating = subStat.Text("exm_ui_likes".Loc(meta.RatingCount));
         _rating.alignment = TextAnchor.MiddleLeft;
+        _rating.horizontalOverflow = HorizontalWrapMode.Overflow;
+        _rating.verticalOverflow = VerticalWrapMode.Overflow;
 
         le = _rating.LayoutElement();
-        le.preferredWidth = width;
-        le.flexibleWidth = 0f;
+        le.flexibleWidth = 1f;
     }
 
     private void BuildSecondaryStat(YKLayout group)

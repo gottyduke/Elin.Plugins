@@ -22,7 +22,7 @@ public class MapController(IMapService service) : EClass
 
         Directory.CreateDirectory(CorePath.ZoneSaveUser);
 
-        var filePath = Path.Combine(CorePath.ZoneSaveUser, meta.FileKey.SanitizeFileName());
+        var filePath = Path.Combine(CorePath.ZoneSaveUser, meta.Id.SanitizeFileName());
         if (!File.Exists(filePath)) {
             LayerProgress.StartAsync("Downloading", DownloadMap(meta, filePath));
         } else {
@@ -104,7 +104,6 @@ public class MapController(IMapService service) : EClass
 
         public override void OnVisit()
         {
-            UpdateRating(false);
             ui.Say(WebUtility.HtmlDecode("exm_ui_visit_map".Loc(meta.Title, meta.Author)));
         }
 
