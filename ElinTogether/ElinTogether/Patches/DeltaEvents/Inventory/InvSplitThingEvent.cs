@@ -44,9 +44,7 @@ internal class InvSplitThingEvent : EClass
         };
         m.Show();
 
-        if (buttonBuy != null) {
-            buttonBuy.gameObject.AddComponent<CanvasGroup>();
-        }
+        buttonBuy?.gameObject.AddComponent<CanvasGroup>();
 
         UpdateButton();
 
@@ -64,33 +62,19 @@ internal class InvSplitThingEvent : EClass
                 if (trans is not null) {
                     trans.Process(startTransaction: true);
                 } else {
-
                     var dragItemCard = new DragItemCard(button);
-
-                    // ??
                     if (NetSession.Instance.IsHost) {
-                        dragItemCard.from.thing = __instance;
+                        dragItemCard.from.thing = button.card.Split(count);
                         ui.StartDrag(dragItemCard);
                         return;
                     }
 
                     ThingRequest
-                        .Create(dragItemCard.from.thing, __instance.Num)
+                        .Create(button.card as Thing, count)
                         .Then(thing => {
                             dragItemCard.from.thing = thing;
                             ui.StartDrag(dragItemCard);
                         });
-
-                    // ??
-                    if (count != __instance.Num) {
-                        var thing = button.card.Split(__instance.Num - count);
-                        button.invOwner.Container.AddThing(thing, tryStack: false);
-                        thing.invX = dragItemCard.from.invX;
-                        thing.invY = dragItemCard.from.invY;
-                        thing.posInvX = button.card.Thing.posInvX;
-                        thing.posInvY = button.card.Thing.posInvY;
-                    }
-                    ui.StartDrag(dragItemCard);
                 }
             }
         }
