@@ -7,7 +7,7 @@ using ElinTogether.Net;
 using HarmonyLib;
 using UnityEngine;
 
-namespace ElinTogether.Patches.Task;
+namespace ElinTogether.Patches;
 
 [HarmonyPatch]
 internal static class AIFishPatch
@@ -125,14 +125,14 @@ internal static class AIFishPatch
 
     internal static void OnProgress_Modified(AI_Fish.ProgressFish thiz)
     {
-        if (thiz.owner.IsPC && (thiz.owner.Tool == null || !thiz.owner.Tool.HasElement(245, false))) {
+        if (thiz.owner.IsPC && (thiz.owner.Tool == null || !thiz.owner.Tool.HasElement(245))) {
             thiz.Cancel();
             return;
         }
 
         if (thiz.hit >= 0) {
-            thiz.owner.renderer.PlayAnime(AnimeID.Fishing, default, false);
-            thiz.owner.PlaySound("fish_fight", 1f, true);
+            thiz.owner.renderer.PlayAnime(AnimeID.Fishing);
+            thiz.owner.PlaySound("fish_fight");
             thiz.Ripple();
 
             if (NetSession.Instance.Connection is ElinNetClient) {
@@ -158,7 +158,7 @@ internal static class AIFishPatch
 
         var progress = NetSession.Instance.IsHost ? thiz.progress : thiz.progress + int.MaxValue - 1;
         if (progress == 2 || (progress >= 8 && progress % 6 == 0 && EClass.rnd(3) == 0)) {
-            thiz.owner.renderer.PlayAnime(AnimeID.Shiver, default, false);
+            thiz.owner.renderer.PlayAnime(AnimeID.Shiver);
             thiz.Ripple();
         }
     }

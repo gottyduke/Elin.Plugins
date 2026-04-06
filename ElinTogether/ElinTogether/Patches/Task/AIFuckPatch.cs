@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using HarmonyLib;
 using UnityEngine;
 
-namespace ElinTogether.Patches.Task;
+namespace ElinTogether.Patches;
 
 [HarmonyPatch]
 internal static class AIFuckPatch

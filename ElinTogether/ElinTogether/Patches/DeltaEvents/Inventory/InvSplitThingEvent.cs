@@ -44,7 +44,9 @@ internal class InvSplitThingEvent : EClass
         };
         m.Show();
 
-        buttonBuy?.gameObject.AddComponent<CanvasGroup>();
+        if (buttonBuy != null) {
+            buttonBuy.gameObject.AddComponent<CanvasGroup>();
+        }
 
         UpdateButton();
 
@@ -60,7 +62,7 @@ internal class InvSplitThingEvent : EClass
                 Debug.Log("Split bug3");
             } else if (count != 0 && !Input.GetMouseButton(1)) {
                 if (trans is not null) {
-                    trans.Process(startTransaction: true);
+                    trans.Process(true);
                 } else {
                     var dragItemCard = new DragItemCard(button);
                     if (NetSession.Instance.IsHost) {
@@ -92,8 +94,8 @@ internal class InvSplitThingEvent : EClass
                 buttonBuy.mainText.SetText(trans.GetTextDetail());
                 buttonBuy.mainText.RebuildLayoutTo<UIButton>();
                 buttonBuy.interactable = trans.IsValid();
-                buttonBuy.RebuildLayout(recursive: true);
-                buttonBuy.gameObject.GetComponent<CanvasGroup>().alpha = (trans.IsValid() ? 1f : 0.9f);
+                buttonBuy.RebuildLayout(true);
+                buttonBuy.gameObject.GetComponent<CanvasGroup>().alpha = trans.IsValid() ? 1f : 0.9f;
             }
         }
     }
