@@ -73,8 +73,13 @@ public class ThingRequest : ElinDelta
             Num = num,
         };
 
-        NetSession.Instance.Connection?.Delta.AddRemote(req);
         return req;
+    }
+
+    public ThingRequest Send()
+    {
+        NetSession.Instance.Connection!.Delta.AddRemote(this);
+        return this;
     }
 
     public void Then(Action<Thing> onSuccess, Action? onFail = null)

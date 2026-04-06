@@ -24,6 +24,7 @@ internal static class InvTransactionEvent
 
         ThingRequest
             .Create(__instance.thing, __instance.num)
+            .Send()
             .Then(thing => {
                 __instance.thing = thing;
                 __instance.Process(startTransaction);

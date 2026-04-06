@@ -5,6 +5,7 @@ using ElinTogether.Helper;
 using ElinTogether.Models;
 using ElinTogether.Net;
 using HarmonyLib;
+using UnityEngine;
 
 namespace ElinTogether.Patches.Task;
 
@@ -114,52 +115,52 @@ internal static class AIFishPatch
         }
     }
 
-    [HarmonyTranspiler]
+    [HarmonyPrefix]
     [HarmonyPatch(typeof(AI_Fish.ProgressFish), nameof(AI_Fish.ProgressFish.OnProgress))]
-    internal static IEnumerable<CodeInstruction> OnProgress(IEnumerable<CodeInstruction> instructions)
+    internal static bool OnProgress(AI_Fish.ProgressFish __instance)
     {
-        return new CodeMatcher(instructions)
-            // this.progress = this.MaxProgress;
-            .MatchStartForward(
-                new CodeMatch(OpCodes.Ldarg_0),
-                new CodeMatch(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(AIAct), nameof(AIAct.MaxProgress))),
-                new CodeMatch(OpCodes.Stfld))
-            .RemoveInstructions(3)
-            .InsertAndAdvance(
-                Transpilers.EmitDelegate((AI_Fish.ProgressFish thiz) => {
-                    if (NetSession.Instance.Connection is ElinNetClient) {
-                        thiz.hit = 1;
-                    } else {
-                        thiz.progress = thiz.MaxProgress;
-                    }
-                }))
-            .MatchStartForward(
-                new CodeMatch(OpCodes.Ret))
-            .Advance(2)
-            .InsertAndAdvance(
-                new CodeInstruction(OpCodes.Ldarg_0),
-                Transpilers.EmitDelegate((AI_Fish.ProgressFish thiz) => {
-                    if (NetSession.Instance.Connection is not ElinNetClient) {
-                        return;
-                    }
+        OnProgress_Modified(__instance);
+        return false;
+    }
 
-                    var progress = thiz.progress + int.MaxValue - 1;
-                    if (progress == 2 || (progress >= 8 && progress % 6 == 0 && EClass.rnd(3) == 0)) {
-                        thiz.owner.renderer.PlayAnime(AnimeID.Shiver);
-                        thiz.Ripple();
-                    }
-                }))
-            // this.hit = 0
-            .MatchStartForward(
-                new CodeMatch(OpCodes.Stfld, AccessTools.Field(typeof(AI_Fish.ProgressFish), nameof(AI_Fish.ProgressFish.hit))))
-            .InsertAndAdvance(
-                new CodeInstruction(OpCodes.Ldarg_0),
-                Transpilers.EmitDelegate((AI_Fish.ProgressFish thiz) => {
-                    if (NetSession.Instance.Connection is ElinNetHost host) {
-                        host.Delta.AddRemote(new CharaHitFishDelta { Owner = thiz.owner });
-                    }
-                }))
-            .InstructionEnumeration();
+    internal static void OnProgress_Modified(AI_Fish.ProgressFish thiz)
+    {
+        if (thiz.owner.IsPC && (thiz.owner.Tool == null || !thiz.owner.Tool.HasElement(245, false))) {
+            thiz.Cancel();
+            return;
+        }
+
+        if (thiz.hit >= 0) {
+            thiz.owner.renderer.PlayAnime(AnimeID.Fishing, default, false);
+            thiz.owner.PlaySound("fish_fight", 1f, true);
+            thiz.Ripple();
+
+            if (NetSession.Instance.Connection is ElinNetClient) {
+                return;
+            }
+
+            var num = Mathf.Clamp(10 - EClass.rnd(thiz.owner.Evalue(245) + 1) / 10, 5, 10);
+            if (thiz.hit > EClass.rnd(num)) {
+                thiz.hit = 100;
+                thiz.progress = thiz.MaxProgress;
+            }
+
+            thiz.hit++;
+            return;
+        }
+
+        if (EClass.rnd(Mathf.Clamp(10 - EClass.rnd(thiz.owner.Evalue(245) + 1) / 5, 2, 10)) == 0 && thiz.progress >= 10) {
+            thiz.hit = 0;
+            if (NetSession.Instance.Connection is ElinNetHost host) {
+                host.Delta.AddRemote(new CharaHitFishDelta { Owner = thiz.owner });
+            }
+        }
+
+        var progress = NetSession.Instance.IsHost ? thiz.progress : thiz.progress + int.MaxValue - 1;
+        if (progress == 2 || (progress >= 8 && progress % 6 == 0 && EClass.rnd(3) == 0)) {
+            thiz.owner.renderer.PlayAnime(AnimeID.Shiver, default, false);
+            thiz.Ripple();
+        }
     }
 
     [HarmonyPrefix]

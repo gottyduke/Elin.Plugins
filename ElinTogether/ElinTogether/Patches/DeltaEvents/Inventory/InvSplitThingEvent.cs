@@ -71,6 +71,7 @@ internal class InvSplitThingEvent : EClass
 
                     ThingRequest
                         .Create(button.card as Thing, count)
+                        .Send()
                         .Then(thing => {
                             dragItemCard.from.thing = thing;
                             ui.StartDrag(dragItemCard);
