@@ -294,7 +294,15 @@ internal sealed partial class CwlMod
     {
         yield return null;
         yield return null;
-        WarnWithPopup<CwlMod>("cwl_warn_duplicate_cwl".lang().TagColor(Color.red));
+
+        var size = 140;
+        var text = "cwl_warn_duplicate_cwl".lang().TagColor(Color.red);
+        ProgressIndicator
+            .CreateProgress(
+                () => new($"<size={size++/10}>{text}</size>"),
+                _ => false,
+                3000f)
+            .OnKill(() => Instance?.StartCoroutine(ReportDuplicateVersion()));
     }
 
     private static void ReportLoadingComplete()
