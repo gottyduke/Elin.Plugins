@@ -17,6 +17,14 @@ internal static class AIFishPatch
     internal static IEnumerable<CodeInstruction> OnRun(IEnumerable<CodeInstruction> instructions)
     {
         return new CodeMatcher(instructions)
+            // if (!this.owner.IsPC)
+            .MatchEndForward(
+                new CodeMatch(OpCodes.Ldloc_2),
+                new CodeMatch(OpCodes.Ldfld),
+                new CodeMatch(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(Card), nameof(Card.IsPC))))
+            .SetInstructionAndAdvance(
+                Transpilers.EmitDelegate((Chara chara) => NetSession.Instance.IsHost ? chara.IsPlayer : chara.IsPC))
+            // if (this.pos != null)
             .MatchEndForward(
                 new CodeMatch(OpCodes.Ldloc_2),
                 new CodeMatch(OpCodes.Ldfld),
