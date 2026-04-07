@@ -31,12 +31,12 @@ public partial class DramaExpansion : DramaOutcome
     [ConsoleCommand("reset_states")]
     public static void ResetStates()
     {
-        if (CwlScriptLoader.ActiveState == CurrentState) {
+        if (CwlScriptRunner.ActiveState == CurrentState) {
             return;
         }
 
         _valueStack.Clear();
-        CwlScriptLoader.RemoveState(CurrentState);
+        CwlScriptRunner.RemoveState(CurrentState);
     }
 
     public static void AddActionHandler(string action, Func<DramaManager, Dictionary<string, string>, bool> process)

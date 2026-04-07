@@ -8,7 +8,7 @@ using ReflexCLI.Attributes;
 
 namespace Cwl.Scripting;
 
-public partial class CwlScriptLoader
+public static partial class CwlScriptRunner
 {
     private static readonly Dictionary<string, CwlScriptState> _scriptStates = [];
     private static Stack<string> _activeStates = [];

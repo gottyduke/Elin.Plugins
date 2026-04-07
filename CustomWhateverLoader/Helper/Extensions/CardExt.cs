@@ -74,6 +74,11 @@ public static class CardExt
             owner.RefreshSpriteRenderer();
         }
 
+        public string? GetSpriteOverride()
+        {
+            return owner.mapStr.TryGetValue("sprite_override", out var spriteOverride) ? spriteOverride : null;
+        }
+
         public IEnumerable<Thing> FindAllThings(Func<Thing, bool> predicate)
         {
             if (owner.things is null) {

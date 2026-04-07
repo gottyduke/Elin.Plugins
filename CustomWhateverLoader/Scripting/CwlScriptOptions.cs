@@ -9,9 +9,9 @@ using Microsoft.CodeAnalysis.Scripting;
 
 namespace Cwl.Scripting;
 
-public static partial class CwlScriptLoader
+internal class CwlScriptOptions
 {
-    private static readonly string[] _defaultScriptNamespaces = [
+    internal static readonly string[] DefaultScriptNamespaces = [
         "System",
         "System.Collections",
         "System.Collections.Generic",
@@ -47,7 +47,7 @@ public static partial class CwlScriptLoader
         "Newtonsoft.Json.Serialization",
     ];
 
-    private static readonly string[] _defaultPreprocessors = [
+    internal static readonly string[] DefaultPreprocessors = [
 #if DEBUG
         "DEBUG",
 #endif
@@ -57,7 +57,7 @@ public static partial class CwlScriptLoader
 #endif
     ];
 
-    private static readonly HashSet<string> _defaultReferences = [
+    internal static readonly HashSet<string> DefaultReferences = [
         "0Harmony",
         "BepInEx.Core",
         "BepInEx.Unity",
@@ -79,7 +79,7 @@ public static partial class CwlScriptLoader
         ..UserAssemblies.Values,
     ];
 
-    internal static HashSet<string> CurrentDomainNamespaces => field ??= [.._defaultScriptNamespaces];
+    internal static HashSet<string> CurrentDomainNamespaces => field ??= [..DefaultScriptNamespaces];
     internal static Dictionary<BaseModPackage, CompilationReference> UserAssemblies => field ??= [];
 
     // do not need debug info for scripts
@@ -88,7 +88,7 @@ public static partial class CwlScriptLoader
             LanguageVersion.Latest,
             DocumentationMode.Parse,
             SourceCodeKind.Regular,
-            _defaultPreprocessors);
+            DefaultPreprocessors);
 
     // debug info for compilations
     internal static CSharpCompilationOptions DefaultCompilationOptions =>

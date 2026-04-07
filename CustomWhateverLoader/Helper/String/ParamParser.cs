@@ -9,7 +9,7 @@ public static class ParamParser
     {
         public string?[] Parse(string delimiter, int expected = 0, bool useNull = true)
         {
-            string?[]? parsed = input.Split(delimiter)
+            string?[] parsed = input.Split(delimiter)
                 .Select(s => s.Trim())
                 .ToArray();
 

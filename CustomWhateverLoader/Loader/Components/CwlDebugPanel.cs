@@ -1,4 +1,3 @@
-using System.Linq;
 using Cwl.API.Attributes;
 using Cwl.Helper.Unity;
 using ReflexCLI.Attributes;
@@ -56,12 +55,15 @@ internal class CwlDebugPanel : EMono
         {
             var point = Scene.HitPoint;
             if (point is { detail: { } detail }) {
-                var cards = detail.things
-                    .OfType<Card>()
-                    .Concat(detail.charas)
-                    .ToArray();
-                foreach (var card in cards) {
-                    DrawSourceInfo(card);
+                foreach (var chara in detail.charas.ToArray()) {
+                    GUILayout.Box($"{chara.Name} '{chara.id}'\n" +
+                                  $"row: {GetSourceInfo(chara.sourceCard) ?? "-"}\n" +
+                                  $"race: {GetSourceInfo(chara.race)}", p.GUIStyle);
+                }
+
+                foreach (var thing in detail.things.ToArray()) {
+                    GUILayout.Box($"{thing.Name} '{thing.id}'\n" +
+                                  $"row: {GetSourceInfo(thing.sourceCard) ?? "-"}", p.GUIStyle);
                 }
             }
         }
@@ -69,10 +71,6 @@ internal class CwlDebugPanel : EMono
 
         return;
 
-        void DrawSourceInfo(Card card)
-        {
-            GUILayout.Box($"{card.Name} '{card.id}'\n" +
-                          $"{ModUtil.FindSourceRowPackage(card.sourceCard)?.title ?? "-"}", p.GUIStyle);
-        }
+        string? GetSourceInfo(SourceData.BaseRow row) => ModUtil.FindSourceRowPackage(row)?.title;
     }
 }

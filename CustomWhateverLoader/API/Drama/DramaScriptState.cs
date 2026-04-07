@@ -5,7 +5,7 @@ using Cwl.Scripting;
 
 namespace Cwl.API.Drama;
 
-public class DramaScriptState : CwlScriptLoader.CwlScriptState
+public class DramaScriptState : CwlScriptRunner.CwlScriptState
 {
     public required DramaManager dm;
     public required Dictionary<string, string> line;

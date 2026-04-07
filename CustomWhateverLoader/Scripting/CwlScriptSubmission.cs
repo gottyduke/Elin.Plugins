@@ -83,7 +83,7 @@ public class CwlScriptSubmission(string submissionKey)
         }
 
         if (assembly is null) {
-            var csharp = CSharpScript.Create(script, CwlScriptLoader.DefaultScriptOptions, typeof(T));
+            var csharp = CSharpScript.Create(script, CwlScriptOptions.DefaultScriptOptions, typeof(T));
             var compilation = csharp.GetCompilation();
 
             var errors = compilation.GetDiagnostics()

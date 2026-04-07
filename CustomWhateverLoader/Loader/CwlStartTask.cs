@@ -210,7 +210,7 @@ internal sealed partial class CwlMod
         CwlScriptLoader.LoadAllPackageScripts();
 
         if (!CwlConfig.DefaultScriptState.IsEmptyOrNull) {
-            CwlScriptLoader.PushState(CwlConfig.DefaultScriptState);
+            CwlScriptRunner.PushState(CwlConfig.DefaultScriptState);
         }
 
         // sources

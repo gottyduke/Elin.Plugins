@@ -16,8 +16,8 @@ using ReflexCLI.Attributes;
 
 namespace Cwl.Scripting;
 
-[ConsoleCommandClassCustomizer("cwl.cs")]
-public static partial class CwlScriptLoader
+[ConsoleCommandClassCustomizer("cwl.csc")]
+public static class CwlScriptLoader
 {
     public enum CwlScriptAPIVersion
     {
@@ -78,7 +78,7 @@ public static partial class CwlScriptLoader
 
         foreach (var package in userPackages) {
             try {
-                var loaded = new PackageScriptCompiler(package).Compile();
+                var loaded = new CwlScriptCompiler.PackageScriptCompiler(package).Compile();
                 if (loaded.IsEmptyOrNull) {
                     continue;
                 }
@@ -91,7 +91,7 @@ public static partial class CwlScriptLoader
                     "*.cs",
                     args => {
                         if ((args.ChangeType & WatcherChangeTypes.All) != 0) {
-                            CwlMod.Popup<PackageScriptCompiler>("cwl_ui_csc_changed".Loc(package.id));
+                            CwlMod.Popup<CwlScriptCompiler>("cwl_ui_csc_changed".Loc(package.id));
                         }
                     });
             } catch (Exception ex) {
@@ -103,7 +103,7 @@ public static partial class CwlScriptLoader
 
     extension(Compilation compilation)
     {
-        private Compilation WithMinimalReferences()
+        internal Compilation WithMinimalReferences()
         {
             var tree = compilation.SyntaxTrees.First();
             var model = compilation.GetSemanticModel(tree);
@@ -133,7 +133,7 @@ public static partial class CwlScriptLoader
                     continue;
                 }
 
-                if (linkedSymbols.Contains(assembly) || _defaultReferences.Contains(assembly.Name)) {
+                if (linkedSymbols.Contains(assembly) || CwlScriptOptions.DefaultReferences.Contains(assembly.Name)) {
                     trimmed.Add(metadata);
                 }
             }
@@ -146,7 +146,7 @@ public static partial class CwlScriptLoader
     {
         public bool IsRoslynScript => assembly.GetName().Name.StartsWith("ℛ*");
 
-        private HashSet<string> GetNamespaces()
+        internal HashSet<string> GetNamespaces()
         {
             var namespaces = new HashSet<string>(StringComparer.Ordinal);
 
@@ -189,7 +189,7 @@ public static partial class CwlScriptLoader
                 return;
             }
 
-            CurrentDomainNamespaces.UnionWith(namespaces);
+            CwlScriptOptions.CurrentDomainNamespaces.UnionWith(namespaces);
         }
 
         public void InvokeScriptMethod(string methodName, params object[] args)
@@ -201,7 +201,8 @@ public static partial class CwlScriptLoader
                 try {
                     init.Invoke(null, args);
                 } catch (Exception ex) {
-                    CwlMod.Warn<PackageScriptCompiler>("cwl_error_csc_diag".Loc(init.GetAssemblyDetail(), ex.Message));
+                    CwlMod.Warn<CwlScriptCompiler.PackageScriptCompiler>("cwl_error_csc_diag".Loc(init.GetAssemblyDetail(),
+                        ex.Message));
                 }
             }
         }

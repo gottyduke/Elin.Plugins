@@ -17,7 +17,8 @@ using ReflexCLI.Attributes;
 
 namespace Cwl.Scripting;
 
-public partial class CwlScriptLoader
+[ConsoleCommandClassCustomizer("cwl.csc")]
+public class CwlScriptCompiler
 {
     private static readonly Dictionary<int, ScriptRunner<object>> _cachedScripts = [];
 
@@ -43,7 +44,7 @@ public partial class CwlScriptLoader
             return cachedScript;
         }
 
-        var csharp = CSharpScript.Create(script, options, typeof(CwlScriptState));
+        var csharp = CSharpScript.Create(script, options, typeof(CwlScriptRunner.CwlScriptState));
         var compilation = csharp.GetCompilation();
 
         if (throwOnError) {
@@ -70,16 +71,16 @@ public partial class CwlScriptLoader
         var trees = scripts
             .Select(s => CSharpSyntaxTree.ParseText(
                 File.ReadAllText(s.FullName),
-                DefaultParseOptions,
+                CwlScriptOptions.DefaultParseOptions,
                 s.FullName,
                 Encoding.UTF8));
 
-        options ??= DefaultCompilationOptions;
+        options ??= CwlScriptOptions.DefaultCompilationOptions;
 
         return CSharpCompilation.Create(
             assemblyName,
             trees,
-            CurrentDomainReferences,
+            CwlScriptOptions.CurrentDomainReferences,
             options);
     }
 
@@ -90,9 +91,9 @@ public partial class CwlScriptLoader
 
     public class PackageScriptCompiler(BaseModPackage package)
     {
-        private static readonly string _apiVersion = APIVersion.ToString();
+        private static readonly string _apiVersion = CwlScriptLoader.APIVersion.ToString();
         private static readonly string _cwlVersion = ModInfo.BuildVersion;
-        private static readonly string _roslynVersion = RoslynVersion;
+        private static readonly string _roslynVersion = CwlScriptLoader.RoslynVersion;
         private readonly string _assemblyName = GetPackageScriptName(package.id);
         private readonly StringBuilderPool _sb = StringBuilderPool.Get();
 
@@ -124,7 +125,7 @@ public partial class CwlScriptLoader
             _sb.AppendLine($"Script Hash: {hash}");
 
             // unload if already loaded
-            TryUnloadScript(_assemblyName);
+            CwlScriptLoader.TryUnloadScript(_assemblyName);
 
             if (File.Exists(assemblyPath)) {
                 var existingHash = FileVersionInfo.GetVersionInfo(assemblyPath).ProductVersion;
@@ -136,11 +137,11 @@ public partial class CwlScriptLoader
                 }
             }
 
-            var compilation = CompileScripts(contents, _assemblyName, DefaultCompilationOptions)
+            var compilation = CompileScripts(contents, _assemblyName, CwlScriptOptions.DefaultCompilationOptions)
                 .AddSyntaxTrees(
                     CSharpSyntaxTree.ParseText(
                         $"[assembly: System.Reflection.AssemblyInformationalVersion(\"{hash}\")]",
-                        DefaultParseOptions,
+                        CwlScriptOptions.DefaultParseOptions,
                         encoding: Encoding.UTF8))
                 .WithMinimalReferences();
 
@@ -153,8 +154,8 @@ public partial class CwlScriptLoader
 
             var pdbPath = Path.ChangeExtension(assemblyPath, "pdb");
 
-            var asmFs = File.OpenWrite(assemblyPath);
-            var pdbFs = File.OpenWrite(pdbPath);
+            var asmFs = File.Open(assemblyPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite | FileShare.Delete);
+            var pdbFs = File.Open(pdbPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite | FileShare.Delete);
             var w32Ms = compilation.CreateDefaultWin32Resources(true, false, null, null);
 
             var emitResult = compilation.Emit(
@@ -167,25 +168,13 @@ public partial class CwlScriptLoader
             pdbFs.Dispose();
             w32Ms.Dispose();
 
-            try {
-                if (!emitResult.Success) {
-                    throw new ScriptCompilationException(
-                        emitResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
-                }
-
-                _sb.AppendLine($"DLL size: {new FileInfo(assemblyPath).Length.ToAllocateString()}");
-                _sb.AppendLine($"PDB size: {new FileInfo(pdbPath).Length.ToAllocateString()}");
-            } catch {
-                if (File.Exists(assemblyPath)) {
-                    File.Delete(assemblyPath);
-                }
-
-                if (File.Exists(pdbPath)) {
-                    File.Delete(pdbPath);
-                }
-
-                throw;
+            if (!emitResult.Success) {
+                throw new ScriptCompilationException(
+                    emitResult.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
             }
+
+            _sb.AppendLine($"DLL size: {new FileInfo(assemblyPath).Length.ToAllocateString()}");
+            _sb.AppendLine($"PDB size: {new FileInfo(pdbPath).Length.ToAllocateString()}");
 
             var log = _sb.ToString();
             CwlMod.Log<PackageScriptCompiler>(log);
@@ -199,7 +188,7 @@ public partial class CwlScriptLoader
             List<FileInfo> fileContents = [];
 
             using var sb = StringBuilderPool.Get();
-            sb.Append(APIVersion.ToString());
+            sb.Append(CwlScriptLoader.APIVersion.ToString());
 
             foreach (var file in files) {
                 sb.Append($"{file.ShortPath()}_{file.LastWriteTimeUtc}");

@@ -6,7 +6,8 @@ using ReflexCLI.Attributes;
 
 namespace Cwl.Scripting;
 
-public partial class CwlScriptLoader
+[ConsoleCommandClassCustomizer("cwl.cs")]
+public static partial class CwlScriptRunner
 {
     /// <summary>
     ///     Ensures scripting is enabled for this user
@@ -80,7 +81,7 @@ public partial class CwlScriptLoader
                 scriptState[key] = value;
             }
 
-            var runner = CompileScriptRunner(script, DefaultScriptOptions, useCache, true);
+            var runner = CwlScriptCompiler.CompileScriptRunner(script, CwlScriptOptions.DefaultScriptOptions, useCache, true);
             var state = runner(scriptState)
                 .GetAwaiter()
                 .GetResult();
