@@ -17,23 +17,12 @@ internal class GetSpriteOverridePatch
         return OverrideMethodComparer.FindAllOverrides(typeof(Card), nameof(Card.GetSprite), typeof(int));
     }
 
-    // TODO: maybe support dir? but I really want to avoid runtime features
     [HarmonyPostfix]
-    internal static void OnGetCardSprite(Card __instance, int dir, ref Sprite __result)
+    internal static void OnGetCardSprite(Card __instance, ref Sprite __result)
     {
         var hasOverride = __instance.mapStr.TryGetValue("sprite_override", out var overrideKey);
-        var isSnow = EClass._zone?.IsSnowCovered is true;
-
-        if (hasOverride) {
-            if (isSnow && TryGetSprite($"{overrideKey}_snow", out var snowOverrideSprite)) {
-                __result = snowOverrideSprite;
-            } else if (TryGetSprite(overrideKey, out var overrideSprite)) {
-                __result = overrideSprite;
-            }
-        } else {
-            if (isSnow && TryGetSprite($"{__instance.id}_snow", out var snowSprite)) {
-                __result = snowSprite;
-            }
+        if (hasOverride && TryGetSprite(overrideKey, out var overrideSprite)) {
+            __result = overrideSprite;
         }
     }
 
