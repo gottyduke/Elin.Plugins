@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace Cwl.Patches.Charas;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class RepositionPortraitPatch
 {
     // calculated from all game npc average
