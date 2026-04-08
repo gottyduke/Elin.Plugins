@@ -41,10 +41,14 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="GitVersion.MsBuild" Version="6.5.1">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
+        <PackageReference Include="GitVersion.MsBuild" Version="6.5.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Components\"/>
     </ItemGroup>
 
     <Target Name="CopyAssets" AfterTargets="AfterBuild">
@@ -53,9 +57,9 @@
         </ItemGroup>
 
         <Copy
-                SourceFiles="@(Assets)"
-                DestinationFiles="@(Assets->'$(OutDir)%(RecursiveDir)%(Filename)%(Extension)')"
-                SkipUnchangedFiles="true"
+            SourceFiles="@(Assets)"
+            DestinationFiles="@(Assets->'$(OutDir)%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
         />
     </Target>
 </Project>

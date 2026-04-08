@@ -135,7 +135,7 @@ jobs:
         with:
           tag_name: ACS-${{ steps.build.outputs.file_version_short }}
           name: Animated Custom Sprites ${{ steps.build.outputs.file_version }}
-          prerelease: true
+          prerelease: false
           generate_release_notes: false
           body_path: ${{ github.workspace }}\CHANGELOG.txt
           files: ${{ steps.artifact.outputs.artifact_path }}

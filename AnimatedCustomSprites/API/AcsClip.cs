@@ -1,19 +1,39 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using UnityEngine;
+using System.Text.RegularExpressions;
 
 namespace ACS.API;
 
-// ReSharper disable All
-public sealed record AcsClip : AcsClipV1;
-
-public record AcsClipV1
+public class AcsClip(string name, int interval, int begin, int end)
 {
-    public float interval = 0.2f;
-    public string name = "idle";
-    public string owner = "example_chara";
-    internal Sprite[]? sprites = null;
+    private static readonly Regex _acsFormat = new(
+        @"^_acs_(?<name>[^#]+)#(?<interval>\d+)_(?<begin>\d+)-(?<end>\d+)$",
+        RegexOptions.Compiled);
+    public readonly int Begin = begin;
+    public readonly int End = end;
+    public readonly int Interval = interval;
 
-    [JsonConverter(typeof(StringEnumConverter))]
-    public AcsAnimationType type = AcsAnimationType.Idle;
+    public readonly string Name = name;
+
+    public int Length => End - Begin + 1;
+
+    public static AcsClip? CreateFromFormat(string format)
+    {
+        var match = _acsFormat.Match(format);
+        if (!match.Success) {
+            return null;
+        }
+
+        if (!int.TryParse(match.Groups["interval"].Value, out var interval)) {
+            interval = 66;
+        }
+
+        if (!int.TryParse(match.Groups["begin"].Value, out var begin)) {
+            begin = 0;
+        }
+
+        if (!int.TryParse(match.Groups["end"].Value, out var end)) {
+            end = begin;
+        }
+
+        return new(match.Groups["name"].Value, interval, begin, end);
+    }
 }
