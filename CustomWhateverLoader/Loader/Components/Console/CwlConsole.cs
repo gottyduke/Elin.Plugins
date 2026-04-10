@@ -107,6 +107,7 @@ internal partial class CwlConsole : EMono
     {
         pc.things
             .Flatten()
+            .ToArray()
             .Do(t => t.Identify(idtSource: IDTSource.SuperiorIdentify));
     }
 

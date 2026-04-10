@@ -299,7 +299,7 @@ internal sealed partial class CwlMod
         var text = "cwl_warn_duplicate_cwl".lang().TagColor(Color.red);
         ProgressIndicator
             .CreateProgress(
-                () => new($"<size={size++/10}>{text}</size>"),
+                () => new($"<size={size++ / 10}>{text}</size>"),
                 _ => false,
                 3000f)
             .OnKill(() => Instance?.StartCoroutine(ReportDuplicateVersion()));
