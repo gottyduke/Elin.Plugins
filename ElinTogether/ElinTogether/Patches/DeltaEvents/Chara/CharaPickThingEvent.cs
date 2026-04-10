@@ -1,3 +1,4 @@
+using ElinTogether.Helper;
 using ElinTogether.Models;
 using ElinTogether.Net;
 using HarmonyLib;
@@ -27,7 +28,7 @@ internal static class CharaPickThingEvent
                 Type = CharaPickThingDelta.PickType.Pick,
             });
 
-            return false;
+            return !CharaProgressCompleteEvent.Chara.IsRemotePlayer;
         }
 
         // we are host, propagate to everyone
@@ -72,7 +73,7 @@ internal static class CharaPickOrDropEvent
 
         CardCache.KeepAlive(t);
 
-        return false;
+        return !CharaProgressCompleteEvent.Chara.IsRemotePlayer;
     }
 }
 
@@ -103,6 +104,6 @@ internal static class CharaTrySmoothPickEvent
 
         CardCache.KeepAlive(t);
 
-        return false;
+        return !CharaProgressCompleteEvent.Chara.IsRemotePlayer;
     }
 }
