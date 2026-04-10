@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
 using ReflexCLI.Attributes;
@@ -46,8 +47,19 @@ public static partial class CwlScriptRunner
     [Description("reflex_greedy_args")] // path may contain spaces
     public static string EvaluateFile(string filePath)
     {
+        if (!filePath.EndsWith(".cs")) {
+            filePath += ".cs";
+        }
+
         if (!Path.IsPathFullyQualified(filePath)) {
-            filePath = Path.Combine(CorePath.rootExe, filePath);
+            var rootPath = Path.Combine(CorePath.rootExe, filePath);
+            if (File.Exists(rootPath)) {
+                filePath = rootPath;
+            } else {
+                filePath = PackageIterator
+                    .GetFiles(Path.Combine("Exec", filePath))
+                    .LastOrDefault()?.FullName ?? filePath;
+            }
         }
 
         if (!File.Exists(filePath)) {

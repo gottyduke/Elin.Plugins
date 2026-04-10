@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Linq;
 using System.Text;
 using Cwl.Helper.String;
@@ -84,28 +83,5 @@ internal partial class CwlConsole
                     }
                 });
         }
-    }
-
-    [ConsoleCommand("dump.shadow_data")]
-    internal static string DumpShadowData()
-    {
-        using var sb = StringBuilderPool.Get();
-
-        sb.AppendLine("|id|name|");
-        sb.AppendLine("|-|-|");
-
-        for (var i = 0; i < ShadowData.Instance.items.Count; i++) {
-            var sd = ShadowData.Instance.items[i];
-            if (!sd.name.IsEmptyOrNull) {
-                sb.AppendLine($"|{i}|{sd.name}|");
-            }
-        }
-
-        CwlMod.Log<ShadowData>(sb);
-
-        var dump = $"{CorePath.rootExe}/shadowdata.md";
-        File.WriteAllText(dump, sb.ToString());
-
-        return $"output has been dumped to {dump.NormalizePath()}";
     }
 }

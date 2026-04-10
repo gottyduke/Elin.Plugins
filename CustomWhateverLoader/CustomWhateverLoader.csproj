@@ -52,6 +52,7 @@
     <ItemGroup>
         <Compile Remove="scripts\**"/>
         <Compile Remove="assets\**"/>
+        <Compile Remove="package\**\*.cs" />
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Remove="scripts\**"/>
