@@ -9,7 +9,7 @@ using HarmonyLib;
 namespace Cwl.Patches.Charas;
 
 [HarmonyPatch]
-internal static class RestoreCharaData
+public static class RestoreCharaData
 {
     [CwlCharaOnCreateEvent]
     internal static void SetOrRestoreCharaData(Chara chara)
@@ -27,7 +27,7 @@ internal static class RestoreCharaData
     {
         [HarmonyReversePatch(HarmonyReversePatchType.Snapshot)]
         [HarmonyPatch(typeof(Card), "_OnDeserialized")]
-        internal void SetCardOnDeserialized(StreamingContext? context = null)
+        public void SetCardOnDeserialized(StreamingContext? context = null)
         {
             throw new NotImplementedException(".Card._OnDeserialized");
         }
