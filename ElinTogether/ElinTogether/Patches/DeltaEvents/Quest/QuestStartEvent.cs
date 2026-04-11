@@ -1,3 +1,4 @@
+using ElinTogether.Models;
 using ElinTogether.Net;
 using HarmonyLib;
 
@@ -14,9 +15,10 @@ internal class QuestStartEvent
             return;
         }
 
-        // connection.Delta.AddRemote(new QuestDelta {
-
-        // });
+        connection.Delta.AddRemote(new QuestStartDelta {
+            Uid = q.uid,
+            RefChara = q.person.chara,
+        });
     }
 
     [HarmonyPrefix]
@@ -26,18 +28,20 @@ internal class QuestStartEvent
         if (NetSession.Instance.Connection is not { } connection) {
             return;
         }
+
+        //
     }
 
-    [HarmonyPrefix]
-    [HarmonyPatch(typeof(ZoneEventManager), nameof(ZoneEventManager.Add), [typeof(ZoneEvent), typeof(bool)])]
-    internal static void OnAdd()
-    {
-        if (NetSession.Instance.Connection is not { } connection) {
-            return;
-        }
+    // [HarmonyPrefix]
+    // [HarmonyPatch(typeof(QuestInstance), nameof(QuestInstance.CreateInstanceZone))]
+    // internal static void OnCreateInstanceZone(Chara c)
+    // {
+    //     if (NetSession.Instance.Connection is not { } connection) {
+    //         return;
+    //     }
 
-        // connection.Delta.AddRemote(new ZoneEventDelta {
-
-        // });
-    }
+    //     connection.Delta.AddRemote(new ZoneEventQuestCreateDelta {
+    //         RefChara = c,
+    //     });
+    // }
 }
