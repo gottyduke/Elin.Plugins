@@ -10,6 +10,7 @@ using ReflexCLI.Attributes;
 
 namespace Cwl.API.Custom;
 
+[ConsoleCommandClassCustomizer("cwl.pl")]
 public partial class CustomPlaylist
 {
     public static bool AddOrReplaceBGM(string bgmId)
@@ -22,6 +23,8 @@ public partial class CustomPlaylist
         if (data == null) {
             return false;
         }
+
+        data.name = bgmId[4..];
 
         // unassigned id
         if (data.id <= 0) {
