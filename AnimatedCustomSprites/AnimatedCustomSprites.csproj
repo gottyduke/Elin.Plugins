@@ -47,10 +47,6 @@
         </PackageReference>
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="Components\"/>
-    </ItemGroup>
-
     <Target Name="CopyAssets" AfterTargets="AfterBuild">
         <ItemGroup>
             <Assets Include="package\**\*.*"/>
