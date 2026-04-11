@@ -19,8 +19,7 @@ internal class RenderFramePatch
             .MatchStartBackwards(
                 new OpCodeContains(nameof(OpCodes.Ldloc)),
                 new OperandContains(OpCodes.Ldfld, nameof(SpriteData.frame)),
-                new(OpCodes.Ldc_I4_1),
-                new(OpCodes.Cgt))
+                new(OpCodes.Ldc_I4_1))
             .EnsureValid("replace sprite data")
             .Advance(1)
             .InsertAndAdvance(
