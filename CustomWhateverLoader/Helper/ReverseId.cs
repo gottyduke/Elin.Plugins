@@ -17,6 +17,26 @@ public static class ReverseId
         return id;
     }
 
+    public static int Block(string blockAlias, int fallback = -1)
+    {
+        var id = fallback;
+        if (EMono.sources.blocks.alias.TryGetValue(blockAlias, out var row)) {
+            id = EMono.sources.blocks.rows.IndexOf(row);
+        }
+
+        return id;
+    }
+
+    public static int Obj(string objAlias, int fallback = -1)
+    {
+        var id = fallback;
+        if (EMono.sources.objs.alias.TryGetValue(objAlias, out var row)) {
+            id = EMono.sources.objs.rows.IndexOf(row);
+        }
+
+        return id;
+    }
+
     public static int BGM(string bgmName, int fallback = -1)
     {
         var id = fallback;
