@@ -10,15 +10,23 @@ public class QuestStartDelta : ElinDelta
     public required int Uid { get; init; }
 
     [Key(1)]
-    public required RemoteCard RefChara { get; init; }
+    public required RemoteCard? Owner { get; init; }
+    
+    [Key(2)]
+    public required LZ4Bytes? Data { get; init; }
 
     protected override void OnApply(ElinNetBase net)
     {
-        if (RefChara.Find() is not Chara chara) {
+        if (Data?.Decompress<Quest>() is Quest q) {
+            game.quests.Start(q);
             return;
         }
 
-        var quest = chara.quest;
+        if (Owner?.Find() is not Chara owner) {
+            return;
+        }
+
+        var quest = owner.quest;
         if (quest.uid != Uid || game.quests.list.Contains(quest)) {
             return;
         }

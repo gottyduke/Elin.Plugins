@@ -15,33 +15,17 @@ internal class QuestStartEvent
             return;
         }
 
-        connection.Delta.AddRemote(new QuestStartDelta {
-            Uid = q.uid,
-            RefChara = q.person.chara,
-        });
-    }
-
-    [HarmonyPrefix]
-    [HarmonyPatch(typeof(Quest), nameof(Quest.Create))]
-    internal static void OnCreate()
-    {
-        if (NetSession.Instance.Connection is not { } connection) {
+        // already started
+        if (EClass.game.quests.list.Contains(q)) {
             return;
         }
 
-        //
+        var owner = q.person.chara;
+        var canFind = owner?.quest == q;
+        connection.Delta.AddRemote(new QuestStartDelta {
+            Uid = q.uid,
+            Owner = owner,
+            Data = canFind ? null : LZ4Bytes.Create(q),
+        });
     }
-
-    // [HarmonyPrefix]
-    // [HarmonyPatch(typeof(QuestInstance), nameof(QuestInstance.CreateInstanceZone))]
-    // internal static void OnCreateInstanceZone(Chara c)
-    // {
-    //     if (NetSession.Instance.Connection is not { } connection) {
-    //         return;
-    //     }
-
-    //     connection.Delta.AddRemote(new ZoneEventQuestCreateDelta {
-    //         RefChara = c,
-    //     });
-    // }
 }

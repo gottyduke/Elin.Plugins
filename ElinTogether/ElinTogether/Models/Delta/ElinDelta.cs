@@ -38,7 +38,9 @@ namespace ElinTogether.Models;
 [Union(402, typeof(ZoneEventQuestCreateDelta))]
 // World
 [Union(500, typeof(GameDelta))]
-[Union(510, typeof(QuestStartDelta))]
+[Union(510, typeof(QuestCreateDelta))]
+[Union(511, typeof(QuestSetClientDelta))]
+[Union(512, typeof(QuestStartDelta))]
 // Misc
 [Union(600, typeof(InvRerollDelta))]
 [Union(601, typeof(OnBarterDelta))]
