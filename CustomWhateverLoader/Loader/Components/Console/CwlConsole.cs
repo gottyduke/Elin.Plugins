@@ -63,12 +63,18 @@ internal partial class CwlConsole : EMono
         return "cwl_log_hobo_begone".Loc(charagy.Length);
     }
 
-    [ConsoleCommand("elin_debug")]
-    internal static string EnableElinDebug(bool enable = true)
+    [ConsoleCommand("elin_dev")]
+    internal static string EnableElinDev(bool enable = true)
     {
         var mode = enable ? ReleaseMode.Debug : ReleaseMode.Public;
         core.SetReleaseMode(mode);
         core.debug.enable = enable;
+
+        DataLoader.ReloadSources();
+        if (enable) {
+            CwlMod.Popup<ReleaseMode>("to disable DEV mode, use console command\n" +
+                                      "'cwl.elin_dev false'".TagColor(Color.cyan));
+        }
 
         return $"debug : {enable}";
     }

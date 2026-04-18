@@ -57,13 +57,13 @@ internal class CwlDebugPanel : EMono
             if (point is { detail: { } detail }) {
                 foreach (var chara in detail.charas.ToArray()) {
                     GUILayout.Box($"{chara.Name} '{chara.id}'\n" +
-                                  $"row: {GetSourceInfo(chara.sourceCard) ?? "-"}\n" +
+                                  $"row: {GetSourceInfo(chara.sourceCard)}\n" +
                                   $"race: {GetSourceInfo(chara.race)}", p.GUIStyle);
                 }
 
                 foreach (var thing in detail.things.ToArray()) {
                     GUILayout.Box($"{thing.Name} '{thing.id}'\n" +
-                                  $"row: {GetSourceInfo(thing.sourceCard) ?? "-"}", p.GUIStyle);
+                                  $"row: {GetSourceInfo(thing.sourceCard)}", p.GUIStyle);
                 }
             }
         }
