@@ -15,45 +15,47 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="package\**" />
+        <Compile Remove="package\**"/>
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Remove="package\**" />
+        <EmbeddedResource Remove="package\**"/>
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="package\**" />
+        <None Remove="package\**"/>
     </ItemGroup>
 
     <ItemGroup>
-        <Reference Include="$(ElinGamePath)\Package\Mod_CustomWhateverLoader\CustomWhateverLoader.dll">
+        <Reference Include="CustomWhateverLoader">
+            <HintPath Condition="Exists('$(SteamContentPath)\2135150\3370512305')">$(SteamContentPath)\2135150\3370512305\CustomWhateverLoader.dll</HintPath>
+            <HintPath Condition="Exists('$(SteamContentPath)\2135150\3544010094')">$(SteamContentPath)\2135150\3544010094\CustomWhateverLoader.dll</HintPath>
+            <HintPath Condition="Exists('$(ElinGamePath)\Package\Mod_CustomWhateverLoader')">$(ElinGamePath)\Package\Mod_CustomWhateverLoader\CustomWhateverLoader.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="YKFramework">
+            <HintPath Condition="Exists('$(ElinGamePath)\2135150\3400020753')">$(ElinGamePath)\2135150\3400020753\YKFramework.dll</HintPath>
+            <HintPath Condition="Exists('$(SteamContentPath)\2135150\3400020753')">$(SteamContentPath)\2135150\3400020753\YKFramework.dll</HintPath>
             <Private>false</Private>
         </Reference>
     </ItemGroup>
 
     <ItemGroup>
-        <Reference Include="$(SteamContentPath)\2135150\3400020753\YKFramework.dll">
-            <Private>false</Private>
-        </Reference>
+        <PackageReference Include="PolySharp" Version="1.15.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="PolySharp" Version="1.15.0">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-    </ItemGroup>
-    
     <Target Name="CopyAssets" AfterTargets="AfterBuild">
         <ItemGroup>
-            <Assets Include="package\**\*.*" />
+            <Assets Include="package\**\*.*"/>
         </ItemGroup>
 
         <Copy
-                SourceFiles="@(Assets)"
-                DestinationFiles="@(Assets->'$(OutDir)%(RecursiveDir)%(Filename)%(Extension)')"
-                SkipUnchangedFiles="true"
+            SourceFiles="@(Assets)"
+            DestinationFiles="@(Assets->'$(OutDir)%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
         />
     </Target>
 </Project>

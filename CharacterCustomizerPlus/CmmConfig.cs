@@ -37,14 +37,14 @@ internal class CmmConfig
                 "Height of the part preview in the parts picker window\n" +
                 "部件预览图的长度",
                 new AcceptableValueRange<int>(96, 288)));
-        
+
         EnableSliderIcon = config.Bind(
             ModInfo.Name,
             "EnableSliderIcon",
             true,
             "Replace the slider buttons with custom textures\n" +
             "替换两个滑条方块的贴图");
-        
+
         SliderIconScale = config.Bind(
             ModInfo.Name,
             "SliderIconScale",

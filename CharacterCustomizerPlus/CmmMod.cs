@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using HarmonyLib;
 
@@ -8,7 +9,7 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.charamakerminus";
     internal const string Name = "Visual PCC Picker";
-    internal const string Version = "1.3.3";
+    internal const string Version = "1.4.0";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
@@ -19,6 +20,10 @@ internal class CmmMod : BaseUnityPlugin
     private void Awake()
     {
         Instance = this;
+
+        if (GameVersion.Int() > 23295) {
+            return;
+        }
 
         CmmConfig.Load(Config);
 

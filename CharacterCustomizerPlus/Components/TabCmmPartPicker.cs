@@ -72,7 +72,7 @@ internal class TabCmmPartPicker : YKLayout<LayerCreationData>
         }
 
         var uiPcc = Layer.Data.UiPcc;
-        var outline = btn.GetComponent<Outline>();
+        var outline = btn.GetOrCreate<Outline>();
         if (part is null) {
             btn.icon.sprite = "cmm_null".LoadSprite();
 
@@ -102,7 +102,7 @@ internal class TabCmmPartPicker : YKLayout<LayerCreationData>
             color.a = 1f;
             btn.icon.color = color.ToRGB();
 
-            var animator = btn.icon.gameObject.AddComponent<SpriteStateAnimator>();
+            var animator = btn.icon.GetOrCreate<SpriteStateAnimator>();
             // use CWL LoadSprite to cache the sprite,
             // so that it won't get garbage collected
             animator.SliceSheet(texItem.fileInfo.FullName.LoadSprite()!.texture);
