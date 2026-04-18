@@ -10,68 +10,53 @@ namespace Cwl.Patches.Materials;
 [HarmonyPatch]
 internal class ReverseIdMapper
 {
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(Card), nameof(Card.c_dyeMat), MethodType.Getter)]
-    internal static void OnGetIdMat(Card __instance, ref int __result)
-    {
-        ReverseIdMap(ref __result);
-        if (__result >= EMono.sources.materials.rows.Count || __result < 0) {
-            __result = 0;
-        }
-    }
-
-    [HarmonyPrefix]
-    [HarmonyPatch(typeof(Card), nameof(Card.Create))]
-    internal static void OnSetIdMat(ref int _idMat)
-    {
-        ReverseIdMap(ref _idMat);
-        if (_idMat >= EMono.sources.materials.rows.Count) {
-            _idMat = -1;
-        }
-    }
-
-    [SwallowExceptions]
-    private static void ReverseIdMap(ref int idMat)
-    {
-        var mat = EMono.sources.materials;
-        var id = mat.rows.IndexOf(mat.map.GetValueOrDefault(idMat));
-        idMat = id;
-    }
-
     [SwallowExceptions]
     private static SourceMaterial.Row ReverseIndexer(List<SourceMaterial.Row> rows, int index)
     {
-        ReverseIdMap(ref index);
-        return rows.TryGet(index);
+        var mat = EMono.sources.materials;
+        return mat.map.GetValueOrDefault(index) ?? mat.map[MATERIAL.granite];
     }
 
-    internal class RecipeMaterialIdMapper
+    internal static IEnumerable<MethodBase> TargetMethods()
     {
-        internal static IEnumerable<MethodBase> TargetMethods()
-        {
-            return [
-                ..OverrideMethodComparer.FindAllOverrides(typeof(Recipe), nameof(Recipe.GetColorMaterial)),
-                ..OverrideMethodComparer.FindAllOverrides(typeof(Recipe), nameof(Recipe.Build),
-                    typeof(Chara), typeof(Card), typeof(Point), typeof(int), typeof(int), typeof(int), typeof(int)),
-            ];
-        }
+        return [
+            ..OverrideMethodComparer.FindAllOverrides(typeof(Recipe), nameof(Recipe.GetColorMaterial)),
+            ..OverrideMethodComparer.FindAllOverrides(typeof(Recipe), nameof(Recipe.GetMainMaterial)),
+            ..OverrideMethodComparer.FindAllOverrides(typeof(Recipe), nameof(Recipe.Build),
+                typeof(Chara), typeof(Card), typeof(Point), typeof(int), typeof(int), typeof(int), typeof(int)),
+            AccessTools.DeclaredMethod(typeof(TraitBoat), nameof(TraitBoat.GetWaterMat)),
+            AccessTools.DeclaredMethod(typeof(Card), nameof(Card.Create)),
+            AccessTools.PropertyGetter(typeof(Card), nameof(Card.DyeMat)),
+        ];
+    }
 
-        [HarmonyPrefix]
-        internal static void OnGetColorId(Recipe __instance)
-        {
-            ReverseIdMap(ref __instance.idMat);
-        }
+    [HarmonyTranspiler]
+    internal static IEnumerable<CodeInstruction> OnRowIndexerIl(IEnumerable<CodeInstruction> instructions)
+    {
+        return new CodeMatcher(instructions)
+            .MatchEndForward(
+                new OperandMatch(OpCodes.Callvirt, o => o.ToString().Contains("List<SourceMaterial+Row>::get_Item")))
+            .Repeat(cm => cm
+                .SetInstructionAndAdvance(
+                    Transpilers.EmitDelegate(ReverseIndexer)))
+            .InstructionEnumeration();
+    }
 
+    [HarmonyPatch]
+    internal class SerializedCardDyeMatIdMapper
+    {
         [HarmonyTranspiler]
-        internal static IEnumerable<CodeInstruction> OnRowIndexerIl(IEnumerable<CodeInstruction> instructions)
+        [HarmonyPatch(typeof(SerializedCards), nameof(SerializedCards.Restore))]
+        internal static IEnumerable<CodeInstruction> OnRowTryGetIl(IEnumerable<CodeInstruction> instructions)
         {
             return new CodeMatcher(instructions)
                 .MatchEndForward(
-                    new OperandMatch(OpCodes.Callvirt, o => o.ToString().Contains("List<SourceMaterial+Row>::get_Item")))
-                .Repeat(cm => {
-                    cm.SetInstructionAndAdvance(
-                        Transpilers.EmitDelegate(ReverseIndexer));
-                })
+                    new OperandContains(OpCodes.Callvirt, "Dye(Row)"))
+                .EnsureValid("serialized card restore idDyeMat")
+                .Advance(-2)
+                .RemoveInstructions(2)
+                .InsertAndAdvance(
+                    Transpilers.EmitDelegate(ReverseIndexer))
                 .InstructionEnumeration();
         }
     }

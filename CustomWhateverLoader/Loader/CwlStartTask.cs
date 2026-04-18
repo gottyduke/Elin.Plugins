@@ -15,7 +15,6 @@ using Cwl.Patches;
 using Cwl.Patches.Charas;
 using Cwl.Patches.Conditions;
 using Cwl.Patches.Elements;
-using Cwl.Patches.Materials;
 using Cwl.Patches.Quests;
 using Cwl.Patches.Relocation;
 using Cwl.Patches.Sources;
@@ -78,7 +77,6 @@ internal sealed partial class CwlMod
             typeof(RepositionTcPatch.TcFixPosPatch),
             typeof(InvalidateItemPatch),
             typeof(InvalidateDestThingPatch),
-            typeof(ReverseIdMapper.RecipeMaterialIdMapper),
         ];
 
         BuildPatchesFromTypes(deferred, true);
