@@ -27,6 +27,10 @@ internal class SetMaterialRowPatch
     [Time]
     private static void AddMaterial(SourceMaterial.Row r)
     {
+        if (!r.tag.Contains(r.alias)) {
+            r.tag = [..r.tag, r.alias];
+        }
+
         var matColors = Core.Instance.Colors.matColors;
         if (matColors.ContainsKey(r.alias)) {
             return;
