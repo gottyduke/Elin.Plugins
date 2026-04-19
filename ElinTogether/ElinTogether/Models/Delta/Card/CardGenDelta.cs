@@ -36,7 +36,7 @@ public class CardGenDelta : ElinDelta
         CardCache.CacheContainer(card.things);
     }
 
-    internal static void Trim(List<ElinDelta> deltaList)
+    internal static void Refresh(List<ElinDelta> deltaList)
     {
         var alreadySent = new List<int>();
         deltaList.RemoveAll(delta => {
