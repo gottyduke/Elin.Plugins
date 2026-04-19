@@ -88,7 +88,7 @@ public partial class DramaExpansion
 
     internal static Func<DramaManager, Dictionary<string, string>, bool>? BuildExpression(string? expression)
     {
-        if (expression is null) {
+        if (expression.IsEmptyOrNull) {
             return null;
         }
 

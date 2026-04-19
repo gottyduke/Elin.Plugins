@@ -46,6 +46,7 @@ public partial class DramaExpansion
     /// <summary>
     ///     choice(cmd arg1 arg2 arg3)
     /// </summary>
+    [Obsolete("use eval")]
     [CwlNodiscard]
     public static bool choice(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
     {

@@ -47,11 +47,10 @@ public enum StockItemType
 public record SerializableStockItemV3 : SerializableStockItemV2
 {
     [JsonProperty]
-    public bool Identified = true;
-
-    [JsonProperty]
     [JsonConverter(typeof(StringEnumConverter))]
     public BlessedState Blessed = BlessedState.Normal;
+    [JsonProperty]
+    public bool Identified = true;
 
     [JsonProperty]
     [JsonConverter(typeof(StringEnumConverter))]
