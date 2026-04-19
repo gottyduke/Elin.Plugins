@@ -83,27 +83,23 @@ public partial class DramaExpansion : DramaOutcome
         return false;
     }
 
-    [CwlDramaAction(nameof(choice))]
+    [CwlDramaAction("choice")]
     private static bool ProcessConditionalChoice(DramaManager dm, Dictionary<string, string> line)
     {
         var expr = line["param"];
-        if (expr.IsEmptyOrNull) {
-            return false;
-        }
-
         var func = BuildExpression(expr);
         if (func is null) {
             return false;
         }
 
-        // add first, but conditionally remove it in invoke call
-        Dictionary<string, string> choiceLine = new(line, StringComparer.Ordinal) {
-            ["param"] = "",
-        };
-
+        // add as dynamic event
         var choices = dm.lastTalk.choices;
         var lastChoice = choices.Count;
-        dm.ParseLine(choiceLine);
+
+        Dictionary<string, string> newLine = new(line, StringComparer.Ordinal) {
+            ["param"] = "",
+        };
+        dm.ParseLine(newLine);
 
         if (choices.Count == lastChoice) {
             // disabled via if / if2 or failed to add or something
@@ -124,46 +120,43 @@ public partial class DramaExpansion : DramaOutcome
             return true;
         }
 
-        // TODO: maybe allow multiline params?
-        foreach (var expr in rawExpr.SplitLines()) {
-            if (BuildExpression(expr) is not { } func) {
-                continue;
-            }
-
-            // for old i* style usage
-            if (expr.StartsWith(nameof(choice))) {
-                Dictionary<string, string> choiceLine = new(line, StringComparer.Ordinal) {
-                    ["action"] = nameof(choice),
-                    ["param"] = "", // reset so we don't use new action handler
-                };
-
-                var lastChoice = dm.lastTalk.choices.Count;
-                dm.ParseLine(choiceLine);
-
-                if (dm.lastTalk.choices.Count == lastChoice) {
-                    // disabled via if / if2 or failed to add or something
-                    return true;
-                }
-
-                dm.lastTalk.choices[^1].activeCondition = () => func(dm, line);
-            }
-
-            var jump = line["jump"];
-            var method = new DramaEventMethod(() => func(dm, line));
-
-            if (!jump.IsEmptyOrNull) {
-                method.action = null;
-                method.jumpFunc = () => func(dm, line) ? jump : "";
-            }
-
-            dm.AddEvent(method);
+        var expr = rawExpr.RemoveNewline();
+        if (BuildExpression(expr) is not { } func) {
+            return true;
         }
+
+        var jump = line["jump"];
+        var hasJump = !jump.IsEmptyOrNull;
+        var hasId = !line["id"].IsEmptyOrNull;
+
+        // 1) no jump, has text, conditional talk
+        if (!hasJump && hasId) {
+            Dictionary<string, string> newLine = new(line, StringComparer.Ordinal) {
+                ["action"] = "",
+                ["param"] = "",
+            };
+            AddConditionalTalk(() => func(dm, line), newLine);
+
+            return true;
+        }
+
+        // 2) has jump, conditional goto
+        if (hasJump) {
+            dm.AddEvent(new DramaEventMethod(null) {
+                jumpFunc = () => func(dm, line) ? jump : "",
+            });
+
+            return true;
+        }
+
+        // 3) fallback, simple action
+        dm.AddEvent(new DramaEventMethod(() => func(dm, line)));
 
         return true;
     }
 
     // always handle this action
-    [CwlDramaAction(nameof(eval))]
+    [CwlDramaAction("eval")]
     private static bool ProcessEvalAction(DramaManager dm, Dictionary<string, string> line)
     {
         var expr = line["param"];
@@ -172,19 +165,41 @@ public partial class DramaExpansion : DramaOutcome
         }
 
         var submission = CwlScriptSubmission.Create(dm.setup.book);
-        var jump = line["jump"];
         var state = new DramaScriptState {
             dm = dm,
             line = line,
         };
 
-        DramaEventMethod method = jump.IsEmptyOrNull
-            ? new(() => DeferredCompileAndRun())
-            : new(null) {
-                jumpFunc = () => DeferredCompileAndRun() is true ? jump : "",
-            };
+        var jump = line["jump"];
+        var hasJump = !jump.IsEmptyOrNull;
+        var hasId = !line["id"].IsEmptyOrNull;
 
-        dm.AddEvent(method);
+        // 1) no jump, has text, conditional talk
+        if (!hasJump && hasId) {
+            Dictionary<string, string> newLine = new(line, StringComparer.Ordinal) {
+                ["action"] = "",
+                ["param"] = "",
+            };
+            AddConditionalTalk(() => DeferredCompileAndRun() is true, newLine);
+
+            return true;
+        }
+
+        // 2) has jump, conditional goto
+        if (hasJump) {
+            dm.AddEvent(new DramaEventMethod(null) {
+                jumpFunc = () => DeferredCompileAndRun() switch {
+                    string jumpEval => jumpEval, // allow jump overwriting
+                    false => "",
+                    _ => jump,
+                },
+            });
+
+            return true;
+        }
+
+        // 3) fallback, simple eval
+        dm.AddEvent(new DramaEventMethod(() => DeferredCompileAndRun()));
 
         return true;
 

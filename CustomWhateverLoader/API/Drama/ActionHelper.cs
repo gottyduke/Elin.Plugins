@@ -20,15 +20,30 @@ public partial class DramaExpansion
 
         var talkEvent = new DramaEventTalk {
             idActor = actor,
-            idJump = jump ?? dm.sequence.lastlastStep.OrIfEmpty("end"),
+            idJump = jump,
             text = text,
             temp = true,
             sequence = dm.sequence,
         };
 
-        dm.lastTalk = talkEvent;
-        dm.AddEvent(talkEvent);
-        dm.sequence.tempEvents.Add(dm.lastTalk);
+        dm.sequence.tempEvents.Add(talkEvent);
+    }
+
+    public static DramaEventDynamicTalk? AddConditionalTalk(Func<bool> enableIf, Dictionary<string, string> line)
+    {
+        if (Cookie?.Dm is not { } dm) {
+            return null;
+        }
+        dm.ParseLine(line);
+
+        var talk = new DramaEventDynamicTalk(dm.lastTalk) {
+            enableIf = enableIf,
+        };
+        dm.sequence.events.Remove(dm.lastTalk);
+        dm.lastTalk = talk;
+        dm.AddEvent(talk);
+
+        return talk;
     }
 
     public static void Goto(string step)

@@ -22,7 +22,7 @@ public static class ModInfo
     public const string Guid = "dk.elinplugins.customdialogloader";
     public const string Name = "Custom Whatever Loader";
 
-    public const string Version = "1.22.16";
+    public const string Version = "1.22.18";
 
     // for runtime versions
     public static string BuildVersion => field ??= CwlMod.Assembly.GetName().Version.ToString();
