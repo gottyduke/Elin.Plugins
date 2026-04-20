@@ -8,6 +8,9 @@ public class DramaEventDynamic(DramaEvent baseEvent) : DramaEvent
 
     public override bool Play()
     {
-        return !enableIf() || baseEvent.Play();
+        if (enableIf()) {
+            baseEvent.Play();
+        }
+        return true;
     }
 }
