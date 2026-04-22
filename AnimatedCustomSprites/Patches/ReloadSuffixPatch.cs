@@ -1,3 +1,4 @@
+using System.IO;
 using System.Linq;
 using ACS.API;
 using HarmonyLib;
@@ -28,6 +29,14 @@ internal class ReloadSuffixPatch
                 data.frame = clip.Length;
                 data.time = clip.Interval / 1000f;
                 data.scale = 100;
+
+                if (!File.Exists($"{data.path}.ini")) {
+                    File.WriteAllLines($"{data.path}.ini", [
+                        $"frame={data.frame}",
+                        $"time={data.time}",
+                        $"scale={data.scale}",
+                    ]);
+                }
 
                 __instance.suffixes[$"_acs_{clip.Name}"] = data;
                 __instance.suffixes[AcsController.ReservedSuffix] = null;
