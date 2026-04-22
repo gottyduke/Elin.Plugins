@@ -16,7 +16,7 @@ public class ThingRequest : ElinDelta
     public required int Id { get; init; }
 
     [Key(1)]
-    public required RemoteCard? Thing { get; init; }
+    public required RemoteCard? Thing { get; set; }
 
     [Key(2)]
     public required int Num { get; init; }
@@ -44,6 +44,7 @@ public class ThingRequest : ElinDelta
         result.parent?.RemoveCard(result);
         CardCache.KeepAlive(result);
 
+        Thing = result;
         Success(result);
     }
 

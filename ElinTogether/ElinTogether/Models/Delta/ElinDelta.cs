@@ -42,8 +42,10 @@ namespace ElinTogether.Models;
 [Union(511, typeof(QuestSetClientDelta))]
 [Union(512, typeof(QuestStartDelta))]
 // Misc
-[Union(600, typeof(InvRerollDelta))]
-[Union(601, typeof(OnBarterDelta))]
+[Union(600, typeof(OnBarterDelta))]
+// Inv
+[Union(700, typeof(InvOwnerOnProcessDelta))]
+[Union(701, typeof(InvRerollDelta))]
 public abstract class ElinDelta : EClass
 {
     public static bool IsApplying { get; private set; }

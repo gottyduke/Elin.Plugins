@@ -16,8 +16,7 @@ internal static class CharaTaskProgressEvents
     internal static IEnumerable<MethodBase> TargetMethods()
     {
         return OverrideMethodComparer
-            .FindAllOverrides(typeof(AIProgress), nameof(AIProgress.OnProgressBegin))
-            .Where(mi => typeof(AIProgress).IsAssignableFrom(mi.DeclaringType));
+            .FindAllOverrides(typeof(AIProgress), nameof(AIProgress.OnProgressBegin));
     }
 
     [HarmonyPrefix]

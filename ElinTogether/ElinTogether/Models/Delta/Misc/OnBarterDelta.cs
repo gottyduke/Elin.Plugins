@@ -27,10 +27,11 @@ public class OnBarterDelta : ElinDelta
             return;
         }
 
-        // remove temp merchant chest
         var invOwnerShop = inv.owner;
         if (!CardCache.Contains(invOwnerShop.Container)) {
+            // remove the temporary merchant chest
             shopOwner.things.Remove(invOwnerShop.Container.Thing);
+            // replace it with the real merchant chest
             invOwnerShop.Container = shopOwner.things.Find("chest_merchant");
         }
 
