@@ -45,7 +45,7 @@ jobs:
       - name: Setup DotNet
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 10.0.x
+          dotnet-version: 10
           cache: true
           cache-dependency-path: |
             ${{ github.workspace }}\CustomWhateverLoader\packages.lock.json
@@ -75,7 +75,7 @@ jobs:
           echo "file_name=exmoongate-ci-builds-$fileVersion-${{ matrix.version }}" >> $env:GITHUB_OUTPUT
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.build.outputs.file_name }}
           path: ${{ github.workspace }}\out\${{ matrix.version }}
@@ -127,7 +127,7 @@ jobs:
 
       - name: Create or Update Release
         if: github.event_name != 'pull_request' && github.event_name != 'pull_request_target'
-        uses: softprops/action-gh-release@5be0e66d93ac7ed76da52eca8bb058f665c3a5fe #2.4.2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: EXM-${{ steps.build.outputs.file_version_short }}
           name: Expanded Moongate - ${{ steps.build.outputs.file_version }}
