@@ -19,7 +19,7 @@ public class InvOwnerOnProcessDelta : ElinDelta
     {
         if (Parent.Find() is not { } parent
             || Thing.Find() is not Thing { isDestroyed: false } thing
-            || Dest.Find() is not Thing dest) {
+            || Dest.Find() is not { } dest) {
             return;
         }
 
@@ -27,15 +27,61 @@ public class InvOwnerOnProcessDelta : ElinDelta
             return;
         }
 
-        // if (LayerInventory.CreateContainer(dest) is not { } layerInv) {
-        //     return;
-        // }
-
         if (net.IsHost) {
             net.Delta.AddRemote(this);
         }
 
-        // var destInv = layerInv.invs[0].owner;
-        // destInv.OnProcess(thing);
+        InvOwner? destInv = null;
+        switch (dest.trait) {
+            case TraitChara:
+                destInv = new InvOwnerGive(dest) {
+                    chara = dest as Chara,
+                };
+                break;
+            case TraitAltarChaos altarChaos:
+                destInv = new InvOwnerChaosOffering(dest) {
+                    altar = altarChaos,
+                };
+                break;
+            case TraitAltar altar:
+                destInv = new InvOwnerOffering(dest) {
+                    altar = altar,
+                };
+                break;
+            case TraitBank:
+                destInv = new InvOwnerDeliver(dest) {
+                    mode = InvOwnerDeliver.Mode.Bank,
+                };
+                break;
+            case TraitFarmChest:
+                destInv = new InvOwnerDeliver(dest) {
+                    mode = InvOwnerDeliver.Mode.Crop,
+                };
+                break;
+            case TraitTaxChest:
+                destInv = new InvOwnerDeliver(dest) {
+                    mode = InvOwnerDeliver.Mode.Tax,
+                };
+                break;
+            case TraitCrafter crafter:
+                destInv = new InvOwnerCraft(dest) {
+                    crafter = crafter,
+                };
+                break;
+            case TraitRecycle recycle:
+                destInv = new InvOwnerRecycle(dest) {
+                    recycle = recycle,
+                };
+                break;
+            case TraitGacha gacha:
+                destInv = new InvOwnerGacha(dest) {
+                    gacha = gacha,
+                };
+                break;
+            default:
+                break;
+        }
+
+        destInv?.OnProcess(thing);
     }
 }
