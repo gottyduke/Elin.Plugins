@@ -95,7 +95,9 @@ internal class ExtendedGunEffectPatch : EClass
                 if (isLaser) {
                     var laserType = isRail ? "laser_rail" : "laser";
                     fireFrom = fireFromMuzzle ? fireOffset : Vector2.zero;
-                    cc.PlayEffect(laserType, fix: fireFrom).GetComponent<SpriteBasedLaser>().Play(tp.PositionCenter());
+                    cc.PlayEffect(laserType, fix: fireFrom)
+                        .GetComponent<SpriteBasedLaser>()
+                        .Play(tp.PositionCenter());
                 } else if (id == "gun_laser_assault") {
                     // newly added assault
                     Effect.Get("ranged_laser")._Play(cc.pos, fireFrom, to: tp, sprite: data.sprite);

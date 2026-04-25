@@ -29,7 +29,7 @@ public partial class CustomChara
         chara.global.transition = new() {
             state = ZoneTransition.EnterState.RandomVisit,
         };
-        zone.AddCard(chara);
+        chara.MoveZone(zone);
     }
 
     [Time]
