@@ -131,11 +131,7 @@ public partial class DramaExpansion : DramaOutcome
 
         // 1) no jump, has text, conditional talk
         if (!hasJump && hasId) {
-            Dictionary<string, string> newLine = new(line, StringComparer.Ordinal) {
-                ["action"] = "",
-                ["param"] = "",
-            };
-            AddConditionalTalk(() => func(dm, line), newLine);
+            AddConditionalTalk(() => func(dm, line), line);
 
             return true;
         }
@@ -176,11 +172,7 @@ public partial class DramaExpansion : DramaOutcome
 
         // 1) no jump, has text, conditional talk
         if (!hasJump && hasId) {
-            Dictionary<string, string> newLine = new(line, StringComparer.Ordinal) {
-                ["action"] = "",
-                ["param"] = "",
-            };
-            AddConditionalTalk(() => DeferredCompileAndRun() is true, newLine);
+            AddConditionalTalk(() => DeferredCompileAndRun() is true, line);
 
             return true;
         }

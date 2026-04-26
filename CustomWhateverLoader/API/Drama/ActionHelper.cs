@@ -34,7 +34,12 @@ public partial class DramaExpansion
         if (Cookie?.Dm is not { } dm) {
             return null;
         }
-        dm.ParseLine(line);
+
+        var newLine = new Dictionary<string, string>(line, StringComparer.Ordinal) {
+            ["action"] = "",
+            ["param"] = "",
+        };
+        dm.ParseLine(newLine);
 
         var talk = new DramaEventDynamicTalk(dm.lastTalk) {
             enableIf = enableIf,
