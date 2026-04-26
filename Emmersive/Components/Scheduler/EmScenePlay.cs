@@ -123,7 +123,7 @@ public partial class EmScheduler
                 pc.Profile.ResetTalkCooldown();
                 GlobalCooldown = EmConfig.Policy.GlobalRequestCooldown.Value;
 
-                EmMod.Debug("em_ui_scene_complete".Loc(response));
+                EmMod.Log("em_ui_scene_complete".Loc(response));
             }
         } catch (AggregateException ex)
             when (ex.InnerException is SchedulerDryRunException) {

@@ -45,6 +45,7 @@ internal class TabDebugPanel : TabEmmersiveBase
                 entry.Layout.childForceExpandWidth = true;
 
                 entry.TopicPair(activity.RequestTime.ToLocalTime().ToLongTimeString(), activity.ServiceName);
+                entry.Spacer(0).LayoutElement().flexibleWidth = 1f;
                 entry.TopicPair(activity.Status.ToString(), $"{activity.TokensInput} + {activity.TokensOutput}");
             }
         }
