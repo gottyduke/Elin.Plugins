@@ -6,6 +6,7 @@ using Cwl.Helper;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.String;
 using Cwl.LangMod;
+using Cwl.Patches.Traits;
 using ReflexCLI.Attributes;
 
 namespace Cwl.API.Custom;
@@ -111,13 +112,14 @@ public class CustomMerchant : TraitMerchant
         }
     }
 
-    // invoked by CWL
-    internal void _OnBarter()
+    public override void OnBarter(bool reroll = false)
     {
         var stock = GetStockItems(owner.id);
         if (stock.Length > 0) {
             GenerateStock(owner, stock);
         }
+
+        OnBarterEvent.FitSize(this);
     }
 
     internal static void TransformMerchant(ref string traitName, Card traitOwner)

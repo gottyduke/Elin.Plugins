@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Cwl.Patches.Traits;
 
 [HarmonyPatch(typeof(Trait), nameof(Trait.OnBarter))]
-internal class OnBarterEvent
+public class OnBarterEvent
 {
     [HarmonyPrefix]
     internal static void OnSetStock(Trait __instance, out bool __state)
@@ -22,21 +22,17 @@ internal class OnBarterEvent
             return;
         }
 
-        if (__instance is CustomMerchant custom) {
-            custom._OnBarter();
-        } else {
-            var externalStock = CustomMerchant.GetStockItems(__instance.owner.id);
-            if (externalStock.Length > 0) {
-                CustomMerchant.GenerateStock(__instance.owner, externalStock);
-            }
-
-            __instance.InstanceDispatch("_OnBarter");
+        var externalStock = CustomMerchant.GetStockItems(__instance.owner.id);
+        if (externalStock.Length > 0) {
+            CustomMerchant.GenerateStock(__instance.owner, externalStock);
         }
+
+        __instance.InstanceDispatch("_OnBarter");
 
         FitSize(__instance);
     }
 
-    private static void FitSize(Trait merchant)
+    public static void FitSize(Trait merchant)
     {
         var inv = merchant.owner?.things?.Find("chest_merchant")?.things;
         if (inv is null) {
