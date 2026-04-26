@@ -204,12 +204,13 @@ internal class TabAiService : TabEmmersiveBase
 
     private static void OpenApiGuide()
     {
-        var link = "https://elin-modding.net/articles/100_Mod%20Documentation/Emmersive/API_Setup" +
-                   Lang.langCode switch {
-                       "CN" or "ZHTW" => ".CN",
-                       "JP" => ".JP",
-                       _ => "",
-                   };
+        var lang = Lang.langCode switch {
+            "CN" or "ZHTW" => "/zh",
+            "JP" => "/ja",
+            _ => "",
+        };
+        var link = $"https://elin-modding.net{lang}/articles/100_Mod%20Documentation/Emmersive/API_Setup";
+
         Application.OpenURL(link);
     }
 
