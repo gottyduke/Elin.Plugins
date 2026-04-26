@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Cwl.Helper.FileUtil;
 using Cwl.LangMod;
@@ -15,17 +16,18 @@ namespace Emmersive.Components;
 internal class TabAiService : TabEmmersiveBase
 {
     private UIButton? _schedulerMode;
+    private int _selectedServiceIndex;
 
     public override void OnLayout()
     {
         BuildSchedulerButton();
         BuildDebugButtons();
 
+        BuildServiceButtons();
+
         if (EmActivity.Session.Count > 0) {
             this.MakeCard().ShowActivityInfo("");
         }
-
-        BuildServiceButtons();
 
         var layouts = ApiPoolSelector.Instance.Providers
             .OfType<ILayoutProvider>()
@@ -76,45 +78,76 @@ internal class TabAiService : TabEmmersiveBase
 
     private void BuildServiceButtons()
     {
-        var btnGroup = Horizontal()
+        var addCard = this.MakeCard();
+        addCard.HeaderCard("em_ui_tab_ai_service");
+
+        var btnGroup = addCard.Horizontal()
             .WithSpace(10);
         btnGroup.Layout.childForceExpandWidth = true;
 
-        AddServiceButton("em_ui_add_service_google", apiKey => new GoogleProvider(apiKey));
-        AddServiceButton("em_ui_add_service_openai", apiKey => new OpenAIProvider(apiKey));
-
-        // Player2
-        btnGroup.Button("em_ui_add_service_player2".lang(),
-            () => Dialog.YesNo("em_ui_p2_desc", () => {
-                AddService(new Player2Provider());
-            }));
-
-        // CN treat: piexian free API
-        if (Lang.langCode == "CN") {
-            btnGroup.Button("em_ui_add_service_piexian".lang(),
-                () => Dialog.YesNo("em_ui_px_desc", () => {
-                    Application.OpenURL("https://proxy.pieixan.icu/login");
-                    AddService(new PiexianProvider());
-                }));
+        var serviceOptions = new List<string> {
+            "em_ui_add_service_openai".lang(),
+            "em_ui_add_service_deepseek".lang(),
+            "em_ui_add_service_google".lang(),
+            "em_ui_add_service_player2".lang(),
+        };
+        if (Lang.langCode is "CN" or "ZHTW") {
+            serviceOptions.Add("em_ui_add_service_piexian".lang());
         }
+
+        var dropdown = btnGroup.Dropdown(
+            serviceOptions,
+            idx => _selectedServiceIndex = idx,
+            _selectedServiceIndex);
+        dropdown.GetOrCreate<LayoutElement>().minWidth = 200f;
+
+        btnGroup.Button("em_ui_add".lang(), OnAddClicked)
+            .GetOrCreate<Image>().color = Color.green;
+
+        btnGroup.Button("em_ui_api_guide".lang(), OpenApiGuide)
+            .mainText.supportRichText = true;
 
         return;
 
-        void AddServiceButton(string btnName, Func<string, IChatProvider> serviceFactory)
+        void OnAddClicked()
         {
-            btnGroup.Button(btnName.lang(), () => {
-                var d = Dialog.InputName(
-                    "em_ui_paste_api_key",
-                    "em_ui_api_key".lang(),
-                    (cancel, apiKey) => {
-                        if (!cancel) {
-                            AddService(serviceFactory(apiKey));
-                        }
+            switch (_selectedServiceIndex) {
+                case 0:
+                    AddServiceButton(apiKey => new OpenAIProvider(apiKey));
+                    break;
+                case 1:
+                    AddServiceButton(apiKey => new DeepSeekProvider(apiKey));
+                    break;
+                case 2:
+                    AddServiceButton(apiKey => new GoogleProvider(apiKey));
+                    break;
+                case 3:
+                    Dialog.YesNo("em_ui_p2_desc", () => {
+                        AddService(new Player2Provider());
                     });
-                d.input.field.characterLimit = 200;
-                d.input.field.contentType = InputField.ContentType.Password;
-                d.input.field.text = "";
-            });
+                    break;
+                case 4:
+                    Dialog.YesNo("em_ui_px_desc", () => {
+                        Application.OpenURL("https://proxy.pieixan.icu/login");
+                        AddService(new PiexianProvider());
+                    });
+                    break;
+            }
+        }
+
+        void AddServiceButton(Func<string, IChatProvider> serviceFactory)
+        {
+            var d = Dialog.InputName(
+                "em_ui_paste_api_key",
+                "em_ui_api_key".lang(),
+                (cancel, apiKey) => {
+                    if (!cancel) {
+                        AddService(serviceFactory(apiKey));
+                    }
+                });
+            d.input.field.characterLimit = 200;
+            d.input.field.contentType = InputField.ContentType.Password;
+            d.input.field.text = "";
         }
     }
 
@@ -134,14 +167,7 @@ internal class TabAiService : TabEmmersiveBase
 
         btnGroup.Button("em_ui_config_open".lang(), () => OpenFileOrPath.Run(EmMod.Instance.Config.ConfigFilePath));
 
-        var link = "https://elin-modding.net/articles/100_Mod%20Documentation/Emmersive/API_Setup" +
-                   Lang.langCode switch {
-                       "CN" or "ZHTW" => ".CN",
-                       "JP" => ".JP",
-                       _ => "",
-                   };
-
-        btnGroup.Button("em_ui_api_guide".lang(), () => Application.OpenURL(link))
+        btnGroup.Button("em_ui_api_guide".lang(), OpenApiGuide)
             .mainText.supportRichText = true;
 
         return;
@@ -174,6 +200,17 @@ internal class TabAiService : TabEmmersiveBase
             ELayer.ui.RemoveLayer<LayerEmmersivePanel>();
             EmScheduler.RequestScenePlayImmediate();
         }
+    }
+
+    private static void OpenApiGuide()
+    {
+        var link = "https://elin-modding.net/articles/100_Mod%20Documentation/Emmersive/API_Setup" +
+                   Lang.langCode switch {
+                       "CN" or "ZHTW" => ".CN",
+                       "JP" => ".JP",
+                       _ => "",
+                   };
+        Application.OpenURL(link);
     }
 
     private static void AddService(IChatProvider provider)

@@ -44,6 +44,7 @@
   "LangGeneral.em_ui_active_blacklist.text": "활성 블랙리스트 캐릭터",
   "LangGeneral.em_ui_active_whitelist.text": "활성 화이트리스트 캐릭터",
   "LangGeneral.em_ui_add.text": "추가",
+  "LangGeneral.em_ui_add_service_deepseek.text": "DeepSeek 추가",
   "LangGeneral.em_ui_add_service_google.text": "Google Gemini 추가",
   "LangGeneral.em_ui_add_service_openai.text": "OpenAI 호환 추가",
   "LangGeneral.em_ui_add_service_player2.text": "Player2 App",
