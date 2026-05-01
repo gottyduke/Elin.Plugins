@@ -58,8 +58,9 @@ public static class MethodCompatibility
                 try {
                     foreach (var il in instructions) {
                         var incompatibleBody = il.Operand switch {
-                            MethodReference mr => mr.Resolve() is not { } targetDef ||
-                                                  (!nested && TestIncompatibleDef(targetDef, true)),
+                            MethodReference mr => mr.DeclaringType is not ArrayType
+                                                  && (mr.Resolve() is not { } targetDef
+                                                      || (!nested && TestIncompatibleDef(targetDef, true))),
                             FieldReference fr => fr.Resolve() is null,
                             TypeReference tr and not GenericParameter => tr.Resolve() is null,
                             _ => false,
