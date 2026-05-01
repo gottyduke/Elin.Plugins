@@ -93,7 +93,7 @@
   "LangGeneral.cwl_ui_converter_reload.text": "重载规则",
   "LangGeneral.cwl_ui_cs_ready.text": "Roslyn 脚本编译器已就绪\n用法：\n  cwl.cs.eval <在此写入任意 C# 代码>\n  cwl.cs.file <C# 脚本文件的路径>",
   "LangGeneral.cwl_ui_csc_changed.text": "模组 '{0}' 的脚本已发生更改\n准备就绪后请使用命令 'cwl.cs.recompile'",
-  "LangGeneral.cwl_ui_debug_btn.text": "CWL/启用调试",
+  "LangGeneral.cwl_ui_debug_btn.text": "CWL/打开调试菜单",
   "LangGeneral.cwl_ui_exception_analyzing.text": "<color=orange><分析报错中…></color>",
   "LangGeneral.cwl_ui_exception_copy.text": "<color=purple><[鼠标左键]复制详情>\n<[鼠标中键]关闭且不再显示></color>",
   "LangGeneral.cwl_ui_export_zone.text": "CWL/导出地图",

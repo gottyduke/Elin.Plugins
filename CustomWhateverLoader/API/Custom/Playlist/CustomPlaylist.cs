@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Cwl.API.Attributes;
 using Cwl.API.Processors;
 using Cwl.Helper.String;
 using Cwl.LangMod;
@@ -153,7 +152,7 @@ public partial class CustomPlaylist(string name, int[] merge, int[] remove, bool
         return match.Success ? match.Groups[1].Value : "";
     }
 
-    [CwlPostLoad]
+    //[CwlPostLoad]
     private static void InvalidateBGM(GameIOProcessor.GameIOContext context)
     {
         var bgms = EClass.player.knownBGMs;

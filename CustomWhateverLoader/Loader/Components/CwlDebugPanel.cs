@@ -27,9 +27,9 @@ internal class CwlDebugPanel : EMono
         }
     }
 
-    [ConsoleCommand("enable_debug")]
+    [ConsoleCommand("show_debug_panel")]
     [CwlContextMenu("cwl_ui_debug_btn")]
-    internal static void EnableDebugPanel()
+    internal static void ShowDebugPanel()
     {
         ELayerCleanup.Cleanup<LayerDebug>();
         ELayer.ui.AddLayer<LayerDebug>();
