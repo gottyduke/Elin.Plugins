@@ -7,6 +7,7 @@ using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using Cysharp.Threading.Tasks;
 using Exm.Model.Map;
+using Newtonsoft.Json;
 using Steamworks;
 
 namespace Exm.API.Services;
@@ -83,16 +84,25 @@ public class MapController(IMapService service) : EClass
             z = returnPos.z,
         };
 
-        userMap.events.Add(new ZoneRatingUpdateEvent(service, meta));
+        userMap.events.Add(new ZoneRatingUpdateEvent {
+            meta = meta,
+        });
 
         pc.SetFlagValue("on_moongate");
         pc.MoveZone(userMap, ZoneTransition.EnterState.Moongate);
     }
 
-    private class ZoneRatingUpdateEvent(IMapService service, MapMeta meta) : ZoneEvent
+    private class ZoneRatingUpdateEvent : ZoneEvent
     {
+        [JsonProperty]
+        public required MapMeta? meta;
+
         public override void OnLeaveZone()
         {
+            if (meta is null) {
+                return;
+            }
+
             pc.SetFlagValue("on_moongate", 0);
 
             CoroutineHelper.Deferred(() =>
@@ -105,17 +115,26 @@ public class MapController(IMapService service) : EClass
 
         public override void OnVisit()
         {
+            if (meta is null) {
+                return;
+            }
+
             ui.Say(WebUtility.HtmlDecode("exm_ui_visit_map".Loc(meta.Title, meta.Author)));
         }
 
         public void UpdateRating(bool like)
         {
+            if (meta is null) {
+                return;
+            }
+
             UpdateRatingAsync().ForgetEx();
 
             return;
 
             async UniTask UpdateRatingAsync()
             {
+                var service = ExmService.MapService;
                 await service.PostMapRatingAsync(meta.Id, new() {
                     MapId = meta.Id,
                     UserId = SteamUser.GetSteamID().ToString(),
