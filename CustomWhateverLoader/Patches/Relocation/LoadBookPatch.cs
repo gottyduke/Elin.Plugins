@@ -11,7 +11,7 @@ using ReflexCLI.Attributes;
 
 namespace Cwl.Patches.Relocation;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 [ConsoleCommandClassCustomizer("cwl.data")]
 internal class LoadBookPatch
 {

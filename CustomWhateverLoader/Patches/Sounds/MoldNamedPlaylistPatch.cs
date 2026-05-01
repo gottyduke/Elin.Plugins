@@ -8,8 +8,8 @@ namespace Cwl.Patches.Sounds;
 [HarmonyPatch(typeof(Zone), nameof(Zone.CreatePlaylist))]
 internal class MoldNamedPlaylistPatch
 {
-    [SwallowExceptions]
-    [HarmonyPrefix]
+    //[SwallowExceptions]
+    //[HarmonyPrefix]
     internal static void PurgePlaylist(ref List<int> list)
     {
         list.RemoveAll(id => !Core.Instance.refs.dictBGM.ContainsKey(id));

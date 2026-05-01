@@ -7,7 +7,7 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Materials;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class ReverseIdMapper
 {
     [SwallowExceptions]

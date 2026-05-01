@@ -119,8 +119,6 @@ internal sealed partial class CwlMod
 
         DataLoader.MergeEffectSetting();
 
-        AddSoundsAndBGM();
-
         // post init tasks
         yield return null;
 
@@ -136,9 +134,11 @@ internal sealed partial class CwlMod
         DataLoader.MergeFactionElements();
         DataLoader.MergeOfferingMultiplier();
 
-        CurrentLoading = $"cwl_log_finished_loading_{ModInfo.TargetVersion}".lang();
+        AddSoundsAndBGM();
 
         yield return null;
+
+        CurrentLoading = $"cwl_log_finished_loading_{ModInfo.TargetVersion}".lang();
 
         // auto init console rebuild
         InitConsole();
@@ -189,7 +189,7 @@ internal sealed partial class CwlMod
     {
         DataLoader.LoadAllSounds();
 
-        CustomPlaylist.RebuildBGM();
+        //CustomPlaylist.RebuildBGM();
         CustomPlaylist.BuildPlaylists();
     }
 
