@@ -35,17 +35,19 @@ namespace ElinTogether.Models;
 // Zone
 [Union(400, typeof(SpatialGenDelta))]
 [Union(401, typeof(ZoneAddCardDelta))]
-[Union(402, typeof(ZoneEventQuestCreateDelta))]
 // World
 [Union(500, typeof(GameDelta))]
-[Union(510, typeof(QuestCreateDelta))]
-[Union(511, typeof(QuestSetClientDelta))]
-[Union(512, typeof(QuestStartDelta))]
 // Misc
 [Union(600, typeof(OnBarterDelta))]
 // Inv
 [Union(700, typeof(InvOwnerOnProcessDelta))]
 [Union(701, typeof(InvRerollDelta))]
+// Quest
+[Union(800, typeof(QuestCreateDelta))]
+[Union(801, typeof(QuestSetClientDelta))]
+[Union(802, typeof(QuestStartDelta))]
+[Union(803, typeof(QuestCreateInstanceZoneDelta))]
+[Union(804, typeof(QuestCompleteDelta))]
 public abstract class ElinDelta : EClass
 {
     public static bool IsApplying { get; private set; }

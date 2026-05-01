@@ -31,7 +31,7 @@ public class InvOwnerOnProcessDelta : ElinDelta
             net.Delta.AddRemote(this);
         }
 
-        InvOwner? destInv = null;
+        InvOwnerDraglet? destInv = null;
         switch (dest.trait) {
             case TraitChara:
                 destInv = new InvOwnerGive(dest) {
@@ -82,6 +82,6 @@ public class InvOwnerOnProcessDelta : ElinDelta
                 break;
         }
 
-        destInv?.OnProcess(thing);
+        destInv?._OnProcess(thing);
     }
 }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using ElinTogether.Helper;
 using ElinTogether.Net;
 using MessagePack;
 
@@ -19,7 +18,7 @@ public class QuestCreateDelta : ElinDelta
 
     protected override void OnApply(ElinNetBase net)
     {
-        if (NetSession.Instance.IsClient) {
+        if (NetSession.Instance.IsHost) {
             return;
         }
 
