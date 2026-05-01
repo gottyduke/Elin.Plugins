@@ -23,6 +23,7 @@ public class MapController(IMapService service) : EClass
         Directory.CreateDirectory(CorePath.ZoneSaveUser);
 
         var filePath = Path.Combine(CorePath.ZoneSaveUser, meta.Id.SanitizeFileName());
+        filePath = Path.ChangeExtension(filePath, ".z");
         if (!File.Exists(filePath)) {
             LayerProgress.StartAsync("Downloading", DownloadMap(meta, filePath));
         } else {
