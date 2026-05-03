@@ -73,6 +73,7 @@ internal partial class ElinNetHost
 
         Session.CurrentPlayers.Add(state);
 
+        peer.Send(NetSession.Instance.Rules);
         peer.Send(SaveDataProbe.Create(chara.uid));
     }
 
