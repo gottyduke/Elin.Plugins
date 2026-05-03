@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
+using Cwl.Helper.Extensions;
 using ElinTogether.Models;
 using ElinTogether.Net;
 using HarmonyLib;
@@ -30,9 +31,9 @@ internal static class Synchronization
         {
             return new CodeMatcher(instructions)
                 .MatchStartForward(
-                    new CodeMatch(OpCodes.Stfld, AccessTools.Field(typeof(Chara), nameof(Chara.actTime))))
-                .RemoveInstruction()
-                .InsertAndAdvance(
+                    new OperandContains(OpCodes.Stfld, nameof(Chara.actTime)))
+                .EnsureValid("Chara._Move set field actTime")
+                .SetInstructionAndAdvance(
                     Transpilers.EmitDelegate(SetActTime))
                 .InstructionEnumeration();
         }
@@ -43,15 +44,17 @@ internal static class Synchronization
         {
             return new CodeMatcher(instructions)
                 .MatchStartForward(
-                    new CodeMatch(OpCodes.Stfld, AccessTools.Field(typeof(Chara), nameof(Chara.actTime))))
-                .RemoveInstruction()
-                .InsertAndAdvance(
+                    new OperandContains(OpCodes.Stfld, nameof(Chara.actTime)))
+                .EnsureValid("Chara.Tick set field actTime 1")
+                .SetInstructionAndAdvance(
                     Transpilers.EmitDelegate(SetActTime))
                 .MatchStartForward(
                     new CodeMatch(OpCodes.Stfld, AccessTools.Field(typeof(Chara), nameof(Chara.actTime))))
-                .Advance(-10)
-                .RemoveInstructions(11)
+                .EnsureValid("Chara.Tick set field actTime 2")
                 .InsertAndAdvance(
+                    new(OpCodes.Pop),
+                    Transpilers.EmitDelegate(() => EClass.player.baseActTime))
+                .SetInstructionAndAdvance(
                     Transpilers.EmitDelegate(SetActTime))
                 .InstructionEnumeration();
         }
