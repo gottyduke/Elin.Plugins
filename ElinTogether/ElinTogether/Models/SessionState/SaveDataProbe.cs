@@ -12,13 +12,13 @@ public class SaveDataProbe
     public required LZ4Bytes Game { get; init; }
 
     [Key(1)]
-    public required LZ4Bytes Chara { get; init; }
+    public required int RemoteCharaUid { get; init; }
 
-    public static SaveDataProbe Create(Chara chara)
+    public static SaveDataProbe Create(int uid)
     {
         return new() {
             Game = LZ4Bytes.Create(EClass.game),
-            Chara = LZ4Bytes.Create(chara),
+            RemoteCharaUid = uid,
         };
     }
 }

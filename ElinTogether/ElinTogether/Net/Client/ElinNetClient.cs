@@ -61,6 +61,9 @@ internal partial class ElinNetClient : ElinNetBase
     /// </summary>
     protected override void OnPeerConnected(ISteamNetPeer host)
     {
+        EmpPop.Information("Connecting to host {@Peer}",
+            Socket.FirstPeer);
+
         // CLIENT-ONLY
         var sw = Stopwatch.StartNew();
         while (host.Name is null && sw.ElapsedMilliseconds <= 500) {
@@ -68,12 +71,11 @@ internal partial class ElinNetClient : ElinNetBase
             // ignore if steam can't respond in 500ms
         }
 
-        EmpPop.Information("Connecting to host {@Peer}",
-            Socket.FirstPeer);
-
         this.StartDeferredCoroutine(StartWorldStateUpdate, () => core.IsGameStarted);
 
+#if DEBUG
         DebugProgress ??= ProgressIndicator.CreateProgress(() => new(BuildDebugInfo()), _ => false, 1f);
+#endif
     }
 
     /// <summary>

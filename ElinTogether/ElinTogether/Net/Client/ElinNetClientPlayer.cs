@@ -12,10 +12,6 @@ internal partial class ElinNetClient
     /// </summary>
     private void OnSessionNewPlayerRequest(SessionNewPlayerRequest request)
     {
-        // TODO: disabled for now
-        return;
-
-
         ui.RemoveLayer<LayerEditBio>();
         var embark = ui.AddLayer<LayerEditBio>();
         var content = embark.GetComponentInChildren<Content>();
@@ -30,6 +26,7 @@ internal partial class ElinNetClient
             Socket.FirstPeer.Send(request.Ready());
             game.Kill();
             ui.RemoveLayer(embark);
+            core.game = null;
         });
     }
 
@@ -46,8 +43,7 @@ internal partial class ElinNetClient
         core.game = probeGame;
         Game.id = "world_emp";
 
-        var remoteChara = Session.Player = probe.Chara.Decompress<Chara>();
-        var find = game.cards.Find(remoteChara.uid);
+        var remoteChara = Session.Player = game.cards.globalCharas.Find(probe.RemoteCharaUid);
 
         player.uidChara = remoteChara.uid;
         player.chara = remoteChara;
@@ -56,6 +52,9 @@ internal partial class ElinNetClient
         probeGame.isLoading = true;
         probeGame.OnGameInstantiated();
         probeGame.OnLoad();
+
+        scene.Init(Scene.Mode.StartGame);
+        core.actionsNextFrame.Add(LayerTitle.KillActor);
 
         ui.RemoveLayer<LayerTitle>();
         ui.ShowCover();

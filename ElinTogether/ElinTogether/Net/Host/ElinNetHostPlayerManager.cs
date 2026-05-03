@@ -2,10 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Cwl.API.Attributes;
 using Cwl.Helper.Extensions;
-using ElinTogether.Helper;
 using ElinTogether.Models;
 using ElinTogether.Net.Steam;
-using Newtonsoft.Json;
 
 namespace ElinTogether.Net;
 
@@ -43,16 +41,11 @@ internal partial class ElinNetHost
         if (!SavedRemoteCharas.TryGetValue(peer.Uid, out var charaUid) ||
             game.cards.globalCharas.Find(charaUid) is not { } chara) {
             EmpLog.Debug("Remote character does not exist, request for new character generation");
-
-            //peer.Send(new SessionNewPlayerRequest());
-            // TODO: disable for now
-
-            chara = CharaGen.Create("player");
-            SavedRemoteCharas[peer.Uid] = chara.uid;
+            peer.Send(new SessionNewPlayerRequest());
+        } else {
+            // remote character exists
+            SendSaveProbe(chara, peer);
         }
-
-        // remote character exists
-        SendSaveProbe(chara, peer);
     }
 
     /// <summary>
@@ -64,12 +57,13 @@ internal partial class ElinNetHost
             peer);
 
         chara.MakeAlly();
+        chara.MoveZone(pc.currentZone);
         chara.SetFlagValue("remote_chara");
         ActiveRemoteCharas[peer.Id] = chara;
 
         var state = States[peer.Id] = new() {
             Index = peer.Id,
-            Uid = peer.Uid,
+            PeerUid = peer.Uid,
             Name = peer.Name!,
             CharaUid = chara.uid,
         };
@@ -79,9 +73,7 @@ internal partial class ElinNetHost
 
         Session.CurrentPlayers.Add(state);
 
-        game.Save(silent: true);
-
-        peer.Send(SaveDataProbe.Create(chara));
+        peer.Send(SaveDataProbe.Create(chara.uid));
     }
 
     /// <summary>
@@ -93,26 +85,19 @@ internal partial class ElinNetHost
             peer);
 
         var chara = response.Chara.Decompress<Chara>();
+        chara.mapInt.Remove(CINT.IsPC);
+        game.cards.AssignUID(chara);
 
-        var remoteChara = CharaGen.Create("player");
+        SavedRemoteCharas[peer.Uid] = chara.uid;
 
-        JsonConvert.PopulateObject(chara.ToCompactJson(), remoteChara, GameIO.jsReadGame);
-        remoteChara.ChangeJob(chara.job.id);
-        remoteChara.ChangeRace(chara.race.id);
-
-        // assign a global uid
-        remoteChara.SetGlobal();
-        game.cards.AssignUID(remoteChara);
-
-        SavedRemoteCharas[peer.Uid] = remoteChara.uid;
-
-        SendSaveProbe(remoteChara, peer);
+        SendSaveProbe(chara, peer);
     }
 
     public static void RemoveRemoteChara(Chara remoteChara)
     {
         pc.party.RemoveMember(remoteChara);
         _zone.RemoveCard(remoteChara);
+
         if (Session.Connection is ElinNetHost host) {
             host.Delta.AddRemote(new CharaRemoveFromGameDelta {
                 Owner = remoteChara,

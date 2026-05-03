@@ -40,7 +40,7 @@ internal partial class ElinNetHost : ElinNetBase
         // host also registers self state
         var selfState = States[0] = new() {
             Index = 0,
-            Uid = (ulong)SteamUser.GetSteamID(),
+            PeerUid = (ulong)SteamUser.GetSteamID(),
             Name = SteamFriends.GetPersonaName(),
             CharaUid = player.uidChara,
         };
@@ -121,7 +121,9 @@ internal partial class ElinNetHost : ElinNetBase
             LobbyId = (ulong)Session.Lobby.Current!.LobbyId,
         });
 
+#if DEBUG
         DebugProgress ??= ProgressIndicator.CreateProgress(() => new(BuildDebugInfo()), _ => false, 1f);
+#endif
     }
 
     protected override void OnPeerDisconnected(ISteamNetPeer peer, string disconnectInfo)
