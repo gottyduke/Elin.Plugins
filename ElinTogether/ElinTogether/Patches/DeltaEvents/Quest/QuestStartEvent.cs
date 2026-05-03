@@ -11,7 +11,7 @@ internal class QuestStartEvent
     [HarmonyPatch(typeof(QuestManager), nameof(QuestManager.Start), typeof(Quest))]
     internal static void OnStart(Quest q)
     {
-        if (NetSession.Instance.Connection is not { } connection) {
+        if (NetSession.Instance.Connection is not { } connection || ElinDelta.IsApplying) {
             return;
         }
 
