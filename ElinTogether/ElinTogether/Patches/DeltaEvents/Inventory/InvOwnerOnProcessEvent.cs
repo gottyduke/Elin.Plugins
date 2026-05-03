@@ -12,8 +12,8 @@ internal static class InvOwnerOnProcessEvent
     internal static IEnumerable<MethodBase> TargetMethods()
     {
         return [
-          AccessTools.Method(typeof(InvOwnerDraglet), nameof(InvOwnerDraglet.OnProcess)),
-          AccessTools.Method(typeof(InvOwnerHotbar), nameof(InvOwnerHotbar.OnProcess)),
+            AccessTools.Method(typeof(InvOwnerDraglet), nameof(InvOwnerDraglet.OnProcess)),
+            AccessTools.Method(typeof(InvOwnerHotbar), nameof(InvOwnerHotbar.OnProcess)),
         ];
     }
 

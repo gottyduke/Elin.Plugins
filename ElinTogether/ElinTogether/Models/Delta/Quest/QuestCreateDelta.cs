@@ -32,7 +32,7 @@ public class QuestCreateDelta : ElinDelta
 
     public static QuestCreateDelta Create(Quest quest)
     {
-        return new QuestCreateDelta {
+        return new() {
             Uid = quest.uid,
             Data = LZ4Bytes.Create(quest),
             AssignQuest = quest.person.chara.quest == quest,

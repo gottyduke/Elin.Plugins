@@ -23,7 +23,7 @@ public class QuestSetClientDelta : ElinDelta
         if (NewChara.Find() is not Chara chara) {
             return;
         }
-        
+
         var quest = game.quests.list.Find(q => q.uid == Uid);
         if (quest is not null) {
             quest.SetClient(chara, AssignQuest);

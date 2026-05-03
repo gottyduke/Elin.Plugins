@@ -11,7 +11,7 @@ public class QuestStartDelta : ElinDelta
 
     [Key(1)]
     public required RemoteCard? Owner { get; init; }
-    
+
     [Key(2)]
     public required LZ4Bytes? Data { get; init; }
 

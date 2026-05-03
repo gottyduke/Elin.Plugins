@@ -78,8 +78,6 @@ public class InvOwnerOnProcessDelta : ElinDelta
                     gacha = gacha,
                 };
                 break;
-            default:
-                break;
         }
 
         destInv?._OnProcess(thing);

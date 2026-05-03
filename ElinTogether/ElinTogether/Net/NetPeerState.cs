@@ -9,7 +9,7 @@ public class NetPeerState
     public required int Index { get; init; }
 
     [Key(1)]
-    public required ulong Uid { get; init; }
+    public required ulong PeerUid { get; init; }
 
     [Key(2)]
     public required string Name { get; init; }
@@ -26,7 +26,7 @@ public class NetPeerState
     [Key(6)]
     public int LastReceivedTick { get; set; } = -1;
 
-    internal Chara FindChara()
+    public Chara FindChara()
     {
         return EClass.pc.party.members.Find(c => c.uid == CharaUid);
     }

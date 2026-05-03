@@ -78,7 +78,7 @@ internal static partial class EmpLogger
                 })
                 .Destructure.ByTransforming<NetPeerState>(ps => new {
                     ps.Index,
-                    ps.Uid,
+                    Uid = ps.PeerUid,
                     ps.Name,
                 })
                 .Destructure.ByTransforming<NetSession>(s => new {

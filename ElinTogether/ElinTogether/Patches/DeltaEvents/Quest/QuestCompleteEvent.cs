@@ -1,6 +1,4 @@
-using ElinTogether.Models;
-using ElinTogether.Net;
-using HarmonyLib;
+
 
 // maybe not needed
 // [HarmonyPatch(typeof(Quest), nameof(Quest.Complete))]
@@ -14,7 +12,7 @@ using HarmonyLib;
 //         }
 
 //         // host.Delta.AddRemote(new QuestCompleteDelta {
-//         //     Uid = __instance.uid,
+//         //     PeerUid = __instance.uid,
 //         // });
 //     }
 // }

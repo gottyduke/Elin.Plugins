@@ -32,7 +32,7 @@ public class QuestCreateInstanceZoneDelta : ElinDelta
         pc.MoveZone(zone, new ZoneTransition {
             state = ZoneTransition.EnterState.Exact,
             x = 50,
-            z = 53
+            z = 53,
         });
     }
 }
