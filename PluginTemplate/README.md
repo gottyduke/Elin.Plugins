@@ -4,7 +4,7 @@
 
 ![nuget](https://img.shields.io/nuget/v/ElinPluginTemplate)
 
-![.NET SDK 10.0.x](https://img.shields.io/badge/10-green?logoColor=blue&label=dotnet%20SDK&labelColor=blue&link=https%3A%2F%2Fdotnet.microsoft.com%2Fen-us%2Fdownload%2Fdotnet%2F10.0)
+[![.NET SDK 10.0.x](https://img.shields.io/badge/10-green?logoColor=blue&label=dotnet%20SDK&labelColor=blue)](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
 
 Install from NuGet, using NPM or dotnet CLI:
 ```ps
