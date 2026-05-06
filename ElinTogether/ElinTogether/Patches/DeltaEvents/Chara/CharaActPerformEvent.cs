@@ -12,8 +12,9 @@ namespace ElinTogether.Patches;
 internal static class CharaActPerformEvent
 {
     private static readonly HashSet<int> _alwaysSuccessfulActs = [
-        // for some reason this returns false
+        // for some reason these return false
         ABILITY.ActRide,
+        ABILITY.ActParasite,
     ];
 
     internal static IEnumerable<MethodBase> TargetMethods()
