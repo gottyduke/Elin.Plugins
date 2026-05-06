@@ -10,7 +10,7 @@ internal class RemoteRideHostPatch
     internal static void OnSetHostRideFocus(BaseGameScreen __instance)
     {
         if (EClass.pc.host is { } host) {
-            __instance.focusPos = host.pos.Position();
+            EClass.player.position = host.renderer.position;
         }
     }
 }
