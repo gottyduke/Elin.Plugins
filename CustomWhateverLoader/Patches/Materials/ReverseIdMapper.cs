@@ -42,7 +42,7 @@ internal class ReverseIdMapper
             .InstructionEnumeration();
     }
 
-    [HarmonyPatch]
+    //[HarmonyPatch]
     internal class SerializedCardDyeMatIdMapper
     {
         [HarmonyTranspiler]
