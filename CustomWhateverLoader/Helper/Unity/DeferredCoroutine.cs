@@ -56,8 +56,8 @@ public static class DeferredCoroutine
                     continue;
                 }
 
-                action();
                 _deferredAwaiters.RemoveAt(i);
+                action();
             }
 
             if (_deferredAwaiters.Count == 0) {

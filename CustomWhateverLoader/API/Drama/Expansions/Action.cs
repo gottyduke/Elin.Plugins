@@ -50,7 +50,7 @@ public partial class DramaExpansion
         parameters.Requires(out var alias);
         dm.RequiresActor(out var actor);
 
-        foreach (var condition in actor.conditions.Copy()) {
+        foreach (var condition in actor.conditions.ToList()) {
             if (condition.source.alias != alias) {
                 continue;
             }
@@ -92,12 +92,12 @@ public partial class DramaExpansion
         var items = actor.FindAllThings(item.Value).ToArray();
 
         if (!valueExpr.Provided) {
-            foreach (var thing in items.Copy()) {
+            foreach (var thing in items.ToList()) {
                 thing.Destroy();
             }
         } else {
             var count = Math.Max(valueExpr.AsInt(1), 0);
-            foreach (var thing in items.Copy()) {
+            foreach (var thing in items.ToList()) {
                 if (count <= 0) {
                     break;
                 }
@@ -122,7 +122,7 @@ public partial class DramaExpansion
         parameters.Requires(out var alias);
         dm.RequiresActor(out var actor);
 
-        foreach (var condition in actor.conditions.Copy()) {
+        foreach (var condition in actor.conditions.ToList()) {
             if (condition.source.alias == alias) {
                 condition.Kill();
             }
