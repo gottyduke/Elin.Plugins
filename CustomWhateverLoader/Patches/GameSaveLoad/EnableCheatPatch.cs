@@ -4,9 +4,15 @@ namespace Cwl.Patches.GameSaveLoad;
 
 internal class EnableCheatPatch
 {
-    [CwlSceneInitEvent(Scene.Mode.StartGame)]
+    [CwlPostLoad]
     internal static void SetCheatEnabled()
     {
-        EClass.game?.config?.cheat = true;
+        EClass.game.config?.cheat = true;
+    }
+
+    [CwlPreSave]
+    internal static void SetCheatDisabled()
+    {
+        EClass.game.config?.cheat = false;
     }
 }
