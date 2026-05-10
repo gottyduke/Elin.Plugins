@@ -140,7 +140,7 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: CWL-${{ steps.build.outputs.file_version_short }}
-          name: Custom Whatever Loader ${{ steps.build.outputs.file_version }}${{ steps.build.outputs.debug_suffix }}
+          name: Custom Whatever Loader ${{ steps.build.outputs.file_version }}
           generate_release_notes: false
           body_path: ${{ github.workspace }}\CHANGELOG.txt
           files: ${{ steps.artifact.outputs.artifact_path }}

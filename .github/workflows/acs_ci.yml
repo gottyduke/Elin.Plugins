@@ -138,7 +138,7 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ACS-${{ steps.build.outputs.file_version_short }}
-          name: Animated Custom Sprites ${{ steps.build.outputs.file_version }}${{ steps.build.outputs.debug_suffix }}
+          name: Animated Custom Sprites ${{ steps.build.outputs.file_version }}
           prerelease: false
           generate_release_notes: false
           body_path: ${{ github.workspace }}\CHANGELOG.txt
