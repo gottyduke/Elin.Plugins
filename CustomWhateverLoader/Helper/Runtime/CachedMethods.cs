@@ -63,7 +63,7 @@ public static class CachedMethods
                 invoker = _cachedInvokers[method] = MethodInvoker.GetHandler(method, true);
             }
 
-            return invoker.Invoke(instance, args);
+            return invoker(instance, args);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

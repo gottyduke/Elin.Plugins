@@ -27,10 +27,10 @@ public static class ConsoleCommand
             }
 
             if (msg) {
-                CwlMod.Popup<ReflexConsole>(resultStr!);
+                CwlMod.Popup<ReflexConsole>(resultStr);
             }
 
-            return resultStr!;
+            return resultStr;
         }
     }
 }

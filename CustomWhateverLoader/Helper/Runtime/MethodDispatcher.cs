@@ -69,7 +69,6 @@ public static class MethodDispatcher
                 return true;
             }
 
-            var allm = instance.GetType().GetMethods(AccessTools.all & ~BindingFlags.Static);
             method = instance.GetType().GetMethod(methodName, AccessTools.all & ~BindingFlags.Static);
             if (method is null) {
                 return false;
