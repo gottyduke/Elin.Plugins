@@ -39,6 +39,8 @@ namespace ElinTogether.Models;
 [Union(500, typeof(GameDelta))]
 // Misc
 [Union(600, typeof(OnBarterDelta))]
+[Union(601, typeof(CardRendererTalkDelta))]
+[Union(602, typeof(MsgSayDelta))]
 // Inv
 [Union(700, typeof(InvOwnerOnProcessDelta))]
 [Union(701, typeof(InvRerollDelta))]

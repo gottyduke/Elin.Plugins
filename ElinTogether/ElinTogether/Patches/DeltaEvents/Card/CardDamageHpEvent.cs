@@ -6,7 +6,7 @@ using HarmonyLib;
 namespace ElinTogether.Patches;
 
 [HarmonyPatch(typeof(Card), nameof(Card.DamageHP),
-    typeof(long), typeof(int), typeof(int), typeof(AttackSource), typeof(Card), typeof(bool), typeof(Thing), typeof(Chara))]
+    typeof(long), typeof(int), typeof(int), typeof(AttackSource), typeof(Card), typeof(bool), typeof(Thing), typeof(Chara), typeof(int))]
 internal static class CardDamageHpEvent
 {
     [HarmonyPrefix]
@@ -18,7 +18,8 @@ internal static class CardDamageHpEvent
                                         Card origin,
                                         bool showEffect,
                                         Thing weapon,
-                                        Chara originalTarget)
+                                        Chara originalTarget,
+                                        int resistPenetrationLevel)
     {
         // simply drop the update as clients and wait for delta
         if (NetSession.Instance.Connection is not { } connection) {
@@ -38,6 +39,7 @@ internal static class CardDamageHpEvent
                 ShowEffect = showEffect,
                 Weapon = weapon,
                 OriginalTarget = originalTarget,
+                ResistPenetrationLevel = resistPenetrationLevel,
             });
         }
 
@@ -54,7 +56,8 @@ internal static class CardDamageHpEvent
                                     Card origin,
                                     bool showEffect,
                                     Thing weapon,
-                                    Chara originalTarget)
+                                    Chara originalTarget,
+                                    int resistPenetrationLevel)
         {
             throw new NotImplementedException("Chara.DamageHP");
         }

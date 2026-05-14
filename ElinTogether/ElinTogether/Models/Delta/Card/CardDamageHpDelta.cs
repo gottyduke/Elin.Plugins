@@ -34,12 +34,15 @@ public class CardDamageHpDelta : ElinDelta
     [Key(8)]
     public RemoteCard? OriginalTarget { get; init; }
 
+    [Key(9)]
+    public int ResistPenetrationLevel { get; init; }
+
     protected override void OnApply(ElinNetBase net)
     {
         if (Owner.Find() is not { } card) {
             return;
         }
 
-        card.Stub_DamageHP(Dmg, Ele, EleP, AttackSource, Origin, ShowEffect, Weapon, OriginalTarget);
+        card.Stub_DamageHP(Dmg, Ele, EleP, AttackSource, Origin, ShowEffect, Weapon, OriginalTarget, ResistPenetrationLevel);
     }
 }
