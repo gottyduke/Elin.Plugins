@@ -21,7 +21,7 @@ internal class NamedImportPatch
 
     internal static bool Prepare()
     {
-        return CwlConfig.NamedImport;
+        return GameVersion.IsBelow(0, 23, 306);
     }
 
     internal static IEnumerable<MethodBase> TargetMethods()
