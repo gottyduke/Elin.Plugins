@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Cwl.API;
 using Cwl.API.Custom;
 using Cwl.API.Drama;
 using Cwl.Helper.String;
@@ -142,6 +143,15 @@ public static class CharaExt
             EClass.game.cards.listAdv.Remove(chara);
 
             chara.Destroy();
+        }
+
+        public void SetPortraitOverride(string? portraitId)
+        {
+            if (portraitId.IsEmptyOrNull) {
+                chara.mapStr.Remove(CwlReservedConstants.PortraitOverride);
+            } else {
+                chara.mapStr.Set(CwlReservedConstants.PortraitOverride, portraitId);
+            }
         }
     }
 }

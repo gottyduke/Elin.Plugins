@@ -5,6 +5,7 @@ public static class CwlReservedConstants
     // runtime override
     public const string DramaOverride = "drama_override";
     public const string SpriteOverride = "sprite_override";
+    public const string PortraitOverride = "portrait_override";
 
     // chara creation
     public const string CharaCreationTagApplied = "cwl_tags_applied";
