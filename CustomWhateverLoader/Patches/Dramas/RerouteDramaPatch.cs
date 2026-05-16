@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reflection.Emit;
+using Cwl.API;
 using Cwl.API.Custom;
 using Cwl.API.Drama;
 using Cwl.Helper.Extensions;
@@ -28,7 +29,7 @@ internal class RerouteDramaPatch
         DramaExpansion.ResetStates();
 
         if (CustomChara.DramaRoutes.TryGetValue(chara.id, out var drama) ||
-            chara.mapStr.TryGetValue("drama_route", out drama)) {
+            chara.mapStr.TryGetValue(CwlReservedConstants.DramaOverride, out drama)) {
             return chara.ShowDialog(drama);
         }
 

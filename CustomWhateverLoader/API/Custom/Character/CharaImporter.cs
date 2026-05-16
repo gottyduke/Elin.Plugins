@@ -18,7 +18,7 @@ public partial class CustomChara
         }
 
         SpawnAtZone(chara, destZone);
-        chara.mapStr.Set("cwl_source_chara_zone", zoneFullName);
+        chara.mapStr.Set(CwlReservedConstants.CharaSourceZone, zoneFullName);
     }
 
     public static void SpawnAtZone(Chara chara, Zone zone)
@@ -88,7 +88,7 @@ public partial class CustomChara
 
                     if (CreateTaggedChara(id, out var chara, import)) {
                         SpawnAtZone(chara, toAddZone.Item1);
-                        chara.mapStr.Set("cwl_source_chara_zone", toAddZone.Item2);
+                        chara.mapStr.Set(CwlReservedConstants.CharaSourceZone, toAddZone.Item2);
 
                         if (isAdv) {
                             listAdv.Add(chara);

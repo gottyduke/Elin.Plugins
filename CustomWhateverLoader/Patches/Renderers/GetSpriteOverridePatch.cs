@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using Cwl.API;
 using Cwl.Helper;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.Unity;
@@ -20,7 +21,7 @@ internal class GetSpriteOverridePatch
     [HarmonyPostfix]
     internal static void OnGetCardSprite(Card __instance, ref Sprite __result)
     {
-        var hasOverride = __instance.mapStr.TryGetValue("sprite_override", out var overrideKey);
+        var hasOverride = __instance.mapStr.TryGetValue(CwlReservedConstants.SpriteOverride, out var overrideKey);
         if (hasOverride && TryGetSprite(overrideKey, out var overrideSprite)) {
             __result = overrideSprite;
         }

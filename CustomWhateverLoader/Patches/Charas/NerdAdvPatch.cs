@@ -1,4 +1,5 @@
-﻿using Cwl.Helper.Extensions;
+﻿using Cwl.API;
+using Cwl.Helper.Extensions;
 using HarmonyLib;
 
 namespace Cwl.Patches.Charas;
@@ -10,6 +11,6 @@ internal class NerdAdvPatch
     [HarmonyPatch(typeof(GlobalGoalAdv), nameof(GlobalGoalAdv.OnAdvanceHour))]
     internal static bool OnNerdShouldTouchGrass(GlobalGoalAdv __instance)
     {
-        return __instance.owner.GetFlagValue("StayHomeZone") == 0;
+        return __instance.owner.GetFlagValue(CwlReservedConstants.CharaSayHomeZone) == 0;
     }
 }

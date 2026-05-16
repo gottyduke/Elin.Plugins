@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Cwl.API;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 
@@ -13,7 +14,7 @@ public static class CardExt
         public string HashKey => $"{owner.id}/{owner.uid}";
 
         /// <summary>
-        ///     Get a flag value from character, 0 if not set
+        ///     Get a flag value from card, 0 if not set
         /// </summary>
         public int GetFlagValue(string flag)
         {
@@ -29,7 +30,7 @@ public static class CardExt
         }
 
         /// <summary>
-        ///     Set a flag value on character
+        ///     Set a flag value on card
         /// </summary>
         public void SetFlagValue(string flag, int value = 1)
         {
@@ -39,6 +40,14 @@ public static class CardExt
             if (EClass.core.IsGameStarted && owner.IsPC) {
                 EClass.player.dialogFlags[flag] = value;
             }
+        }
+
+        /// <summary>
+        ///     Check if card has a non-0 flag value
+        /// </summary>
+        public bool HasFlagValue(string flag)
+        {
+            return owner.mapInt.TryGetValue(flag, out var value) && value != 0;
         }
 
         /// <summary>
@@ -66,9 +75,9 @@ public static class CardExt
         public void SetSpriteOverride(string? spriteId)
         {
             if (spriteId.IsEmptyOrNull) {
-                owner.mapStr.Remove("sprite_override");
+                owner.mapStr.Remove(CwlReservedConstants.SpriteOverride);
             } else {
-                owner.mapStr.Set("sprite_override", spriteId);
+                owner.mapStr.Set(CwlReservedConstants.SpriteOverride, spriteId);
             }
 
             owner.RefreshSpriteRenderer();
@@ -76,7 +85,7 @@ public static class CardExt
 
         public string? GetSpriteOverride()
         {
-            return owner.mapStr.TryGetValue("sprite_override", out var spriteOverride) ? spriteOverride : null;
+            return owner.mapStr.TryGetValue(CwlReservedConstants.SpriteOverride, out var spriteOverride) ? spriteOverride : null;
         }
 
         public IEnumerable<Thing> FindAllThings(Func<Thing, bool> predicate)

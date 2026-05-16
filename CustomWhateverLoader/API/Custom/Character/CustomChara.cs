@@ -150,13 +150,13 @@ public partial class CustomChara : Chara
     [CwlCharaOnCreateEvent]
     internal static void ApplyTags(Chara chara)
     {
-        if (chara.GetFlagValue("cwl_tags_applied") != 0 ||
+        if (chara.GetFlagValue(CwlReservedConstants.CharaCreationTagApplied) != 0 ||
             !_delayedCharaImport.TryGetValue(chara.id, out var import)) {
             return;
         }
 
-        chara.SetFlagValue("cwl_tags_applied");
-        chara.mapStr.Set("cwl_source_chara_id", chara.id);
+        chara.SetFlagValue(CwlReservedConstants.CharaCreationTagApplied);
+        chara.mapStr.Set(CwlReservedConstants.CharaSourceId, chara.id);
 
         foreach (var tag in chara.source.tag) {
             if (tag.StartsWith("addFlag_")) {
@@ -195,7 +195,7 @@ public partial class CustomChara : Chara
     {
         row = chara.source;
         return chara.id == "chicken" &&
-               chara.mapStr.TryGetValue("cwl_source_chara_id", out var id) &&
+               chara.mapStr.TryGetValue(CwlReservedConstants.CharaSourceId, out var id) &&
                EMono.sources.charas.map.TryGetValue(id, out row) &&
                row.id != "chicken";
     }
