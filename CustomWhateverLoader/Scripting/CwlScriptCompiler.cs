@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
 using Cwl.LangMod;
+using MethodTimer;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
@@ -30,6 +31,7 @@ public class CwlScriptCompiler
         return $"removed {count} cached scripts";
     }
 
+    [Time]
     // no need to trim references because it's never emitted
     internal static ScriptRunner<object> CompileScriptRunner(string script,
                                                              ScriptOptions options,
@@ -64,6 +66,7 @@ public class CwlScriptCompiler
         return runner;
     }
 
+    [Time]
     internal static Compilation CompileScripts(IEnumerable<FileInfo> scripts,
                                                string assemblyName,
                                                CSharpCompilationOptions? options = null)
@@ -97,6 +100,7 @@ public class CwlScriptCompiler
         private readonly string _assemblyName = GetPackageScriptName(package.id);
         private readonly StringBuilderPool _sb = StringBuilderPool.Get();
 
+        [Time]
         public string? Compile()
         {
             if (package.dirInfo.GetDirectories("Script") is not [{ } scriptDir] ||

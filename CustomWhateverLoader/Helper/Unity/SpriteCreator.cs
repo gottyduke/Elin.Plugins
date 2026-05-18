@@ -82,7 +82,7 @@ public static class SpriteCreator
             }
 
             var sprite = Sprite.Create(_cached[cache], new(0, 0, _cached[cache].width, _cached[cache].height),
-                pivot.Value, 100f, 0u, SpriteMeshType.FullRect);
+                (Vector2)pivot, 100f, 0u, SpriteMeshType.FullRect);
 
             sprite.name = name;
             return sprite;
