@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
 
-namespace KoC.Patches;
+namespace KarmaOnCaught.Patches;
 
 internal class OnModKarmaPatch
 {

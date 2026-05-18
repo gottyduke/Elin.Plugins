@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
 
-namespace KoC.Patches;
+namespace KarmaOnCaught.Patches;
 
 [HarmonyPatch]
 internal class TaskDwarfPatch
@@ -87,7 +87,7 @@ internal class TaskDwarfPatch
         var difficulty = 0f;
         var detection = Config.DetectionRadius!.Value;
         var mod = Config.DifficultyModifier!.Value;
-        var skill = (cc.Evalue("mining") + cc.DEX) / 2f;
+        var skill = (cc.Evalue(SKILL.mining) + cc.DEX) / 2f;
 
         var witnesses = pos.ListWitnesses(cc, detection).Count;
         var caught = pos.TryWitnessCrime(cc, radius: detection, funcWitness: w => {

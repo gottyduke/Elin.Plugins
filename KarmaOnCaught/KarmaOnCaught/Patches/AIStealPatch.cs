@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
 
-namespace KoC.Patches;
+namespace KarmaOnCaught.Patches;
 
 [HarmonyPatch]
 internal class AIStealPatch
@@ -81,7 +80,7 @@ internal class AIStealPatch
         if (KocMod.SkipNext()) {
             return false;
         }
-        
+
         var detection = Config.DetectionRadius!.Value;
         var witnesses = pos.ListWitnesses(cc, detection, target: target);
         var witness = witnesses.Find(witness => !witness.IsHostile() && func(witness));

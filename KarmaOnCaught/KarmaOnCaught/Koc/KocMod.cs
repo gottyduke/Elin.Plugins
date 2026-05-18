@@ -1,14 +1,14 @@
 ﻿using BepInEx;
 using HarmonyLib;
-using KoC.Patches;
+using KarmaOnCaught.Patches;
 
-namespace KoC;
+namespace KarmaOnCaught;
 
 internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.karmaoncaught";
     internal const string Name = "Lose Karma On Caught";
-    internal const string Version = "1.5";
+    internal const string Version = "1.6";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
