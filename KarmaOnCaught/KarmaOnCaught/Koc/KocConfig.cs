@@ -2,7 +2,7 @@
 using BepInEx.Configuration;
 using HarmonyLib;
 
-namespace KoC;
+namespace KarmaOnCaught;
 
 internal class KocConfig
 {

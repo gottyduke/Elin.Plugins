@@ -1,4 +1,4 @@
-﻿namespace KoC;
+﻿namespace KarmaOnCaught;
 
 internal class KocLoc
 {

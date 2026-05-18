@@ -1,8 +1,8 @@
 ﻿using BepInEx;
 using HarmonyLib;
-using KoC.Patches;
+using KarmaOnCaught.Patches;
 
-namespace KoC;
+namespace KarmaOnCaught;
 
 internal static class ModInfo
 {

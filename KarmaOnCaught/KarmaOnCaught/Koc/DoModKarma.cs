@@ -1,16 +1,16 @@
-﻿namespace KoC;
+﻿namespace KarmaOnCaught;
 
 internal partial class KocMod
 {
     private static bool _skipped;
-    
+
     internal static bool SkipNext()
     {
         var skipped = _skipped;
         _skipped = false;
         return skipped;
     }
-    
+
     internal static void DoModKarma(bool isCrime, Chara? cc, int modifier, bool suspicious = false, int witnesses = 0)
     {
         if (!isCrime) {

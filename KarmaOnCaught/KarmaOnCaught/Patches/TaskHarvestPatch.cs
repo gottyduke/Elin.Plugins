@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
 
-namespace KoC.Patches;
+namespace KarmaOnCaught.Patches;
 
 [HarmonyPatch]
 internal class TaskHarvestPatch
@@ -81,7 +81,7 @@ internal class TaskHarvestPatch
         if (KocMod.SkipNext()) {
             return false;
         }
-        
+
         var difficulty = 0f;
         var detection = Config.DetectionRadius!.Value;
         var mod = Config.DifficultyModifier!.Value;
