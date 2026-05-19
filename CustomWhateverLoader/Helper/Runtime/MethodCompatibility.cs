@@ -62,7 +62,7 @@ public static class MethodCompatibility
                                                   && (mr.Resolve() is not { } targetDef
                                                       || (!nested && TestIncompatibleDef(targetDef, true))),
                             FieldReference fr => fr.Resolve() is null,
-                            TypeReference tr and not GenericParameter => tr.Resolve() is null,
+                            TypeReference { ContainsGenericParameter: false } tr => tr.Resolve() is null,
                             _ => false,
                         };
                         if (incompatibleBody) {

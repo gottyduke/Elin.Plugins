@@ -107,7 +107,7 @@ public class CwlScriptSubmission(string submissionKey)
 
         var submission = CreateSubmissionCall(assembly);
         if (submission is null) {
-            CwlMod.Log<CwlScriptSubmission>($"failed to script submission data-{scriptKey}");
+            CwlMod.Log<CwlScriptSubmission>($"failed to load script submission data-{scriptKey}");
             return null;
         }
 

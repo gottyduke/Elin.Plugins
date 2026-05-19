@@ -6,10 +6,10 @@ using HarmonyLib;
 namespace Cwl.Patches.Charas;
 
 [HarmonyPatch]
-internal class PortraitOverride
+internal class PortraitOverridePatch
 {
-    [HarmonyPatch(typeof(Chara), nameof(Chara.GetIdPortrait))]
     [HarmonyPostfix]
+    [HarmonyPatch(typeof(Chara), nameof(Chara.GetIdPortrait))]
     internal static void OnSetPortraitOverride(Chara __instance, ref string __result)
     {
         if (__instance.mapStr.TryGetValue(CwlReservedConstants.PortraitOverride, out var portraitId) &&

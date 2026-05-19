@@ -18,13 +18,11 @@ internal partial class CwlConsole : EMono
             return;
         }
 
-        if (!Input.GetKeyDown(KeyCode.BackQuote)) {
-            return;
-        }
-
         if (ReflexUIManager.IsConsoleOpen()) {
-            ReflexUIManager.StaticClose();
-        } else {
+            if (Input.GetKeyDown(KeyCode.BackQuote) || Input.GetKeyDown(KeyCode.Escape)) {
+                ReflexUIManager.StaticClose();
+            }
+        } else if (Input.GetKeyDown(KeyCode.BackQuote)) {
             ReflexUIManager.StaticOpen();
         }
     }
