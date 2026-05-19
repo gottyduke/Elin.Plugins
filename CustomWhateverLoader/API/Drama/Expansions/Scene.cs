@@ -196,6 +196,19 @@ public partial class DramaExpansion
     }
 
     /// <summary>
+    ///     set_portrait_override(portrait_id_or_null)
+    /// </summary>
+    public static bool set_portrait_override(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
+    {
+        parameters.RequiresOpt(out var portraitId);
+        dm.RequiresActor(out var owner);
+
+        owner.SetPortraitOverride(portraitId.Value);
+
+        return true;
+    }
+
+    /// <summary>
     ///     set_sprite(id_or_null)
     /// </summary>
     public static bool set_sprite(DramaManager dm, Dictionary<string, string> line, params string[] parameters)
