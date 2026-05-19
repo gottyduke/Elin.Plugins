@@ -21,6 +21,16 @@ internal class CellPostProcessPatch
         return OnCellProcess?.Invoke(__result);
     }
 
+    [HarmonyPostfix]
+    [HarmonyPatch(typeof(ExcelParser), nameof(ExcelParser.GetStringArray))]
+    internal static string[] OnGetCellArray(string[] __result)
+    {
+        for (var i = 0; i < __result.Length; ++i) {
+            __result[i] = OnCellProcess?.Invoke(__result[i]) ?? __result[i];
+        }
+        return __result;
+    }
+
     internal static void Add(CellProcess cellProcess)
     {
         OnCellProcess += cell => {
