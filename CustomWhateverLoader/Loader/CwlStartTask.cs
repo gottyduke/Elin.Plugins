@@ -263,7 +263,7 @@ internal sealed partial class CwlMod
 
     private static void InitConsole()
     {
-        CommandRegistry.Rebuild();
+        CommandRegistry.Init();
         ParameterProcessorRegistry.Init();
 
         var console = ReflexConsole.Instance;
