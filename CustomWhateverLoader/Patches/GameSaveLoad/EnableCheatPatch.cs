@@ -5,6 +5,7 @@ namespace Cwl.Patches.GameSaveLoad;
 internal class EnableCheatPatch
 {
     [CwlPostLoad]
+    [CwlPostSave]
     internal static void SetCheatEnabled()
     {
         EClass.game.config?.cheat = true;
