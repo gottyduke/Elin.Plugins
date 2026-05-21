@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -33,18 +34,23 @@ public static partial class CwlScriptRunner
     ///     Evaluate a script string with state if there's any active
     /// </summary>
     [ConsoleCommand("eval")]
-    [Description("reflex_greedy_args")]
+    [Description("reflex_args=greedy")]
     public static string EvaluateScript(string script)
     {
         _activeStates.TryPeek(out var activeState);
 
         // caching console commands are usually not worth it
-        var result = script.ExecuteAsCs(useState: activeState, useCache: false);
-        return result.TryToString("null or void");
+        try {
+            var result = script.ExecuteAsCs(useState: activeState, useCache: false);
+            return result.TryToString("(void): executed with null or no return value");
+        } catch (Exception ex) {
+            // noexcept
+            return $"(err): {ex.GetType().Name}: {ex.Message}";
+        }
     }
 
     [ConsoleCommand("file")]
-    [Description("reflex_greedy_args")] // path may contain spaces
+    [Description("reflex_args=greedy")] // path may contain spaces
     public static string EvaluateFile(string filePath)
     {
         if (!filePath.EndsWith(".cs")) {
