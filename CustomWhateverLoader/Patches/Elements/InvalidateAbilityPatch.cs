@@ -59,8 +59,11 @@ internal class InvalidateAbilityPatch
                 continue;
             }
 
-            if (elements.fuzzyAlias.TryGetValue(act, out var fuzzyRow)) {
-                actCombats[i] = actCombat.Replace(act, fuzzyRow);
+            if (elements.fuzzyAlias.TryGetValue(act, out var alias)) {
+                actCombats[i] = actCombat.Replace(act, alias);
+                if (!ACT.dict.ContainsKey(act)) {
+                    ACT.dict[act] = ClassCache.Create<Act>(elements.alias[alias].type);
+                }
             } else {
                 actCombats.RemoveAt(i);
                 CwlMod.WarnWithPopup<CharaAbility>("cwl_warn_fix_actCombat".Loc(actCombat, chara.id));
