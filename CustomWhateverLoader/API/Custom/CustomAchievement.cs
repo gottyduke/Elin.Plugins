@@ -122,6 +122,15 @@ public class CustomAchievement
     }
 
     /// <summary>
+    ///     Unlock an elin achievement by id
+    /// </summary>
+    [ConsoleCommand("unlock_elin")]
+    public static void UnlockElin(ID_Achievement id)
+    {
+        Steam.GetAchievement(id);
+    }
+
+    /// <summary>
     ///     Unlock a mod achievement by id
     /// </summary>
     [ConsoleCommand("unlock")]
@@ -133,7 +142,7 @@ public class CustomAchievement
     /// <summary>
     ///     Unlock a mod achievement by id unconditionally
     /// </summary>
-    [ConsoleCommand("unlock")]
+    [ConsoleCommand("unlock_force")]
     public static void UnlockForce(string id)
     {
         UnlockPrerequisites(id);
@@ -153,12 +162,21 @@ public class CustomAchievement
     ///     Unlock all prerequisites of a mod achievement by id unconditionally
     /// </summary>
     /// <param name="id"></param>
-    [ConsoleCommand("unlock_persistent")]
+    [ConsoleCommand("unlock_all_force")]
     public static void UnlockPrerequisites(string id)
     {
         foreach (var prerequisite in GetAchievement(id)?.GetPrerequisiteAchievements() ?? []) {
             prerequisite.Unlock(force: true);
         }
+    }
+
+    /// <summary>
+    ///     Resets a mod achievement by id, clearing its data
+    /// </summary>
+    [ConsoleCommand("reset_elin")]
+    public static void ResetElin(ID_Achievement id)
+    {
+        Steam.ResetAchievement(id);
     }
 
     /// <summary>
@@ -176,7 +194,7 @@ public class CustomAchievement
         GetAchievement(id)?.SetProgress(progress);
     }
 
-    [ConsoleCommand("set_progress")]
+    [ConsoleCommand("mod_progress")]
     public static void ModProgress(string id, float progressMod)
     {
         GetAchievement(id)?.ModProgress(progressMod);
