@@ -8,13 +8,18 @@ on:
     paths: ["Emmersive/**"]
   workflow_dispatch:
 
+permissions:
+  contents: write
+  id-token: write
+
 jobs:
   ci:
     uses: ./.github/workflows/build_plugin_ci.yml
+    secrets: inherit
     with:
       plugin_name: Emmersive
       plugin_path: Emmersive
-      tag_prefix: EMM
+      tag_prefix: EM
       release_name_prefix: "Emmersive - Elin with AI"
       artifact_name_prefix: emmersive
       include_cwl: true

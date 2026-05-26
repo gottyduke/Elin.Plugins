@@ -48,7 +48,8 @@ jobs:
         with:
           fetch-depth: 0
           sparse-checkout: |
-            ${{ inputs.include_cwl && 'CustomWhateverLoader/' || '' }}${{ inputs.plugin_path }}/
+            ${{ inputs.include_cwl && 'CustomWhateverLoader/' || '' }}
+            ${{ inputs.plugin_name }}/
             Directory.Build.props
             global.json
           sparse-checkout-cone-mode: false
@@ -134,7 +135,7 @@ jobs:
           
           $lastTag = git describe --tags --abbrev=0 --match="${{ inputs.tag_prefix }}-*"
           $lastTagSha = git rev-parse $lastTag
-          $commits = @(git log "$($lastTag)..HEAD" --date=format:"%y-%m-%d %H:%M" --pretty=format:"- %cd %h %s" -- ${{ inputs.plugin_path }} |
+          $commits = @(git log "$($lastTag)..HEAD" --date=format:"%y-%m-%d %H:%M" --pretty=format:"- %cd %h %s @%an" -- ${{ inputs.plugin_path }} |
             ? { $_ -notmatch "cleanup" })
 
           $changelog = @(

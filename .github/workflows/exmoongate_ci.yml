@@ -8,12 +8,17 @@ on:
     paths: ["ExpandedMoongate/ExpandedMoongate/**"]
   workflow_dispatch:
 
+permissions:
+  contents: write
+  id-token: write
+
 jobs:
   ci:
     uses: ./.github/workflows/build_plugin_ci.yml
+    secrets: inherit
     with:
       plugin_name: ExpandedMoongate
-      plugin_path: ExpandedMoongate/ExpandedMoongate
+      plugin_path: ExpandedMoongate\ExpandedMoongate
       tag_prefix: EXM
       release_name_prefix: "Expanded Moongate"
       artifact_name_prefix: exmoongate

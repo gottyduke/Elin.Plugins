@@ -8,13 +8,18 @@ on:
     paths: ["ElinTogether/ElinTogether/**"]
   workflow_dispatch:
 
+permissions:
+  contents: write
+  id-token: write
+
 jobs:
   ci:
     uses: ./.github/workflows/build_plugin_ci.yml
+    secrets: inherit
     with:
       plugin_name: ElinTogether
-      plugin_path: ElinTogether/ElinTogether
-      tag_prefix: ETL
+      plugin_path: ElinTogether\ElinTogether
+      tag_prefix: EMP
       release_name_prefix: "Elin Together - Preview"
       artifact_name_prefix: emp
       include_cwl: true
