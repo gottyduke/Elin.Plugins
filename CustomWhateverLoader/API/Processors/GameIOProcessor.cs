@@ -130,20 +130,20 @@ public class GameIOProcessor
             return;
         }
 
-        BaseModManager.SubscribeEvent(EVENT.PreLoad,
-            args => Load((args as global::GameIOContext)!.ChunkDir.Parent!.FullName, false));
+        BaseModManager.SubscribeEvent<global::GameIOContext>(EVENT.PreLoad,
+            args => Load(args.ChunkDir.Parent!.FullName, false));
 
-        BaseModManager.SubscribeEvent(EVENT.PostLoad,
-            args => Load((args as global::GameIOContext)!.ChunkDir.Parent!.FullName, true));
+        BaseModManager.SubscribeEvent<global::GameIOContext>(EVENT.PostLoad,
+            args => Load(args.ChunkDir.Parent!.FullName, true));
 
-        BaseModManager.SubscribeEvent(EVENT.NewGame,
-            args => Load((args as global::GameIOContext)!.ChunkDir.Parent!.FullName, true));
+        BaseModManager.SubscribeEvent<global::GameIOContext>(EVENT.NewGame,
+            args => Load(args.ChunkDir.Parent!.FullName, true));
 
-        BaseModManager.SubscribeEvent(EVENT.PreSave,
-            args => Save((args as global::GameIOContext)!.ChunkDir.Parent!.FullName, false));
+        BaseModManager.SubscribeEvent<global::GameIOContext>(EVENT.PreSave,
+            args => Save(args.ChunkDir.Parent!.FullName, false));
 
-        BaseModManager.SubscribeEvent(EVENT.PostSave,
-            args => Save((args as global::GameIOContext)!.ChunkDir.Parent!.FullName, true));
+        BaseModManager.SubscribeEvent<global::GameIOContext>(EVENT.PostSave,
+            args => Save(args.ChunkDir.Parent!.FullName, true));
 
         _registered = true;
 

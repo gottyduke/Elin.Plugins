@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using Cwl.Helper.Exceptions;
-using Cwl.Helper.String;
 using ReflexCLI.Attributes;
 
 namespace Cwl.Scripting;

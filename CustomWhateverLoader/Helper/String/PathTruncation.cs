@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace Cwl.Helper.String;
 
@@ -14,7 +15,8 @@ public static class PathTruncation
     {
         public string NormalizePath()
         {
-            return path.Replace('\\', '/');
+            path = path.Replace('\\', '/');
+            return Regex.Replace(path, "/+", "/");
         }
 
         public bool IsInvalidPath()

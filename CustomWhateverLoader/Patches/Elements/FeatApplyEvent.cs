@@ -39,9 +39,8 @@ internal class FeatApplyEvent
 
     internal static void Prepare()
     {
-        BaseModManager.SubscribeEvent(EVENT.FeatApply, args => {
-            var fe = args as EVENT.ElinFeatApplyEventArgs;
-            OnApply(fe!.feat, fe.data, fe.owner, fe.hint);
+        BaseModManager.SubscribeEvent<EVENT.ElinFeatApplyEventArgs>(EVENT.FeatApply, args => {
+            OnApply(args.feat, args.data, args.owner, args.hint);
         });
     }
 

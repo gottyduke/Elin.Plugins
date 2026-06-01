@@ -16,10 +16,9 @@ internal class DramaExpansionPatch
     internal static bool Prepare()
     {
 #if EXAMPLE_DRAMA_EVENT
-        BaseModManager.SubscribeEvent(EVENT.DramaParseAction, args => {
-            var dae = args as EVENT.ElinDramaParseActionEventArgs;
-            if (ExternalInvoke(dae!.dm, dae.line)) {
-                dae.Use();
+        BaseModManager.SubscribeEvent<EVENT.ElinDramaParseActionEventArgs>(EVENT.DramaParseAction, args => {
+            if (ExternalInvoke(arg!.dm, args.line)) {
+                args.Use();
             }
         });
 #endif
