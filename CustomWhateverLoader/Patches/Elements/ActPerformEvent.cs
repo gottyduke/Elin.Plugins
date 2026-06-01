@@ -16,13 +16,19 @@ public class ActPerformEvent
 {
     private static event Action<Act>? OnActPerformEvent;
 
+    internal static bool Prepare()
+    {
+        BaseModManager.SubscribeEvent<Act>(EVENT.ActPerformed, OnPerform);
+        return !CwlMod.IsModdingApiAvailable;
+    }
+
     internal static IEnumerable<MethodBase> TargetMethods()
     {
         return OverrideMethodComparer.FindAllOverrides(typeof(Act), nameof(Act.Perform))
             .Where(mi => mi.DeclaringType != typeof(DynamicAct) && mi.DeclaringType != typeof(DynamicAIAct));
     }
 
-    [HarmonyPostfix]
+    //[HarmonyPostfix]
     internal static void OnPerform(Act __instance)
     {
         OnActPerformEvent?.Invoke(__instance);

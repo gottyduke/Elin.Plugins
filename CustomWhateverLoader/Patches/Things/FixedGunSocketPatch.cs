@@ -1,5 +1,4 @@
 using System.Linq;
-using Cwl.API.Attributes;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
 
@@ -7,7 +6,7 @@ namespace Cwl.Patches.Things;
 
 internal class FixedGunSocketPatch : EClass
 {
-    [CwlThingOnCreateEvent]
+    //[CwlThingOnCreateEvent]
     internal static void ApplyGunSocket(Thing thing)
     {
         if (thing is not { source: { } row, IsRangedWeapon: true, IsMeleeWithAmmo: false }) {

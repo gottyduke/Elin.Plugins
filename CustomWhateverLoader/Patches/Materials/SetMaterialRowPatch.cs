@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Cwl.Patches.Materials;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class SetMaterialRowPatch
 {
     [HarmonyPrefix]

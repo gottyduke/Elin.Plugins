@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using Cwl.API;
-using Cwl.API.Attributes;
 using Cwl.API.Custom;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.FileUtil;
@@ -12,7 +11,7 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Charas;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 public class BioOverridePatch
 {
     private const int FallbackRowId = -1;
@@ -55,7 +54,7 @@ public class BioOverridePatch
         }
     }
 
-    [CwlCharaOnCreateEvent]
+    //[CwlCharaOnCreateEvent]
     internal static void SetCharaBioOverride(Chara chara)
     {
         // override mode

@@ -13,7 +13,7 @@ using NPOI.SS.UserModel;
 
 namespace Cwl.Patches.Sources;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class NamedImportPatch
 {
     private static readonly Dictionary<Type, Dictionary<string, int>> _expected = [];

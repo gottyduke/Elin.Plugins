@@ -3,7 +3,7 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Zones;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class SafeMapInitPatch
 {
     [HarmonyPrefix]

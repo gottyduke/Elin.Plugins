@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Cwl.API.Attributes;
 using Cwl.LangMod;
 using HarmonyLib;
 
@@ -31,8 +30,8 @@ internal class SafeCreateZonePatch
     }
 
     [SwallowExceptions]
-    [HarmonyPrefix]
-    [HarmonyPatch(typeof(EloMap), nameof(EloMap.Init))]
+    //[HarmonyPrefix]
+    //[HarmonyPatch(typeof(EloMap), nameof(EloMap.Init))]
     internal static void OnInitMap(EloMap __instance)
     {
         var list = __instance.region.children;
@@ -47,7 +46,7 @@ internal class SafeCreateZonePatch
     }
 
     [SwallowExceptions]
-    [CwlSceneInitEvent(Scene.Mode.StartGame, preInit: true)]
+    //[CwlSceneInitEvent(Scene.Mode.StartGame, preInit: true)]
     private static void PostCleanup()
     {
         var map = EClass.game.spatials.map;

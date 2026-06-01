@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Cwl.API;
-using Cwl.API.Attributes;
 using Cwl.API.Custom;
 using Cwl.Helper.FileUtil;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
-using HarmonyLib;
 using MethodTimer;
-using ReflexCLI.Attributes;
 
 namespace Cwl;
 
@@ -18,15 +13,15 @@ internal partial class DataLoader
     private const string DefaultSheet = "_default";
 
     [Time]
-    [ConsoleCommand("load_god_talk")]
-    [CwlSourceReloadEvent]
+    //[ConsoleCommand("load_god_talk")]
+    //[CwlSourceReloadEvent]
     internal static void MergeGodTalk()
     {
         if (Lang.setting?.dir is null) {
             CoroutineHelper.Deferred(MergeGodTalk, () => Lang.setting?.dir is not null);
-            return;
         }
 
+        /**
         var godTalk = EMono.sources.dataGodTalk;
         var map = godTalk.sheets[DefaultSheet].map;
 
@@ -52,11 +47,12 @@ internal partial class DataLoader
                 // noexcept
             }
         }
+        /**/
     }
 
     [Time]
-    [ConsoleCommand("load_religion_elements")]
-    [CwlSourceReloadEvent]
+    //[ConsoleCommand("load_religion_elements")]
+    //[CwlSourceReloadEvent]
     internal static void MergeFactionElements()
     {
         var elements = PackageIterator.GetFiles("Data/religion_elements.json")
@@ -78,8 +74,8 @@ internal partial class DataLoader
     }
 
     [Time]
-    [ConsoleCommand("load_religion_offerings")]
-    [CwlSourceReloadEvent]
+    //[ConsoleCommand("load_religion_offerings")]
+    //[CwlSourceReloadEvent]
     internal static void MergeOfferingMultiplier()
     {
         var offerings = PackageIterator.GetFiles("Data/religion_offerings.json")

@@ -11,7 +11,7 @@ using MethodTimer;
 
 namespace Cwl.Patches.Sources;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class RethrowParsePatch
 {
     private static readonly string[] _methodNames = [

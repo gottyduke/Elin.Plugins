@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cwl.API.Attributes;
 using Cwl.API.Processors;
 using Cwl.LangMod;
 using MethodTimer;
@@ -107,7 +106,7 @@ public class CustomReligion : Religion, IChunkable
     }
 
     [Time]
-    [CwlPostSave]
+    //[CwlPostSave]
     internal static void SaveCustomReligion(GameIOProcessor.GameIOContext context)
     {
         var religions = game.religions.list
@@ -117,7 +116,7 @@ public class CustomReligion : Religion, IChunkable
     }
 
     [Time]
-    [CwlPostLoad]
+    //[CwlPostLoad]
     internal static void LoadCustomReligion(GameIOProcessor.GameIOContext context)
     {
         if (!context.Load<Dictionary<string, CustomReligion>>(out var religions, "custom_religions")) {
@@ -141,17 +140,17 @@ public class CustomReligion : Religion, IChunkable
             return;
         }
 
-        if (objectType != typeof(CustomReligion)) {
+        if (objectType != typeof(Religion)) {
             return;
         }
 
-        readType = typeof(CustomReligion);
+        readType = typeof(ReligionCustom);
         resolved = true;
-        CwlMod.WarnWithPopup<CustomReligion>("cwl_warn_deserialize".Loc(nameof(CustomReligion), qualified, readType.MetadataToken,
+        CwlMod.WarnWithPopup<CustomReligion>("cwl_warn_deserialize".Loc(nameof(ReligionCustom), qualified, readType.MetadataToken,
             CwlConfig.Patches.SafeCreateClass!.Definition.Key));
     }
 
-    [CwlActPerformEvent]
+    //[CwlActPerformEvent]
     private static void ProcGodTalk(Act act)
     {
         if (!act.HasTag("godAbility")) {

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Cwl.Patches.Religions;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class SetReligionPortraitPatch
 {
     private static readonly int _mainTex = Shader.PropertyToID("_MainTex");

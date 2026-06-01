@@ -1,11 +1,10 @@
 using Cwl.API;
-using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
 using HarmonyLib;
 
 namespace Cwl.Patches.Charas;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class PortraitOverridePatch
 {
     [HarmonyPostfix]

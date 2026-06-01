@@ -9,7 +9,7 @@ using MethodTimer;
 
 namespace Cwl.Patches.Sources;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class RowOverridePatch
 {
     internal static bool Prepare()

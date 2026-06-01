@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Cwl.API.Attributes;
 using Cwl.LangMod;
 using MethodTimer;
 
@@ -23,7 +22,7 @@ public class CustomZone : Zone
         }
     }
 
-    [CwlSceneInitEvent(Scene.Mode.StartGame, true, order: CwlSceneEventOrder.ZoneImporter)]
+    //[CwlSceneInitEvent(Scene.Mode.StartGame, true, order: CwlSceneEventOrder.ZoneImporter)]
     public static void AddDelayedZone()
     {
         foreach (var row in All) {

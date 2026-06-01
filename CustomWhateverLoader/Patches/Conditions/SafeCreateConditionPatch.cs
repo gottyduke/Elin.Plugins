@@ -9,7 +9,7 @@ using MethodTimer;
 
 namespace Cwl.Patches.Conditions;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class SafeCreateConditionPatch
 {
     internal static bool Prepare()
@@ -60,7 +60,7 @@ internal class SafeCreateConditionPatch
             return;
         }
 
-        readType = typeof(CustomCondition);
+        readType = typeof(ConWet);
         resolved = true;
         CwlMod.WarnWithPopup<CustomCondition>("cwl_warn_deserialize".Loc(nameof(Condition), qualified, readType.MetadataToken,
             CwlConfig.Patches.SafeCreateClass!.Definition.Key));

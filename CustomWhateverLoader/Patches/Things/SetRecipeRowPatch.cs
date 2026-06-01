@@ -3,7 +3,7 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Things;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class SanitizeComponentsPatch
 {
     [HarmonyPrefix]

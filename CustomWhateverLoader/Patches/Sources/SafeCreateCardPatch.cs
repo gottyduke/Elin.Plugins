@@ -5,7 +5,7 @@ using MethodTimer;
 
 namespace Cwl.Patches.Sources;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class SafeCreateCardPatch
 {
     internal static bool Prepare()

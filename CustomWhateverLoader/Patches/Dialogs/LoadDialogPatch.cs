@@ -6,7 +6,7 @@ using MethodTimer;
 
 namespace Cwl.Patches.Dialogs;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class LoadDialogPatch
 {
     private static readonly Dictionary<string, WeakReference<Dictionary<string, ExcelData.Sheet>>> _built =

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using Cwl.API.Attributes;
 using Cwl.API.Custom;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
@@ -8,10 +7,10 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Charas;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 public static class RestoreCharaData
 {
-    [CwlCharaOnCreateEvent]
+    //[CwlCharaOnCreateEvent]
     internal static void SetOrRestoreCharaData(Chara chara)
     {
         if (!CustomChara.IsRestorable(chara, out var row)) {

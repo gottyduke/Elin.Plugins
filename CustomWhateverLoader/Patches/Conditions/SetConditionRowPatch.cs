@@ -5,7 +5,7 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Conditions;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class SetConditionRowPatch
 {
     [HarmonyPrefix]

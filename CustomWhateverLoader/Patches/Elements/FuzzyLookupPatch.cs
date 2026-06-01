@@ -8,7 +8,7 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Elements;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class FuzzyLookup
 {
     private static Dictionary<string, SourceElement.Row> _lookup = [];

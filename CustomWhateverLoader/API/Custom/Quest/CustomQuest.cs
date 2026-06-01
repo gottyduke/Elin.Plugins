@@ -194,7 +194,7 @@ public class CustomQuest : CustomQuestStorage
     }
 
     // TODO loc
-    [CwlSceneInitEvent(Scene.Mode.StartGame, true, order: CwlSceneEventOrder.QuestImporter)]
+    //[CwlSceneInitEvent(Scene.Mode.StartGame, true, order: CwlSceneEventOrder.QuestImporter)]
     internal static void AddDelayedQuest()
     {
         var qm = game.quests;

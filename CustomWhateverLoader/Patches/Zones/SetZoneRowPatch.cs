@@ -7,7 +7,7 @@ using MethodTimer;
 
 namespace Cwl.Patches.Zones;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class SetZoneRowPatch
 {
     [Time]

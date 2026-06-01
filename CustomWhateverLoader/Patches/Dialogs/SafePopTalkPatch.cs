@@ -4,7 +4,7 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Dialogs;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class SafePopTalkPatch
 {
     internal static bool Prepare()

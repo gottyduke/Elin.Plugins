@@ -3,10 +3,9 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Sources;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class SafeParseElementPatch
 {
-    // TODO: remove this patch after it's merged into Elin
     [HarmonyPrefix]
     [HarmonyPatch(typeof(Core), nameof(Core.ParseElements))]
     internal static bool SafeParseElements(string str, ref int[] __result)

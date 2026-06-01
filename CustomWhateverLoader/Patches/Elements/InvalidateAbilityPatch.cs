@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Cwl.Patches.Elements;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class InvalidateAbilityPatch
 {
     private static bool _retry;

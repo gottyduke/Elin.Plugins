@@ -3,7 +3,7 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Religions;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class ReligionArtifactPatch
 {
     [HarmonyPostfix]

@@ -3,14 +3,13 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Cwl.API;
 using Cwl.Helper;
-using Cwl.Helper.Extensions;
 using Cwl.Helper.Unity;
 using HarmonyLib;
 using UnityEngine;
 
 namespace Cwl.Patches.Renderers;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class GetSpriteOverridePatch
 {
     internal static IEnumerable<MethodBase> TargetMethods()

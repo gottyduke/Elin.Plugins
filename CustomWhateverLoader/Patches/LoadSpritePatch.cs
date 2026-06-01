@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Cwl.Patches;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class LoadSpritePatch
 {
     [HarmonyPrefix]

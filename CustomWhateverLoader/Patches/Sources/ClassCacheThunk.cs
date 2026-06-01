@@ -3,7 +3,7 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Sources;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class ClassCacheThunk
 {
     internal static bool Prepare()

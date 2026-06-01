@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Cwl.Patches.Materials;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class SafeCreateMaterialPatch
 {
     internal static bool Prepare()

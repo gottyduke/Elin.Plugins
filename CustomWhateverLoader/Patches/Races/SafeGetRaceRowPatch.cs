@@ -2,7 +2,7 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Races;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class SafeGetRaceRowPatch
 {
     internal static bool Prepare()

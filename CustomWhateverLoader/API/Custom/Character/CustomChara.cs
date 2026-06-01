@@ -147,7 +147,7 @@ public partial class CustomChara : Chara
         }
     }
 
-    [CwlCharaOnCreateEvent]
+    //[CwlCharaOnCreateEvent]
     internal static void ApplyTags(Chara chara)
     {
         if (chara.GetFlagValue(CwlReservedConstants.CharaCreationTagApplied) != 0 ||

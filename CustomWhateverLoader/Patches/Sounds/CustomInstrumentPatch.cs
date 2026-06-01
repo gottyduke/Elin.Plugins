@@ -6,7 +6,7 @@ using HarmonyLib;
 namespace Cwl.Patches.Sounds;
 
 // oh, whither art thou gone, 105gun??
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class CustomInstrumentPatch
 {
     internal static bool Prepare()

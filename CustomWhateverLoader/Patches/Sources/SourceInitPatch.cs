@@ -9,7 +9,7 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Sources;
 
-[HarmonyPatch(typeof(SourceManager), nameof(SourceManager.Init))]
+//[HarmonyPatch(typeof(SourceManager), nameof(SourceManager.Init))]
 internal class SourceInitPatch
 {
     internal static bool SafeToCreate = true;

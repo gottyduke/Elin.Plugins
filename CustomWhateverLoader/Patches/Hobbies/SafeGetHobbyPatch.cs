@@ -4,7 +4,7 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Hobbies;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class SafeGetHobbyPatch
 {
     [HarmonyPrefix]

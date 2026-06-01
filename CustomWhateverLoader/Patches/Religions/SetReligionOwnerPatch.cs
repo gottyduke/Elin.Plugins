@@ -4,7 +4,7 @@ using MethodTimer;
 
 namespace Cwl.Patches.Religions;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class SetReligionOwnerPatch
 {
     [Time]

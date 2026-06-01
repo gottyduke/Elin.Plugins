@@ -15,7 +15,6 @@ internal class VariableQuotePatch
         "\"",
         "「",
         "“",
-        "_bracketTalk",
     };
 
     internal static bool Prepare()
@@ -28,7 +27,8 @@ internal class VariableQuotePatch
     internal static IEnumerable<CodeInstruction> OnCompareQuoteIl(IEnumerable<CodeInstruction> instructions)
     {
         return new CodeMatcher(instructions)
-            .MatchEndForward(
+            .End()
+            .MatchEndBackwards(
                 new OperandContains(OpCodes.Callvirt, nameof(string.StartsWith)))
             .EnsureValid("startswith quotes")
             .SetInstruction(

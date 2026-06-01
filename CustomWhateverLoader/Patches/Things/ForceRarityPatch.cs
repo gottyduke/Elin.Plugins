@@ -1,10 +1,8 @@
-﻿using Cwl.API.Attributes;
-
-namespace Cwl.Patches.Things;
+﻿namespace Cwl.Patches.Things;
 
 internal class ForceRarityPatch
 {
-    [CwlThingOnCreateEvent]
+    //[CwlThingOnCreateEvent]
     internal static void OnResetRarity(Thing __instance)
     {
         var row = __instance.sourceCard;

@@ -1,12 +1,11 @@
 ﻿using System.Linq;
-using Cwl.API.Attributes;
 using Cwl.Helper.Unity;
 
 namespace Cwl.Patches.Things;
 
 internal class ForcePurityPatch
 {
-    [CwlThingOnCreateEvent]
+    //[CwlThingOnCreateEvent]
     internal static void OnResetPurity(Thing __instance)
     {
         var row = __instance.source;

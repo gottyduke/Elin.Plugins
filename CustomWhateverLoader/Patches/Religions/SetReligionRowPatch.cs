@@ -7,7 +7,7 @@ using MethodTimer;
 
 namespace Cwl.Patches.Religions;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class SetReligionRowPatch
 {
     [Time]
@@ -31,7 +31,7 @@ internal class SetReligionRowPatch
             var qualified = TypeQualifier.TryQualify<Religion>(r.type);
             r.type = qualified?.FullName ?? r.type;
         } else {
-            r.type = typeof(CustomReligion).FullName;
+            r.type = typeof(ReligionCustom).FullName;
         }
 
         CustomReligion.GerOrAdd(r.id, r.type)

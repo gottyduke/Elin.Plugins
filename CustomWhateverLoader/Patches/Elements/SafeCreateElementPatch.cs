@@ -8,7 +8,7 @@ using MethodTimer;
 
 namespace Cwl.Patches.Elements;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class SafeCreateElementPatch
 {
     private const int LogSpamMax = 4;

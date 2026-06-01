@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cwl.API.Attributes;
 using Cwl.Helper.Extensions;
 using Cwl.LangMod;
 using Cwl.Patches;
@@ -37,7 +36,7 @@ public class CustomElement : Element
 
     // credits to 105gun
     [Time]
-    [CwlSceneInitEvent(Scene.Mode.StartGame, true, order: CwlSceneEventOrder.AbilityImporter)]
+    //[CwlSceneInitEvent(Scene.Mode.StartGame, true, order: CwlSceneEventOrder.AbilityImporter)]
     internal static void GainAbilityOnLoad()
     {
         if (!SafeSceneInitEvent.SafeToCreate) {
@@ -66,7 +65,7 @@ public class CustomElement : Element
     // credits to 105gun
     // https://github.com/105gun/ElinInduceVomiting/blob/master/ElementMissingWorkAround.cs
     [Time]
-    [CwlPreSave]
+    //[CwlPreSave]
     private static void PurgeBeforeSave()
     {
         if (core?.game?.player?.currentHotItem is not HotItemAct act ||
@@ -80,7 +79,7 @@ public class CustomElement : Element
     }
 
     [Time]
-    [CwlPostSave]
+    //[CwlPostSave]
     private static void RestoreAfterSave()
     {
         if (core?.game?.player?.chara is null ||
