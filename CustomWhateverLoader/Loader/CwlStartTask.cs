@@ -73,7 +73,7 @@ internal sealed partial class CwlMod
             typeof(ActPerformEvent),
             typeof(ConverterEvent.CanDecaySubEvent),
             typeof(ConverterEvent.OnDecaySubEvent),
-            typeof(LoadZonePatch),
+            //typeof(LoadZonePatch),
             typeof(RepositionTcPatch.TcFixPosPatch),
             typeof(InvalidateItemPatch),
             typeof(InvalidateDestThingPatch),
