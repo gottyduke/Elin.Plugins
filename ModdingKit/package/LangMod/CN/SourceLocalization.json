@@ -1,0 +1,21 @@
+{
+  "LangGeneral.es_error_cs_disabled.text": "脚本编译器已被禁用",
+  "LangGeneral.es_error_cs_frozen.text": "脚本状态 '#1' 已被冻结",
+  "LangGeneral.es_error_csc_diag.text": "编译 '#1' 失败:\n#2",
+  "LangGeneral.es_log_csc_eval.text": "正在编译脚本\n#1",
+  "LangGeneral.es_log_csc_package.text": "正在编译包 #1 << #2",
+  "LangGeneral.es_log_csc_roslyn.text": "Roslyn 编译器 #1",
+  "LangGeneral.es_log_csc_scripts.text": "正在编译 #2 个脚本文件 '#1'",
+  "LangGeneral.es_ui_callstack.text": "//导致此错误的事件顺序 (最后的事件在最上方):",
+  "LangGeneral.es_ui_cs_ready.text": "Roslyn 脚本编译器已就绪\n用法：\n  cs.eval <在此写入任意 C# 代码>\n  cs.file <C# 脚本文件的路径>",
+  "LangGeneral.es_ui_csc_changed.text": "模组 '#1' 的脚本已发生更改\n准备就绪后请使用命令 'csc.recompile'",
+  "LangGeneral.es_ui_exception_analyzing.text": "<color=orange><分析报错中…></color>",
+  "LangGeneral.es_ui_exception_copy.text": "<color=purple><[鼠标左键]复制详情>\n<[鼠标中键]关闭且不再显示></color>",
+  "LangGeneral.es_ui_hover_close.text": "<color=blue><[鼠标右键]关闭></color>",
+  "LangGeneral.es_ui_hover_detail.text": "<color=blue><[鼠标悬浮]查看详细信息></color>",
+  "LangGeneral.es_ui_invalid_patch.text": "<color=#d343f7>(不兼容)</color>",
+  "LangGeneral.es_warn_missing_method.text": "<color=#d343f7>一个MOD与您当前游戏版本不兼容。</color>\n#1",
+  "LangGeneral.es_warn_missing_mods.text": "当前存档中缺失的模组：\n#1",
+  "LangGeneral.es_warn_missing_mods_no.text": "继续游玩",
+  "LangGeneral.es_warn_missing_mods_yes.text": "不保存并返回至标题"
+}

@@ -1,0 +1,171 @@
+using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO.Pipes;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using UnityEngine;
+
+namespace EModding.Components;
+
+internal class EPipe : EMono
+{
+    private const string PipeName = @"Elin\Console";
+    private static readonly CancellationTokenSource _cts = new();
+    private readonly List<NamedPipeServerStream> _activeServers = [];
+
+    private readonly ConcurrentQueue<(NamedPipeServerStream server, string cmd)> _commands = new();
+    private readonly List<UniTask> _connections = [];
+
+    private void Awake()
+    {
+        StartConsoleServer().Forget();
+        StartCoroutine(ProcessCommands());
+        Debug.Log($@"#pipe external console opened \\.\pipe\{PipeName}");
+    }
+
+    private void OnApplicationQuit()
+    {
+        _cts.Cancel();
+
+        lock (_connections) {
+            UniTask.WhenAll(_connections).Forget();
+        }
+    }
+
+    public async UniTaskVoid Notify(NamedPipeServerStream server, string msg)
+    {
+        if (server is not { IsConnected: true }) {
+            return;
+        }
+
+        var data = Encoding.UTF8.GetBytes(msg + "\n");
+
+        try {
+            await server.WriteAsync(data, 0, data.Length, _cts.Token);
+            await server.FlushAsync(_cts.Token);
+        } catch {
+            // noexcept
+        }
+    }
+
+    public void Notify(string msg)
+    {
+        List<NamedPipeServerStream> snapshot;
+
+        lock (_connections) {
+            snapshot = _activeServers.ToList();
+        }
+
+        foreach (var server in snapshot) {
+            Notify(server, msg).Forget();
+        }
+    }
+
+    private IEnumerator ProcessCommands()
+    {
+        var wait = new WaitForSeconds(0.2f);
+
+        while (_commands.TryDequeue(out var item)) {
+            var (server, cmd) = item;
+            var result = cmd.EvaluateAsCommand(true);
+
+            if (!string.IsNullOrEmpty(result)) {
+                Notify(server, result).Forget();
+            }
+
+            yield return wait;
+        }
+    }
+
+    private async UniTaskVoid StartConsoleServer()
+    {
+        while (!_cts.IsCancellationRequested) {
+            var server = new NamedPipeServerStream(
+                PipeName,
+                PipeDirection.InOut,
+                NamedPipeServerStream.MaxAllowedServerInstances,
+                PipeTransmissionMode.Byte,
+                PipeOptions.Asynchronous);
+
+            try {
+                await server.WaitForConnectionAsync(_cts.Token);
+            } catch {
+                await DisposeServer(server);
+                continue;
+                // noexcept
+            }
+
+            if (_cts.IsCancellationRequested) {
+                await DisposeServer(server);
+                break;
+            }
+
+            lock (_connections) {
+                _activeServers.Add(server);
+                _connections.Add(HandleConnection(server));
+            }
+
+            Debug.Log("#pipe external console connected");
+        }
+    }
+
+    private static async UniTask DisposeServer(NamedPipeServerStream server)
+    {
+        try {
+            await server.DisposeAsync();
+        } catch {
+            // noexcept
+        }
+    }
+
+    private async UniTask HandleConnection(NamedPipeServerStream server)
+    {
+        try {
+            var buffer = new byte[1024];
+            var decoder = Encoding.UTF8.GetDecoder();
+            var sb = new StringBuilder();
+
+            while (!_cts.IsCancellationRequested && server.IsConnected) {
+                int read;
+                try {
+                    read = await server.ReadAsync(buffer, 0, buffer.Length, _cts.Token);
+                } catch {
+                    break;
+                }
+
+                if (read == 0) {
+                    continue;
+                }
+
+                var charBuf = new char[decoder.GetCharCount(buffer, 0, read)];
+                decoder.GetChars(buffer, 0, read, charBuf, 0);
+                sb.Append(charBuf);
+
+                var current = sb.ToString();
+                int newline;
+                while ((newline = current.IndexOf('\n')) >= 0) {
+                    var line = current[..newline].TrimEnd('\r');
+                    if (!string.IsNullOrEmpty(line)) {
+                        _commands.Enqueue((server, line));
+                    }
+
+                    current = current[(newline + 1)..];
+                }
+
+                sb.Clear();
+                sb.Append(current);
+            }
+        } catch {
+            // noexcept
+        } finally {
+            lock (_connections) {
+                _activeServers.Remove(server);
+            }
+
+            await DisposeServer(server);
+        }
+    }
+}

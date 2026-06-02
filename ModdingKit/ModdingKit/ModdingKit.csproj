@@ -1,0 +1,50 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <Platforms>AnyCPU</Platforms>
+        <LangVersion>preview</LangVersion>
+        <Nullable>enable</Nullable>
+        <RootNamespace>EModding</RootNamespace>
+        <AssemblyName>ElinModdingKit</AssemblyName>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <GenerateDependencyFile>false</GenerateDependencyFile>
+        <OutputPath>$(ElinGamePath)\Package\Mod_$(AssemblyName)\</OutputPath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <Deterministic>false</Deterministic>
+        <GenerateRuntimeConfigurationFiles>false</GenerateRuntimeConfigurationFiles>
+        <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+        <NoWarn>$(NoWarn);4014</NoWarn>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Remove="package\**"/>
+    </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Remove="package\**"/>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="GitVersion.MsBuild" Version="6.7.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="5.3.0"/>
+        <PackageReference Include="PolySharp" Version="1.16.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="System.Collections.Immutable" Version="11.0.0-preview.4.26230.115"/>
+        <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.3"/>
+    </ItemGroup>
+    <Target Name="CopyAssets" AfterTargets="AfterBuild">
+        <ItemGroup>
+            <Assets Include="..\package\**\*.*"/>
+        </ItemGroup>
+        <Copy
+            SourceFiles="@(Assets)"
+            DestinationFiles="@(Assets->'$(OutDir)%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+        />
+    </Target>
+</Project>

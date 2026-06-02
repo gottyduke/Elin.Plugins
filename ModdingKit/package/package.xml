@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Meta>
+  <title>Elin Modding Kit</title>
+  <id>elin.plugins.modding</id>
+  <author>DK</author>
+  <builtin>true</builtin>
+  <loadPriority>10</loadPriority>
+  <version>0.23.311</version>
+  <description />
+</Meta>
