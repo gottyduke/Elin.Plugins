@@ -12,11 +12,10 @@ using MethodTimer;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using ReflexCLI;
-using ReflexCLI.Attributes;
 
 namespace Cwl.Scripting;
 
-[ConsoleCommandClassCustomizer("cwl.csc")]
+//[ConsoleCommandClassCustomizer("cwl.csc")]
 public static class CwlScriptLoader
 {
     public enum CwlScriptAPIVersion
@@ -31,7 +30,7 @@ public static class CwlScriptLoader
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
             .InformationalVersion;
 
-    [ConsoleCommand("unload")]
+    //[ConsoleCommand("unload")]
     public static string TryUnloadScript(string assemblyName)
     {
         var assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name == assemblyName);
@@ -48,7 +47,7 @@ public static class CwlScriptLoader
         return $"tried to unload {assemblyName}";
     }
 
-    [ConsoleCommand("load")]
+    //[ConsoleCommand("load")]
     public static string TryLoadScript(string assemblyPath)
     {
         if (!File.Exists(assemblyPath)) {
@@ -68,7 +67,7 @@ public static class CwlScriptLoader
 
     [Time]
     [Conditional("CWL_SCRIPTING")]
-    [ConsoleCommand("recompile")]
+    //[ConsoleCommand("recompile")]
     internal static void LoadAllPackageScripts()
     {
         CwlMod.Log<CSharpCompilation>("cwl_log_csc_roslyn".Loc(RoslynVersion));

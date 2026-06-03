@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Cwl.Helper;
 using Cwl.LangMod;
 
 namespace Cwl.API.Custom;
@@ -14,7 +13,7 @@ public class CustomCondition : Condition
     internal static void AddCondition(SourceStat.Row r, string qualified)
     {
         try {
-            SpriteReplacerHelper.AppendSpriteSheet(r.alias, 32, 32);
+            //SpriteReplacerHelper.AppendSpriteSheet(r.alias, 32, 32);
 
             if (CwlConfig.QualifyTypeName) {
                 r.type = qualified;

@@ -5,7 +5,7 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Elements;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class SetElementRowPatch
 {
     [HarmonyPrefix]
@@ -23,7 +23,7 @@ internal class SetElementRowPatch
                     _ => 48,
                 };
 
-                SpriteReplacerHelper.AppendSpriteSheet(r.alias, size, size);
+                //SpriteReplacerHelper.AppendSpriteSheet(r.alias, size, size);
             }
         }
 

@@ -1,19 +1,17 @@
 using System;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using Cwl.Helper.Exceptions;
-using ReflexCLI.Attributes;
 
 namespace Cwl.Scripting;
 
-[ConsoleCommandClassCustomizer("cwl.cs")]
+//[ConsoleCommandClassCustomizer("cwl.cs")]
 public static partial class CwlScriptRunner
 {
     /// <summary>
     ///     Ensures scripting is enabled for this user
     /// </summary>
-    [ConsoleCommand("is_ready")]
+    //[ConsoleCommand("is_ready")]
     public static string TestIfScriptAvailable()
     {
         if (!CwlMod.LoadingComplete) {
@@ -32,8 +30,7 @@ public static partial class CwlScriptRunner
     /// <summary>
     ///     Evaluate a script string with state if there's any active
     /// </summary>
-    [ConsoleCommand("eval")]
-    [Description("reflex_args=greedy")]
+    //[ConsoleCommand("eval")]
     public static string EvaluateScript(string script)
     {
         _activeStates.TryPeek(out var activeState);
@@ -48,8 +45,7 @@ public static partial class CwlScriptRunner
         }
     }
 
-    [ConsoleCommand("file")]
-    [Description("reflex_args=greedy")] // path may contain spaces
+    //[ConsoleCommand("file")]
     public static string EvaluateFile(string filePath)
     {
         if (!filePath.EndsWith(".cs")) {

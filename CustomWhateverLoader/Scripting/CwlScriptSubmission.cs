@@ -9,11 +9,10 @@ using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
-using ReflexCLI.Attributes;
 
 namespace Cwl.Scripting;
 
-[ConsoleCommandClassCustomizer("cwl.csc")]
+//[ConsoleCommandClassCustomizer("cwl.csc")]
 public class CwlScriptSubmission(string submissionKey)
 {
     public enum CwlScriptSubmissionVersion
@@ -31,7 +30,7 @@ public class CwlScriptSubmission(string submissionKey)
 
     private readonly string _snippets = _context.GetPath(submissionKey);
 
-    [ConsoleCommand("create_submission")]
+    //[ConsoleCommand("create_submission")]
     public static CwlScriptSubmission Create(string submissionKey)
     {
         if (_submissions.TryGetValue(submissionKey, out var submission)) {
@@ -44,7 +43,7 @@ public class CwlScriptSubmission(string submissionKey)
         return submission;
     }
 
-    [ConsoleCommand("clear_submissions")]
+    //[ConsoleCommand("clear_submissions")]
     public static void InvalidateSubmission(string submissionKey = "")
     {
         if (submissionKey.IsEmptyOrNull) {

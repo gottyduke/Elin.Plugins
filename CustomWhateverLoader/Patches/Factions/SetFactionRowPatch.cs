@@ -5,7 +5,7 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Factions;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class SetFactionRowPatch
 {
     [HarmonyPrefix]

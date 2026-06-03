@@ -11,7 +11,7 @@ internal partial class DataLoader
     internal static readonly List<ExcelData> CachedDialogs = [];
 
     [Time]
-    [ConsoleCommand("load_dialog")]
+    //[ConsoleCommand("load_dialog")]
     internal static void PreloadDialog()
     {
         CachedDialogs.Clear();

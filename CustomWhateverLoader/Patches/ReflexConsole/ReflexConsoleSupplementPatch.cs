@@ -7,7 +7,7 @@ using ReflexCLI;
 
 namespace Cwl.Patches.ReflexConsole;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class ReflexConsoleSupplementPatch
 {
     private static readonly Dictionary<string, ReflexCommandSupplement> _queriedCommands = [];

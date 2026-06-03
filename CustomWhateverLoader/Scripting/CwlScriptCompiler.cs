@@ -14,16 +14,15 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.Scripting;
-using ReflexCLI.Attributes;
 
 namespace Cwl.Scripting;
 
-[ConsoleCommandClassCustomizer("cwl.csc")]
+//[ConsoleCommandClassCustomizer("cwl.csc")]
 public class CwlScriptCompiler
 {
     private static readonly Dictionary<int, ScriptRunner<object>> _cachedScripts = [];
 
-    [ConsoleCommand("clear_cache")]
+    //[ConsoleCommand("clear_cache")]
     public static string ClearCache()
     {
         var count = _cachedScripts.Count;

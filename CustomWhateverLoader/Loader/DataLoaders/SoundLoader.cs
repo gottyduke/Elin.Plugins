@@ -24,8 +24,8 @@ internal partial class DataLoader
     internal static int LastBgmIndex { get; private set; }
 
     [Time]
-    [ConsoleCommand("load_sound")]
-    [CwlContextMenu("CWL/cwl_ui_sound_reload")]
+    //[ConsoleCommand("load_sound")]
+    //[CwlContextMenu("CWL/cwl_ui_sound_reload")]
     internal static void LoadAllSounds()
     {
         if (LastBgmIndex == 0) {
@@ -66,7 +66,7 @@ internal partial class DataLoader
         }
     }
 
-    [ConsoleCommand("clear_sound_cache")]
+    //[ConsoleCommand("clear_sound_cache")]
     private static void ClearSoundCache()
     {
         CachedSounds.Clear();

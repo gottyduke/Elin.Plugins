@@ -13,14 +13,11 @@ using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using Cwl.Patches;
 using Cwl.Patches.Charas;
-using Cwl.Patches.Conditions;
 using Cwl.Patches.Elements;
 using Cwl.Patches.Quests;
 using Cwl.Patches.Relocation;
 using Cwl.Patches.Sources;
 using Cwl.Patches.Traits;
-using Cwl.Patches.Zones;
-using Cwl.Scripting;
 using HarmonyLib;
 using MethodTimer;
 using ReflexCLI;
@@ -108,7 +105,7 @@ internal sealed partial class CwlMod
 
     private static IEnumerator LoadTask()
     {
-        DataLoader.RefreshAllPackageTextures(); // can be removed
+        //DataLoader.RefreshAllPackageTextures(); // can be removed
 
         PrebuildDispatchers();
         DramaExpansion.BuildActionList();
@@ -127,7 +124,7 @@ internal sealed partial class CwlMod
         }
         DataLoader.MergeCharaTalk();
         DataLoader.MergeCharaTone();
-        DataLoader.MergeGodTalk();
+        //DataLoader.MergeGodTalk();
         //DataLoader.MergeCustomAlias();
         //DataLoader.MergeCustomName();
 
@@ -141,7 +138,7 @@ internal sealed partial class CwlMod
         CurrentLoading = $"cwl_log_finished_loading_{ModInfo.TargetVersion}".lang();
 
         // auto init console rebuild
-        InitConsole();
+        //InitConsole();
         ContextMenuHelper.AddDelayedContextMenu();
 
         ExecutionAnalysis.DispatchAnalysis();
@@ -159,7 +156,7 @@ internal sealed partial class CwlMod
 
         CwlConfig.Watch(Config);
 
-        SetupExceptionHook();
+        //SetupExceptionHook();
 
         CreateLoadingProgress();
 
@@ -205,10 +202,10 @@ internal sealed partial class CwlMod
     private static void InitRuntimeFeatures()
     {
         // scripts
-        CwlScriptLoader.LoadAllPackageScripts();
+        //CwlScriptLoader.LoadAllPackageScripts();
 
         if (!CwlConfig.DefaultScriptState.IsEmptyOrNull) {
-            CwlScriptRunner.PushState(CwlConfig.DefaultScriptState);
+            //CwlScriptRunner.PushState(CwlConfig.DefaultScriptState);
         }
 
         // sources
@@ -250,13 +247,13 @@ internal sealed partial class CwlMod
 
         GameIOProcessor.RegisterContextVars();
 
-        TraitTransformer.Add(CustomMerchant.TransformMerchant);
-        TraitTransformer.Add(CustomConverter.TransformConverter);
+        //TraitTransformer.Add(CustomMerchant.TransformMerchant);
+        //TraitTransformer.Add(CustomConverter.TransformConverter);
 
-        TypeResolver.Add(SafeCreateConditionPatch.ResolveCondition);
-        TypeResolver.Add(SafeCreateQuestPatch.ResolveQuest);
-        TypeResolver.Add(SafeCreateZonePatch.ResolveZone);
-        TypeResolver.Add(CustomReligion.ResolveReligion);
+        //TypeResolver.Add(SafeCreateConditionPatch.ResolveCondition);
+        //TypeResolver.Add(SafeCreateQuestPatch.ResolveQuest);
+        //TypeResolver.Add(SafeCreateZonePatch.ResolveZone);
+        //TypeResolver.Add(CustomReligion.ResolveReligion);
 
         MigrateDetail.SetupProcessor();
     }

@@ -4,7 +4,6 @@ using System.Linq;
 using Cwl.API.Drama;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
-using ReflexCLI.Attributes;
 
 namespace Cwl.Scripting;
 
@@ -18,7 +17,7 @@ public static partial class CwlScriptRunner
     /// <summary>
     ///     Clear a script state and reset its variables
     /// </summary>
-    [ConsoleCommand("state.remove")]
+    //[ConsoleCommand("state.remove")]
     public static void RemoveState(string state)
     {
         _scriptStates.Remove(state);
@@ -27,7 +26,7 @@ public static partial class CwlScriptRunner
             .Reverse());
     }
 
-    [ConsoleCommand("state.push")]
+    //[ConsoleCommand("state.push")]
     public static string PushState(string state)
     {
         TestIfDramaScriptStateActive();
@@ -36,7 +35,7 @@ public static partial class CwlScriptRunner
         return FormatCurrentStates();
     }
 
-    [ConsoleCommand("state.pop")]
+    //[ConsoleCommand("state.pop")]
     public static string PopState()
     {
         TestIfDramaScriptStateActive();
@@ -45,7 +44,7 @@ public static partial class CwlScriptRunner
         return FormatCurrentStates();
     }
 
-    [ConsoleCommand("state")]
+    //[ConsoleCommand("state")]
     private static string FormatCurrentStates()
     {
         using var sb = StringBuilderPool.Get();

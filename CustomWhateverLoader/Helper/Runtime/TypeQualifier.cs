@@ -92,7 +92,7 @@ public class TypeQualifier
                 if (qualified is null && (t.FullName?.Equals(unq, StringComparison.InvariantCultureIgnoreCase) is true ||
                                           t.Name.Equals(unq, StringComparison.InvariantCultureIgnoreCase))) {
                     qualified = t;
-                    CwlMod.WarnWithPopup<TypeQualifier>("cwl_warn_qualify_typo".Loc(unq, qualified.FullName));
+                    CwlMod.Warn<TypeQualifier>("cwl_warn_qualify_typo".Loc(unq, qualified.FullName));
                 }
 
                 if (qualified is not null) {

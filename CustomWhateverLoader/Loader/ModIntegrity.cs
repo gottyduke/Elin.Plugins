@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Cwl.API;
-using Cwl.API.Attributes;
 using Cwl.API.Processors;
 using Cwl.Helper.String;
-using Cwl.Helper.Unity;
 using Cwl.LangMod;
 
 namespace Cwl;
@@ -20,7 +18,7 @@ public class ModIntegrity
             })
             .ToArray();
 
-    [CwlPostLoad]
+    //[CwlPostLoad]
     private static void CheckModList(GameIOProcessor.GameIOContext context)
     {
         if (!context.Load<SerializableModPackage[]>(out var mods, "active_mods")) {
@@ -42,7 +40,7 @@ public class ModIntegrity
             () => EClass.core.IsGameStarted);
     }
 
-    [CwlPostSave]
+    //[CwlPostSave]
     private static void SaveModList(GameIOProcessor.GameIOContext context)
     {
         context.Save(CurrentActivated, "active_mods");

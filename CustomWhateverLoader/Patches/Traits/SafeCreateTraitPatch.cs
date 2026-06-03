@@ -9,7 +9,7 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Traits;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class SafeCreateTraitPatch
 {
     private static readonly HashSet<string> _qualifiedTraits = new(StringComparer.Ordinal);
