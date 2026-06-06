@@ -15,7 +15,7 @@ public class PlaylistViewer
     private static PlaylistViewer? _viewer;
     private readonly FastString _lastBgmViewInfo = new(256);
 
-    private ProgressIndicator? _bgmProgress;
+    private EGui? _bgmProgress;
     private bool _detailedView;
 
 
@@ -145,8 +145,8 @@ public class PlaylistViewer
     private void Show()
     {
         Kill();
-        _bgmProgress ??= ProgressIndicator
-            .CreateProgress(
+        _bgmProgress ??= EGui
+            .CreatePopup(
                 () => new(GetCurrentPlaylistInfo()),
                 _ => !EClass.core.IsGameStarted,
                 0.1f)
@@ -213,7 +213,7 @@ public class PlaylistViewer
         return sb.ToString();
     }
 
-    private void DrawControlPanel(ProgressIndicator progress)
+    private void DrawControlPanel(EGui progress)
     {
         var playlist = SoundManager.current.currentPlaylist;
         if (playlist == null || playlist.currentItem is not { data.clip.length: > 0f }) {

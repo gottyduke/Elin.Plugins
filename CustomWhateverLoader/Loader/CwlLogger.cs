@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using Cwl.Helper.Exceptions;
 using Cwl.Helper.String;
-using Cwl.Helper.Unity;
 using UnityEngine;
 
 namespace Cwl;
@@ -117,11 +116,11 @@ internal sealed partial class CwlMod
             }
         }
 
-        using var progress = ProgressIndicator.CreateProgressScoped(() => new(header, Color: color));
+        using var progress = EGui.CreatePopupScoped(() => new(header, Color: color));
 
         if (truncation) {
             var footer = log.RemoveTagColor()[150..];
-            progress.Get<ProgressIndicator>().OnHover(p => GUILayout.Label(footer, p.GUIStyle));
+            progress.Object.OnHover(p => GUILayout.Label(footer, p.GUIStyle));
         }
     }
 }

@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using Cwl.Helper.Exceptions;
-using Cwl.Helper.String;
-using Cysharp.Threading.Tasks;
-using UnityEngine;
+﻿namespace Cwl.Helper.Unity;
 
-namespace Cwl.Helper.Unity;
-
+/*
 public class ProgressIndicator
 {
     private const float UpdateInterval = 0.2f;
@@ -363,3 +356,4 @@ public class ProgressIndicator
 
 #endregion
 }
+/**/

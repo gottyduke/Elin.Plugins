@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reflection;
 using Cwl.Helper.String;
 using Cwl.Helper.Stubs;
-using Cwl.Helper.Unity;
 using ReflexCLI.Attributes;
 
 namespace Cwl.Helper;
@@ -18,7 +17,7 @@ public class DebugSampler : MethodStub
     private static readonly Stopwatch _sw = Stopwatch.StartNew();
     private static readonly FastString _lastSamplerInfo = new(1024);
     private static MethodInfo? _lastAttached;
-    private static ProgressIndicator? _samplerProgress;
+    private static EGui? _samplerProgress;
     private static bool _killSamplerProgress;
     private static int _keepCount;
 
@@ -44,8 +43,8 @@ public class DebugSampler : MethodStub
         }
 
         _killSamplerProgress = false;
-        _samplerProgress ??= ProgressIndicator
-            .CreateProgress(
+        _samplerProgress ??= EGui
+            .CreatePopup(
                 () => new(GetSamplerInfo()),
                 _ => _killSamplerProgress,
                 1f);

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Cwl.API.Custom;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
-using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using HarmonyLib;
 using HarmonyLib.Public.Patching;
@@ -30,7 +30,7 @@ public class ExceptionProfile(string message)
         nameof(MissingFieldException),
         nameof(MissingMemberException),
     ];
-    private ProgressIndicator? _progressIndicator;
+    private EGui? _progressIndicator;
 
     public List<MonoFrame> Frames => field ??= [];
 
@@ -92,7 +92,7 @@ public class ExceptionProfile(string message)
     public void CreateAndPop(string? display = null)
     {
 #if !DEBUG
-        API.Custom.CustomAchievement.UnlockPersistent("cwl_first_exception");
+        CustomAchievement.UnlockPersistent("cwl_first_exception");
 #endif
 
         EMono.ui?.hud?.imageCover?.SetActive(false);
@@ -111,8 +111,8 @@ public class ExceptionProfile(string message)
         }
 
         using var scopeExit =
-            ProgressIndicator.CreateProgressScoped(() => new(GetOccurrenceString() + display, Color: Color.red));
-        _progressIndicator = scopeExit.Get<ProgressIndicator>();
+            EGui.CreatePopupScoped(() => new(GetOccurrenceString() + display, Color: Color.red));
+        _progressIndicator = scopeExit.Object;
 
         if (!CwlConfig.ExceptionAnalyze) {
             return;
@@ -144,7 +144,7 @@ public class ExceptionProfile(string message)
         EClass.core.StartCoroutine(DeferredAnalyzer());
     }
 
-    private void ClickHandler(ProgressIndicator progress, Event eventData)
+    private void ClickHandler(EGui progress, Event eventData)
     {
         switch (eventData.button) {
             case 0 when State is AnalyzeState.Completed:

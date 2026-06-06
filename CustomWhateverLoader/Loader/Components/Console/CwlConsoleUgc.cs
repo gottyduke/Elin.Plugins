@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Text;
 using Cwl.Helper.String;
-using Cwl.Helper.Unity;
 using HeathenEngineering.SteamworksIntegration;
 using HeathenEngineering.SteamworksIntegration.API;
 using ReflexCLI.Attributes;
@@ -61,8 +60,8 @@ internal partial class CwlConsole
             }
 
             var scrollPosition = Vector2.zero;
-            ProgressIndicator
-                .CreateProgress(() => new(header), _ => false)
+            EGui
+                .CreatePopup(() => new(header), _ => false)
                 .OnHover(p => {
                     scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.Height(300f), GUILayout.MinWidth(800f));
                     {

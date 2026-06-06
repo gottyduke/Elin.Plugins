@@ -8,7 +8,7 @@ namespace Cwl.Components;
 [ConsoleCommandClassCustomizer("cwl")]
 internal class CwlDebugPanel : EMono
 {
-    private ProgressIndicator? _progress;
+    private EGui? _progress;
 
     private void Update()
     {
@@ -38,8 +38,8 @@ internal class CwlDebugPanel : EMono
     internal void Show()
     {
         Kill();
-        _progress = ProgressIndicator
-            .CreateProgress(() => new("CWL Debug"), _ => false)
+        _progress = EGui
+            .CreatePopup(() => new("CWL Debug"), _ => false)
             .OnAfterGUI(DrawDebugPanel);
     }
 
@@ -49,7 +49,7 @@ internal class CwlDebugPanel : EMono
         _progress = null;
     }
 
-    private void DrawDebugPanel(ProgressIndicator p)
+    private void DrawDebugPanel(EGui p)
     {
         GUILayout.BeginVertical(p.GUIStyle);
         {

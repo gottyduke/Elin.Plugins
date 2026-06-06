@@ -160,7 +160,7 @@ public partial class DramaExpansion : DramaOutcome
             return true;
         }
 
-        var submission = CwlScriptSubmission.Create(dm.setup.book);
+        var submission = EScriptSubmission.Create(dm.setup.book);
         var state = new DramaScriptState {
             dm = dm,
             line = line,
@@ -211,7 +211,7 @@ public partial class DramaExpansion : DramaOutcome
                 expr = File.ReadAllText(filePath);
             }
 
-            var csharp = submission.CompileAndRun<DramaScriptState>(expr);
+            var csharp = submission.Compile<DramaScriptState>(expr);
             return csharp?.Invoke(state);
         }
     }

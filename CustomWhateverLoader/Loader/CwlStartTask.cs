@@ -154,7 +154,7 @@ internal sealed partial class CwlMod
 
         CwlConfig.Watch(Config);
 
-        //SetupExceptionHook();
+        SetupExceptionHook();
 
         CreateLoadingProgress();
 
@@ -277,10 +277,9 @@ internal sealed partial class CwlMod
     {
         LoadingComplete = false;
 
-        ProgressIndicator
-            .CreateProgress(
-                () => new("cwl_log_loading".Loc(ModInfo.Version, CurrentLoading)),
-                _ => LoadingComplete);
+        EGui.CreatePopup(
+            () => new("cwl_log_loading".Loc(ModInfo.Version, CurrentLoading)),
+            _ => LoadingComplete);
     }
 
     private static IEnumerator ReportDuplicateVersion()
@@ -290,8 +289,7 @@ internal sealed partial class CwlMod
 
         var size = 140;
         var text = "cwl_warn_duplicate_cwl".lang().TagColor(Color.red);
-        ProgressIndicator
-            .CreateProgress(
+        EGui.CreatePopup(
                 () => new($"<size={size++ / 10}>{text}</size>"),
                 _ => false,
                 3000f)

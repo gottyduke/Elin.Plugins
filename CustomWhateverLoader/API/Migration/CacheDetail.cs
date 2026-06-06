@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using Cwl.API.Processors;
 using Cwl.Helper.String;
-using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using MethodTimer;
 using ReflexCLI.Attributes;
@@ -149,10 +148,10 @@ public sealed class CacheDetail(string cacheKey)
 
         if (details.Length > 0) {
             var list = sb.ToString();
-            using var progress = ProgressIndicator.CreateProgressScoped(
+            using var progress = EGui.CreatePopupScoped(
                 () => new("cwl_ui_cache_gen".Loc(CacheVersionManifest.Get()?.NextGen(), GetDetailString(details))),
                 5f);
-            progress.Get<ProgressIndicator>().OnHover(p => GUILayout.Label(list, p.GUIStyle));
+            progress.Object.OnHover(p => GUILayout.Label(list, p.GUIStyle));
         }
     }
 
