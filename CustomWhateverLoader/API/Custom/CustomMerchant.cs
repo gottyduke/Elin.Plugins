@@ -116,7 +116,7 @@ public class CustomMerchant : TraitMerchant
     {
         var stock = GetStockItems(owner.id);
         if (stock.Length > 0) {
-            GenerateStock(owner, stock);
+            //GenerateStock(owner, stock);
         }
     }
 

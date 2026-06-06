@@ -4,7 +4,7 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Charas;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class SetCharaRowPatch
 {
     [HarmonyPostfix]

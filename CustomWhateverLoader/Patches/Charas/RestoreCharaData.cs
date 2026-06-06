@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using Cwl.API.Custom;
+using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using HarmonyLib;
 

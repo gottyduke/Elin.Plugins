@@ -8,6 +8,10 @@ internal class GameLoadEvent
 {
     internal static bool Prepare()
     {
+        BaseModManager.SubscribeEvent<GameIOContext>(EVENT.PostLoad, ctx => GameIOProcessor.Load(ctx.GetFullPath(""), true));
+        BaseModManager.SubscribeEvent<GameIOContext>(EVENT.NewGame, ctx => GameIOProcessor.Load(ctx.GetFullPath(""), true));
+        BaseModManager.SubscribeEvent<GameIOContext>(EVENT.PreLoad, ctx => GameIOProcessor.Load(ctx.GetFullPath(""), false));
+
         return !CwlMod.IsModdingApiAvailable;
     }
 

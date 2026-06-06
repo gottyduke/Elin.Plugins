@@ -38,7 +38,7 @@ public class DramaException(string exceptionMessage = "")
 }
 
 public class DramaActionArgumentException(int count, string[] parameters) :
-    DramaException($"expected {count}, got [{parameters.Join()}");
+    DramaException($"expected {count}, got [{parameters.Join()}]");
 
 public class DramaActionInvokeException(string callName) :
     DramaException(callName);

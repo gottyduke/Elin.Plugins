@@ -47,8 +47,6 @@ public static class MethodDispatcher
                 dispatch.Exception = ex;
                 CwlMod.Warn($"Invocation failed: {ex}");
             }
-            ModUtil.ExportAllSourceDataCsv($"{CorePath.rootExe}/sourceCsv");
-            ModUtil.ExportAllSourceDataJson($"{CorePath.rootExe}/sourceJson");
 
             return dispatch;
         }

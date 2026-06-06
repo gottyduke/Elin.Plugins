@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Linq;
 using Cwl.LangMod;
-using HarmonyLib;
 
 namespace Cwl.Patches.Zones;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class SafeCreateZonePatch
 {
     internal static bool Prepare()

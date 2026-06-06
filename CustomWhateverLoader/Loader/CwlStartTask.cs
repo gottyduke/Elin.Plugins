@@ -14,10 +14,8 @@ using Cwl.LangMod;
 using Cwl.Patches;
 using Cwl.Patches.Charas;
 using Cwl.Patches.Elements;
-using Cwl.Patches.Quests;
 using Cwl.Patches.Relocation;
 using Cwl.Patches.Sources;
-using Cwl.Patches.Traits;
 using HarmonyLib;
 using MethodTimer;
 using ReflexCLI;
@@ -68,12 +66,12 @@ internal sealed partial class CwlMod
     {
         List<Type> deferred = [
             typeof(ActPerformEvent),
-            typeof(ConverterEvent.CanDecaySubEvent),
-            typeof(ConverterEvent.OnDecaySubEvent),
+            //typeof(ConverterEvent.CanDecaySubEvent),
+            //typeof(ConverterEvent.OnDecaySubEvent),
             //typeof(LoadZonePatch),
             typeof(RepositionTcPatch.TcFixPosPatch),
-            typeof(InvalidateItemPatch),
-            typeof(InvalidateDestThingPatch),
+            //typeof(InvalidateItemPatch),
+            //typeof(InvalidateDestThingPatch),
         ];
 
         BuildPatchesFromTypes(deferred, true);
@@ -184,7 +182,7 @@ internal sealed partial class CwlMod
 
     private static void AddSoundsAndBGM()
     {
-        DataLoader.LoadAllSounds();
+        //DataLoader.LoadAllSounds();
 
         //CustomPlaylist.RebuildBGM();
         CustomPlaylist.BuildPlaylists();

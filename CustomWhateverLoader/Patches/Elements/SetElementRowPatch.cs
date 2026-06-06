@@ -5,7 +5,7 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Elements;
 
-//[HarmonyPatch]
+[HarmonyPatch]
 internal class SetElementRowPatch
 {
     [HarmonyPrefix]

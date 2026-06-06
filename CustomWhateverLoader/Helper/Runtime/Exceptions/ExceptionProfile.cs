@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Cwl.API.Custom;
 using Cwl.Helper.Extensions;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
@@ -93,7 +92,7 @@ public class ExceptionProfile(string message)
     public void CreateAndPop(string? display = null)
     {
 #if !DEBUG
-        CustomAchievement.UnlockPersistent("cwl_first_exception");
+        API.Custom.CustomAchievement.UnlockPersistent("cwl_first_exception");
 #endif
 
         EMono.ui?.hud?.imageCover?.SetActive(false);

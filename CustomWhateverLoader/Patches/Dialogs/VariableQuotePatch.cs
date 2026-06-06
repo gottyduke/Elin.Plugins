@@ -8,7 +8,7 @@ using MethodTimer;
 
 namespace Cwl.Patches.Dialogs;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class VariableQuotePatch
 {
     private static readonly HashSet<string> _quotes = new(StringComparer.Ordinal) {

@@ -27,7 +27,7 @@ internal class OnBarterEvent
         } else {
             var externalStock = CustomMerchant.GetStockItems(__instance.owner.id);
             if (externalStock.Length > 0) {
-                CustomMerchant.GenerateStock(__instance.owner, externalStock);
+                //CustomMerchant.GenerateStock(__instance.owner, externalStock);
             }
 
             __instance.InstanceDispatch("_OnBarter");

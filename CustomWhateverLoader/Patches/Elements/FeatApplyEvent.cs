@@ -13,7 +13,7 @@ internal class FeatApplyEvent
 {
     private static string[]? _aliases;
 
-    [HarmonyTranspiler]
+    //[HarmonyTranspiler]
     internal static IEnumerable<CodeInstruction> OnGodHintIl(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
         return new CodeMatcher(instructions, generator)
@@ -37,11 +37,12 @@ internal class FeatApplyEvent
             .InstructionEnumeration();
     }
 
-    internal static void Prepare()
+    internal static bool Prepare()
     {
         BaseModManager.SubscribeEvent<EVENT.ElinFeatApplyEventArgs>(EVENT.FeatApply, args => {
             OnApply(args.feat, args.data, args.owner, args.hint);
         });
+        return !CwlMod.IsModdingApiAvailable;
     }
 
     internal static void OnApply(Feat __instance, int a, ElementContainer owner, bool hint)

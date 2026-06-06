@@ -12,7 +12,7 @@ using ReflexCLI.Attributes;
 namespace Cwl.Patches.Relocation;
 
 //[HarmonyPatch]
-[ConsoleCommandClassCustomizer("cwl.data")]
+//[ConsoleCommandClassCustomizer("cwl.data")]
 internal class LoadBookPatch
 {
     private const string CacheEntry = "Text";

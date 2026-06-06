@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using Cwl.API.Custom;
 using Cwl.Helper.Extensions;
+using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using HarmonyLib;
 
