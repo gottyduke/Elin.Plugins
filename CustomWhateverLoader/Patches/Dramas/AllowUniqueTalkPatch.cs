@@ -5,7 +5,7 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Dramas;
 
-//[HarmonyPatch]
+[HarmonyPatch]
 internal class AllowUniqueTalkPatch
 {
     [HarmonyTranspiler]

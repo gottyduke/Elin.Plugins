@@ -26,7 +26,7 @@ internal class DramaExpansionPatch
         return CwlConfig.ExpandedActions;
     }
 
-    //[HarmonyTranspiler]
+    [HarmonyTranspiler]
     internal static IEnumerable<CodeInstruction> OnParseActionIl(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
     {
         return new CodeMatcher(instructions, generator)

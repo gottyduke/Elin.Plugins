@@ -12,7 +12,7 @@ using MethodTimer;
 
 namespace Cwl.Patches.Dramas;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class LoadDramaPatch
 {
     private const string CacheEntry = "Dialog/Drama/";
