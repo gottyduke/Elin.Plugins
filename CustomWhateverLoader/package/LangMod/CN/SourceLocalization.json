@@ -114,7 +114,7 @@
   "LangGeneral.cwl_warn_drama_call_ex.text": "调用失败: '{0}'\n{1}",
   "LangGeneral.cwl_warn_drama_id_collision.text": "剧情文本ID冲突 [{0}] => [{1}] 位于行#{2}",
   "LangGeneral.cwl_warn_drama_play_ex.text": "无法正常演出剧情！\n请检查 Player.log 和相关MOD。\n{0}",
-  "LangGeneral.cwl_warn_duplicate_cwl.text": "发现了两个CWL版本！\n请仅使用与您的游戏相匹配的版本。",
+  "LangGeneral.cwl_warn_duplicate_cwl.text": "发现了两个CWL版本！\n请仅使用与您的游戏相匹配的版本。\n如果您的游戏是Nightly分支，请移除Stable CWL。\n如果您不知道什么是Nightly分支，请移除Nightly CWL。",
   "LangGeneral.cwl_warn_empty_default.text": "工作表缺失对应缺省值(行3), 或许不兼容此版本",
   "LangGeneral.cwl_warn_exist_zone.text": "取消生成区域: {0}\n一个区域已经存在于 {1}, {2}: {3}",
   "LangGeneral.cwl_warn_fix_actCombat.text": "已从 '{1}' 移除无效的actCombat '<color=red>{0}</color>'",
