@@ -1,4 +1,6 @@
 {
+  "LangGeneral.enableModError.text": "启用错误弹窗显示",
+  "LangGeneral.errorPopup_tip.text": "开启后，游戏过程中发生的错误将以弹窗显示，并列出可能相关的模组。\n有助于排查模组引起的问题，方便向模组作者反馈。",
   "LangGeneral.es_error_cs_disabled.text": "脚本编译器已被禁用",
   "LangGeneral.es_error_cs_frozen.text": "脚本状态 '#1' 已被冻结",
   "LangGeneral.es_error_csc_diag.text": "编译 '#1' 失败:\n#2",

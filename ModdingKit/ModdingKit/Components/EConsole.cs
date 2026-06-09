@@ -12,7 +12,7 @@ internal class EConsole : EMono
         }
 
         var pressed = Input.GetKeyDown(EClass.core.config.input.keys.console.key);
-        if (ReflexUIManager.IsConsoleOpen() && pressed) {
+        if (ReflexUIManager.IsConsoleOpen() && Input.GetKeyDown(KeyCode.Escape)) {
             ReflexUIManager.StaticClose();
         } else if (pressed) {
             ReflexUIManager.StaticOpen();

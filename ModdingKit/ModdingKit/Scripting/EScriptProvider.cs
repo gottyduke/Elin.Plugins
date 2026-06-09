@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
-using EModding.Exceptions;
+using EModding.Helper.Runtime.Exceptions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using DiagnosticSeverity = Microsoft.CodeAnalysis.DiagnosticSeverity;

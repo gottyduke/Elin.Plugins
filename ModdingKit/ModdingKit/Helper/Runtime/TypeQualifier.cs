@@ -144,5 +144,7 @@ public class TypeQualifier
                 // noexcept
             }
         }
+
+        ClassCache.modTypes.UnionWith(Declared);
     }
 }
