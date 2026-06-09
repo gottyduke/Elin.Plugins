@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using BepInEx;
 using HarmonyLib;
 using UnityEngine;
@@ -135,7 +136,9 @@ public class TypeQualifier
 
         foreach (var plugin in Plugins.ToArray()) {
             try {
-                var types = plugin.GetType().Assembly.DefinedTypes.ToArray();
+                var types = plugin.GetType().Assembly.DefinedTypes
+                    .Where(t => !t.IsDefined(typeof(CompilerGeneratedAttribute), false) && !t.Name.Contains('<'))
+                    .ToArray();
                 // test cast for missing dependency
                 _ = types.Select(ti => typeof(object).IsAssignableFrom(ti)).ToArray();
                 Declared.UnionWith(types);
