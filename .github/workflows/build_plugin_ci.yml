@@ -57,6 +57,7 @@ jobs:
       - name: Checkout Deps
         uses: actions/checkout@v6
         with:
+          fetch-depth: 0
           path: ${{ matrix.version }}
           ref: ${{ matrix.version }}
           repository: gottyduke/Elin.Plugins.BuildDeps
