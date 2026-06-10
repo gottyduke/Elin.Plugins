@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Cwl.Patches.Effects;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class ExtendedGunEffectPatch : EClass
 {
     [HarmonyPrefix]

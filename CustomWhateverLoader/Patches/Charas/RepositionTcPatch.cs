@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Cwl.Patches.Charas;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class RepositionTcPatch
 {
     private static float CacheRaycastDistTwoWay(Sprite sprite)

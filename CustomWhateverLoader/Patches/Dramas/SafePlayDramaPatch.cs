@@ -8,7 +8,7 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Dramas;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class SafePlayDramaPatch
 {
     internal static IEnumerable<MethodBase> TargetMethods()

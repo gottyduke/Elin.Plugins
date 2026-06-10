@@ -5,7 +5,7 @@ using MethodTimer;
 
 namespace Cwl.Patches.Elements;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class MergeAttackElementPatch
 {
     [Time]

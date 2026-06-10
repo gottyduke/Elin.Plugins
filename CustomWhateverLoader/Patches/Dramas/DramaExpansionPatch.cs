@@ -10,7 +10,7 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Dramas;
 
-[HarmonyPatch(typeof(DramaManager), nameof(DramaManager.ParseLine))]
+//[HarmonyPatch(typeof(DramaManager), nameof(DramaManager.ParseLine))]
 internal class DramaExpansionPatch
 {
     internal static bool Prepare()

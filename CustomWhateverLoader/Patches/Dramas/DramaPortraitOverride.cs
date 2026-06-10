@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Cwl.Patches.Dramas;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class DramaPortraitOverride
 {
     [SwallowExceptions]

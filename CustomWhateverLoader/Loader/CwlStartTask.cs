@@ -112,22 +112,22 @@ internal sealed partial class CwlMod
 
         CustomAchievement.ReimportAchievementDefinitions();
 
-        DataLoader.MergeEffectSetting();
+        //DataLoader.MergeEffectSetting();
 
         // post init tasks
         yield return null;
 
         if (!IsModdingApiAvailable) {
             DataLoader.PreloadDialog();
+            DataLoader.MergeCharaTalk();
+            DataLoader.MergeCharaTone();
+            DataLoader.MergeFactionElements();
+            DataLoader.MergeOfferingMultiplier();
+
         }
-        DataLoader.MergeCharaTalk();
-        DataLoader.MergeCharaTone();
         //DataLoader.MergeGodTalk();
         //DataLoader.MergeCustomAlias();
         //DataLoader.MergeCustomName();
-
-        DataLoader.MergeFactionElements();
-        DataLoader.MergeOfferingMultiplier();
 
         AddSoundsAndBGM();
 
@@ -172,12 +172,11 @@ internal sealed partial class CwlMod
     private static void AddResourceRelocators()
     {
         if (!IsModdingApiAvailable) {
+            DataLoader.SetupEffectTemplate();
             LoadResourcesPatch.AddHandler<SoundData>(DataLoader.RelocateSound);
+            LoadResourcesPatch.AddHandler<Effect>(DataLoader.RelocateEffect);
         }
         LoadResourcesPatch.AddHandler<Sprite>(DataLoader.RelocateSprite);
-
-        DataLoader.SetupEffectTemplate();
-        LoadResourcesPatch.AddHandler<Effect>(DataLoader.RelocateEffect);
     }
 
     private static void AddSoundsAndBGM()

@@ -3,7 +3,7 @@ using HarmonyLib;
 
 namespace Cwl.Patches.Calcs;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class LoadRefDicePatch
 {
     [HarmonyPrefix]
