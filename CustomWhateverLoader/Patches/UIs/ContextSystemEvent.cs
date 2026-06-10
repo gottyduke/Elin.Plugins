@@ -3,7 +3,7 @@ using HarmonyLib;
 
 namespace Cwl.Patches.UIs;
 
-[HarmonyPatch]
+//[HarmonyPatch]
 internal class ContextSystemEvent
 {
     [SwallowExceptions]

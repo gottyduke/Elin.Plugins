@@ -1,4 +1,3 @@
-using Cwl.API.Attributes;
 using Cwl.Helper.Unity;
 using ReflexCLI.Attributes;
 using UnityEngine;
@@ -28,7 +27,7 @@ internal class CwlDebugPanel : EMono
     }
 
     [ConsoleCommand("show_debug_panel")]
-    [CwlContextMenu("cwl_ui_debug_btn")]
+    [ElinContextMenuEntry("cwl_ui_debug_btn", "cwl_ui_debug_btn")]
     internal static void ShowDebugPanel()
     {
         ELayerCleanup.Cleanup<LayerDebug>();

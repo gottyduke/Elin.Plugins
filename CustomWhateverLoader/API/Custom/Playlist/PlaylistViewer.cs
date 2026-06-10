@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Cwl.API.Attributes;
 using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using ReflexCLI.Attributes;
@@ -56,12 +55,12 @@ public class PlaylistViewer
         };
 
     [ConsoleCommand("view")]
-    [CwlContextMenu("BGM/Show", "cwl_ui_bgm_view")]
-    public static string EnableBGMView()
+    [ElinContextMenuEntry("BGM/cwl_ui_bgm_view", "cwl_ui_bgm_view")]
+    public static void EnableBGMView()
     {
         _viewer ??= new();
         _viewer.Show();
-        return "enabled BGM panel";
+        EGui.CreatePopup("enabled BGM panel");
     }
 
     [ConsoleCommand("hide")]
@@ -102,13 +101,13 @@ public class PlaylistViewer
     }
 
     [ConsoleCommand("add_known")]
-    [CwlContextMenu("BGM/AddKnown", "cwl_ui_bgm_add_known")]
-    public static string AddPlaylistToKnown()
+    [ElinContextMenuEntry("BGM/cwl_ui_bgm_add_known", "cwl_ui_bgm_add_known")]
+    public static void AddPlaylistToKnown()
     {
         var pl = SoundManager.current.currentPlaylist;
         var prev = EClass.player.knownBGMs.Count;
         EClass.player.knownBGMs.UnionWith(pl.ToInts());
-        return $"added {EClass.player.knownBGMs.Count - prev} new BGM(s) to known list";
+        EGui.CreatePopup($"added {EClass.player.knownBGMs.Count - prev} new BGM(s) to known list");
     }
 
     [ConsoleCommand("dump")]

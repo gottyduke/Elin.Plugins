@@ -20,6 +20,9 @@ public class ContextMenuHelper
             return;
         }
 
+        ModUtil.AddContextMenuEntry(Process, entry, displayName);
+        return;
+        /**
         string[] parts = entry.Split('/', StringSplitOptions.RemoveEmptyEntries);
         var menus = EntryProxies;
 
@@ -44,6 +47,7 @@ public class ContextMenuHelper
         }
 
         return;
+        /**/
 
         void Process()
         {

@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Cwl.API.Attributes;
 using Cwl.Helper.Extensions;
 using Cwl.LangMod;
 using HarmonyLib;
@@ -27,11 +26,10 @@ internal partial class CwlConsole : EMono
         }
     }
 
-    [CwlContextMenu("CWL/BeggarBegone", "cwl_ui_vacate_beggar")]
-    internal static string BegoneOfYouChicken()
+    [ElinContextMenuEntry("CWL/BeggarBegone", "cwl_ui_vacate_beggar")]
+    internal static void BegoneOfYouChicken()
     {
-        // 23.149 changed beggar to chicken, what noa
-        return BegoneOfYouInsertNameHere("chicken");
+        EGui.CreatePopup(BegoneOfYouInsertNameHere("chicken"));
     }
 
     [ConsoleCommand("gain_ability")]

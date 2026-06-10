@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Cwl.Patches.UIs;
 
-//[HarmonyPatch]
+[HarmonyPatch]
 internal class DirectPopperPatch
 {
     [HarmonyTranspiler]
