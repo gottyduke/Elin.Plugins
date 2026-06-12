@@ -18,4 +18,4 @@ It's built with 3 modules working together:
 
 ## Server Spec
 
-See [Expanded Moongate Server API](https://docs.exmoongate.elin-modding.net/)
+See [Expanded Moongate Server API](https://api.exmoongate.elin-modding.net/)
