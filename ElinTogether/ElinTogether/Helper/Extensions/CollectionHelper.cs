@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ElinTogether.Helper;
+namespace ElinTogether.Helper.Extensions;
 
 internal static class CollectionHelper
 {

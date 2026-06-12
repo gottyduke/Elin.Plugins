@@ -47,10 +47,6 @@ internal class FeatApplyEvent
 
     internal static void OnApply(Feat __instance, int a, ElementContainer owner, bool hint)
     {
-        if (!CustomElement.Managed.ContainsKey(__instance.id)) {
-            return;
-        }
-
         __instance.InstanceDispatch("_OnApply", a, owner, hint);
     }
 
