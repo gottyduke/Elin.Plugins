@@ -105,6 +105,8 @@ public class NetSession : EClass
 
         SwitchSyncMode(Mode.None);
         ResetPhase();
+
+        EmpLog.Information("Connection component removed, session reset to None");
     }
 
     public T InitializeComponent<T>() where T : ElinNetBase

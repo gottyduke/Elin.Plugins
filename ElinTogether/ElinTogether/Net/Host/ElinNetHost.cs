@@ -21,6 +21,7 @@ internal partial class ElinNetHost : ElinNetBase
         StopWorldStateUpdate();
 
         if (!core.IsGameStarted || player?.chara?.homeBranch?.owner is null) {
+            EmpLog.Warning("Cannot start server: game not started or no land claimed");
             EmpPop.Debug("emp_ui_unclaimed_zone".lang());
             Session.RemoveComponent();
             return;
@@ -180,6 +181,9 @@ internal partial class ElinNetHost : ElinNetBase
 
             Session.CurrentPlayers.Remove(state);
         }
+
+        EmpLog.Debug("Player {Name} disconnected. {Remaining} players remaining, {Pending} pending reconnects",
+            state?.Name ?? "unknown", States.Count, PendingReconnects.Count);
 
         // keep ticking but no update
         if (States.Count == 0) {

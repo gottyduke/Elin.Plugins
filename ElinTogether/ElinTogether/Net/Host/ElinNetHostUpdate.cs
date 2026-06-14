@@ -35,7 +35,12 @@ internal partial class ElinNetHost
         try {
             _lastTick = PropagateWorldState();
         } catch (Exception ex) {
-            EmpLog.Verbose(ex, "Exception at server tick update");
+            EmpLog.Warning(ex, "Exception at server tick update");
+        }
+
+        if (_lastTick is null) {
+            EmpLog.Warning("WorldStateSnapshot is null at tick {Tick}, skipping broadcast", Session.Tick);
+            return;
         }
 
         Broadcast(_lastTick);

@@ -80,6 +80,10 @@ internal partial class ElinNetClient : ElinNetBase
             // ignore if steam can't respond in 500ms
         }
 
+        if (host.Name is null) {
+            EmpLog.Warning("Host {Uid} name resolution timed out", host.Uid);
+        }
+
         this.StartDeferredCoroutine(StartWorldStateUpdate, () => core.IsGameStarted);
 
 #if DEBUG
@@ -126,6 +130,9 @@ internal partial class ElinNetClient : ElinNetBase
         }
 
         // Non-recoverable path: clean up and return to title
+        EmpLog.Warning("Non-recoverable disconnect (phase={Phase}): {Reason}",
+            Session.CurrentPhase, disconnectInfo);
+
         if (core.IsGameStarted) {
             scene.Init(Scene.Mode.Title);
         }

@@ -24,7 +24,7 @@ public partial class ElinNetBase
         var oldList = SourceList;
         SourceList = SourceValidation.GenerateAll(SourceValidation.DefaultSources);
 
-        EmpLog.Information("Created source validation rules for {Count} sources",
+        EmpLog.Debug("Created source validation rules for {Count} sources",
             SourceList.Count);
 
         foreach (var (sourceName, sha) in SourceList) {

@@ -22,7 +22,7 @@ internal partial class ElinNetHost
 
     private void OnSourceListResponse(SourceValidationResponse response, ISteamNetPeer peer)
     {
-        EmpLog.Information("Received source validation response from {@Peer}",
+        EmpLog.Debug("Received source validation response from {@Peer}",
             peer);
 
         var mismatches = new Dictionary<string, string>();
@@ -54,6 +54,9 @@ internal partial class ElinNetHost
 
         // u shall not pass
 
+        EmpLog.Warning("Source validation mismatch: {Count} sources differ for {@Peer}",
+            mismatches.Count, peer);
+
         var diff = new Dictionary<string, LZ4Bytes>();
         foreach (var sourceType in mismatches.Keys) {
             var source = ModUtil.FindSourceByName(sourceType);
@@ -63,7 +66,7 @@ internal partial class ElinNetHost
         }
 
         if (diff.Count > 0) {
-            EmpLog.Information("Sending source diff ({Count} tables) to {@Peer}", diff.Count,
+            EmpLog.Information("Sending source diff ({Count} sources) to {@Peer}", diff.Count,
                 peer);
             // clients apply, recompute, then send another SourceValidationResponse
             peer.Send(new SourceListSync {
