@@ -48,7 +48,7 @@ internal partial class ElinNetHost
         var zone = _zone;
         if (request.ZoneUid != -1) {
             zone = game.spatials.Find(request.ZoneUid) ??
-                   game.spatials.Find<Zone>(z => z.ZoneFullName == request.ZoneFullName);
+                   ModUtil.FindZoneByFullName(request.ZoneFullName);
         }
 
         if (zone is not null) {
@@ -72,14 +72,16 @@ internal partial class ElinNetHost
 
         var chara = ActiveRemoteCharas[peer.Id];
 
-        // Staleness check (Phase 1): use ZoneFullName + ZoneUid instead of re-sending.
-        // If the client is on a different zone, just ignore; it will receive the correct zone data later.
-        if (response.ZoneUid != _zone.uid || response.ZoneFullName != _zone.ZoneFullName) {
-            EmpLog.Debug(
-                "Ignoring stale ZoneDataReceivedResponse from {@Peer} (expected {ExpectedName}/{ExpectedUid}, got {GotName}/{GotUid})",
-                peer,
-                _zone.ZoneFullName, _zone.uid,
-                response.ZoneFullName, response.ZoneUid);
+        // check if the received zone is still the current zone
+        // in case clients have a high RTT and host fast fingered to another zone
+        if (response.ZoneUid != _zone.uid) {
+            EmpLog.Debug("...but the zone state is stale, switching to new zone state {@Zone}",
+                new {
+                    _zone.ZoneFullName,
+                    ZoneUid = _zone.uid,
+                });
+
+            PropagateZoneChangeState(_zone, peer);
             return;
         }
 

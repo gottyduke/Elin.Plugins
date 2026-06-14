@@ -53,17 +53,13 @@ internal sealed class EmpMod : BaseUnityPlugin
         SteamNetworkingUtils.InitRelayNetworkAccess();
 
         NetSession.Instance.Lobby.TryParseLobbyCommand();
+
+        TitleButtonPatch.RegisterTitleButton(Scene.Mode.Title);
     }
 
     private void OnApplicationQuit()
     {
         NetSession.Instance.RemoveComponent();
         StringAllocator.UnpinSharedStringHandles();
-    }
-
-    [ElinPostLoad]
-    private static void ClearRef(GameIOContext context)
-    {
-        SpatialGenEvent.HeldRefZones.Clear();
     }
 }

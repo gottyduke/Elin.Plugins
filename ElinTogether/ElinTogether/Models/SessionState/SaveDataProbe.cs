@@ -9,8 +9,6 @@ namespace ElinTogether.Models;
 [MessagePackObject]
 public class SaveDataProbe
 {
-    private static readonly JsonSerializer _serializer = JsonSerializer.Create(GameIO.jsReadGame);
-
     [Key(0)]
     public required LZ4Bytes Game { get; init; }
 
@@ -19,13 +17,13 @@ public class SaveDataProbe
 
     public Game MakeGameSave()
     {
-        return Game.Decompress<Game>(_serializer);
+        return Game.Decompress<Game>();
     }
 
     public static SaveDataProbe Create(int uid)
     {
         return new() {
-            Game = LZ4Bytes.Create(EClass.game, _serializer),
+            Game = LZ4Bytes.Create(EClass.game),
             RemoteCharaUid = uid,
         };
     }

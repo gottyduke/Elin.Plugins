@@ -10,7 +10,7 @@ namespace ElinTogether.Models;
 [MessagePackObject]
 public class LZ4Bytes
 {
-    private static readonly JsonSerializer _serializer = JsonSerializer.Create(GameIOContext.Settings);
+    private static readonly JsonSerializer _serializer = JsonSerializer.Create(GameIO.jsReadGame);
 
     [Key(0)]
     public required byte[] Bytes { get; init; }

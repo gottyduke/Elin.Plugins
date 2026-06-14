@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using ElinTogether.Helper;
+using ElinTogether.Patches;
 using MessagePack;
 
 namespace ElinTogether.Models;
@@ -46,6 +47,13 @@ public class ZoneDataResponse
                 .GetFiles(zone.pathSave, "*.*", SearchOption.TopDirectoryOnly)
                 .ToDictionary(Path.GetFileNameWithoutExtension, LZ4Bytes.CreateFromFile),
         };
+    }
+
+    public Zone? FindZone()
+    {
+        return EClass.game?.spatials.Find(ZoneUid) ??
+               ModUtil.FindZoneByFullName(ZoneFullName) ??
+               SpatialGenEvent.TryPop(ZoneUid);
     }
 
     public ZoneDataReceivedResponse Ready()

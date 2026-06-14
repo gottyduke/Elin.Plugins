@@ -41,4 +41,10 @@ internal static class SpatialGenEvent
         // must defer this because dungeon levels are assigned after creation
         CoroutineHelper.Deferred(() => host.Delta.AddRemote(SpatialGenDelta.Create(__result as Zone)));
     }
+
+    [ElinPostLoad]
+    private static void ClearRef(GameIOContext context)
+    {
+        HeldRefZones.Clear();
+    }
 }
