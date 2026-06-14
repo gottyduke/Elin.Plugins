@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ReflexCLI.Attributes;
 using Steamworks;
 
-namespace ElinTogether.Helper;
+namespace ElinTogether.Helper.String;
 
 [ConsoleCommandClassCustomizer("emp.native")]
 internal sealed class StringAllocator : IDisposable

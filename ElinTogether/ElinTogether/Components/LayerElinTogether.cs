@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using Cwl.API.Attributes;
-using Cwl.Helper.String;
 using ElinTogether.Net;
 using UnityEngine;
 using YKF;
@@ -38,7 +36,7 @@ internal class LayerElinTogether : YKLayer<LayerCreationData>
     {
         base.OnAfterAddLayer();
 
-        if (!Data.StartingTab.IsEmptyOrNull) {
+        if (!Data.StartingTab.IsEmpty()) {
             _lastOpenedTab = Data.StartingTab;
         }
 
@@ -70,7 +68,7 @@ internal class LayerElinTogether : YKLayer<LayerCreationData>
         OpenPanelSesame(_lastOpenedTab);
     }
 
-    [CwlContextMenu("Elin Together")]
+    [ElinContextMenuEntry("Elin Together")]
     private static void OpenInternal()
     {
         OpenPanelSesame();

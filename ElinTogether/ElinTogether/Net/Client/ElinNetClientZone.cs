@@ -1,6 +1,4 @@
-using System;
-using Cwl.Helper.Extensions;
-using Cwl.Helper.Unity;
+using ElinTogether.Common;
 using ElinTogether.Models;
 using ElinTogether.Patches;
 using ReflexCLI.Attributes;
@@ -19,7 +17,7 @@ internal partial class ElinNetClient
         EmpLog.Information("Requesting zone state {@Zone} from host",
             request);
 
-        Socket.FirstPeer.Send(request);
+        Host.Send(request);
     }
 
     /// <summary>
@@ -45,7 +43,7 @@ internal partial class ElinNetClient
                 EmpLog.Warning("Remote zone parent does not exist in current game");
 
                 // TODO: add reconnect logic to resync save probe
-                Socket.Disconnect(Socket.FirstPeer, "emp_invalid_zone");
+                Socket.Disconnect(Host, EmpDisconnectInfo.InvalidZone);
                 return;
             }
 
@@ -62,7 +60,7 @@ internal partial class ElinNetClient
             EmpLog.Warning("Zone state mismatch");
 
             // TODO: add reconnect logic to resync save probe
-            Socket.Disconnect(Socket.FirstPeer, "emp_invalid_zone");
+            Socket.Disconnect(Host, EmpDisconnectInfo.InvalidZone);
             return;
         }
 
@@ -81,7 +79,7 @@ internal partial class ElinNetClient
         Session.CurrentZone = remoteZone;
 
         // respond for replication complete, waiting for sync position
-        Socket.FirstPeer.Send(response.Ready());
+        Host.Send(response.Ready());
     }
 
     /// <summary>
@@ -91,21 +89,25 @@ internal partial class ElinNetClient
     {
         var currentZone = Session.CurrentZone;
 
-        if (currentZone?.uid != response.ZoneUid) {
-            // ??? how
-            Socket.Disconnect(Socket.FirstPeer, "emp_invalid_zone");
-            throw new InvalidOperationException($"zone state is invalid with uid {response.ZoneUid}");
+        // Staleness guard (Phase 1): use ZoneFullName + ZoneUid instead of hard disconnect.
+        // If mismatch, the client will receive the correct zone data later via snapshot/delta or re-request.
+        if (currentZone?.uid != response.ZoneUid || currentZone.ZoneFullName != response.ZoneFullName) {
+            EmpLog.Debug("Ignoring stale ZoneActivateResponse (expected {ExpectedName}/{ExpectedUid}, got {GotName}/{GotUid})",
+                currentZone?.ZoneFullName, currentZone?.uid,
+                response.ZoneFullName, response.ZoneUid);
+            return;
         }
 
-        if (player.zone is null) {
-            // first time joining, need to do scene init from title
-            EmpLog.Debug("Starting initial scene init");
-
+        // Unified transition (Phase 2): single path, no player.zone == null hack.
+        if (player.zone != currentZone) {
             player.zone = pc.currentZone = currentZone;
-            scene.Init(Scene.Mode.Zone);
-        } else if (player.zone != currentZone) {
-            // do normal zone transition
-            pc.MoveZone(currentZone);
+            if (!core.IsGameStarted || scene.mode != Scene.Mode.Zone) {
+                // first time or coming from title
+                scene.Init(Scene.Mode.Zone);
+            } else {
+                // normal in-game zone change
+                pc.MoveZone(currentZone);
+            }
         }
 
         // reassign zone pos

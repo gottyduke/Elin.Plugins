@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using ElinTogether.Common;
 using ElinTogether.Helper;
+using ElinTogether.Helper.Steam;
 using Steamworks;
 
 namespace ElinTogether.Net.Steam;
@@ -122,7 +123,7 @@ public partial class SteamNetManager(ISteamNetSerializer? serializer = null) : I
     public void Stop()
     {
         foreach (var peer in Peers) {
-            Disconnect(peer, "emp_shutdown");
+            Disconnect(peer, EmpDisconnectInfo.HostShutdown);
         }
 
         DiscardListenSocket();
@@ -198,7 +199,7 @@ public partial class SteamNetManager(ISteamNetSerializer? serializer = null) : I
                 var peer = _peers.FirstOrDefault(p => p.Connection == connection);
                 if (peer is not null) {
                     _listener?.OnPeerDisconnected(peer, status.m_info.m_szEndDebug);
-                    Disconnect(peer, "emp_remote_closed");
+                    Disconnect(peer, EmpDisconnectInfo.RemoteClosed);
                 }
 
                 break;

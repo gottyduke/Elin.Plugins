@@ -1,4 +1,3 @@
-using Cwl.Helper.Extensions;
 using ElinTogether.Net;
 using ElinTogether.Patches;
 using MessagePack;
@@ -47,7 +46,7 @@ public class SpatialGenDelta : ElinDelta
             return;
         }
 
-        var (_, zoneId, zoneLv) = ZoneFullName.ParseZoneFullName();
+        var (_, zoneId, zoneLv) = ParseZoneFullName(ZoneFullName);
         var parent = game.spatials.Find(ParentZoneUid);
         remoteZone = SpatialGen.Create(zoneId, parent, true, Pos.X, Pos.Z) as Zone;
 
@@ -61,5 +60,30 @@ public class SpatialGenDelta : ElinDelta
         }
 
         SpatialGenEvent.HeldRefZones[ZoneUid] = remoteZone;
+    }
+
+    private (string zoneType, string zoneId, int zoneLv) ParseZoneFullName(string zoneFullName)
+    {
+        var zoneType = "";
+        var zoneId = "";
+        var zoneLv = 0;
+        zoneFullName = zoneFullName.Replace('/', '@');
+        var zone = game.spatials.Find<Zone>(z => z.ZoneFullName == zoneFullName);
+        if (zone is not null) {
+            return (zoneType, zoneId, zoneLv);
+        }
+
+        var byLv = zoneFullName.LastIndexOf('@');
+        if (byLv > 0 && byLv < zoneFullName.Length - 1) {
+            zoneType = zoneFullName[..byLv];
+            zoneLv = zoneFullName[(byLv + 1)..].ToInt();
+        } else {
+            zoneType = zoneFullName.Replace("@", "");
+        }
+
+        zoneId = zoneType.Replace("Zone_", "");
+        zoneType = "Zone_" + zoneId;
+
+        return (zoneType, zoneId, zoneLv);
     }
 }

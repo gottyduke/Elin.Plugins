@@ -1,4 +1,3 @@
-using Cwl.API.Attributes;
 using ElinTogether.Net;
 using HarmonyLib;
 
@@ -31,10 +30,17 @@ internal class GameSaveLoad
         return false;
     }
 
-    [CwlPreLoad]
-    [CwlSceneInitEvent(Scene.Mode.Title, preInit: true)]
-    internal static void TerminateConnectionOnLoad()
+    [ElinPreLoad]
+    internal static void TerminateConnectionOnLoad(GameIOContext context)
     {
         NetSession.Instance.RemoveComponent();
+    }
+
+    [ElinPostSceneInit]
+    internal static void TerminateConnectionOnLoad(Scene.Mode mode)
+    {
+        if (mode == Scene.Mode.Title) {
+            NetSession.Instance.RemoveComponent();
+        }
     }
 }

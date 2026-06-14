@@ -26,7 +26,7 @@ internal partial class ElinNetClient
             return;
         }
 
-        Socket.FirstPeer.Send(new WorldStateDeltaList {
+        Host.Send(new WorldStateDeltaList {
             DeltaList = deltaList,
         });
     }
@@ -67,7 +67,7 @@ internal partial class ElinNetClient
         snapshot.ApplyReconciliation();
 
         // send back client state
-        Socket.FirstPeer.Send(CharaStateSnapshot.CreateSelf());
+        Host.Send(CharaStateSnapshot.CreateSelf());
     }
 
     /// <summary>

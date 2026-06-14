@@ -1,12 +1,11 @@
 using System.IO;
-using Cwl.API.Processors;
 using UnityEngine;
 
 namespace ElinTogether.Helper;
 
 internal class ResourceFetch
 {
-    internal static readonly GameIOProcessor.GameIOContext Context = GameIOProcessor.GetPersistentModContext("ElinMP")!;
+    internal static readonly GameIOContext Context = GameIOContext.GetPersistentModContext("ElinMP")!;
 
     internal static string TempFolder { get; private set; } = Path.Combine(Application.persistentDataPath, "ElinMP/Temp");
 

@@ -6,7 +6,8 @@ using HarmonyLib;
 namespace ElinTogether.Patches;
 
 [HarmonyPatch(typeof(Card), nameof(Card.DamageHP),
-    typeof(long), typeof(int), typeof(int), typeof(AttackSource), typeof(Card), typeof(bool), typeof(Thing), typeof(Chara), typeof(int))]
+    typeof(long), typeof(int), typeof(int), typeof(AttackSource), typeof(Card), typeof(bool), typeof(Thing), typeof(Chara),
+    typeof(int))]
 internal static class CardDamageHpEvent
 {
     [HarmonyPrefix]

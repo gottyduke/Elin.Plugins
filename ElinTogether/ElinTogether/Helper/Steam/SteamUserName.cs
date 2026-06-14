@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Steamworks;
 
-namespace ElinTogether.Helper;
+namespace ElinTogether.Helper.Steam;
 
 internal class SteamUserName
 {

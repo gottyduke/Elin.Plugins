@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using ElinTogether.Helper;
+using ElinTogether.Models;
 using ElinTogether.Net.Steam;
 using Object = UnityEngine.Object;
 
@@ -34,6 +36,7 @@ public class NetSession : EClass
     public int Tick { get; internal set; }
     public ulong SessionId { get; internal set; }
     public NetSessionRules Rules { get; internal set; } = NetSessionRules.Default;
+    public bool IsRejoining { get; internal set; }
 
     public List<NetPeerState> CurrentPlayers => field ??= [];
     public SteamNetLobbyManager Lobby => field ??= new();
@@ -42,6 +45,43 @@ public class NetSession : EClass
     public bool IsHost => Connection?.IsHost is not false;
     public bool IsClient => !IsHost;
     public bool ShouldSimulate => IsHost || SyncMode == Mode.PartialSync;
+
+    /// <summary>
+    ///     Minimal info retained across transient disconnects to support lightweight rejoin.
+    ///     Populated on successful initial join / synchronization.
+    /// </summary>
+    public LastSessionInfo? LastSession { get; internal set; }
+
+    // ===== Connection Phase State Machine (per design doc) =====
+
+    public ConnectionPhase CurrentPhase { get; private set; } = ConnectionPhase.None;
+
+    public event Action<ConnectionPhase>? OnPhaseChanged;
+
+    /// <summary>
+    ///     Transitions the session to a new connection phase. Logs the change and fires
+    ///     <see cref="OnPhaseChanged" />. Idempotent if already in target phase.
+    /// </summary>
+    public void SetPhase(ConnectionPhase phase)
+    {
+        if (CurrentPhase == phase) {
+            return;
+        }
+
+        var previous = CurrentPhase;
+        CurrentPhase = phase;
+
+        EmpLog.Debug("ConnectionPhase: {Previous} -> {Current}", previous, phase);
+        OnPhaseChanged?.Invoke(phase);
+    }
+
+    /// <summary>
+    ///     Resets phase to None (used on RemoveComponent / full disconnect).
+    /// </summary>
+    public void ResetPhase()
+    {
+        CurrentPhase = ConnectionPhase.None;
+    }
 
     public void RemoveComponent()
     {
@@ -64,6 +104,7 @@ public class NetSession : EClass
         ResourceFetch.InvalidateTemp();
 
         SwitchSyncMode(Mode.None);
+        ResetPhase();
     }
 
     public T InitializeComponent<T>() where T : ElinNetBase

@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Cwl.API.Attributes;
-using Cwl.Helper.Extensions;
 using ElinTogether.Models;
 using ElinTogether.Net.Steam;
 
@@ -21,7 +19,7 @@ internal partial class ElinNetHost
     /// </summary>
     public int SharedSpeed => (int)States.Values.Average(s => s.Speed);
 
-    [CwlContextVar("remote_chara")]
+    [ElinGameIOProperty("remote_chara")]
     private static Dictionary<ulong, int> SavedRemoteCharas
     {
         get => field ??= [];
@@ -33,8 +31,6 @@ internal partial class ElinNetHost
     /// </summary>
     public void PreparePlayerJoin(ISteamNetPeer peer)
     {
-        EnsureValidation(peer);
-
         EmpLog.Information("Preparing player {@Peer} for joining",
             peer);
 
@@ -58,7 +54,7 @@ internal partial class ElinNetHost
 
         chara.MakeAlly();
         chara.MoveZone(pc.currentZone);
-        chara.SetFlagValue("remote_chara");
+        chara.SetBool("remote_chara", true);
         ActiveRemoteCharas[peer.Id] = chara;
 
         var state = States[peer.Id] = new() {
@@ -106,15 +102,15 @@ internal partial class ElinNetHost
         }
     }
 
-    [CwlPostLoad]
-    private static void RemoveLeftOverCharas()
+    [ElinPostLoad]
+    private static void RemoveLeftOverCharas(GameIOContext context)
     {
         IEnumerable<Chara> excluded = Session.Connection is ElinNetHost host
             ? host.ActiveRemoteCharas.Values
             : [];
 
         var currentRemoteCharas = game.cards.globalCharas.Values
-            .Where(c => c.GetFlagValue("remote_chara") > 0);
+            .Where(c => c.GetBool("remote_chara"));
 
         foreach (var chara in currentRemoteCharas.Except(excluded)) {
             RemoveRemoteChara(chara);

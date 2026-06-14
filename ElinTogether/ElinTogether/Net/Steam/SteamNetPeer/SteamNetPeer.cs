@@ -2,7 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 using System.Threading;
-using ElinTogether.Helper;
+using ElinTogether.Helper.Steam;
 using Steamworks;
 using UnityEngine;
 

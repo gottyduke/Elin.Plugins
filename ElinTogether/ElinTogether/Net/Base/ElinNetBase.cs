@@ -1,5 +1,4 @@
-using Cwl.Helper.String;
-using Cwl.Helper.Unity;
+using System.Text;
 using ElinTogether.Helper;
 using ElinTogether.Net.Steam;
 using ReflexCLI.UI;
@@ -14,7 +13,7 @@ public abstract partial class ElinNetBase : EMono
     protected readonly TickScheduler Scheduler = new();
     protected readonly SteamNetManager Socket = new();
     private bool _initialized;
-    protected ProgressIndicator? DebugProgress;
+    protected EGui? DebugProgress;
 
     public abstract bool IsHost { get; }
 
@@ -25,6 +24,7 @@ public abstract partial class ElinNetBase : EMono
     private void Awake()
     {
         Initialize();
+        SourceValidation.BuildActMapping();
 
 #if !DEBUG
         if (!HarmonyLib.Harmony.HasAnyPatches(ModInfo.Guid)) {
@@ -88,7 +88,7 @@ public abstract partial class ElinNetBase : EMono
 
     protected string BuildDebugInfo()
     {
-        using var sb = StringBuilderPool.Get();
+        var sb = new StringBuilder();
 
         var peers = Socket.Peers;
         for (var i = 0; i < peers.Count; ++i) {
@@ -98,7 +98,7 @@ public abstract partial class ElinNetBase : EMono
             sb.AppendLine(peer.Stat.ToString());
         }
 
-        sb.Append(Delta.ToString());
+        sb.Append(Delta);
 
         return sb.ToString();
     }

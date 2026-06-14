@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Reflection.Emit;
-using Cwl.Helper.Extensions;
+using ElinTogether.Helper.Extensions;
 using HarmonyLib;
 
 namespace ElinTogether.Patches;

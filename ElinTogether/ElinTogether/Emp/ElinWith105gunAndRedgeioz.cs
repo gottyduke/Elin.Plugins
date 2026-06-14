@@ -1,7 +1,7 @@
 using System.Reflection;
 using BepInEx;
-using Cwl.API.Attributes;
 using ElinTogether.Helper;
+using ElinTogether.Helper.String;
 using ElinTogether.Net;
 using ElinTogether.Patches;
 using HarmonyLib;
@@ -44,7 +44,7 @@ internal sealed class EmpMod : BaseUnityPlugin
     private void Start()
     {
 #if !DEBUG
-        Cwl.Helper.Exceptions.MonoFrame.AddVendorExclusion("MessagePack.");
+        EModding.Helper.Runtime.Exceptions.MonoFrame.AddVendorExclusion("MessagePack.");
 #endif
 
         ResourceFetch.InvalidateTemp();
@@ -61,8 +61,8 @@ internal sealed class EmpMod : BaseUnityPlugin
         StringAllocator.UnpinSharedStringHandles();
     }
 
-    [CwlPostLoad]
-    private static void ClearRef()
+    [ElinPostLoad]
+    private static void ClearRef(GameIOContext context)
     {
         SpatialGenEvent.HeldRefZones.Clear();
     }

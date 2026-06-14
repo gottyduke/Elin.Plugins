@@ -10,19 +10,20 @@ namespace ElinTogether.Models;
 [MessagePackObject]
 public class LZ4Bytes
 {
-    private static readonly JsonSerializer _serializer = JsonSerializer.Create(GameIO.jsReadGame);
+    private static readonly JsonSerializer _serializer = JsonSerializer.Create(GameIOContext.Settings);
 
     [Key(0)]
     public required byte[] Bytes { get; init; }
 
-    public static LZ4Bytes Create(object data)
+    public static LZ4Bytes Create(object data, JsonSerializer? serializer = null)
     {
         using var ms = new MemoryStream();
         using var lz4 = new LZ4Stream(ms, CompressionMode.Compress);
         using var sw = new StreamWriter(lz4, Encoding.UTF8);
         using var jw = new JsonTextWriter(sw);
 
-        _serializer.Serialize(jw, data);
+        serializer ??= _serializer;
+        serializer.Serialize(jw, data);
         jw.Flush();
         sw.Flush();
         lz4.Flush();
@@ -59,14 +60,15 @@ public class LZ4Bytes
         };
     }
 
-    public T Decompress<T>()
+    public T Decompress<T>(JsonSerializer? serializer = null)
     {
         using var input = new MemoryStream(Bytes);
         using var lz4 = new LZ4Stream(input, CompressionMode.Decompress);
         using var sr = new StreamReader(lz4, Encoding.UTF8);
         using var jr = new JsonTextReader(sr);
 
-        return _serializer.Deserialize<T>(jr)!;
+        serializer ??= _serializer;
+        return serializer.Deserialize<T>(jr)!;
     }
 
     public string DecompressToString()

@@ -1,72 +1,35 @@
-using System;
-using System.Linq;
-using Cwl.Helper.String;
-using ElinTogether.Helper;
 using ElinTogether.Models;
-using Serilog.Events;
+using HarmonyLib;
 
 namespace ElinTogether.Net;
 
 internal partial class ElinNetClient
 {
     /// <summary>
-    ///     Net event: Source validation requested, sending checksums
+    ///     Net event: Host requested source checksums. Compute locally
     /// </summary>
-    private void OnSourceListRequest(SourceListRequest request)
+    private void OnSourceValidationRequest(SourceValidationRequest request)
     {
-        SourceValidation.ThrowIfInvalid(request.Type);
+        EmpLog.Debug("Received source validation request for {Count} sources",
+            request.SourceNames.Count);
 
-        if (request.Type == SourceListType.All) {
-            foreach (var source in SourceList.Keys) {
-                SendSourceList(source);
-            }
-        } else {
-            SendSourceList(request.Type);
-        }
-
-        return;
-
-        void SendSourceList(SourceListType sourceType)
-        {
-            Socket.FirstPeer.Send(new SourceListResponse {
-                Type = sourceType,
-                Checksum = SourceList[sourceType],
-            });
-
-            EmpLog.Information("Sending source list validation {SourceListType} to host",
-                sourceType);
-        }
+        Host.Send(SourceValidationResponse.Create(SourceList));
     }
 
     /// <summary>
-    ///     Net event: Source validation failed
+    ///     Net event: Host sent source rows to sync
     /// </summary>
-    private void OnSourceDiffResponse(SourceDiffResponse response)
+    private void OnSourceListSync(SourceListSync sync)
     {
-        SourceValidation.ThrowIfInvalid(response.Type);
+        EmpLog.Information("Received source sync for {Count} sources, [{SourceSyncs}]",
+            sync.SourceRows.Count, sync.SourceRows.Keys.Join());
 
-        var current = SourceValidation
-            .GenerateSourceIdList(response.Type)
-            .OrderBy(id => id, StringComparer.Ordinal)
-            .ToArray();
-        var received = response.IdList
-            .OrderBy(id => id, StringComparer.Ordinal)
-            .ToArray();
+        sync.Apply();
 
-        using var sb = StringBuilderPool.Get();
+        CreateValidation();
 
-        for (var i = 0; i < Math.Max(received.Length, current.Length); ++i) {
-            var idHost = received.TryGet(i, true);
-            var idSelf = current.TryGet(i, true);
+        Host.Send(SourceValidationResponse.Create(SourceList));
 
-            if (idHost != idSelf) {
-                sb.AppendLine($"row {i}, host:{idHost}, self:{idSelf}");
-            }
-        }
-
-        EmpPop.Popup(LogEventLevel.Warning, "Failed to validate source list {SourceListType}\n{SourceListDiff}",
-            response.Type, sb.ToString());
-
-        Socket.Disconnect(Socket.FirstPeer, "emp_source_invalid");
+        EmpLog.Debug("Re-sent source validation after applying sync");
     }
 }

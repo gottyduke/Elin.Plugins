@@ -21,7 +21,7 @@ internal class ChatBubbleEvent
             connection.Delta.AddRemote(new CardRendererTalkDelta {
                 Card = __instance.owner,
                 Text = text,
-                Duration = duration
+                Duration = duration,
             });
             return true;
         }
@@ -34,10 +34,13 @@ internal class ChatBubbleEvent
     {
         private static int MsgIndex;
 
-        internal static IEnumerable<MethodInfo> TargetMethods() => [
-            AccessTools.Method(typeof(Card), nameof(Card.TalkRaw)),
-            AccessTools.Method(typeof(Chara), nameof(Chara.TalkTopic)),
-        ];
+        internal static IEnumerable<MethodInfo> TargetMethods()
+        {
+            return [
+                AccessTools.Method(typeof(Card), nameof(Card.TalkRaw)),
+                AccessTools.Method(typeof(Chara), nameof(Chara.TalkTopic)),
+            ];
+        }
 
         internal static bool Prefix()
         {
@@ -62,7 +65,7 @@ internal class ChatBubbleEvent
                 R = color.r,
                 G = color.g,
                 B = color.b,
-                A = color.a
+                A = color.a,
             });
         }
     }

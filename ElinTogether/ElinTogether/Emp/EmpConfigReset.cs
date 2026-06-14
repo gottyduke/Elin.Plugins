@@ -1,6 +1,5 @@
 using System.IO;
-using Cwl.API.Processors;
-using Cwl.LangMod;
+using ElinTogether.LangMod;
 using ElinTogether.Net;
 using ReflexCLI.Attributes;
 
@@ -33,13 +32,13 @@ internal partial class EmpConfig
 
     internal static void InvalidateConfigs()
     {
-        var context = GameIOProcessor.GetPersistentModContext("ElinMP")!;
-        if (context.Load<EmpConfigVersion>(out var version, "config_version") &&
+        var context = GameIOContext.GetPersistentModContext("ElinMP")!;
+        if (context.Load<EmpConfigVersion>("config_version", out var version) &&
             version >= CurrentVersion) {
             return;
         }
 
-        context.SaveUncompressed(CurrentVersion, "config_version");
+        context.SaveUncompressed("config_version", CurrentVersion);
         Reset();
     }
 

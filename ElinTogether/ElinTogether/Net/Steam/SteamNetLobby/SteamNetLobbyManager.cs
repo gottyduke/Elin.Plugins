@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
-using Cwl.Helper.Unity;
+using ElinTogether.Common;
 using ElinTogether.Helper;
+using ElinTogether.Helper.Steam;
 using Steamworks;
 
 namespace ElinTogether.Net.Steam;
 
-public class SteamNetLobbyManager
+public class SteamNetLobbyManager : EClass
 {
     private readonly HashSet<ulong> _blocked = [];
     private Action<SteamNetLobby[]>? _deferOnComplete;
@@ -29,8 +30,6 @@ public class SteamNetLobbyManager
     public void CreateLobby(SteamNetLobbyType type = SteamNetLobbyType.Invite, int maxPlayers = 16)
     {
         LeaveLobby();
-
-        Challenge((ulong)SteamUser.GetSteamID());
 
         EmpLog.Information("Creating steam {LobbyType} lobby",
             type);
@@ -69,7 +68,7 @@ public class SteamNetLobbyManager
 
         Challenge((ulong)SteamUser.GetSteamID());
 
-        if (EClass.core.IsGameStarted) {
+        if (core.IsGameStarted) {
             EMono.scene.Init(Scene.Mode.Title);
         }
 
@@ -152,11 +151,12 @@ public class SteamNetLobbyManager
 
         Current = new((CSteamID)lobby.m_ulSteamIDLobby);
 
-        Current.SetLobbyData("EmpVersion", ModInfo.BuildVersion);
+        Current.SetLobbyData(EmpLobbyData.EmpVersion, ModInfo.BuildVersion);
 
         // add our custom lobby data
-        Current.SetLobbyData("OwnerName", SteamFriends.GetPersonaName());
-        Current.SetLobbyData("GameVersion", EMono.core.version.GetText());
+        Current.SetLobbyData(EmpLobbyData.OwnerName, SteamFriends.GetPersonaName());
+        Current.SetLobbyData(EmpLobbyData.GameVersion, core.version.GetText());
+        Current.SetLobbyData(EmpLobbyData.CurrentZone, core.game?.activeZone?.ZoneFullName ?? "");
 
         NetSession.Instance.SessionId = lobby.m_ulSteamIDLobby;
     }

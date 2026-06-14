@@ -10,4 +10,7 @@ public class ZoneActivateResponse
 
     [Key(1)]
     public required Position Pos { get; init; }
+
+    [Key(2)]
+    public string? ZoneFullName { get; init; }
 }

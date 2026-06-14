@@ -1,6 +1,6 @@
 using Steamworks;
 
-namespace ElinTogether.Helper;
+namespace ElinTogether.Helper.Steam;
 
 internal class PlayerUidMaker
 {

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ElinTogether.Helper;
+using ElinTogether.Helper.Extensions;
 using ElinTogether.Net;
 using MessagePack;
 

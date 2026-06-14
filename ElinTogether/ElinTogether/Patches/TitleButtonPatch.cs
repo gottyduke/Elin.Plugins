@@ -1,5 +1,3 @@
-using Cwl.API.Attributes;
-using Cwl.Helper.Unity;
 using ElinTogether.Components;
 using UnityEngine;
 using UnityEngine.Events;
@@ -9,9 +7,13 @@ namespace ElinTogether.Patches;
 
 internal class TitleButtonPatch
 {
-    [CwlSceneInitEvent(Scene.Mode.Title, true)]
-    internal static void RegisterTitleButton()
+    [ElinPostSceneInit]
+    internal static void RegisterTitleButton(Scene.Mode mode)
     {
+        if (mode != Scene.Mode.Title) {
+            return;
+        }
+
         var title = EMono.ui.GetLayer<LayerTitle>();
         if (title == null) {
             return;
@@ -22,7 +24,7 @@ internal class TitleButtonPatch
             return;
         }
 
-        var button = grid.transform.GetFirstChildWithName("UIButton");
+        var button = grid.transform.Find("UIButton");
         if (button == null) {
             return;
         }

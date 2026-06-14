@@ -1,5 +1,4 @@
-using Cwl.Helper.Extensions;
-using Cwl.Helper.Unity;
+using ElinTogether.Common;
 using ElinTogether.Models;
 using ElinTogether.Net.Steam;
 using Serilog.Context;
@@ -17,10 +16,8 @@ internal partial class ElinNetHost
 
         EmpPop.Debug("Initiating zone state change");
 
-        PauseWorldStateUpdate();
-        // try not to drop deltas during loading or something
-        this.StartDeferredCoroutine(() => ResumeWorldStateUpdate(true));
-
+        // NOTE (Phase 1): Removed PauseWorldStateUpdate / Resume dance.
+        // Zone replication is now out-of-band; deltas & snapshots continue uninterrupted.
         var packet = ZoneDataResponse.Create(zone);
 
         if (peer is not null) {
@@ -35,7 +32,7 @@ internal partial class ElinNetHost
         }
 
         // update lobby data
-        Session.Lobby.Current?.SetLobbyData("CurrentZone", zone.NameWithLevel);
+        Session.Lobby.Current?.SetLobbyData(EmpLobbyData.CurrentZone, zone.ZoneFullName);
     }
 
     /// <summary>
@@ -61,7 +58,7 @@ internal partial class ElinNetHost
                 peer);
 
             // gtfo
-            Socket.Disconnect(peer, "emp_invalid_zone");
+            Socket.Disconnect(peer, EmpDisconnectInfo.InvalidZone);
         }
     }
 
@@ -75,16 +72,14 @@ internal partial class ElinNetHost
 
         var chara = ActiveRemoteCharas[peer.Id];
 
-        // check if the received zone is still the current zone
-        // in case clients have a high RTT and host fast fingered to another zone
-        if (response.ZoneUid != _zone.uid) {
-            EmpLog.Debug("...but the zone state is stale, switching to new zone state {@Zone}",
-                new {
-                    _zone.ZoneFullName,
-                    ZoneUid = _zone.uid,
-                });
-
-            PropagateZoneChangeState(_zone, peer);
+        // Staleness check (Phase 1): use ZoneFullName + ZoneUid instead of re-sending.
+        // If the client is on a different zone, just ignore; it will receive the correct zone data later.
+        if (response.ZoneUid != _zone.uid || response.ZoneFullName != _zone.ZoneFullName) {
+            EmpLog.Debug(
+                "Ignoring stale ZoneDataReceivedResponse from {@Peer} (expected {ExpectedName}/{ExpectedUid}, got {GotName}/{GotUid})",
+                peer,
+                _zone.ZoneFullName, _zone.uid,
+                response.ZoneFullName, response.ZoneUid);
             return;
         }
 

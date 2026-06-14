@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using ElinTogether.Helper;
+using ElinTogether.Common;
 using ElinTogether.Models;
 using ElinTogether.Net.Steam;
 
@@ -9,69 +7,72 @@ namespace ElinTogether.Net;
 
 internal partial class ElinNetHost
 {
-    private readonly Dictionary<int, Dictionary<SourceListType, bool>> _validationResults = [];
-
-    internal readonly HashSet<SourceListType> SourceValidationsEnabled = [
-        // this is necessary to check so we can map remote acts
-        SourceListType.Act,
-    ];
-
-    private void EnsureValidation(ISteamNetPeer peer)
-    {
-        if (!_validationResults.TryGetValue(peer.Id, out var validations) ||
-            validations.Values.Any(r => !r)) {
-            throw new InvalidOperationException($"player {peer.Id} not validated");
-        }
-    }
-
     private void RequestSourceValidation(ISteamNetPeer peer)
     {
-        _validationResults.Remove(peer.Id);
-
-        foreach (var type in SourceValidationsEnabled) {
-            peer.Send(new SourceListRequest {
-                Type = type,
-            });
-        }
-
-        EmpLog.Debug("Requesting source lists validation from player {@Peer}",
+        Session.SetPhase(ConnectionPhase.SourceValidating);
+        EmpLog.Debug("Requesting source validation from {@Peer}",
             peer);
+
+        var request = new SourceValidationRequest {
+            SourceNames = GetValidationSourceNames(),
+        };
+
+        peer.Send(request);
     }
 
-    /// <summary>
-    ///     Net event: Check the source list checksum from clients
-    /// </summary>
-    private void OnSourceListResponse(SourceListResponse response, ISteamNetPeer peer)
+    private void OnSourceListResponse(SourceValidationResponse response, ISteamNetPeer peer)
     {
-        if (!_validationResults.TryGetValue(peer.Id, out var validations)) {
-            validations = _validationResults[peer.Id] = [];
+        EmpLog.Information("Received source validation response from {@Peer}",
+            peer);
+
+        var mismatches = new Dictionary<string, string>();
+
+        foreach (var (source, sha) in SourceList) {
+            if (!response.Checksums.TryGetValue(source, out var clientSha) ||
+                clientSha != sha) {
+                mismatches[source] = sha;
+            }
         }
 
-        SourceValidation.ThrowIfInvalid(response.Type);
+        // ok
 
-        var valid = response.Checksum.SequenceEqual(SourceList[response.Type]);
-        validations[response.Type] = valid;
+        // TODO: localization syncs
+        var noSync = true;
+        if (mismatches.Count == 0 || noSync) {
+            EmpLog.Debug("Source validation passed for {@Peer}",
+                peer);
+            Session.SetPhase(ConnectionPhase.SourceSynced);
 
-        EmpLog.Information("Received source list validation {SourceListType} from player {@Peer}",
-            response.Type, peer);
-
-        if (valid) {
-            if (validations.Count != SourceValidationsEnabled.Count || !validations.Values.All(r => r)) {
-                return;
+            if (_pendingRejoinIntents.Remove(peer.Uid, out var rejoinReq)) {
+                HandleRejoin(peer, rejoinReq);
+            } else {
+                PreparePlayerJoin(peer);
             }
 
-            EmpLog.Information("Player {@Peer} has validated all source lists",
+            return;
+        }
+
+        // u shall not pass
+
+        var diff = new Dictionary<string, LZ4Bytes>();
+        foreach (var sourceType in mismatches.Keys) {
+            var source = ModUtil.FindSourceByName(sourceType);
+            if (source is not null) {
+                diff[sourceType] = LZ4Bytes.Create(source.ExportRows());
+            }
+        }
+
+        if (diff.Count > 0) {
+            EmpLog.Information("Sending source diff ({Count} tables) to {@Peer}", diff.Count,
                 peer);
-
-            PreparePlayerJoin(peer);
-        } else {
-            EmpLog.Information("Sending source list diff {SourceListType} to player {@Peer}",
-                response.Type, peer);
-
-            peer.Send(new SourceDiffResponse {
-                Type = response.Type,
-                IdList = SourceValidation.GenerateSourceIdList(response.Type).ToArray(),
+            // clients apply, recompute, then send another SourceValidationResponse
+            peer.Send(new SourceListSync {
+                SourceRows = diff,
             });
+        } else {
+            EmpLog.Error("Source mismatch but no rows to sync for {@Peer}. Disconnecting.",
+                peer);
+            Socket.Disconnect(peer, EmpDisconnectInfo.InvalidSource);
         }
     }
 }

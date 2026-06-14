@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cwl.API.Attributes;
-using ElinTogether.Helper;
+using ElinTogether.Helper.Extensions;
 using ElinTogether.Net;
 
 namespace ElinTogether.Models;
@@ -91,12 +90,24 @@ public static class CardCache
         _keepalive.Add(card);
     }
 
-    [CwlPreLoad]
-    [CwlSceneInitEvent(Scene.Mode.Title, preInit: true)]
     private static void ClearCachedRefs()
     {
         _cards.Clear();
         _keepalive.Clear();
+    }
+
+    [ElinPreLoad]
+    private static void ClearCachedRefs(GameIOContext context)
+    {
+        ClearCachedRefs();
+    }
+
+    [ElinPostSceneInit]
+    private static void ClearCachedRefs(Scene.Mode mode)
+    {
+        if (mode == Scene.Mode.Title) {
+            ClearCachedRefs();
+        }
     }
 
     public static void Update()

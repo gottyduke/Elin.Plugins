@@ -1,4 +1,4 @@
-using Cwl.LangMod;
+using ElinTogether.LangMod;
 using ElinTogether.Net;
 using ElinTogether.Net.Steam;
 

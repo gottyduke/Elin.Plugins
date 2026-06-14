@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using Cwl.API.Attributes;
 using ElinTogether.Elements;
 using ElinTogether.Net;
 
@@ -11,11 +10,18 @@ internal static class RemoteCardHelper
 {
     internal static readonly ConcurrentDictionary<Chara, RemoteCharaNetProfile> RemoteCardNetProfile = [];
 
-    [CwlPreLoad]
-    [CwlSceneInitEvent(Scene.Mode.Title, preInit: true)]
-    private static void ClearProfiles()
+    [ElinPreLoad]
+    private static void ClearProfiles(GameIOContext context)
     {
         RemoteCardNetProfile.Clear();
+    }
+
+    [ElinPreSceneInit]
+    private static void ClearProfiles(Scene.Mode mode)
+    {
+        if (mode == Scene.Mode.Title) {
+            RemoteCardNetProfile.Clear();
+        }
     }
 
     internal class RemoteCharaNetProfile

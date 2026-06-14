@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Concurrent;
-using Cwl.Helper.Exceptions;
+using EModding.Helper.Runtime.Exceptions;
 
 namespace ElinTogether.Net.Steam;
 
@@ -46,7 +46,7 @@ public sealed class SteamNetMessageRouter : ISteamNetListener
             try {
                 handler((T)packet);
             } catch (Exception ex) {
-                EmpLog.Verbose(ex, "Exception at handling T1 message {CallbackName}, {MessageType}",
+                EmpLog.Verbose(ex, "Exception at handling T1 message {CallbackName}, T1 = {MessageType}",
                     handler.Method.Name, typeof(T).Name);
                 DebugThrow.Void(ex);
                 // noexcept
@@ -68,7 +68,7 @@ public sealed class SteamNetMessageRouter : ISteamNetListener
             try {
                 handler((T)packet, peer);
             } catch (Exception ex) {
-                EmpLog.Verbose(ex, "Exception at handling T2 message {CallbackName}, {MessageType}, from {@Peer}",
+                EmpLog.Verbose(ex, "Exception at handling T2 message {CallbackName}, T2 = {MessageType}, from {@Peer}",
                     handler.Method.Name, typeof(T).Name, peer);
                 DebugThrow.Void(ex);
                 // noexcept

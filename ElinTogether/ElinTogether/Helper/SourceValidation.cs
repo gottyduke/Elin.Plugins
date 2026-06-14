@@ -2,92 +2,47 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Cwl.Helper;
-using Cwl.Helper.Exceptions;
-using Cwl.Helper.String;
-using ElinTogether.Models;
-using HarmonyLib;
+using EModding.Helper.Runtime;
 
 namespace ElinTogether.Helper;
 
 public class SourceValidation
 {
     // ReSharper disable StringLiteralTypo
-    private static readonly ImmutableArray<string> _excludedPlugins = [
+    public static readonly ImmutableArray<string> ExcludedPlugins = [
         "com.sinai.unityexplorer",
         "jp.cmbc.mod.elin.yk-devtool",
     ];
 
-    public static readonly ImmutableArray<SourceListType> ValidationRequirements = [
-        SourceListType.Assembly,
-        SourceListType.Card,
-        SourceListType.Zone,
-        SourceListType.Element,
-        SourceListType.Job,
-        SourceListType.Race,
-        SourceListType.Material,
-        SourceListType.Religion,
-        SourceListType.Quest,
-        SourceListType.Stat,
-        SourceListType.Act,
+    public static readonly ImmutableArray<string> DefaultSources = [
+        nameof(SourceBlock),
+        nameof(SourceChara),
+        nameof(SourceElement),
+        nameof(SourceFaction),
+        nameof(SourceHobby),
+        nameof(SourceThing),
+        nameof(SourceJob),
+        nameof(SourceMaterial),
+        nameof(SourceObj),
+        nameof(SourceQuest),
+        nameof(SourceRace),
+        nameof(SourceRecipe),
+        nameof(SourceReligion),
+        nameof(SourceStat),
+        nameof(SourceZone),
     ];
 
-    // 255 should be more than enough
     public static readonly Dictionary<int, Type> IdToActMapping = [];
     public static readonly Dictionary<Type, int> ActToIdMapping = [];
 
-    public static Dictionary<SourceListType, byte[]> GenerateAll()
+    public static Dictionary<string, string> GenerateAll(IEnumerable<string> sourceTypes)
     {
-        var data = new Dictionary<SourceListType, byte[]>();
-
-        foreach (var sourceType in ValidationRequirements) {
-            data[sourceType] = GenerateSourceChecksum(sourceType);
-        }
-
-        return data;
+        return sourceTypes.Distinct().ToDictionary(s => s, GenerateSourceChecksum);
     }
 
-    public static byte[] GenerateSourceChecksum(SourceListType type)
+    public static string GenerateSourceChecksum(string sourceType)
     {
-        using var sb = StringBuilderPool.Get();
-        foreach (var id in GenerateSourceIdList(type).OrderBy(id => id, StringComparer.Ordinal)) {
-            sb.Append(id).Append('|');
-        }
-
-        return sb.ToString().GetSha256Hash().ToArray();
-    }
-
-    public static IEnumerable<string> GenerateSourceIdList(SourceListType type)
-    {
-        if (ActToIdMapping.Count == 0) {
-            BuildActMapping();
-        }
-
-        var sources = EMono.sources;
-        return type switch {
-            SourceListType.Assembly => TypeQualifier.Plugins
-                .Select(p => p.Info.Metadata.GUID)
-                .Except(_excludedPlugins),
-            SourceListType.Card => sources.cards.rows.Select(r => r.id),
-            SourceListType.Element => sources.elements.rows.Select(r => r.alias),
-            SourceListType.Job => sources.jobs.rows.Select(r => r.id),
-            SourceListType.Race => sources.races.rows.Select(r => r.id),
-            SourceListType.Material => sources.materials.rows.Select(r => r.alias),
-            SourceListType.Religion => sources.religions.rows.Select(r => r.id),
-            SourceListType.Quest => sources.quests.rows.Select(r => r.id),
-            SourceListType.Stat => sources.stats.rows.Select(r => r.alias),
-            SourceListType.Zone => sources.zones.rows.Select(r => r.id),
-            SourceListType.Act => ActToIdMapping.Keys.Select(t => t.Name),
-            _ => DebugThrow.Return(new ArgumentOutOfRangeException(nameof(type)), Array.Empty<string>()),
-        };
-    }
-
-    public static void ThrowIfInvalid(SourceListType sourceType)
-    {
-        if (sourceType is <= SourceListType.Reserved or > SourceListType.All) {
-            ThrowHelper.Throw(new ArgumentOutOfRangeException(nameof(sourceType)),
-                "Invalid source validation {SourceListType} requested", sourceType);
-        }
+        return ModUtil.FindSourceByName(sourceType).ExportRows().ToCompactJson().GetSha256Code();
     }
 
     public static void BuildActMapping()
@@ -96,7 +51,7 @@ public class SourceValidation
         IdToActMapping.Clear();
 
         var actType = typeof(Act);
-        var allActs = AccessTools.AllAssemblies()
+        var allActs = AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(a => {
                 try {
                     return a.GetTypes();
@@ -112,7 +67,7 @@ public class SourceValidation
         IdToActMapping[0] = typeof(NoGoal);
         ActToIdMapping[typeof(NoGoal)] = 0;
 
-        byte actIndex = 1;
+        var actIndex = 1;
         foreach (var act in allActs) {
             if (!ActToIdMapping.TryAdd(act, actIndex)) {
                 continue;
@@ -134,5 +89,14 @@ public class SourceValidation
 
             return depth;
         }
+    }
+
+    // TODO: verify this, but we will probably just leave a mismatch warning
+    public static List<string> GetSourceAssemblies()
+    {
+        return TypeQualifier.Plugins
+            .Select(p => p.GetType().Assembly)
+            .Select(a => a.FullName)
+            .ToList();
     }
 }

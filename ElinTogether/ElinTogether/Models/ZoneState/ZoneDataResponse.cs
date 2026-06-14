@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using Cwl.Helper.Extensions;
 using ElinTogether.Helper;
 using MessagePack;
 
@@ -53,6 +52,7 @@ public class ZoneDataResponse
     {
         return new() {
             ZoneUid = ZoneUid,
+            ZoneFullName = ZoneFullName,
         };
     }
 

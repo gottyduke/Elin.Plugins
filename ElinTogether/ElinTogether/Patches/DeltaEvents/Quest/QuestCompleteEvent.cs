@@ -1,5 +1,3 @@
-
-
 // maybe not needed
 // [HarmonyPatch(typeof(Quest), nameof(Quest.Complete))]
 // internal static class QuestCompleteEvent

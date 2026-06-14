@@ -1,8 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Cwl.Helper.Extensions;
-using Cwl.Helper.Unity;
+using ElinTogether.Common;
 using ElinTogether.Models;
 using ElinTogether.Net.Steam;
 using Steamworks;
@@ -26,8 +26,10 @@ internal partial class ElinNetHost : ElinNetBase
             return;
         }
 
+        Session.SetPhase(ConnectionPhase.LobbyCreating);
         Session.Lobby.CreateLobby(SteamNetLobbyType.Public);
-        Session.Lobby.Current?.SetLobbyData("CurrentZone", _zone.NameWithLevel);
+
+        Session.SetPhase(ConnectionPhase.HostingListening);
 
         if (localUdp) {
             Socket.StartServerUdp();
@@ -52,8 +54,8 @@ internal partial class ElinNetHost : ElinNetBase
             ? SharedSpeed
             : -1;
 
-        EmpPop.Debug("Started server\nSource validations enabled: {SourceValidations}",
-            SourceValidationsEnabled.Count);
+        Session.SetPhase(ConnectionPhase.HostingReady);
+        EmpPop.Information("Started server");
 
         CardCache.CacheCurrentZone();
 
@@ -62,13 +64,16 @@ internal partial class ElinNetHost : ElinNetBase
 
     protected override void RegisterPackets()
     {
-        Router.RegisterHandler<SourceListResponse>(OnSourceListResponse);
         Router.RegisterHandler<SessionNewPlayerResponse>(OnSessionNewPlayerResponse);
         Router.RegisterHandler<MapDataRequest>(OnMapDataRequest);
         Router.RegisterHandler<ZoneDataReceivedResponse>(OnZoneDataReceivedResponse);
         Router.RegisterHandler<WorldStateRequest>(OnWorldStateRequest);
         Router.RegisterHandler<WorldStateDeltaList>(OnWorldStateDeltaResponse);
         Router.RegisterHandler<CharaStateSnapshot>(OnClientRemoteCharaSnapshot);
+
+        // source validation
+        Router.RegisterHandler<SourceValidationResponse>(OnSourceListResponse);
+        Router.RegisterHandler<SessionRejoinRequest>(OnSessionRejoinRequest);
     }
 
     private void Broadcast<T>(T packet)
@@ -89,14 +94,37 @@ internal partial class ElinNetHost : ElinNetBase
 
             // client has not been responding after 25 ticks
             if (!peer.IsConnected && Session.Tick - state.LastReceivedTick > 25) {
-                Socket.Disconnect(peer, "emp_inactive");
+                Socket.Disconnect(peer, EmpDisconnectInfo.InactivePeer);
             }
         }
 
         // remove all left over chara
         foreach (var chara in _map.charas.ToArray()) {
-            if (chara.GetFlagValue("remote_chara") > 0 && !ActiveRemoteCharas.Values.Contains(chara)) {
+            if (chara.GetBool("remote_chara") && !ActiveRemoteCharas.Values.Contains(chara)) {
                 RemoveRemoteChara(chara);
+            }
+        }
+
+        // Evict stale pending reconnects (simple time-based window).
+        // If a player does not rejoin within the window we finally remove the remote chara.
+        var now = DateTime.UtcNow;
+        var toEvict = new List<ulong>();
+        foreach (var (steamUid, info) in PendingReconnects) {
+            if ((now - info.DcTime).TotalSeconds > 90) { // 90s reconnect window
+                toEvict.Add(steamUid);
+            }
+        }
+
+        foreach (var steamUid in toEvict) {
+            if (PendingReconnects.Remove(steamUid, out var stale)) {
+                // find and remove the corresponding remote chara
+                var deadEntry = ActiveRemoteCharas.FirstOrDefault(kv => kv.Value.uid == stale.CharaUid);
+                if (deadEntry.Value is not null) {
+                    ActiveRemoteCharas.Remove(deadEntry.Key);
+                    RemoveRemoteChara(deadEntry.Value);
+                    EmpLog.Information("Evicted pending reconnect for steam {Uid} (chara {CharaUid}) after timeout",
+                        steamUid, stale.CharaUid);
+                }
             }
         }
     }
@@ -122,7 +150,7 @@ internal partial class ElinNetHost : ElinNetBase
         });
 
 #if DEBUG
-        DebugProgress ??= ProgressIndicator.CreateProgress(() => new(BuildDebugInfo()), _ => false, 1f);
+        DebugProgress ??= EGui.CreatePopup(() => new(BuildDebugInfo()), _ => false, 1f);
 #endif
     }
 
@@ -131,19 +159,26 @@ internal partial class ElinNetHost : ElinNetBase
         EmpPop.Information("Player {@Peer} disconnected\n{DisconnectInfo}",
             peer, disconnectInfo);
 
-        // remove left over chara
-        if (States.Remove(peer.Id, out var state) &&
-            ActiveRemoteCharas.Remove(peer.Id, out var remoteChara)) {
-            RemoveRemoteChara(remoteChara);
+        // Rejoin support: do NOT immediately remove the remote chara.
+        // Instead, record a pending reconnect entry so the same Steam UID can
+        // perform a lightweight SessionRejoinRequest / HandleRejoin later.
+        if (States.Remove(peer.Id, out var state)) {
+            if (ActiveRemoteCharas.TryGetValue(peer.Id, out var remoteChara)) {
+                // keep the chara in the world but mark it as pending reconnect
+                remoteChara.SetBool("pending_reconnect", true);
+
+                PendingReconnects[peer.Uid] = new(
+                    remoteChara.uid,
+                    state.LastReceivedTick,
+                    DateTime.UtcNow,
+                    disconnectInfo);
+
+                EmpLog.Information("Player {Name} marked for pending reconnect (chara {Uid}). " +
+                                   "Will be evicted on timeout or successful rejoin.",
+                    state.Name, remoteChara.uid);
+            }
 
             Session.CurrentPlayers.Remove(state);
-
-            EmpLog.Debug("Removed remote chara {@Chara}",
-                new {
-                    Uid = remoteChara.uid,
-                    remoteChara.Name,
-                    Player = state.Name,
-                });
         }
 
         // keep ticking but no update

@@ -1,7 +1,6 @@
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Cwl.Helper.String;
-using Cwl.Helper.Unity;
+using ElinTogether.Helper.String;
 using Serilog.Core;
 using Serilog.Events;
 using UnityEngine;
@@ -117,11 +116,11 @@ internal static partial class EmpLogger
             }
         }
 
-        using var progress = ProgressIndicator.CreateProgressScoped(() => new(header));
+        using var progress = EGui.CreatePopupScoped(() => new(header));
 
         if (truncation) {
             var footer = rendered.RemoveTagColor()[150..];
-            progress.Get<ProgressIndicator>().OnHover(p => GUILayout.Label(footer, p.GUIStyle));
+            progress.Object.OnHover(p => GUILayout.Label(footer, p.GUIStyle));
         }
     }
 }

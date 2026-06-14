@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Cwl.Helper.Unity;
 using ElinTogether.Common;
 using ElinTogether.Models;
 using ElinTogether.Net.Steam;
@@ -11,6 +10,7 @@ namespace ElinTogether.Net;
 internal partial class ElinNetClient : ElinNetBase
 {
     public override bool IsHost => false;
+    public ISteamNetPeer Host => Socket.FirstPeer;
 
     public void ConnectLocalPort(ushort port = EmpConstants.LocalPort)
     {
@@ -21,21 +21,29 @@ internal partial class ElinNetClient : ElinNetBase
     public void ConnectSteamUser(ulong steamId)
     {
         Stop();
+        // store for potential rejoin after transient disconnect
+        Session.LastSession = new() { HostSteamId = steamId };
         Socket.Connect(new CSteamID(steamId));
     }
 
     protected override void RegisterPackets()
     {
-        Router.RegisterHandler<SourceListRequest>(OnSourceListRequest);
-        Router.RegisterHandler<SourceDiffResponse>(OnSourceDiffResponse);
-        Router.RegisterHandler<SessionNewPlayerRequest>(OnSessionNewPlayerRequest);
-        Router.RegisterHandler<SaveDataProbe>(OnSaveDataProbe);
-        Router.RegisterHandler<SteamLobbyRequest>(OnSteamLobbyRequest);
-        Router.RegisterHandler<SessionPlayersSnapshot>(OnSessionStatesUpdate);
+        // delta
         Router.RegisterHandler<ZoneDataResponse>(OnZoneDataResponse);
         Router.RegisterHandler<ZoneActivateResponse>(OnZoneActivateResponse);
         Router.RegisterHandler<WorldStateSnapshot>(OnWorldStateSnapshot);
         Router.RegisterHandler<WorldStateDeltaList>(OnWorldStateDeltaResponse);
+
+        // source validation
+        Router.RegisterHandler<SourceValidationRequest>(OnSourceValidationRequest);
+        Router.RegisterHandler<SourceListSync>(OnSourceListSync);
+
+        // session
+        Router.RegisterHandler<SessionNewPlayerRequest>(OnSessionNewPlayerRequest);
+        Router.RegisterHandler<SessionRejoinResponse>(OnSessionRejoinResponse);
+        Router.RegisterHandler<SaveDataProbe>(OnSaveDataProbe);
+        Router.RegisterHandler<SteamLobbyRequest>(OnSteamLobbyRequest);
+        Router.RegisterHandler<SessionPlayersSnapshot>(OnSessionStatesUpdate);
         Router.RegisterHandler<NetSessionRules>(OnSessionRulesUpdate);
     }
 
@@ -61,8 +69,9 @@ internal partial class ElinNetClient : ElinNetBase
     /// </summary>
     protected override void OnPeerConnected(ISteamNetPeer host)
     {
+        Session.SetPhase(ConnectionPhase.Authenticating);
         EmpPop.Information("Connecting to host {@Peer}",
-            Socket.FirstPeer);
+            Host);
 
         // CLIENT-ONLY
         var sw = Stopwatch.StartNew();
@@ -74,24 +83,51 @@ internal partial class ElinNetClient : ElinNetBase
         this.StartDeferredCoroutine(StartWorldStateUpdate, () => core.IsGameStarted);
 
 #if DEBUG
-        DebugProgress ??= ProgressIndicator.CreateProgress(() => new(BuildDebugInfo()), _ => false, 1f);
+        DebugProgress ??= EGui.CreatePopup(() => new(BuildDebugInfo()), _ => false, 1f);
 #endif
+
+        // Rejoin path: if we are attempting to resume an existing session, declare intent early.
+        // Host will short-circuit PreparePlayerJoin if it has a saved remote chara for us.
+        if (Session.CurrentPhase == ConnectionPhase.Reconnecting &&
+            Session.LastSession is { CharaUid: > 0 } last) {
+            Host.Send(new SessionRejoinRequest {
+                LastKnownServerTick = last.LastServerTick,
+                CharaUid = last.CharaUid,
+                LastZoneUid = last.LastZoneUid,
+            });
+            EmpLog.Debug("Sent SessionRejoinRequest for chara {CharaUid}", last.CharaUid);
+        }
     }
 
     /// <summary>
-    ///     Net event: On disconnected from host
+    ///     Net event: On disconnected from host.
+    ///     On transient DC while Synchronized, attempt lightweight rejoin instead of
+    ///     forcing title + full reconnect.
     /// </summary>
     protected override void OnPeerDisconnected(ISteamNetPeer host, string disconnectInfo)
     {
         StopWorldStateUpdate();
         StopAllCoroutines();
 
-        if (core.IsGameStarted) {
-            scene.Init(Scene.Mode.Title);
-        }
-
         if (ReflexUIManager.IsConsoleOpen()) {
             ReflexUIManager.StaticClose();
+        }
+
+        // Only attempt reconnect if we were fully synchronized (happy path).
+        // Otherwise fall back to title.
+        if (Session.CurrentPhase == ConnectionPhase.Synchronized &&
+            Session.LastSession is { HostSteamId: > 0 } last) {
+            Session.SetPhase(ConnectionPhase.Reconnecting);
+            EmpPop.Information("Connection lost. Attempting to rejoin...");
+
+            // keep local game state; do not call RemoveComponent / go to title yet
+            ConnectSteamUser(last.HostSteamId);
+            return;
+        }
+
+        // Non-recoverable path: clean up and return to title
+        if (core.IsGameStarted) {
+            scene.Init(Scene.Mode.Title);
         }
 
         EmpPop.Information("Disconnected from host\n{DisconnectInfo}",
