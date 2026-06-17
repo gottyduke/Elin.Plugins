@@ -33,8 +33,10 @@ internal class EConsole : EMono
     {
         if (EClass.core.IsGameStarted) {
             if (reloadGame) {
+                var isCloud = game.isCloud;
+                var id = Game.id;
                 game.Save(silent: true);
-                CoroutineHelper.Deferred(() => Game.Load(Game.id, game.isCloud));
+                CoroutineHelper.Deferred(() => Game.Load(id, isCloud));
             }
 
             scene.Init(Scene.Mode.Title);

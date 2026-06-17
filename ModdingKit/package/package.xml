@@ -4,7 +4,7 @@
   <id>elin.plugins.modding</id>
   <author>DK</author>
   <builtin>true</builtin>
-  <loadPriority>10</loadPriority>
-  <version>0.23.311</version>
+  <loadPriority>-90</loadPriority>
+  <version>0.23.317</version>
   <description />
 </Meta>

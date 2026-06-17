@@ -30,6 +30,7 @@ internal class EDebugInfo : EMono
     {
         ELayerCleanup.Cleanup<LayerDebug>();
         ELayer.ui.AddLayer<LayerDebug>();
+        ELayerCleanup.Cleanup<LayerConsole>();
     }
 
     internal void Show()
