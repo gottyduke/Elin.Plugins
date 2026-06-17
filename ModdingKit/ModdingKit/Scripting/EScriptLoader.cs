@@ -83,36 +83,37 @@ public static class EScriptLoader
     {
         internal Compilation WithMinimalReferences()
         {
-            var tree = compilation.SyntaxTrees.First();
-            var model = compilation.GetSemanticModel(tree);
-
-            // trimming is necessary so that the generated assembly can be distributed
+            HashSet<MetadataReference> trimmed = [];
             var selfAssembly = compilation.Assembly;
             var linkedSymbols = new HashSet<IAssemblySymbol>(SymbolEqualityComparer.Default);
-            foreach (var node in tree.GetRoot().DescendantNodes()) {
-                var info = model.GetSymbolInfo(node);
-                var symbol = info.Symbol ?? info.CandidateSymbols.FirstOrDefault();
 
-                var assembly = symbol?.ContainingAssembly;
-                if (assembly is null) {
-                    continue;
+            foreach (var tree in compilation.SyntaxTrees) {
+                var model = compilation.GetSemanticModel(tree);
+                // trimming is necessary so that the generated assembly can be distributed
+                foreach (var node in tree.GetRoot().DescendantNodes()) {
+                    var info = model.GetSymbolInfo(node);
+                    var symbol = info.Symbol ?? info.CandidateSymbols.FirstOrDefault();
+
+                    var assembly = symbol?.ContainingAssembly;
+                    if (assembly is null) {
+                        continue;
+                    }
+
+                    if (SymbolEqualityComparer.Default.Equals(assembly, selfAssembly)) {
+                        continue;
+                    }
+
+                    linkedSymbols.Add(assembly);
                 }
 
-                if (SymbolEqualityComparer.Default.Equals(assembly, selfAssembly)) {
-                    continue;
-                }
+                foreach (var metadata in compilation.References) {
+                    if (compilation.GetAssemblyOrModuleSymbol(metadata) is not IAssemblySymbol assembly) {
+                        continue;
+                    }
 
-                linkedSymbols.Add(assembly);
-            }
-
-            HashSet<MetadataReference> trimmed = [];
-            foreach (var metadata in compilation.References) {
-                if (compilation.GetAssemblyOrModuleSymbol(metadata) is not IAssemblySymbol assembly) {
-                    continue;
-                }
-
-                if (linkedSymbols.Contains(assembly) || EScriptOptions.DefaultReferences.Contains(assembly.Name)) {
-                    trimmed.Add(metadata);
+                    if (linkedSymbols.Contains(assembly) || EScriptOptions.DefaultReferences.Contains(assembly.Name)) {
+                        trimmed.Add(metadata);
+                    }
                 }
             }
 
