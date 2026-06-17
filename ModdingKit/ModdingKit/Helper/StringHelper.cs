@@ -5,7 +5,7 @@ using HarmonyLib;
 
 namespace EModding.Helper;
 
-internal static class StringHelper
+public static class StringHelper
 {
     public static string MergeOverlap(string lhs, string rhs, string delimiter = " ")
     {
