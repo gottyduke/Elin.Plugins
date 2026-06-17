@@ -52,7 +52,6 @@ public class ZoneDataResponse
     public Zone? FindZone()
     {
         return EClass.game?.spatials.Find(ZoneUid) ??
-               ModUtil.FindZoneByFullName(ZoneFullName) ??
                SpatialGenEvent.TryPop(ZoneUid);
     }
 

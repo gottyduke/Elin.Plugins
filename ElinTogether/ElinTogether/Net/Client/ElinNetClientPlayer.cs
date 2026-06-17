@@ -63,7 +63,10 @@ internal partial class ElinNetClient
         probeGame.OnGameInstantiated();
         probeGame.OnLoad();
 
-        scene.Init(Scene.Mode.StartGame);
+        ui.RemoveLayer<LayerTitle>();
+        ui.ShowCover();
+        //scene.Init(Scene.Mode.StartGame);
+        player.zone = null;
         core.actionsNextFrame.Add(LayerTitle.KillActor);
 
         // do an initial zone request to load in

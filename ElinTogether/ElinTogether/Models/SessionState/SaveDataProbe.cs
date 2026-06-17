@@ -1,5 +1,4 @@
 using MessagePack;
-using Newtonsoft.Json;
 
 namespace ElinTogether.Models;
 

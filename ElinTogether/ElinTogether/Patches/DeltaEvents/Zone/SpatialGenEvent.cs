@@ -10,7 +10,7 @@ namespace ElinTogether.Patches;
 ///     For spatial gen, we don't necessarily need to send zone instances in packets
 ///     It is not a random instantiation unlike CardGen
 /// </summary>
-[HarmonyPatch(typeof(SpatialGen), nameof(SpatialGen.Create))]
+[HarmonyPatch]
 internal static class SpatialGenEvent
 {
     internal static readonly Dictionary<int, Zone> HeldRefZones = [];
@@ -31,6 +31,7 @@ internal static class SpatialGenEvent
     }
 
     [HarmonyPostfix]
+    [HarmonyPatch(typeof(SpatialGen), nameof(SpatialGen.Create))]
     internal static void OnSpatialGen(Spatial __result)
     {
         if (NetSession.Instance.Connection is not ElinNetHost host) {

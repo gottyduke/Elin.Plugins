@@ -126,7 +126,7 @@ public class SteamNetLobbyManager : EClass
                 continue;
             }
 
-            if (i + 1 < args.Length && ulong.TryParse(args[i + 1], out lobbyId)) {
+            if (ulong.TryParse(args.TryGet(i + 1, true), out lobbyId)) {
                 break;
             }
         }

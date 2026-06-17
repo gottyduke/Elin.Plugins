@@ -1,3 +1,4 @@
+using ElinTogether.Common;
 using Steamworks;
 
 namespace ElinTogether.Net.Steam;
@@ -15,10 +16,10 @@ public class SteamNetLobby(CSteamID steamLobbyId)
     public void RefreshData()
     {
         OwnerId = GetLobbyOwner();
-        EmpVersion = GetLobbyData("EmpVersion");
-        OwnerName = GetLobbyData("OwnerName");
-        GameVersion = GetLobbyData("GameVersion");
-        CurrentZone = GetLobbyData("CurrentZone");
+        EmpVersion = GetLobbyData(EmpLobbyData.EmpVersion);
+        OwnerName = GetLobbyData(EmpLobbyData.OwnerName);
+        GameVersion = GetLobbyData(EmpLobbyData.GameVersion);
+        CurrentZone = GetLobbyData(EmpLobbyData.CurrentZone);
         PlayerCount = GetCurrentPlayersCount();
     }
 
