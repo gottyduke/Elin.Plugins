@@ -1,4 +1,5 @@
 using ElinTogether.Common;
+using ElinTogether.Helper.Extensions;
 using ElinTogether.Models;
 using ElinTogether.Patches;
 using ReflexCLI.Attributes;
@@ -77,8 +78,6 @@ internal partial class ElinNetClient
 
         // update session remote zone
         Session.CurrentZone = remoteZone;
-
-        CardCache.CacheCurrentZone();
 
         // respond for replication complete, waiting for position sync
         Host.Send(response.Ready());

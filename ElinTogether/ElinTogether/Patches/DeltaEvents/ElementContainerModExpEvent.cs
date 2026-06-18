@@ -39,7 +39,10 @@ internal class ElementContainerModExpEvent
             return;
         }
 
-        var element = __instance.GetElement(ele);
+        if (__instance.GetElement(ele) is not { } element) {
+            return;
+        }
+
         NetSession.Instance.Connection!.Delta.AddRemote(new CardModExpDelta {
             Chara = __instance.Chara,
             Ele = ele,

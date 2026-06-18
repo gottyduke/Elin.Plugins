@@ -9,7 +9,7 @@ internal static class ZoneActivateEvent
 {
     [HarmonyPostfix]
     [HarmonyPatch(typeof(Zone), nameof(Zone.Activate))]
-    internal static void OnHostActivateZone(Zone __instance)
+    internal static void OnActivateZone(Zone __instance)
     {
         if (NetSession.Instance.Connection is not null) {
             CardCache.CacheCurrentZone();
