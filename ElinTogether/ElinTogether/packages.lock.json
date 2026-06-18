@@ -28,9 +28,9 @@
       },
       "Serilog": {
         "type": "Direct",
-        "requested": "[4.3.2-dev-02433, )",
-        "resolved": "4.3.2-dev-02433",
-        "contentHash": "E1SeZxEk51HaSd0cSUJcutHaR+yW7DC3p6FJHfUHuRAYUQbczwWpsa5Z4HZz4fEn+b0Qyg1lMAI6L6y4Bkxyqw==",
+        "requested": "[4.4.0-dev-02437, )",
+        "resolved": "4.4.0-dev-02437",
+        "contentHash": "46LxI8ECGhksLJsPTzm24DaGgT6JaZg4wrddGZJkaQmHyLOycdHGaL81XyJTgSGMtdlFn0IvmRHeWlkGnTTjvg==",
         "dependencies": {
           "System.Diagnostics.DiagnosticSource": "8.0.1",
           "System.Threading.Channels": "8.0.0"
