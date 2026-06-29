@@ -19,6 +19,12 @@ internal class EScriptOptions
         "System.Text.RegularExpressions",
         "System.Reflection",
         "HarmonyLib",
+        // modding kit
+        "EModding",
+        "EModding.API",
+        "EModding.Helper",
+        "EModding.Helper.Runtime",
+        "EModding.Helper.Runtime.Exceptions",
         // unity
         "UnityEngine",
         "UnityEngine.UI",
@@ -54,6 +60,7 @@ internal class EScriptOptions
         "System.Core",
         "UnityEngine",
         "UnityEngine.CoreModule",
+        "ElinModdingKit",
     ];
 
     internal static IReadOnlyList<MetadataReference> StaticDomainReferences => field ??= CreateStaticDomainReferences();
