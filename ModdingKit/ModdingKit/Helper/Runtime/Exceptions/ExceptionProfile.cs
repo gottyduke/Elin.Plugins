@@ -75,12 +75,6 @@ public class ExceptionProfile(string message)
         return exp;
     }
 
-    [Obsolete("use ref overload for inner exception swap")]
-    public static ExceptionProfile GetFromStackTrace(Exception exception)
-    {
-        return GetFromStackTrace(ref exception);
-    }
-
     public static void DefaultExceptionHandler(Exception exception)
     {
         var profile = GetFromStackTrace(ref exception);

@@ -56,11 +56,9 @@ public class TypeQualifier
             return baseAsm;
         }
 
-        var baseDir = Path.GetDirectoryName(assembly.Location)!.NormalizePath();
-        var packageAsm = BaseModManager.Instance.packages
-                             .FirstOrDefault(p => p.dirInfo.FullName.NormalizePath() == baseDir)?.title
-                         ?? Plugins.FirstOrDefault(p => p.GetType().Assembly == assembly)?.Info.Metadata.Name
-                         ?? baseAsm;
+        var packageAsm = ModUtil.FindFileProviderPackage(new (assembly.Location))?.title ??
+                         Plugins.FirstOrDefault(p => p.GetType().Assembly == assembly)?.Info.Metadata.Name ??
+                         baseAsm;
 
         packageAsm = packageAsm.Replace(" ", "").Replace(baseAsm, "");
         packageAsm = string.IsNullOrWhiteSpace(packageAsm)
