@@ -22,5 +22,5 @@ jobs:
       tag_prefix: EM
       release_name_prefix: "Emmersive - Elin with AI"
       artifact_name_prefix: emmersive
-      include_cwl: true
+      include_cwl: false
       prerelease: false
