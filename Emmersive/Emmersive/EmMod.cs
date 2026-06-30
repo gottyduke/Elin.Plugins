@@ -37,9 +37,9 @@ internal sealed partial class EmMod : BaseUnityPlugin
     private void Start()
     {
 #if !DEBUG
-        MonoFrame.AddVendorExclusion("Azure.");
-        MonoFrame.AddVendorExclusion("Microsoft.");
-        MonoFrame.AddVendorExclusion("OpenAI");
+        EModding.Helper.Runtime.Exceptions.MonoFrame.AddVendorExclusion("Azure.");
+        EModding.Helper.Runtime.Exceptions.MonoFrame.AddVendorExclusion("Microsoft.");
+        EModding.Helper.Runtime.Exceptions.MonoFrame.AddVendorExclusion("OpenAI");
 #endif
 
         EmConfig.InvalidateConfigs();
