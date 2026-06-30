@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using Emmersive.Helper;
+using EModding.Helper;
 using EModding.Helper.Runtime.Exceptions;
 using UnityEngine;
 

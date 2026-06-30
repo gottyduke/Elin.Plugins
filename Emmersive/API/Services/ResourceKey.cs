@@ -25,4 +25,9 @@ public class ResourceKey(string path)
     {
         return key.ResourcePath;
     }
+
+    public override string ToString()
+    {
+        return ResourcePath;
+    }
 }

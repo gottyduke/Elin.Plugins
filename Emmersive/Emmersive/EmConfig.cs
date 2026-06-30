@@ -106,21 +106,16 @@ internal partial class EmConfig
             "Comma separated list of disabled context provider types\n" +
             "禁用的上下文提供器类型列表，以逗号分隔");
 
-        Context.RecentLogDepth = config.Bind(
+        Context.GameLogDepth = config.Bind(
             "Context",
-            "RecentLogDepth",
+            "GameLogDepth",
             20,
             new ConfigDescription(
-                "Maximum number of previous logs to fetch as context\n" +
-                "最大拉取的作为上下文的游戏日志条数",
+                "Maximum number of recent game event logs to include as context\n" +
+                "Conversation memory is handled separately by the Memory system\n" +
+                "最大拉取的作为上下文的游戏事件日志条数\n" +
+                "对话记忆由 Memory 系统单独管理",
                 new AcceptableValueRange<int>(0, 100)));
-
-        Context.RecentTalkOnly = config.Bind(
-            "Context",
-            "RecentTalkOnly",
-            false,
-            "Only fetch talk logs, do not include combat or gameplay info\n" +
-            "仅拉取对话日志，不使用战斗或其他游戏信息");
 
         Context.NearbyRadius = config.Bind(
             "Context",
@@ -162,6 +157,51 @@ internal partial class EmConfig
             false,
             "Localize the context entries, may increase prompt length\n" +
             "尝试本地化上下文条目，可能会增加提示词长度");
+
+        Memory.MaxStmEntries = config.Bind(
+            "Memory",
+            "MaxStmEntries",
+            12,
+            new ConfigDescription(
+                "Maximum short-term memory entries per character (FIFO)\n" +
+                "每个角色的最大短期记忆条目数",
+                new AcceptableValueRange<int>(4, 30)));
+
+        Memory.MaxStmInContext = config.Bind(
+            "Memory",
+            "MaxStmInContext",
+            5,
+            new ConfigDescription(
+                "Maximum STM entries to inject per character in a scene request\n" +
+                "单次请求中每个角色注入的最大短期记忆条数",
+                new AcceptableValueRange<int>(1, 12)));
+
+        Memory.MaxLtmInContext = config.Bind(
+            "Memory",
+            "MaxLtmInContext",
+            5,
+            new ConfigDescription(
+                "Maximum LTM entries to inject per character in a scene request\n" +
+                "单次请求中每个角色注入的最大长期记忆条数",
+                new AcceptableValueRange<int>(1, 12)));
+
+        Memory.SummarizeThresholdPercentage = config.Bind(
+            "Memory",
+            "SummarizeThresholdPercentage",
+            0.75f,
+            new ConfigDescription(
+                "STM fill ratio (0-1) to trigger AI summarization into LTM\n" +
+                "短期记忆填充到此比例时触发AI总结为长期记忆",
+                new AcceptableValueRange<float>(0.25f, 1f)));
+
+        Memory.SummarizeThresholdSeconds = config.Bind(
+            "Memory",
+            "SummarizeThresholdSeconds",
+            120,
+            new ConfigDescription(
+                "Minimum seconds required before next AI summarization into LTM\n" +
+                "短期记忆触发AI总结为长期记忆时的最小间隔秒数",
+                new AcceptableValueRange<int>(10, 600)));
 
         Scene.MaxReactions = config.Bind(
             "Scene",
@@ -273,13 +313,21 @@ internal partial class EmConfig
     internal static class Context
     {
         internal static ConfigEntry<string> DisabledProviders { get; set; } = null!;
-        internal static ConfigEntry<int> RecentLogDepth { get; set; } = null!;
-        internal static ConfigEntry<bool> RecentTalkOnly { get; set; } = null!;
+        internal static ConfigEntry<int> GameLogDepth { get; set; } = null!;
         internal static ConfigEntry<int> NearbyRadius { get; set; } = null!;
         internal static ConfigEntry<int> NearbyMaxCount { get; set; } = null!;
         internal static ConfigEntry<bool> NearbyImportantOnly { get; set; } = null!;
         internal static ConfigEntry<bool> WhitelistMode { get; set; } = null!;
         internal static ConfigEntry<bool> EnableLocalizer { get; set; } = null!;
+    }
+
+    internal static class Memory
+    {
+        internal static ConfigEntry<int> MaxStmEntries { get; set; } = null!;
+        internal static ConfigEntry<int> MaxStmInContext { get; set; } = null!;
+        internal static ConfigEntry<int> MaxLtmInContext { get; set; } = null!;
+        internal static ConfigEntry<float> SummarizeThresholdPercentage { get; set; } = null!;
+        internal static ConfigEntry<int> SummarizeThresholdSeconds { get; set; } = null!;
     }
 
     internal static class Policy

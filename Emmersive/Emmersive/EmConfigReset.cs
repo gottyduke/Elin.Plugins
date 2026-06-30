@@ -1,6 +1,6 @@
 using System.IO;
+using Emmersive.API.Services;
 using Emmersive.Components;
-using Emmersive.Helper;
 using Emmersive.LangMod;
 using ReflexCLI.Attributes;
 
@@ -8,7 +8,7 @@ namespace Emmersive;
 
 internal partial class EmConfig
 {
-    private const EmConfigVersion CurrentVersion = EmConfigVersion.V3;
+    private const EmConfigVersion CurrentVersion = EmConfigVersion.V4;
 
     [ConsoleCommand("reload_cfg")]
     internal static void Reload()
@@ -21,13 +21,16 @@ internal partial class EmConfig
     internal static void Reset()
     {
         var config = EmMod.Instance.Config;
+        File.WriteAllText(config.ConfigFilePath, "");
 
-        foreach (var entry in config.Values) {
-            entry.SetSerializedValue(entry.DefaultValue.ToString());
-        }
+        config.SaveOnConfigSet = false;
+        config.Clear();
+
+        Bind();
+        Reload();
 
         config.Save();
-        Reload();
+        config.SaveOnConfigSet = true;
 
         EmMod.Popup<EmConfig>("em_ui_config_reset".Loc(CurrentVersion));
     }
@@ -70,5 +73,6 @@ internal partial class EmConfig
         V1, // 0.9.3 beta
         V2, // 0.9.4 beta
         V3, // 0.9.5 beta
+        V4, // 0.10.0 beta
     }
 }

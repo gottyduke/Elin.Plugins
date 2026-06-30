@@ -74,7 +74,10 @@ internal class EmTalkTrigger : EClass
 
                 if (canRequest) {
                     // trigger immediately
-                    core.StartDeferredCoroutine(() => EmScheduler.RequestScenePlayImmediate(), 0.01f);
+                    EmScheduler.OnTalkTrigger(new() {
+                        Chara = chara,
+                        Trigger = text,
+                    });
                 }
             },
             Dialog.InputType.None);

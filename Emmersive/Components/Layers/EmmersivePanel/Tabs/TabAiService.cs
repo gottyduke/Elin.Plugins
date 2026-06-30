@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Emmersive.API;
 using Emmersive.API.Services;
+using Emmersive.API.ThirdParty;
 using Emmersive.ChatProviders;
 using Emmersive.Helper;
 using Emmersive.LangMod;
@@ -19,6 +20,12 @@ internal class TabAiService : TabEmmersiveBase
 
     public override void OnLayout()
     {
+        ChatProviderBase.OnProviderRemoved = provider => {
+            ApiPoolSelector.Instance.RemoveService(provider);
+            EmKernel.RebuildKernel();
+        };
+        ChatProviderBase.OnProviderConfigChanged = () => EmKernel.RebuildKernel();
+
         BuildButtons();
 
         if (EmActivity.Session.Count > 0) {
@@ -27,7 +34,8 @@ internal class TabAiService : TabEmmersiveBase
 
         var layouts = ApiPoolSelector.Instance.Providers
             .OfType<ILayoutProvider>()
-            .ToArray();
+            .Concat(EmPluginRegistry.Instance.ExternalLayoutProviders)
+            .ToList();
 
         var initialIndex = transform.childCount;
         foreach (var provider in layouts) {
@@ -50,7 +58,7 @@ internal class TabAiService : TabEmmersiveBase
             void Reorder(int a)
             {
                 var index = card.transform.GetSiblingIndex() + a;
-                if (index < initialIndex || index >= layouts.Length + initialIndex) {
+                if (index < initialIndex || index >= layouts.Count + initialIndex) {
                     return;
                 }
 
@@ -62,9 +70,9 @@ internal class TabAiService : TabEmmersiveBase
 
     public override void OnLayoutConfirm()
     {
-        var layouts = ApiPoolSelector.Instance
-            .Providers
-            .OfType<ILayoutProvider>();
+        var layouts = ApiPoolSelector.Instance.Providers
+            .OfType<ILayoutProvider>()
+            .Concat(EmPluginRegistry.Instance.ExternalLayoutProviders);
         foreach (var provider in layouts) {
             provider.OnLayoutConfirm();
         }
@@ -126,13 +134,13 @@ internal class TabAiService : TabEmmersiveBase
                     });
                     break;
                 case 4:
-                    Dialog.YesNo("em_ui_px_desc", () => {
-                        Application.OpenURL("https://proxy.pieixan.icu/login");
-                        AddService(new PiexianProvider());
-                    });
+                    AddService(new OllamaProvider());
                     break;
                 case 5:
-                    AddService(new OllamaProvider());
+                    Dialog.YesNo("em_ui_px_desc", () => {
+                        Application.OpenURL("https://api.pie-xian.com/");
+                        AddService(new PiexianProvider());
+                    });
                     break;
             }
         }
@@ -171,6 +179,12 @@ internal class TabAiService : TabEmmersiveBase
 
         btnGroup.Button("em_ui_api_guide".lang(), OpenApiGuide)
             .mainText.supportRichText = true;
+
+        var chatKey = EClass.core.config.input.keys.chat;
+        btnGroup.Button("em_ui_chat_keymap".Loc(chatKey.key.ToString()), () => Dialog.Keymap(chatKey).SetOnKill(() => {
+            EmConfig.Policy.PlayerTalkKey.Value = chatKey.key;
+            LayerEmmersivePanel.Instance?.Reopen();
+        }));
 
         return;
 

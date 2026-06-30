@@ -7,7 +7,7 @@ using YKF;
 namespace Emmersive.Components;
 
 [ConsoleCommandClassCustomizer("em")]
-internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
+internal class LayerEmmersivePanel : LayerEmmersiveBase<LayerCreationData>
 {
     private static Vector2 _browsedPosition = Vector2.zero;
     private static string _lastOpenedTab = "";
@@ -15,12 +15,13 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
 
     private readonly List<TabEmmersiveBase> _tabs = [];
     public override string Title => "Elin with AI";
-    public override Rect Bound => FitWindow();
 
     public static LayerEmmersivePanel? Instance { get; private set; }
 
     public override void OnLayout()
     {
+        base.OnLayout();
+
         Instance = this;
 
         if (_resetHyp) {
@@ -34,6 +35,7 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
             _tabs.Add(CreateTab<TabSystemPrompt>("em_ui_tab_prompts", "em_tab_prompt_setting"));
             _tabs.Add(CreateTab<TabCharaPrompt>("em_ui_tab_characters", "em_tab_chara_prompts"));
             _tabs.Add(CreateTab<TabCharaRelations>("em_ui_tab_relations", "em_tab_chara_relations"));
+            _tabs.Add(CreateTab<TabCharaMemory>("em_ui_tab_memory", "em_tab_npc_memory"));
         }
 
         _tabs.Add(CreateTab<TabDebugPanel>("em_ui_tab_debug", "em_tab_debug_panel"));
@@ -92,12 +94,5 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
     internal static void OpenPanelSesame(string targetTab = "")
     {
         YK.CreateLayer<LayerEmmersivePanel, LayerCreationData>(new(targetTab));
-    }
-
-    private static Rect FitWindow()
-    {
-        var scaler = ui.canvasScaler.scaleFactor;
-        var size = new Vector2(Screen.width / 1.5f, Screen.height / 1.5f) / scaler;
-        return new(Vector2.zero, size);
     }
 }

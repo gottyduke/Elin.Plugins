@@ -6,8 +6,10 @@ using Emmersive.API.Exceptions;
 using Emmersive.API.Plugins;
 using Emmersive.API.Services;
 using Emmersive.Contexts;
+using Emmersive.Contexts.Memory;
 using Emmersive.Helper;
 using Emmersive.LangMod;
+using EModding.Helper;
 using EModding.Helper.Runtime.Exceptions;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -26,6 +28,7 @@ public partial class EmScheduler
             .CreateStandardPrefix()
             .Add(new NearbyCharaContext(focus))
             .Add(new NearbyThingContext(focus))
+            .Add(new MemoryContext())
             // put volatile context at the end to hit as much cache as possible
             .Add(ContextBuilder.RecentActionContext);
 
@@ -39,6 +42,7 @@ public partial class EmScheduler
             .CreateStandardPrefix()
             .Add(new NearbyCharaContext(focus))
             .Add(new NearbyThingContext(focus))
+            .Add(new MemoryContext())
             // put volatile context at the end to hit as much cache as possible
             .Add(ContextBuilder.RecentActionContext)
             .Add(new SceneTriggerContext(_buffer.ToArray()));

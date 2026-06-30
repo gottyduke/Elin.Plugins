@@ -1,5 +1,5 @@
 using System.Linq;
-using Emmersive.Contexts;
+using Emmersive.Contexts.Memory;
 using Emmersive.Helper;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,19 +11,22 @@ internal class TabDebugPanel : TabEmmersiveBase
 {
     public override void OnLayout()
     {
-        var logs = RecentActionContext.RecentActions
-            .TakeLast(EmConfig.Context.RecentLogDepth.Value * 2)
+        var allEntries = MemoryManager.Instance.AllStores
+            .SelectMany(s => s.GetRecentStm(EmConfig.Memory.MaxStmInContext.Value))
+            .OrderByDescending(e => e.Turn)
+            .Take(EmConfig.Context.GameLogDepth.Value * 2)
             .Reverse()
+            .Select(e => (actor: e.Speaker, text: e.Content))
             .ToArray();
 
-        if (logs.Length > 0) {
+        if (allEntries.Length > 0) {
             var logPanel = this.MakeCard();
             logPanel.HeaderCard("em_ui_recent_action");
 
             var langWidth = Lang.isEN ? 15f : 18f;
-            var max = logs.Max(a => a.actor.Length) / EMono.ui.canvasScaler.scaleFactor * langWidth;
+            var max = allEntries.Max(a => a.actor.Length) / EMono.ui.canvasScaler.scaleFactor * langWidth;
 
-            foreach (var (actor, text) in logs) {
+            foreach (var (actor, text) in allEntries) {
                 var pair = logPanel.TopicPair(actor, text);
                 pair.text1.alignment = TextAnchor.UpperLeft;
                 pair.text1.GetOrCreate<LayoutElement>().preferredWidth = max;

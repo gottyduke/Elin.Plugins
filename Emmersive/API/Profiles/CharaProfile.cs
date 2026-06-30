@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Emmersive.API.Profiles;
@@ -29,21 +28,9 @@ public class CharaProfile(Chara chara)
 
     public bool IsPC => chara.IsPC;
 
-    public Queue<string> LastTalks { get; set; } = [];
-
-    public void ResetTalkCooldown(string? talk = null)
+    public void ResetTalkCooldown()
     {
         LastReactionTime = Time.unscaledTime;
         LastReactionTurn = chara.turn;
-
-        if (talk is null) {
-            return;
-        }
-
-        LastTalks.Enqueue(talk);
-
-        if (LastTalks.Count > EmConfig.Context.RecentLogDepth.Value) {
-            LastTalks.Dequeue();
-        }
     }
 }

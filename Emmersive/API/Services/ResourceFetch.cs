@@ -83,13 +83,13 @@ public class ResourceFetch
     public static void SetActiveResource(ResourceKey key, string content)
     {
         _activeResources[key] = content;
-        EmMod.Log<ResourceFetch>($"set active resource {key}");
+        EmMod.Debug<ResourceFetch>($"set active resource {key}");
     }
 
     public static void RemoveActiveResource(ResourceKey key)
     {
         _activeResources.Remove(key);
-        EmMod.Log<ResourceFetch>($"removed active resource {key}");
+        EmMod.Debug<ResourceFetch>($"removed active resource {key}");
     }
 
     public static void ClearActiveResources()
@@ -123,7 +123,7 @@ public class ResourceFetch
 
         RemoveActiveResource(key);
 
-        EmMod.Log<ResourceFetch>($"set custom resource {file}");
+        EmMod.Debug<ResourceFetch>($"set custom resource {file}");
     }
 
     public static void RemoveCustomResource(ResourceKey key)
@@ -149,7 +149,9 @@ public class ResourceFetch
 
     public static void OpenCustomFolder(string subFolder = "")
     {
-        Util.Run(CustomFolder + subFolder);
+        var dir = CustomFolder + subFolder;
+        Directory.CreateDirectory(dir);
+        Util.Run(dir);
     }
 
     public static void ClearCustomResources()

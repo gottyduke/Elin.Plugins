@@ -1,6 +1,6 @@
 using System.ComponentModel;
 using System.Text.RegularExpressions;
-using Emmersive.Contexts;
+using Emmersive.Contexts.Memory;
 using Emmersive.Helper;
 using Microsoft.SemanticKernel;
 using UnityEngine;
@@ -26,9 +26,9 @@ public partial class SceneDirector
         }
 
         content = chara.ApplyTone(content);
-        content = content.Replace("~", "*");
+        content = content.Replace('~', '*');
         // gpt prefers this quote
-        content = content.Replace("’", "'");
+        content = content.Replace('’', '\'');
 
         var matches = Regex.Matches(content, @"(\*[^*]+\*)|([^\*]+)");
 
@@ -41,6 +41,7 @@ public partial class SceneDirector
             var gesture = text.StartsWith("*") && text.EndsWith("*");
 
             CoroutineHelper.Deferred(PopText, delay);
+
             continue;
 
             void PopText()
@@ -62,13 +63,12 @@ public partial class SceneDirector
                     text = text.Replace("&", "");
                 }
 
-                if (profile.LastTalks.Contains(text) ||
-                    RecentActionContext.HasDuplicate(chara.Name, text)) {
+                if (MemoryManager.Instance.HasRecentTalk(chara, text)) {
                     // reduce repetition
                     return;
                 }
 
-                RecentActionContext.Add(chara.NameSimple, text);
+                MemoryManager.Instance.RecordTalk(chara, text);
 
                 Msg.SetColor(color);
 
@@ -85,7 +85,7 @@ public partial class SceneDirector
                     chara.HostRenderer.Say(text.Wrap(), duration: duration);
                 }
 
-                profile.ResetTalkCooldown(text);
+                profile.ResetTalkCooldown();
             }
         }
 

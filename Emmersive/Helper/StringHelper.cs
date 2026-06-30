@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using HarmonyLib;
-using Newtonsoft.Json;
 
 namespace Emmersive.Helper;
 
@@ -26,18 +21,6 @@ public static class StringHelper
         var size = bytes / Math.Pow(1024, mag);
 
         return $"{size:0.##} {_memSizeSuffixes[mag]}";
-    }
-
-    public static string MergeOverlap(string lhs, string rhs, string delimiter = " ")
-    {
-        var maxOverlap = 0;
-        for (var i = 1; i <= Math.Min(lhs.Length, rhs.Length); ++i) {
-            if (lhs.EndsWith(rhs[..i], StringComparison.OrdinalIgnoreCase)) {
-                maxOverlap = i;
-            }
-        }
-
-        return $"{lhs}{delimiter}{rhs[maxOverlap..]}";
     }
 
     public static class Cjk
@@ -69,28 +52,6 @@ public static class StringHelper
         public string OrIfWhiteSpace(string fallback)
         {
             return string.IsNullOrWhiteSpace(input) ? fallback : input;
-        }
-
-        public string Capitalize()
-        {
-            Span<char> buf = input.ToCharArray();
-            buf[0] = char.ToUpperInvariant(buf[0]);
-            return buf.ToString();
-        }
-
-        public string Truncate(int length)
-        {
-            return input.IsEmptyOrNull || input.RemoveTagColor().Length <= length ? input : $"{input[..length]} ...";
-        }
-
-        public string TruncateAllLines(int length)
-        {
-            return input.SplitLines().Select(s => s.Truncate(length)).Join(s => s, "\n");
-        }
-
-        public string[] SplitLines()
-        {
-            return input.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
         }
 
         public string Wrap(int segments = 7, int segmentsCjk = 14)
@@ -166,101 +127,6 @@ public static class StringHelper
             result = string.Join('\n', lines[..^1]);
 
             return result;
-        }
-
-        public object AsTypeOf(Type type)
-        {
-            if (type == typeof(string)) {
-                return input;
-            }
-
-            if (type == typeof(bool)) {
-                return input == "1" || input.Equals("true", StringComparison.OrdinalIgnoreCase);
-            }
-
-            return Convert.ChangeType(input, type, CultureInfo.InvariantCulture);
-        }
-    }
-
-    extension(object input)
-    {
-        public string ToTruncateString(int length)
-        {
-            return input.ToString().Truncate(length);
-        }
-
-        public string TagColor(int hex)
-        {
-            var color = (uint)hex;
-            var hexString = color <= 0xffffff
-                ? color.ToString("x6")
-                : color.ToString("x8");
-            return $"<color=#{hexString}>{input}</color>";
-        }
-
-        public string TagColorEx(Func<bool> onSwitch,
-                                 int good = 0x2cff14,
-                                 int bad = 0x000000)
-        {
-            return input.TagColor(onSwitch() ? good : bad);
-        }
-
-        public string TagStyle(string style)
-        {
-            return $"<{style}>{input}</{style}>";
-        }
-
-        public string RemoveTagColor()
-        {
-            return Regex.Replace(input.ToString(), "<color(=[^>]*)?>|</color>", "");
-        }
-
-        public string TryToString(string nullFallback = "")
-        {
-            switch (input) {
-                case null:
-                    return nullFallback;
-                case string str:
-                    return str;
-                default:
-                    try {
-                        return input.GetType().GetRuntimeMethod(nameof(input.ToString), [])?.DeclaringType == typeof(object)
-                            ? JsonConvert.SerializeObject(input, Formatting.Indented)
-                            : input.ToString();
-                    } catch {
-                        return nullFallback.OrIfEmpty(input.ToString());
-                        // noexcept
-                    }
-            }
-        }
-    }
-
-    extension(StringBuilder sb)
-    {
-        public StringBuilder AppendColor(string input, int hex)
-        {
-            return sb.Append(input.TagColor(hex));
-        }
-
-        public StringBuilder AppendLineColor(string input, int hex)
-        {
-            return sb.AppendLine(input.TagColor(hex));
-        }
-
-        public StringBuilder AppendColorEx(string input,
-                                           Func<bool> onSwitch,
-                                           int good = 0x2cff14,
-                                           int bad = 0x000000)
-        {
-            return sb.Append(input.TagColorEx(onSwitch, good, bad));
-        }
-
-        public StringBuilder AppendLineColorEx(string input,
-                                               Func<bool> onSwitch,
-                                               int good = 0x2cff14,
-                                               int bad = 0x000000)
-        {
-            return sb.AppendLine(input.TagColorEx(onSwitch, good, bad));
         }
     }
 }

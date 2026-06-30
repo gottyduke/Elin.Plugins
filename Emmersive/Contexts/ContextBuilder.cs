@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Emmersive.API;
+using Emmersive.API.ThirdParty;
 using Emmersive.Helper;
 using EModding.Helper.Runtime.Exceptions;
 using Microsoft.SemanticKernel;
@@ -89,6 +90,26 @@ public sealed class ContextBuilder
                 EmMod.Warn<ContextBuilder>($"provider {provider.Name} failed\n{ex}");
                 DebugThrow.Void(ex);
                 // noexcept
+            }
+        }
+
+        // 处理外部 IEmContextProvider
+        foreach (var extProvider in EmPluginRegistry.Instance.ExternalContextProviders) {
+            if (!extProvider.IsAvailable) {
+                continue;
+            }
+
+            try {
+                sb.AppendLine($"[{extProvider.Name}]");
+                var context = extProvider.Build();
+                if (context is null) {
+                    continue;
+                }
+
+                sb.AppendLine(context.ToCompactJson());
+            } catch (Exception ex) {
+                EmMod.Warn<ContextBuilder>($"external provider {extProvider.Name} failed\n{ex}");
+                DebugThrow.Void(ex);
             }
         }
 

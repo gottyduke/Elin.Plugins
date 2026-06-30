@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Emmersive.API.Services;
 using Emmersive.Contexts;
 using Emmersive.Helper;
 using EModding.Helper.Runtime.Exceptions;
@@ -9,6 +10,13 @@ namespace Emmersive.Components;
 
 internal class TabCharaPrompt : TabEmmersiveBase
 {
+    private static readonly string[] _popupEmoji = [
+        "(∠・ω< )⌒★",
+        "(＞ω＜)⌒☆",
+        "(◕ω<)⌒✿",
+        "(∠▽∠)⌒o",
+    ];
+
     public override void OnLayout()
     {
         var header = Horizontal();
@@ -48,7 +56,12 @@ internal class TabCharaPrompt : TabEmmersiveBase
 
             card.Toggle("em_ui_use_pop",
                     chara.GetBool("em_pop"),
-                    value => chara.SetBool("em_pop", value))
+                    value => {
+                        chara.SetBool("em_pop", value);
+                        if (value) {
+                            WidgetFeed.Instance.SayRaw(chara, _popupEmoji.RandomItem());
+                        }
+                    })
                 .transform
                 .SetSiblingIndex(1);
             card.Spacer(5)

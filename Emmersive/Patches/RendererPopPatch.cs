@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Emmersive.API.Services;
 using Emmersive.Components;
-using Emmersive.Contexts;
+using Emmersive.Contexts.Memory;
 using Emmersive.Helper;
 using HarmonyLib;
 using UnityEngine;
@@ -76,7 +76,9 @@ internal class RendererPopPatch
         void AllowOriginalText()
         {
             Msg.Say(text);
-            RecentActionContext.Add(card.NameSimple, text);
+            if (card is Chara chara) {
+                MemoryManager.Instance.RecordTalk(chara, text);
+            }
         }
     }
 
@@ -127,8 +129,8 @@ internal class RendererPopPatch
         void AllowOriginalPop()
         {
             renderer.Say(text, color, duration);
-            profile.ResetTalkCooldown(text);
-            RecentActionContext.Add(chara.NameSimple, text);
+            profile.ResetTalkCooldown();
+            MemoryManager.Instance.RecordTalk(chara, text);
         }
     }
 }

@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
+using Emmersive.API.Services;
 using Emmersive.Contexts;
 using Emmersive.Helper;
-using UnityEngine;
 using UnityEngine.UI;
 using YKF;
 
@@ -76,11 +76,5 @@ internal class TabCharaRelations : TabCharaPrompt
                 list.Toggle(chara.Name, charas[chara], value => charas[chara] = value);
             }
         }
-    }
-
-    internal static Vector2 FitCell(int constraint)
-    {
-        var scaler = EMono.ui.canvasScaler.scaleFactor;
-        return new Vector2(Screen.width / 1.7f / constraint, 45f) / scaler;
     }
 }

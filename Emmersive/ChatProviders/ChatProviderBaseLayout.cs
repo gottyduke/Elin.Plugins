@@ -1,6 +1,5 @@
 using System;
 using Emmersive.API;
-using Emmersive.API.Services;
 using Emmersive.Components;
 using Emmersive.Helper;
 using UnityEngine;
@@ -12,6 +11,9 @@ namespace Emmersive.ChatProviders;
 
 public abstract partial class ChatProviderBase : ILayoutProvider
 {
+    public static Action<ChatProviderBase>? OnProviderRemoved;
+    public static Action? OnProviderConfigChanged;
+
     private UIInputText? _aliasInput;
     private UIInputText? _endpointInput;
     private UIInputText? _modelInput;
@@ -63,8 +65,7 @@ public abstract partial class ChatProviderBase : ILayoutProvider
         controlGroup.Button("em_ui_edit_params".lang(), this.OpenProviderParam);
 
         controlGroup.Button("em_ui_remove".lang(), () => {
-            ApiPoolSelector.Instance.RemoveService(this);
-            EmKernel.RebuildKernel();
+            OnProviderRemoved?.Invoke(this);
             Object.DestroyImmediate(card.transform.parent.gameObject);
         }).GetOrCreate<Image>().color = Color.red;
     }
@@ -91,7 +92,7 @@ public abstract partial class ChatProviderBase : ILayoutProvider
         // we can load from new aliased param file
         this.LoadProviderParam();
 
-        EmKernel.RebuildKernel();
+        OnProviderConfigChanged?.Invoke();
     }
 
     protected abstract void OnLayoutInternal(YKLayout card);

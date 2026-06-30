@@ -16,10 +16,10 @@ internal sealed class PiexianProvider() : OpenAIProvider("")
     public override string Alias { get; set; } = "氕氙";
 
     [JsonProperty]
-    public override string CurrentModel { get; set; } = "gpt-4o-mini";
+    public override string CurrentModel { get; set; } = "gemini-3-flash";
 
     [JsonProperty]
-    public override string EndPoint { get; set; } = "https://proxy.pieixan.icu/v1";
+    public override string EndPoint { get; set; } = "https://api.pie-xian.com/v1";
 
     public override IDictionary<string, object> RequestParams { get; set; } = new Dictionary<string, object> {
         ["response_format"] = SceneReaction.OpenAiSchema,

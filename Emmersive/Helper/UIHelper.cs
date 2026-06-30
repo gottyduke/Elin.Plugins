@@ -66,16 +66,6 @@ public static class UIHelper
             return card;
         }
 
-        public YKHorizontal MakeEqualWidthGroup()
-        {
-            var group = layout.Horizontal();
-            var le = group.LayoutElement();
-            le.minWidth = 0;
-            le.preferredWidth = 0;
-            le.flexibleWidth = 1;
-            return group;
-        }
-
         public UIItem AddImageCard(Component parent, Sprite sprite)
         {
             var item = Util.Instantiate<UIItem>("UI/Element/Deco/ImageNote", parent);

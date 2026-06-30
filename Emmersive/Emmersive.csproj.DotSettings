@@ -4,6 +4,36 @@
 	<s:Boolean
         x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=api_005Cplugins_005Cscenedirector/@EntryIndexedValue">True</s:Boolean>
     <s:Boolean
+        x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=components_005Cemmersivepanel_005Ctabs/@EntryIndexedValue">True</s:Boolean>
+    <s:Boolean
+        x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=components_005Cemmersivepanel/@EntryIndexedValue">True</s:Boolean>
+    <s:Boolean
+        x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=components_005Clayeremmersive/@EntryIndexedValue">True</s:Boolean>
+    <s:Boolean
+        x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=components_005Clayeremmersive_005Ctabs/@EntryIndexedValue">True</s:Boolean>
+    <s:Boolean
+        x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=components_005Clayermemory/@EntryIndexedValue">True</s:Boolean>
+    <s:Boolean
+        x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=components_005Clayermemory_005Ctabs/@EntryIndexedValue">True</s:Boolean>
+    <s:Boolean
+        x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=components_005Clayers/@EntryIndexedValue">True</s:Boolean>
+    <s:Boolean
+        x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=components_005Clayers_005Cemmersivepanel_005Ctabs/@EntryIndexedValue">True</s:Boolean>
+    <s:Boolean
+        x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=components_005Clayers_005Cemmersivepanel/@EntryIndexedValue">True</s:Boolean>
+    <s:Boolean
+        x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=components_005Clayers_005Clayeremmersive_005Ctabs/@EntryIndexedValue">True</s:Boolean>
+    <s:Boolean
+        x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=components_005Clayers_005Clayeremmersive/@EntryIndexedValue">True</s:Boolean>
+    <s:Boolean
+        x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=components_005Clayers_005Clayermemory_005Ctabs/@EntryIndexedValue">True</s:Boolean>
+    <s:Boolean
+        x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=components_005Clayers_005Clayermemory/@EntryIndexedValue">True</s:Boolean>
+    <s:Boolean
+        x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=components_005Clayers_005Cmemoryeditor_005Ctabs/@EntryIndexedValue">True</s:Boolean>
+    <s:Boolean
+        x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=components_005Clayers_005Cmemoryeditor/@EntryIndexedValue">True</s:Boolean>
+    <s:Boolean
         x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=components_005Cscheduler/@EntryIndexedValue">True</s:Boolean>
     <s:Boolean
         x:Key="/Default/CodeInspection/NamespaceProvider/NamespaceFoldersToSkip/=components_005Ctabs/@EntryIndexedValue">True</s:Boolean>

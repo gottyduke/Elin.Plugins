@@ -35,4 +35,14 @@ public static class UniTasklet
                 .Forget(ExceptionProfile.DefaultExceptionHandler);
         }
     }
+
+    extension<T>(UniTask<T> task)
+    {
+        public void ForgetEx()
+        {
+            task.AttachExternalCancellation(GameToken)
+                .SuppressCancellationThrow()
+                .Forget(ExceptionProfile.DefaultExceptionHandler);
+        }
+    }
 }

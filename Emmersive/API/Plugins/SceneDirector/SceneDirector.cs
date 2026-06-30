@@ -49,7 +49,7 @@ public partial class SceneDirector : EClass
         EmScheduler.SetScenePlayDelay(delayMax);
     }
 
-    private SceneReaction[]? TryParseReactions(string content)
+    private static SceneReaction[]? TryParseReactions(string content)
     {
         content = StripMarkdownFence(content);
 
@@ -102,7 +102,7 @@ public partial class SceneDirector : EClass
         return null;
     }
 
-    private string StripMarkdownFence(string content)
+    private static string StripMarkdownFence(string content)
     {
         content = content.Trim();
 
