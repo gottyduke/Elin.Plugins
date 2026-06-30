@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Cwl.Helper.String;
-using Cwl.LangMod;
+using System.Text;
+using Emmersive.LangMod;
 
 namespace Emmersive.Helper;
 
@@ -15,7 +15,7 @@ public static class Localizer
             return;
         }
 
-        using var sb = StringBuilderPool.Get();
+        var sb = new StringBuilder();
 
         sb.AppendLine("unlocalized entries");
 

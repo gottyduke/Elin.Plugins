@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Cwl.Helper.Extensions;
-using Cwl.LangMod;
 using Emmersive.Helper;
+using Emmersive.LangMod;
 using UnityEngine.UI;
 using YKF;
 
@@ -54,7 +53,7 @@ internal class TabWhitelist : TabCharaRelations
 
             foreach (var chara in charas) {
                 var initial = getInitial(chara);
-                grid.Toggle(chara.Name, initial, value => chara.SetFlagValue(flagKey, value ? 1 : 0));
+                grid.Toggle(chara.Name, initial, value => chara.SetBool(flagKey, value));
             }
         }
 

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Cwl.Helper.Extensions;
 using UnityEngine;
 
 namespace Emmersive.API.Profiles;
@@ -14,9 +13,9 @@ public class CharaProfile(Chara chara)
         chara.turn - LastReactionTurn <= EmConfig.Scene.TurnsCooldown.Value;
 
     public bool LockedInRequest { get; set; }
-    public bool OnWhitelist => chara.GetFlagValue("em_wl") > 0;
-    public bool OnBlacklist => chara.GetFlagValue("em_bl") > 0;
-    public bool UsePopFeed => chara.GetFlagValue("em_pop") > 0;
+    public bool OnWhitelist => chara.GetBool("em_wl");
+    public bool OnBlacklist => chara.GetBool("em_bl");
+    public bool UsePopFeed => chara.GetBool("em_pop");
 
     public bool IsImportant =>
         !chara.IsPC &&

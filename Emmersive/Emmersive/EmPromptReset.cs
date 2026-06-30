@@ -1,5 +1,4 @@
 using System.IO;
-using Cwl.Helper.Unity;
 using Emmersive.Components;
 using Emmersive.Contexts;
 using Emmersive.Helper;
@@ -25,7 +24,7 @@ internal class EmPromptReset
                 var panel = LayerEmmersivePanel.Instance;
                 if (panel != null) {
                     // defer to unity main thread
-                    CoroutineHelper.Deferred(() => panel.Reopen());
+                    CoroutineHelper.Deferred(panel.Reopen);
                 }
             });
     }

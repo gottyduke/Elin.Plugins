@@ -1,4 +1,4 @@
-using Cwl.Helper.String;
+using System.Text;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 
@@ -12,13 +12,13 @@ public static class KernelConverter
         {
             ChatHistory history = [];
 
-            using var sb = StringBuilderPool.Get();
+            var sb = new StringBuilder();
 
-            sb.Append(args["system_prompt"]!.ToString());
+            sb.Append(args["system_prompt"]!);
 
             // manual render filter
             foreach (var (k, v) in args) {
-                sb.StringBuilder.Replace($"{{{{{k}}}}}", v!.ToString());
+                sb.Replace($"{{{{{k}}}}}", v!.ToString());
             }
 
             history.AddSystemMessage(sb.ToString());
@@ -31,7 +31,7 @@ public static class KernelConverter
         // also we'd prefer enforcing system prompt as its own role
         public string ToTemplate()
         {
-            using var sb = StringBuilderPool.Get();
+            var sb = new StringBuilder();
 
             sb.AppendLine("<message role=\"system\">");
             sb.AppendLine(args["system_prompt"]!.ToString());

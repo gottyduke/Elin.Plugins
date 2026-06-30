@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Threading;
-using Cwl.LangMod;
+using Emmersive.LangMod;
 using ReflexCLI.Attributes;
 using UnityEngine;
 

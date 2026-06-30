@@ -65,13 +65,13 @@ public sealed class ApiPoolSelector : IAIServiceSelector
 
         var context = ResourceFetch.Context;
 
-        context.Save(_providers, "active_providers");
+        context.Save("active_providers", _providers);
 
         foreach (var provider in _providers) {
             provider.SaveProviderParam();
         }
 
-        context.SaveUncompressed(ChatProviderBase.ServiceCount, "service_count");
+        context.SaveUncompressed("service_count", ChatProviderBase.ServiceCount);
     }
 
     public void LoadServices(bool clear = true)
@@ -84,7 +84,7 @@ public sealed class ApiPoolSelector : IAIServiceSelector
 
         var context = ResourceFetch.Context;
 
-        if (!context.Load<List<IChatProvider>>(out var providers, "active_providers")) {
+        if (!context.Load<List<IChatProvider>>("active_providers", out var providers)) {
             return;
         }
 
@@ -92,7 +92,7 @@ public sealed class ApiPoolSelector : IAIServiceSelector
             AddService(provider);
         }
 
-        if (context.Load<int>(out var serviceCount, "service_count")) {
+        if (context.Load<int>("service_count", out var serviceCount)) {
             ChatProviderBase.ServiceCount = serviceCount;
         }
     }

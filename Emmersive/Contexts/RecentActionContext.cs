@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cwl.API.Attributes;
-using Cwl.Helper.String;
 using Emmersive.Helper;
 
 namespace Emmersive.Contexts;
@@ -144,21 +142,21 @@ public class RecentActionContext : ContextProviderBase
         RecentActions.RemoveRange(0, RecentActions.Count - bufSize);
     }
 
-    [CwlPostLoad]
-    public static void ClearSession()
+    [ElinPostLoad]
+    public static void ClearSession(GameIOContext context)
     {
         RecentActions.Clear();
         _indexSinceStart = EClass.game.log.currentLogIndex - 1;
 
-        if (ResourceFetch.Context.Load<HashSet<string>>(out var filters, "action_filters")) {
+        if (ResourceFetch.Context.Load<HashSet<string>>("action_filters", out var filters)) {
             Filters = filters;
         }
     }
 
-    [CwlPostSave]
-    public static void SaveFilters()
+    [ElinPostLoad]
+    public static void SaveFilters(GameIOContext context)
     {
         Filters.Add(_push);
-        ResourceFetch.Context.Save(Filters, "action_filters");
+        ResourceFetch.Context.Save("action_filters", Filters);
     }
 }

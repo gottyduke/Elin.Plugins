@@ -1,6 +1,5 @@
 using System.Collections.Generic;
-using Cwl.API.Attributes;
-using Cwl.Helper.String;
+using Emmersive.Helper;
 using ReflexCLI.Attributes;
 using UnityEngine;
 using YKF;
@@ -83,7 +82,7 @@ internal class LayerEmmersivePanel : YKLayer<LayerCreationData>
         _browsedPosition = Window.transform.localPosition;
     }
 
-    [CwlContextMenu("em_ui_open_sesame")]
+    [ElinContextMenuEntry("em_ui_open_sesame")]
     private static void OpenInternal()
     {
         OpenPanelSesame();

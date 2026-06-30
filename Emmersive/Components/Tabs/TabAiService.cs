@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cwl.Helper.FileUtil;
-using Cwl.LangMod;
 using Emmersive.API;
 using Emmersive.API.Services;
 using Emmersive.ChatProviders;
 using Emmersive.Helper;
+using Emmersive.LangMod;
 using UnityEngine;
 using UnityEngine.UI;
 using YKF;
@@ -20,10 +19,7 @@ internal class TabAiService : TabEmmersiveBase
 
     public override void OnLayout()
     {
-        BuildSchedulerButton();
-        BuildDebugButtons();
-
-        BuildServiceButtons();
+        BuildButtons();
 
         if (EmActivity.Session.Count > 0) {
             this.MakeCard().ShowActivityInfo("");
@@ -76,12 +72,17 @@ internal class TabAiService : TabEmmersiveBase
         base.OnLayoutConfirm();
     }
 
+    private void BuildButtons()
+    {
+        BuildSchedulerButton();
+        BuildDebugButtons();
+
+        BuildServiceButtons();
+    }
+
     private void BuildServiceButtons()
     {
-        var addCard = this.MakeCard();
-        addCard.HeaderCard("em_ui_tab_ai_service");
-
-        var btnGroup = addCard.Horizontal()
+        var btnGroup = Horizontal()
             .WithSpace(10);
         btnGroup.Layout.childForceExpandWidth = true;
 
@@ -90,6 +91,7 @@ internal class TabAiService : TabEmmersiveBase
             "em_ui_add_service_deepseek".lang(),
             "em_ui_add_service_google".lang(),
             "em_ui_add_service_player2".lang(),
+            "em_ui_add_service_ollama".lang(),
         };
         if (Lang.langCode is "CN" or "ZHTW") {
             serviceOptions.Add("em_ui_add_service_piexian".lang());
@@ -103,9 +105,6 @@ internal class TabAiService : TabEmmersiveBase
 
         btnGroup.Button("em_ui_add".lang(), OnAddClicked)
             .GetOrCreate<Image>().color = Color.green;
-
-        btnGroup.Button("em_ui_api_guide".lang(), OpenApiGuide)
-            .mainText.supportRichText = true;
 
         return;
 
@@ -131,6 +130,9 @@ internal class TabAiService : TabEmmersiveBase
                         Application.OpenURL("https://proxy.pieixan.icu/login");
                         AddService(new PiexianProvider());
                     });
+                    break;
+                case 5:
+                    AddService(new OllamaProvider());
                     break;
             }
         }
@@ -165,7 +167,7 @@ internal class TabAiService : TabEmmersiveBase
             });
         _schedulerMode.GetOrCreate<LayoutElement>().minWidth = 80f;
 
-        btnGroup.Button("em_ui_config_open".lang(), () => OpenFileOrPath.Run(EmMod.Instance.Config.ConfigFilePath));
+        btnGroup.Button("em_ui_config_open".lang(), () => Util.Run(EmMod.Instance.Config.ConfigFilePath));
 
         btnGroup.Button("em_ui_api_guide".lang(), OpenApiGuide)
             .mainText.supportRichText = true;

@@ -1,10 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using Cwl.Helper.Extensions;
-using Cwl.Helper.FileUtil;
-using Cwl.LangMod;
 using Emmersive.Contexts;
 using Emmersive.Helper;
+using Emmersive.LangMod;
 using UnityEngine;
 using UnityEngine.UI;
 using YKF;
@@ -52,7 +50,7 @@ internal class TabSystemPrompt : TabEmmersiveBase
             LayerEmmersivePanel.Instance?.Reopen();
         }).GetComponent<Image>().color = Color.red;
 
-        btnGroup.Button("em_ui_open_folder".lang(), () => OpenFileOrPath.Run(ResourceFetch.CustomFolder));
+        btnGroup.Button("em_ui_open_folder".lang(), () => Util.Run(ResourceFetch.CustomFolder));
 
         _chatKey = new() {
             action = EAction.Chat,

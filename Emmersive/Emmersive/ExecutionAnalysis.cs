@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
-using Cwl.Helper.String;
+using System.Text;
 using Emmersive.Helper;
 
 namespace Emmersive;
@@ -42,7 +42,7 @@ internal class ExecutionAnalysis
 
         var file = $"Activity\\{DateTime.UtcNow:MM_dd_hh_mm_ss}.csv";
 
-        using var sb = StringBuilderPool.Get();
+        var sb = new StringBuilder();
         sb.AppendLine("Activity,Service,Status,Latency,Input,Output");
 
         foreach (var activity in activities) {

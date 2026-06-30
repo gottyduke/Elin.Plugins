@@ -3,25 +3,26 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
-namespace Emmersive.Helper;
+namespace Emmersive.API.Services;
 
 public class ResourceFetch
 {
     private const string DefaultResource = "Emmersive.package.LangMod.";
 
     // holds user custom edits
-    private static readonly Dictionary<string, string> _activeResources = [];
+    private static readonly Dictionary<ResourceKey, string> _activeResources = [];
 
     // holds active data exchanges
     public static readonly GameIOContext Context = GameIOContext.GetPersistentModContext("Emmersive")!;
 
-    public static string CustomFolder { get; private set; } = Path.Combine(Application.persistentDataPath, "Emmersive/Custom");
+    public static ResourceKey CustomFolder { get; private set; } =
+        new(Path.Combine(Application.persistentDataPath, "Emmersive/Custom"));
 
-    public static IEnumerable<ResourceDescriptor> GetAvailableResources(string path)
+    public static IEnumerable<ResourceDescriptor> GetAvailableResources(ResourceKey key)
     {
         using var _ = PackageIterator.AddTempLookup(CustomFolder);
         return PackageIterator
-            .GetFilesEx(path.NormalizePath())
+            .GetFilesEx(key)
             .Select(fm => new ResourceDescriptor(fm.file, fm.package?.title ?? "Custom"))
             .ToArray();
     }
@@ -53,16 +54,14 @@ public class ResourceFetch
 
 #region Active Resource
 
-    public static bool HasActiveResource(string path)
+    public static bool HasActiveResource(ResourceKey key)
     {
-        return _activeResources.ContainsKey(path.NormalizePath());
+        return _activeResources.ContainsKey(key);
     }
 
-    public static string GetActiveResource(string path, bool autoSet = true)
+    public static string GetActiveResource(ResourceKey key, bool autoSet = true)
     {
-        path = path.NormalizePath();
-
-        if (_activeResources.TryGetValue(path, out var resource)) {
+        if (_activeResources.TryGetValue(key, out var resource)) {
             return resource;
         }
 
@@ -70,29 +69,27 @@ public class ResourceFetch
             return "";
         }
 
-        var fs = GetAvailableResources(path);
+        var fs = GetAvailableResources(key);
         var fallbackResource = fs.LastOrDefault();
         resource = fallbackResource is not null
             ? File.ReadAllText(fallbackResource.Provider.FullName)
             : "";
 
-        SetActiveResource(path, resource);
+        SetActiveResource(key, resource);
 
         return resource;
     }
 
-    public static void SetActiveResource(string path, string content)
+    public static void SetActiveResource(ResourceKey key, string content)
     {
-        path = path.NormalizePath();
-        _activeResources[path] = content;
-        EmMod.Log<ResourceFetch>($"set active resource {path}");
+        _activeResources[key] = content;
+        EmMod.Log<ResourceFetch>($"set active resource {key}");
     }
 
-    public static void RemoveActiveResource(string path)
+    public static void RemoveActiveResource(ResourceKey key)
     {
-        path = path.NormalizePath();
-        _activeResources.Remove(path);
-        EmMod.Log<ResourceFetch>($"removed active resource {path}");
+        _activeResources.Remove(key);
+        EmMod.Log<ResourceFetch>($"removed active resource {key}");
     }
 
     public static void ClearActiveResources()
@@ -105,33 +102,33 @@ public class ResourceFetch
 
 #region Custom Resource
 
-    public static void SetCustomFolderPath(string path)
+    public static void SetCustomFolderPath(ResourceKey key)
     {
-        CustomFolder = path;
+        CustomFolder = key;
         Directory.CreateDirectory(CustomFolder);
     }
 
-    public static string? GetCustomResource(string path)
+    public static string? GetCustomResource(ResourceKey key)
     {
-        var file = Path.Combine(CustomFolder, path);
+        var file = CustomFolder + key;
         return !File.Exists(file) ? null : File.ReadAllText(file);
     }
 
-    public static void SetCustomResource(string path, string content)
+    public static void SetCustomResource(ResourceKey key, string content)
     {
-        var file = new FileInfo(Path.Combine(CustomFolder, path));
+        var file = CustomFolder + key;
 
-        Directory.CreateDirectory(Path.GetDirectoryName(file.FullName)!);
-        File.WriteAllText(file.FullName, content);
+        Directory.CreateDirectory(Path.GetDirectoryName(file)!);
+        File.WriteAllText(file, content);
 
-        RemoveActiveResource(path);
+        RemoveActiveResource(key);
 
-        EmMod.Log<ResourceFetch>($"set custom resource {path}");
+        EmMod.Log<ResourceFetch>($"set custom resource {file}");
     }
 
-    public static void RemoveCustomResource(string path)
+    public static void RemoveCustomResource(ResourceKey key)
     {
-        var file = Path.Combine(CustomFolder, path);
+        var file = CustomFolder + key;
 
         try {
             File.Delete(file);
@@ -140,11 +137,11 @@ public class ResourceFetch
         }
     }
 
-    public static void OpenOrCreateCustomResource(string path)
+    public static void OpenOrCreateCustomResource(ResourceKey key)
     {
-        var file = Path.Combine(CustomFolder, path);
+        var file = CustomFolder + key;
         if (!File.Exists(file)) {
-            SetCustomResource(path, GetActiveResource(path));
+            SetCustomResource(key, GetActiveResource(key));
         }
 
         Util.Run(file);
@@ -152,7 +149,7 @@ public class ResourceFetch
 
     public static void OpenCustomFolder(string subFolder = "")
     {
-        Util.Run(Path.Combine(CustomFolder, subFolder));
+        Util.Run(CustomFolder + subFolder);
     }
 
     public static void ClearCustomResources()

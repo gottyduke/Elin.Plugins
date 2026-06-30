@@ -26,10 +26,9 @@
         <None Remove="Emmersive.Test\**"/>
     </ItemGroup>
     <ItemGroup>
-        <Reference Include="CustomWhateverLoader">
-            <HintPath Condition="Exists('$(SteamContentPath)\2135150\3370512305\CustomWhateverLoader.dll')">$(SteamContentPath)\2135150\3370512305\CustomWhateverLoader.dll</HintPath>
-            <HintPath Condition="Exists('$(SteamContentPath)\2135150\3544010094\CustomWhateverLoader.dll')">$(SteamContentPath)\2135150\3544010094\CustomWhateverLoader.dll</HintPath>
-            <HintPath Condition="Exists('$(ElinGamePath)\Package\Mod_CustomWhateverLoader\CustomWhateverLoader.dll')">$(ElinGamePath)\Package\Mod_CustomWhateverLoader\CustomWhateverLoader.dll</HintPath>
+        <Reference Include="ElinModdingKit">
+            <HintPath Condition="Exists('$(ElinGamePath)\Package\_ModdingKit\ElinModdingKit.dll')">$(ElinGamePath)\Package\_ModdingKit\ElinModdingKit.dll</HintPath>
+            <HintPath Condition="Exists('$(ElinGamePath)\Package\Mod_ElinModdingKit\ElinModdingKit.dll')">$(ElinGamePath)\Package\Mod_ElinModdingKit\ElinModdingKit.dll</HintPath>
             <Private>false</Private>
         </Reference>
         <Reference Include="YKFramework">

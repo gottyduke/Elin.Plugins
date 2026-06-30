@@ -4,9 +4,9 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Cwl.Helper.String;
-using Cwl.LangMod;
 using Emmersive.Components;
+using Emmersive.Helper;
+using Emmersive.LangMod;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -109,8 +109,11 @@ public partial class SceneDirector : EClass
         const string pattern = @"^```(?:json)?\s*([\s\S]*?)\s*```$";
         var match = Regex.Match(content, pattern, RegexOptions.IgnoreCase);
 
-        return match.Success
+        content = match.Success
             ? match.Groups[1].Value.Trim()
             : content;
+
+        content = content.Replace("```", "");
+        return content;
     }
 }

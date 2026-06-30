@@ -1,10 +1,8 @@
 using System;
 using System.Linq;
-using Cwl.Helper;
-using Cwl.Helper.Exceptions;
-using Cwl.Helper.Extensions;
 using Emmersive.Contexts;
 using Emmersive.Helper;
+using EModding.Helper.Runtime.Exceptions;
 using YKF;
 
 namespace Emmersive.Components;
@@ -49,8 +47,8 @@ internal class TabCharaPrompt : TabEmmersiveBase
             card = BuildPromptCard(chara.Name, $"Emmersive/Characters/{chara.UnifiedId}.txt");
 
             card.Toggle("em_ui_use_pop",
-                    chara.GetFlagValue("em_pop") > 0,
-                    value => chara.SetFlagValue("em_pop", value ? 1 : 0))
+                    chara.GetBool("em_pop"),
+                    value => chara.SetBool("em_pop", value))
                 .transform
                 .SetSiblingIndex(1);
             card.Spacer(5)

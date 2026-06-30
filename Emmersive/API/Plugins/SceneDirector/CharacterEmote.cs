@@ -1,6 +1,5 @@
 using System.ComponentModel;
 using System.Text.Json.Serialization;
-using Cwl.Helper.Unity;
 using Microsoft.SemanticKernel;
 
 // ReSharper disable InconsistentNaming

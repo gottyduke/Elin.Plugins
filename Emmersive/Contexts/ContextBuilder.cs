@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Cwl.Helper.Exceptions;
-using Cwl.Helper.String;
+using System.Text;
 using Emmersive.API;
 using Emmersive.Helper;
+using EModding.Helper.Runtime.Exceptions;
 using Microsoft.SemanticKernel;
 
 namespace Emmersive.Contexts;
@@ -67,7 +67,7 @@ public sealed class ContextBuilder
 
         var sw = Stopwatch.StartNew();
 
-        using var sb = StringBuilderPool.Get();
+        var sb = new StringBuilder();
 
         foreach (var provider in _providers.Where(provider => provider.IsAvailable)) {
             try {

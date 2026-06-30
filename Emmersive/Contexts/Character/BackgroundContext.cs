@@ -1,8 +1,6 @@
 using System;
-using Cwl.Helper.Exceptions;
-using Cwl.Helper.String;
-using Cwl.Patches.Charas;
 using Emmersive.Helper;
+using EModding.Helper.Runtime.Exceptions;
 
 namespace Emmersive.Contexts;
 
@@ -17,9 +15,17 @@ public class BackgroundContext(Chara chara) : ContextProviderBase
             var background = ResourceFetch.GetActiveResource(resourceKey);
 
             if (background.IsEmptyOrNull) {
-                background = chara.IsPC
-                    ? EClass.player.GetBackgroundText()
-                    : BioOverridePatch.GetNpcBackground("em_ui_non_provided", chara);
+                if (chara.IsPC) {
+                    background = EClass.player.GetBackgroundText();
+                } else if (ModUtil.TryGetContent<CustomBiographyContent>($"Biography/{chara.id}", out var bio)) {
+                    bio.RefreshCharaBio(chara);
+                    background = bio.background;
+                }
+
+                if (background.IsEmptyOrNull) {
+                    background = "em_ui_non_provided";
+                }
+
                 ResourceFetch.SetActiveResource(resourceKey, background);
             }
 

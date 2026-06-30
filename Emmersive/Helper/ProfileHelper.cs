@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using Cwl.API.Attributes;
 using Emmersive.API.Profiles;
 
 namespace Emmersive.Helper;
@@ -8,8 +7,8 @@ public static class ProfileHelper
 {
     private static readonly ConcurrentDictionary<int, CharaProfile> _profiles = [];
 
-    [CwlPostLoad]
-    internal static void ClearProfiles()
+    [ElinPostLoad]
+    internal static void ClearProfiles(GameIOContext context)
     {
         _profiles.Clear();
     }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using Cysharp.Threading.Tasks;
+using Emmersive.Helper;
 using Newtonsoft.Json;
 using UnityEngine.Networking;
 using ChatMessageContent = Microsoft.SemanticKernel.ChatMessageContent;

@@ -4,11 +4,10 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Cwl.Helper.Exceptions;
-using Cwl.Helper.String;
 using Emmersive.API.Exceptions;
 using Emmersive.Components;
 using Emmersive.Helper;
+using EModding.Helper.Runtime.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -30,7 +29,7 @@ public class ExtensionRequestHandler()
     {
         if (ApiPoolSelector.Instance.CurrentProvider is not IExtensionRequestMerger provider) {
             EmMod.Debug<ExtensionRequestHandler>($"requesting {request.RequestUri}");
-            return await base.SendAsync(request, cancellationToken);
+            return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
         }
 
         // merge into params
@@ -64,7 +63,7 @@ public class ExtensionRequestHandler()
 
         EmMod.Debug<ExtensionRequestHandler>($"requesting {request.RequestUri}");
 
-        return await base.SendAsync(request, cancellationToken);
+        return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
         void ThrowIfDryRun()
         {
@@ -72,7 +71,7 @@ public class ExtensionRequestHandler()
                 return;
             }
 
-            using var sb = StringBuilderPool.Get();
+            var sb = new StringBuilder();
 
             sb.AppendLine($"[{request.Method}]: {request.RequestUri}");
             sb.Append("[Content]: ").Append(dict.ToIndentedJson());

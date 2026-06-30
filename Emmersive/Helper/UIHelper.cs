@@ -10,20 +10,29 @@ public static class UIHelper
 {
     private static readonly Dictionary<string, Sprite> _lookup = [];
 
-    public static Sprite FindSprite(string name)
+    public static Sprite? FindSprite(string path, string name)
     {
-        if (_lookup.TryGetValue(name, out var sprite)) {
-            return sprite;
+        if (!_lookup.TryGetValue(name, out var sprite)) {
+            sprite = _lookup[name] = Resources.LoadAll<Sprite>(path)?.FirstOrDefault(s => s.name == name)!;
         }
 
-        sprite = Resources.FindObjectsOfTypeAll<Sprite>()
-            .LastOrDefault(s => s.name == name);
-
-        return _lookup[name] = sprite!;
+        return sprite;
     }
 
     extension<T>(T layout) where T : YKLayout
     {
+        public T FlexWidth()
+        {
+            layout.Spacer(0).LayoutElement().flexibleWidth = 1f;
+            return layout;
+        }
+
+        public T FlexHeight()
+        {
+            layout.Spacer(0).LayoutElement().flexibleHeight = 1f;
+            return layout;
+        }
+
         public UIInputText AddPair(string idLang, string text)
         {
             var pair = layout.Horizontal();
@@ -51,10 +60,34 @@ public static class UIHelper
             card.Layout.padding = new(20, 20, 20, 20);
 
             var cardBg = card.Layout.gameObject.AddComponent<Image>();
-            cardBg.sprite = FindSprite("buttonBig");
+            cardBg.sprite = FindSprite("UI/Window/Base/Asset/_uiset default", "buttonBig");
             cardBg.type = Image.Type.Sliced;
 
             return card;
+        }
+
+        public YKHorizontal MakeEqualWidthGroup()
+        {
+            var group = layout.Horizontal();
+            var le = group.LayoutElement();
+            le.minWidth = 0;
+            le.preferredWidth = 0;
+            le.flexibleWidth = 1;
+            return group;
+        }
+
+        public UIItem AddImageCard(Component parent, Sprite sprite)
+        {
+            var item = Util.Instantiate<UIItem>("UI/Element/Deco/ImageNote", parent);
+            var bg = item.image1;
+            var rt = bg.rectTransform;
+
+            bg.sprite = sprite;
+            if (bg.sprite != null) {
+                bg.SetNativeSize();
+                (rt.parent as RectTransform)?.sizeDelta = rt.sizeDelta;
+            }
+            return item;
         }
 
         public void ShowActivityInfo(string serviceName)

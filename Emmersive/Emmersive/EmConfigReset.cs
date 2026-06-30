@@ -1,7 +1,7 @@
 using System.IO;
-using Cwl.LangMod;
 using Emmersive.Components;
 using Emmersive.Helper;
+using Emmersive.LangMod;
 using ReflexCLI.Attributes;
 
 namespace Emmersive;
@@ -35,12 +35,12 @@ internal partial class EmConfig
     internal static void InvalidateConfigs()
     {
         var context = ResourceFetch.Context;
-        if (context.Load<EmConfigVersion>(out var version, "config_version") &&
+        if (context.Load<EmConfigVersion>("config_version", out var version) &&
             version >= CurrentVersion) {
             return;
         }
 
-        context.SaveUncompressed(CurrentVersion, "config_version");
+        context.SaveUncompressed("config_version", CurrentVersion);
         Reset();
     }
 

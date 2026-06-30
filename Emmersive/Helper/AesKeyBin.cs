@@ -11,7 +11,7 @@ internal static class AesKeyBin
 
     private static byte[] GetAesKeyBin()
     {
-        if (ResourceFetch.Context.Load<byte[]>(out var key, "aes_bin")) {
+        if (ResourceFetch.Context.Load<byte[]>("aes_bin", out var key)) {
             if (key.Length == 32) {
                 return key;
             }
@@ -19,7 +19,7 @@ internal static class AesKeyBin
 
         key = new byte[32];
         RandomNumberGenerator.Fill(key);
-        ResourceFetch.Context.Save(key, "aes_bin");
+        ResourceFetch.Context.Save("aes_bin", key);
 
         return key;
     }

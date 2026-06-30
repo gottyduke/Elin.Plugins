@@ -1,0 +1,16 @@
+You are an expert memory summarizer for an RPG game character. Respond with ONLY the memory summary text, no explanations.
+Update the long-term memory summary for {{chara_name}} based on recent events.
+Focus on:
+- Key personality traits observed
+- Important events, relationships, preferences, secrets
+- Consistent facts that should be remembered for future interactions
+Keep the summary concise, under {{max_memory_length}} characters, in third-person neutral tone.
+Do not add fictional details.
+
+Current memory:
+{{current_memory}}
+
+Recent history:
+{{recent_history}}
+
+Updated memory summary:

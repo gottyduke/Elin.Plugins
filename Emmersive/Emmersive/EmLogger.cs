@@ -2,9 +2,8 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using Cwl.Helper.Exceptions;
-using Cwl.Helper.String;
-using Cwl.Helper.Unity;
+using Emmersive.Helper;
+using EModding.Helper.Runtime.Exceptions;
 using UnityEngine;
 
 namespace Emmersive;
@@ -73,10 +72,10 @@ internal sealed partial class EmMod
                 exp.CreateAndPop(payload.ToString());
                 break;
             default: {
-                using var progress = ProgressIndicator.CreateProgressScoped(() => new(payload.ToTruncateString(150)));
+                using var progress = EGui.CreatePopupScoped(() => new(payload.ToTruncateString(150)));
                 if (log is not null) {
                     LogInternal(log);
-                    progress.Get<ProgressIndicator>()
+                    progress.Object
                         .OnHover(p => GUILayout.Label(log.ToTruncateString(450).TruncateAllLines(150), p.GUIStyle));
                 }
 
@@ -106,11 +105,11 @@ internal sealed partial class EmMod
                 exp.CreateAndPop(payload.ToString());
                 break;
             default: {
-                using var progress = ProgressIndicator
-                    .CreateProgressScoped(() => new(payload.ToTruncateString(150), Color: _warningColor));
+                using var progress = EGui
+                    .CreatePopupScoped(() => new(payload.ToTruncateString(150), Color: _warningColor));
                 if (log is not null) {
                     LogInternal(log);
-                    progress.Get<ProgressIndicator>()
+                    progress.Object
                         .OnHover(p => GUILayout.Label(log.ToTruncateString(450).TruncateAllLines(150), p.GUIStyle));
                 }
 
@@ -128,7 +127,7 @@ internal sealed partial class EmMod
     internal static void Popup<T>(string message, float seconds = 2.5f)
     {
         Log<T>(message);
-        using var progress = ProgressIndicator.CreateProgressScoped(() => new(message), seconds);
+        EGui.CreatePopup(message, seconds);
     }
 
     private static void LogInternal(object log)
