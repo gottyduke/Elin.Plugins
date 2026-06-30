@@ -105,7 +105,7 @@ internal sealed partial class CwlMod
         //DataLoader.RefreshAllPackageTextures(); // can be removed
 
         PrebuildDispatchers();
-        DramaExpansion.BuildActionList();
+        DramaExpansion.BuildActionListWithModdingAPI();
 
         AddResourceRelocators();
 
