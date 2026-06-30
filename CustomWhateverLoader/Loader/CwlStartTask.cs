@@ -12,7 +12,6 @@ using Cwl.Helper.String;
 using Cwl.Helper.Unity;
 using Cwl.LangMod;
 using Cwl.Patches;
-using Cwl.Patches.Charas;
 using Cwl.Patches.Elements;
 using Cwl.Patches.Relocation;
 using Cwl.Patches.Sources;
@@ -123,7 +122,6 @@ internal sealed partial class CwlMod
             DataLoader.MergeCharaTone();
             DataLoader.MergeFactionElements();
             DataLoader.MergeOfferingMultiplier();
-
         }
         //DataLoader.MergeGodTalk();
         //DataLoader.MergeCustomAlias();

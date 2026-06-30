@@ -11,6 +11,10 @@ internal class CwlDebugPanel : EMono
 
     private void Update()
     {
+        if (CwlMod.IsModdingApiAvailable) {
+            return;
+        }
+
         if (!EClass.core.IsGameStarted) {
             Kill();
             return;

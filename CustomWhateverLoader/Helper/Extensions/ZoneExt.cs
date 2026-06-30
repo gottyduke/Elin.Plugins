@@ -124,7 +124,7 @@ public static class ZoneExt
             var (_, zoneId, zoneLv) = zoneFullName.ParseZoneFullName();
             int? icon = EMono.sources.zones.map[zoneId].pos.TryGet(2, true);
 
-            var zoneParent = SpatialGen.Create(zoneId, region, true, eloX, eloY, icon.GetValueOrDefault(306)) as Zone;
+            var zoneParent = SpatialGen.Create(zoneId, region, true, eloX, eloY, icon ?? 306) as Zone;
             var zone = zoneParent?.FindOrCreateLevel(zoneLv);
 
             if (zone is null) {
