@@ -70,6 +70,31 @@ public partial class DramaExpansion
         return log;
     }
 
+    internal static void BuildActionListWithModdingAPI()
+    {
+        var count = 0;
+        var types = TypeQualifier.Declared
+            .OfDerived(typeof(DramaOutcome))
+            .Where(t => t.Assembly != CwlMod.Assembly);
+        foreach (var method in types.SelectMany(AccessTools.GetDeclaredMethods)) {
+            if (!method.IsStatic || method.IsGenericMethod || method.IsSpecialName) {
+                continue;
+            }
+
+            try {
+                var func = method.CreateDelegate<DramaInvokeFunc>();
+                if (func is not null) {
+                    CustomDramaExpansion.AddDramaInvokeMethod(method.Name, func);
+                    count++;
+                }
+            } catch {
+                // noexcept
+            }
+        }
+
+        CwlMod.Log<DramaExpansion>("cwl_log_drama_build".Loc(count));
+    }
+
     [ConsoleCommand("dump_action_list")]
     internal static string DumpActionList()
     {
