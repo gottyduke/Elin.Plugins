@@ -1,4 +1,3 @@
-using Cwl.Helper.Extensions;
 using UnityEngine;
 
 namespace Exm;
@@ -16,12 +15,12 @@ internal class ExmExceptionHandler
             return;
         }
 
-        if (EClass.core.game?.player?.chara is { } pc && pc.GetFlagValue("on_moongate") > 0) {
-            if (pc.GetFlagValue("on_exception") > 0) {
+        if (EClass.core.game?.player?.chara is { } pc && pc.GetBool("on_moongate")) {
+            if (pc.GetBool("on_exception")) {
                 return;
             }
 
-            pc.SetFlagValue("on_exception");
+            pc.SetBool("on_exception", true);
 
             Dialog.YesNo(
                 "exm_ui_moongate_failsafe_desc",
@@ -36,13 +35,13 @@ internal class ExmExceptionHandler
         void ReturnLastZone()
         {
             pc.MoveZone(pc.homeZone);
-            pc.SetFlagValue("on_moongate", 0);
-            pc.SetFlagValue("on_exception", 0);
+            pc.SetBool("on_moongate", false);
+            pc.SetBool("on_exception", false);
         }
 
         void IgnoreException()
         {
-            pc.SetFlagValue("on_moongate", 0);
+            pc.SetBool("on_moongate", false);
         }
     }
 }

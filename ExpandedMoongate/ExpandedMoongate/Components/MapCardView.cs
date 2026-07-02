@@ -1,8 +1,7 @@
 using System;
 using System.Net;
-using Cwl.Helper.Unity;
-using Cwl.LangMod;
 using Exm.Helper;
+using Exm.LangMod;
 using Exm.Model.Map;
 using UnityEngine;
 using UnityEngine.UI;
@@ -45,7 +44,7 @@ public class MapCardView(MapMeta meta)
     {
         // TODO api v2 load preview key
         var bgSize = (int)(_refSize.width * 0.15f);
-        var bgSprite = "exm_no_preview".LoadSprite(resizeHeight: bgSize, resizeWidth: bgSize);
+        var bgSprite = ModUtil.LoadSprite("exm_no_preview", resizeHeight: bgSize, resizeWidth: bgSize);
         _bg = group.AddImageCard(parent, bgSprite)
             .WithMinWidth(bgSize)
             .WithMinHeight(bgSize)

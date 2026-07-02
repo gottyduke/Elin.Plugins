@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cwl.Helper.String;
-using Cwl.Helper.Unity;
-using Cwl.LangMod;
 using Cysharp.Threading.Tasks;
 using Exm.API;
 using Exm.Helper;
+using Exm.LangMod;
 using Exm.Model.Map;
 using UnityEngine;
 using UnityEngine.UI;
@@ -218,7 +216,7 @@ internal class TabMapBrowser : TabExMoongateBase
         var search = searchGroup.InputText(Search)
             .WithWidth((int)(_refSize.width * 0.5f));
 
-        if (Search.IsEmptyOrNull) {
+        if (string.IsNullOrEmpty(Search)) {
             Search = "exm_ui_search_hint".lang();
         }
 
@@ -235,7 +233,7 @@ internal class TabMapBrowser : TabExMoongateBase
 
         void RunSearch()
         {
-            if (!Search.IsEmptyOrNull) {
+            if (!string.IsNullOrEmpty(Search)) {
                 SearchMode = true;
                 DirtyData = true;
             }

@@ -1,6 +1,5 @@
 using System;
 using System.Text;
-using Cwl.Helper.String;
 using Cysharp.Threading.Tasks;
 using Exm.Helper;
 using Exm.Model.Map;
@@ -105,7 +104,7 @@ public class ElinNetMapService(string endpoint = ElinNetMapService.DefaultElinMo
             return null;
         }
 
-        ExmMod.Log($"finished downloading map '{mapId}' with {StringHelper.ToAllocateString(req.downloadHandler.data.Length)}");
+        ExmMod.Log($"finished downloading map '{mapId}' with {req.downloadHandler.data.Length.ToAllocateString()}");
         return req.downloadHandler.data;
     }
 

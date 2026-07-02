@@ -1,5 +1,5 @@
 using System;
-using Cwl.Helper.String;
+using System.Text;
 using Cysharp.Threading.Tasks;
 using Steamworks;
 using UnityEngine.Networking;
@@ -35,20 +35,20 @@ public static class UnityWebRequester
         public UnityWebRequest SetParams(object query)
         {
             var ub = new UriBuilder(req.uri);
-            using var sb = StringBuilderPool.Get();
+            var sb = new StringBuilder();
 
             var first = true;
             foreach (var (k, v) in query.Tokenize()) {
-                if (v.IsEmptyOrNull) {
+                if (string.IsNullOrEmpty(v)) {
                     continue;
                 }
 
                 if (!first) {
-                    sb.Append("&");
+                    sb.Append('&');
                 }
 
                 sb.Append(Uri.EscapeDataString(k));
-                sb.Append("=");
+                sb.Append('=');
                 sb.Append(Uri.EscapeDataString(v));
 
                 first = false;

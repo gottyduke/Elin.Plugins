@@ -1,11 +1,9 @@
 using System;
 using System.IO;
 using System.Net;
-using Cwl.Helper.Extensions;
-using Cwl.Helper.String;
-using Cwl.Helper.Unity;
-using Cwl.LangMod;
 using Cysharp.Threading.Tasks;
+using Exm.Helper;
+using Exm.LangMod;
 using Exm.Model.Map;
 using Newtonsoft.Json;
 using Steamworks;
@@ -88,7 +86,7 @@ public class MapController(IMapService service) : EClass
             meta = meta,
         });
 
-        pc.SetFlagValue("on_moongate");
+        pc.SetBool("on_moongate", true);
         pc.MoveZone(userMap, ZoneTransition.EnterState.Moongate);
     }
 
@@ -103,7 +101,7 @@ public class MapController(IMapService service) : EClass
                 return;
             }
 
-            pc.SetFlagValue("on_moongate", 0);
+            pc.SetBool("on_moongate", false);
 
             CoroutineHelper.Deferred(() =>
                 Dialog.YesNo(

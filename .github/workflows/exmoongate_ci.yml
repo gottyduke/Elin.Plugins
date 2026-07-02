@@ -22,5 +22,5 @@ jobs:
       tag_prefix: EXM
       release_name_prefix: "Expanded Moongate"
       artifact_name_prefix: exmoongate
-      include_cwl: true
+      include_cwl: false
       prerelease: false
