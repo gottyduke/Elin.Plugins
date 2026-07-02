@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Emmersive.API.Services;
@@ -10,11 +12,37 @@ public static class EmAi
 {
     public static bool IsAvailable => ApiPoolSelector.Instance.HasAnyAvailableServices();
 
-    public static async UniTask<string> SendAsync(string systemPrompt, string userMessage, CancellationToken ct = default)
+    public static IReadOnlyList<string> GetModels()
+    {
+        return ApiPoolSelector.Instance.Providers
+            .Select(p => p.Id)
+            .ToList();
+    }
+
+    public static async UniTask<RequestReport> SendWithReportAsync(
+        string systemPrompt,
+        string userMessage,
+        string? providerId = null,
+        CancellationToken ct = default)
     {
         var apiPool = ApiPoolSelector.Instance;
-        if (!apiPool.TryGetNextAvailable(out var provider)) {
-            throw new InvalidOperationException("No available AI service");
+        IChatProvider? provider;
+
+        if (providerId is not null) {
+            provider = apiPool.Providers.FirstOrDefault(p => p.Id == providerId);
+            if (provider is null) {
+                return RequestReport.Fail($"Provider '{providerId}' not found.");
+            }
+
+            provider.UpdateAvailability();
+            if (!provider.IsAvailable) {
+                return RequestReport.Fail($"Provider '{providerId}' is currently unavailable.", providerId);
+            }
+        } else if (!apiPool.TryGetNextAvailable(out provider)) {
+            return RequestReport.Fail(
+                apiPool.Providers.Count == 0
+                    ? "No AI providers registered. Add a service in the Emmersive panel."
+                    : "All registered providers are currently unavailable (cooldown or misconfigured).");
         }
 
         var kernel = EmKernel.Kernel ?? EmKernel.RebuildKernel();
@@ -30,17 +58,20 @@ public static class EmAi
 
             if (string.IsNullOrEmpty(response.Content)) {
                 activity.SetStatus(EmActivity.StatusType.Failed);
-                return string.Empty;
+                provider.MarkUnavailable("Empty response from provider");
+                return RequestReport.Fail("Provider returned an empty response.", provider.Id);
             }
 
             activity.SetStatus(EmActivity.StatusType.Completed);
-            return response.Content!;
+            return RequestReport.Ok(response.Content, provider.Id, activity);
         } catch (OperationCanceledException) {
             activity.SetStatus(EmActivity.StatusType.Timeout);
-            throw;
-        } catch {
+            provider.MarkUnavailable("Request timed out");
+            return RequestReport.Fail("Request timed out.", provider.Id);
+        } catch (Exception ex) {
             activity.SetStatus(EmActivity.StatusType.Failed);
-            throw;
+            provider.MarkUnavailable(ex.Message);
+            return RequestReport.Fail($"Request failed: {ex.Message}", provider.Id);
         }
     }
 }
