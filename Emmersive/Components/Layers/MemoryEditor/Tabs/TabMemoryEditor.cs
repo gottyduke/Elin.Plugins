@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using Emmersive.Contexts.Memory;
 using Emmersive.Helper;
 using Emmersive.LangMod;
@@ -16,20 +17,18 @@ internal class TabMemoryEditor : YKLayout<LayerMemoryCreationData>
             return;
         }
 
-        var editor = Vertical();
-
-        var header = editor.Horizontal();
+        var header = Horizontal();
         header.HeaderCard(store.Name);
 
-        BuildStmSection(editor, store);
-        BuildLtmSection(editor, store);
+        BuildStmSection(store);
+        BuildLtmSection(store);
 
-        var actions = editor.Horizontal();
+        var actions = Horizontal();
         actions.Layout.childForceExpandWidth = true;
 
         actions.Button("em_ui_summarize_now".lang(), () => {
-            LayerProgress.StartAsync("summarizing", MemoryManager.Instance.TriggerSummarizeAsync(store))
-                .onComplete = () => LayerMemoryEditor.Instance?.Reopen();
+            EmMod.Popup<MemoryManager>("em_ui_summarizing".lang());
+            Summarize().ForgetEx();
         }).GetOrCreate<Image>().color = Color.green;
 
         actions.Button("em_ui_clear_memory".lang(), () => {
@@ -39,11 +38,25 @@ internal class TabMemoryEditor : YKLayout<LayerMemoryCreationData>
                 LayerMemoryEditor.Instance?.Reopen();
             }
         }).GetOrCreate<Image>().color = Color.red;
+
+        return;
+
+        async UniTask Summarize()
+        {
+            var success = await MemoryManager.Instance.TriggerSummarizeAsync(store);
+            await UniTask.Yield();
+            if (success) {
+                EmMod.Popup<MemoryManager>("em_ui_summarize_done".lang());
+                LayerMemoryEditor.Instance?.Reopen();
+            } else {
+                EmMod.Popup<MemoryManager>("failed to summarize");
+            }
+        }
     }
 
-    private static void BuildStmSection(YKLayout parent, CharaMemoryStore store)
+    private void BuildStmSection(CharaMemoryStore store)
     {
-        var card = parent.MakeCard();
+        var card = this.MakeCard();
         var header = card.Text("em_ui_stm_header");
 
         var stm = store.GetRecentStm();
@@ -72,13 +85,13 @@ internal class TabMemoryEditor : YKLayout<LayerMemoryCreationData>
 
         void RefreshHeader()
         {
-            header.SetText("em_ui_stm_header".Loc(store.ShortTerm.Count / EmConfig.Memory.MaxStmEntries.Value));
+            header.SetText("em_ui_stm_header".Loc($"{store.ShortTerm.Count} / {EmConfig.Memory.MaxStmEntries.Value}"));
         }
     }
 
-    private void BuildLtmSection(YKLayout parent, CharaMemoryStore store)
+    private void BuildLtmSection(CharaMemoryStore store)
     {
-        var card = parent.MakeCard();
+        var card = this.MakeCard();
         var header = card.Horizontal();
         header.Layout.childForceExpandWidth = true;
         header.Text("em_ui_ltm_header".Loc(store.LongTerm.Count));

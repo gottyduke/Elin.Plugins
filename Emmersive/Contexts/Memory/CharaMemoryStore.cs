@@ -11,10 +11,10 @@ public sealed class CharaMemoryStore
     public int Uid { get; init; }
 
     [JsonProperty("id")]
-    public string UnifiedId { get; set; } = string.Empty;
+    public string UnifiedId { get; set; } = "";
 
     [JsonProperty("n")]
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; set; } = "";
 
     [JsonProperty("stm")]
     public List<MemoryEntry> ShortTerm { get; set; } = [];

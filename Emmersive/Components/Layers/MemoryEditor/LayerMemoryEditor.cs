@@ -1,3 +1,5 @@
+using System.Collections;
+using UnityEngine;
 using YKF;
 
 namespace Emmersive.Components;
@@ -15,6 +17,15 @@ internal class LayerMemoryEditor : LayerEmmersiveBase<LayerMemoryCreationData>
         Instance = this;
 
         CreateTab<TabMemoryEditor>("em_ui_tab_memory", "em_tab_memory");
+
+        StartCoroutine(AdjustRect());
+    }
+
+    private IEnumerator AdjustRect()
+    {
+        yield return null;
+
+        transform.position -= new Vector3(25f, 25f);
     }
 
     public void Reopen()

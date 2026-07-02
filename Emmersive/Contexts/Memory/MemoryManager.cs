@@ -49,7 +49,7 @@ public sealed class MemoryManager
         store.AddStm(speaker, content, chara.turn);
 
         if (store.ShouldSummarize) {
-            TriggerSummarizeAsync(store).ForgetEx();
+            TriggerSummarizeAsync(store, CancellationToken.None).ForgetEx();
         }
     }
 
@@ -69,7 +69,7 @@ public sealed class MemoryManager
         Stores.TryRemove(chara.uid, out _);
     }
 
-    public async UniTask<bool> TriggerSummarizeAsync(CharaMemoryStore store)
+    public async UniTask<bool> TriggerSummarizeAsync(CharaMemoryStore store, CancellationToken ct = default)
     {
         if (Interlocked.CompareExchange(ref _summarizeInProgress, 1, 0) != 0) {
             return false;
@@ -96,12 +96,29 @@ public sealed class MemoryManager
 
             var user = $"NPC: {store.Name}\n\nRecent conversations:\n{recentTalks}\n\nExtract key facts:";
 
-            var response = await EmAi.SendAsync(system, user);
-            if (response.IsEmptyOrNull) {
+            var requestTask = EmAi.SendWithReportAsync(system, user, null, ct)
+                .Preserve();
+
+            var timeout = EmConfig.Policy.Timeout.Value;
+            var (hasResultLeft, report) = await UniTask.WhenAny(
+                requestTask,
+                UniTask.Delay(TimeSpan.FromSeconds(timeout), cancellationToken: ct));
+
+            if (!hasResultLeft || report is null) {
+                EmMod.Warn<MemoryManager>($"summarization timed out after {timeout}s for {store.Name}");
                 return false;
             }
 
-            var facts = ParseFacts(response);
+            if (!report.Success) {
+                EmMod.Warn<MemoryManager>($"summarization failed for {store.Name}: {report.ErrorReason}");
+                return false;
+            }
+
+            if (report.Content.IsEmptyOrNull) {
+                return false;
+            }
+
+            var facts = ParseFacts(report.Content);
             if (facts?.Count is > 0) {
                 store.LongTerm.AddRange(facts);
                 store.LongTerm.RemoveAll(f => f.Fact.IsEmptyOrNull);
@@ -110,12 +127,12 @@ public sealed class MemoryManager
                 var keepCount = Math.Min(3, store.ShortTerm.Count);
                 store.ShortTerm.RemoveRange(0, store.ShortTerm.Count - keepCount);
 
-                EmMod.Log<MemoryManager>($"summarized {facts.Count} facts for {store.Name}");
+                EmMod.Log<MemoryManager>($"summarized {facts.Count} facts for {store.Name} " +
+                                         $"({report.LatencyMs:F0}ms, {report.TokensInput}+{report.TokensOutput} tokens)");
             }
         } catch (Exception ex) {
             EmMod.Warn<MemoryManager>($"summarization failed for {store.Name}: {ex.Message}");
             return false;
-            // noexcept
         } finally {
             Interlocked.Exchange(ref _summarizeInProgress, 0);
         }
