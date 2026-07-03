@@ -15,6 +15,8 @@ internal class TabCharaMemory : TabCharaPrompt
 
         header.Header("em_ui_npc_memory");
 
+        BuildPromptCard("em_ui_memory_prompt", "Emmersive/MemoryPrompt.txt");
+
         BuildCharaMemoryList();
     }
 

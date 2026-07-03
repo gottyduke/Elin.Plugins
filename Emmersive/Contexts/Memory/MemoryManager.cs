@@ -86,17 +86,15 @@ public sealed class MemoryManager
             }
 
             var recentTalks = string.Join("\n", stmCopy.Select(e => e.ToString()));
-            var system = "You are a memory summarizer for an NPC in a fantasy game. " +
-                         "Given recent conversation history with this NPC, extract 1-3 key facts " +
-                         "about the relationship, events, character traits, or significant revelations. " +
-                         "De-duplicate repetitive talks before summarization. " +
-                         "Output ONLY a JSON array: [{\"fact\":\"...\",\"importance\":1-5}]. " +
-                         "Importance: 1=trivial, 3=notable, 5=crucial character-defining. " +
-                         "Focus on persistent knowledge, not transient chitchat.";
 
-            var user = $"NPC: {store.Name}\n\nRecent conversations:\n{recentTalks}\n\nExtract key facts:";
+            var prompt = new SystemContext("Emmersive/MemoryPrompt.txt").Build();
+            var background = new BackgroundContext(chara).Build();
+            var user = $"NPC: {store.Name}\n" +
+                       $"Background: {background}\n" +
+                       $"Recent conversations: {recentTalks}\n" +
+                       "Extract key facts:";
 
-            var requestTask = EmAi.SendWithReportAsync(system, user, null, ct)
+            var requestTask = EmAi.SendWithReportAsync(prompt.ToString(), user, null, ct)
                 .Preserve();
 
             var timeout = EmConfig.Policy.Timeout.Value;

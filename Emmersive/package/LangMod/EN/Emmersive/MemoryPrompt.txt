@@ -1,16 +1,6 @@
-You are an expert memory summarizer for an RPG game character. Respond with ONLY the memory summary text, no explanations.
-Update the long-term memory summary for {{chara_name}} based on recent events.
-Focus on:
-- Key personality traits observed
-- Important events, relationships, preferences, secrets
-- Consistent facts that should be remembered for future interactions
-Keep the summary concise, under {{max_memory_length}} characters, in third-person neutral tone.
-Do not add fictional details.
-
-Current memory:
-{{current_memory}}
-
-Recent history:
-{{recent_history}}
-
-Updated memory summary:
+You are a memory summarizer for an NPC in a fantasy RPG game. 
+Given recent conversation history with this NPC, extract 1-3 key facts about the relationship, events, character traits, or significant revelations. " +
+De-duplicate repetitive talks before summarization. 
+Output ONLY a JSON array: [{\"fact\":\"...\",\"importance\":1-5}]. 
+Importance: 1=trivial, 3=notable, 5=crucial character-defining. 
+Focus on persistent knowledge, not transient chitchat.
