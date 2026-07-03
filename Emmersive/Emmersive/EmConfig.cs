@@ -194,6 +194,19 @@ internal partial class EmConfig
                 "单次请求中每个角色注入的最大长期记忆条数(按重要度排序)",
                 new AcceptableValueRange<int>(1, 30)));
 
+        Memory.MaxLtmEntries = config.Bind(
+            "Memory",
+            "MaxLtmEntries",
+            20,
+            new ConfigDescription(
+                "Maximum long-term memory facts stored per character. " +
+                "When exceeded, low-score facts (importance × recall) are evicted. " +
+                "Facts with importance >= 4 are pinned and never evicted.\n" +
+                "每个角色储存的最大长期记忆条目数。" +
+                "超出时按综合评分(重要性×回忆次数×时间衰减)淘汰低分条目。" +
+                "重要性>=4的条目不会被淘汰。",
+                new AcceptableValueRange<int>(5, 50)));
+
         Memory.SummarizeThresholdPercentage = config.Bind(
             "Memory",
             "SummarizeThresholdPercentage",
@@ -336,6 +349,7 @@ internal partial class EmConfig
         internal static ConfigEntry<int> MaxStmEntriesAfterSummarization { get; set; } = null!;
         internal static ConfigEntry<int> MaxStmInContext { get; set; } = null!;
         internal static ConfigEntry<int> MaxLtmInContext { get; set; } = null!;
+        internal static ConfigEntry<int> MaxLtmEntries { get; set; } = null!;
         internal static ConfigEntry<float> SummarizeThresholdPercentage { get; set; } = null!;
         internal static ConfigEntry<int> SummarizeThresholdSeconds { get; set; } = null!;
     }

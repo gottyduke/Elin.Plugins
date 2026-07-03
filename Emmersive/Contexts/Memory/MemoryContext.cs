@@ -30,15 +30,16 @@ public sealed class MemoryContext(HashSet<string>? excludedEntries) : ContextPro
             var store = MemoryManager.Instance.Get(chara.uid);
             var memory = new Dictionary<string, object>();
 
+            var rawTalks = new List<(string Speaker, string Content)>();
+
             // stm from memory store
-            var stmMemory = new List<string>();
             if (store is { ShortTerm.Count: > 0 }) {
                 var stm = store.GetRecentStm();
                 foreach (var entry in stm) {
                     if (_excludedEntries.Contains(entry.Content)) {
                         continue;
                     }
-                    stmMemory.Add(entry.ToString());
+                    rawTalks.Add((entry.Speaker, entry.Content));
                 }
             }
 
@@ -47,17 +48,25 @@ public sealed class MemoryContext(HashSet<string>? excludedEntries) : ContextPro
                 .Select(e => e.Content)
                 .ToHashSet(StringComparer.Ordinal) ?? [];
 
-            if (logs.TryGetValue(chara.NameSimple, out var talks)) {
-                foreach (var talk in talks) {
+            if (rawTalks.Count < EmConfig.Memory.MaxStmInContext.Value &&
+                logs.TryGetValue(chara.NameSimple, out var logTalks)) {
+                foreach (var talk in logTalks) {
                     if (_excludedEntries.Contains(talk.Content) || stmLogged.Contains(talk.Content)) {
                         continue;
                     }
-                    stmMemory.Add($"[{talk.Speaker}]: {talk.Content}");
+                    rawTalks.Add((talk.Speaker, talk.Content));
+                    if (rawTalks.Count >= EmConfig.Memory.MaxStmInContext.Value) {
+                        break;
+                    }
                 }
             }
 
-            if (stmMemory.Count > 0) {
-                memory["recent_talks"] = stmMemory;
+            // dedup
+            var deduped = DeduplicateTalkList(rawTalks);
+            if (deduped.Count > 0) {
+                memory["recent_talks"] = deduped
+                    .Select(t => $"[{t.Speaker}]: {t.Content}")
+                    .ToList();
             }
 
             // ltm facts
@@ -75,6 +84,42 @@ public sealed class MemoryContext(HashSet<string>? excludedEntries) : ContextPro
         }
 
         return hasAny ? result : null;
+    }
+
+    private static List<(string Speaker, string Content)> DeduplicateTalkList(
+        List<(string Speaker, string Content)> talks)
+    {
+        if (talks.Count <= 1) {
+            return talks;
+        }
+
+        var result = new List<(string Speaker, string Content)>(talks.Count);
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+
+        // recent
+        for (var i = talks.Count - 1; i >= 0; i--) {
+            var talk = talks[i];
+
+            if (!seen.Add(talk.Content)) {
+                continue;
+            }
+
+            if (result.Count > 0) {
+                var prev = result[^1];
+                if (prev.Speaker == talk.Speaker &&
+                    MemoryManager.IsContentSimilar(prev.Content, talk.Content)) {
+                    if (talk.Content.Length >= prev.Content.Length) {
+                        result[^1] = talk;
+                    }
+                    continue;
+                }
+            }
+
+            result.Add(talk);
+        }
+
+        result.Reverse();
+        return result;
     }
 
     private static Dictionary<string, List<(string Speaker, string Content)>> ReadGameLogTalks()
@@ -124,8 +169,16 @@ public sealed class MemoryContext(HashSet<string>? excludedEntries) : ContextPro
             scanned++;
         }
 
+        // dedup adjacent
         foreach (var (_, talks) in result) {
             talks.Reverse();
+            for (var i = 0; i < talks.Count - 1;) {
+                if (MemoryManager.IsContentSimilar(talks[i].Content, talks[i + 1].Content)) {
+                    talks.RemoveAt(i);
+                } else {
+                    i++;
+                }
+            }
         }
 
         return result;

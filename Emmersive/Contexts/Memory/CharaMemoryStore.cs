@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Emmersive.Helper;
 using Newtonsoft.Json;
 
@@ -33,6 +34,14 @@ public sealed class CharaMemoryStore
 
     public void AddStm(string speaker, string content, int turn)
     {
+        // skip same speaker
+        if (ShortTerm.Count > 0) {
+            var last = ShortTerm[^1];
+            if (last.Speaker == speaker && last.Content == content) {
+                return;
+            }
+        }
+
         ShortTerm.Add(new() {
             Speaker = speaker,
             Content = content,
@@ -82,5 +91,55 @@ public sealed class CharaMemoryStore
         }
 
         return result;
+    }
+
+    public void EvictLtm()
+    {
+        var maxEntries = EmConfig.Memory.MaxLtmEntries.Value;
+        if (LongTerm.Count <= maxEntries) {
+            return;
+        }
+
+        var now = DateTime.UtcNow;
+
+        var scored = LongTerm
+            .Select(f => (Fact: f, Score: ScoreFact(f, now)))
+            .OrderBy(x => x.Score)
+            .ToList();
+
+        var toRemove = new HashSet<MemoryFact>();
+        var needToRemove = LongTerm.Count - maxEntries;
+
+        foreach (var (fact, _) in scored) {
+            if (needToRemove <= 0) {
+                break;
+            }
+
+            // pin importance >= 4
+            if (fact.Importance >= 4) {
+                continue;
+            }
+
+            toRemove.Add(fact);
+            needToRemove--;
+        }
+
+        if (toRemove.Count > 0) {
+            LongTerm.RemoveAll(toRemove.Contains);
+        }
+    }
+
+    private static float ScoreFact(MemoryFact f, DateTime now)
+    {
+        var score = f.Importance * (1f + Math.Min(f.RecallCount, 5));
+        var access = f.LastRecalled ?? f.Created;
+        var recency = (float)(now - access).TotalHours switch {
+            < 1 => 1.5f,
+            < 24 => 1.0f,
+            < 168 => 0.7f,
+            _ => 0.3f,
+        };
+
+        return score * recency;
     }
 }

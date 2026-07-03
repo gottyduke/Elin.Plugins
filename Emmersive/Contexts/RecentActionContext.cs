@@ -71,7 +71,7 @@ public class RecentActionContext : ContextProviderBase
     private static bool IsTalkEntry(string text)
     {
         return text.Contains(": ") &&
-               (text.StartsWith('"') || char.IsUpper(text[0]));
+               (text.StartsWith('"') || char.IsLetter(text[0]));
     }
 
     [ElinPostLoad]

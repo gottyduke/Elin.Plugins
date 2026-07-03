@@ -89,6 +89,8 @@ public sealed class MemoryManager
                 return false;
             }
 
+            stmCopy = DeduplicateStm(stmCopy);
+
             var chara = EClass.game.cards.Find(store.Uid);
             if (chara is null) {
                 return false;
@@ -127,14 +129,27 @@ public sealed class MemoryManager
 
             var facts = ParseFacts(report.Content);
             if (facts.Count > 0) {
-                store.LongTerm.AddRange(facts);
+                // dedup stm -> ltm
+                var existingFacts = store.LongTerm
+                    .Select(f => f.Fact)
+                    .ToHashSet(StringComparer.Ordinal);
+
+                var newFacts = facts
+                    .Where(f => !existingFacts.Contains(f.Fact))
+                    .ToList();
+
+                if (newFacts.Count > 0) {
+                    store.LongTerm.AddRange(newFacts);
+                }
+
                 store.LongTerm.RemoveAll(f => f.Fact.IsEmptyOrNull);
+                store.EvictLtm();
                 store.LastSummarized = DateTime.UtcNow;
 
                 var keepCount = Math.Min(EmConfig.Memory.MaxStmEntriesAfterSummarization.Value, store.ShortTerm.Count);
                 store.ShortTerm.RemoveRange(0, store.ShortTerm.Count - keepCount);
 
-                EmMod.Log<MemoryManager>($"summarized {facts.Count} facts for {store.Name} " +
+                EmMod.Log<MemoryManager>($"summarized {newFacts.Count} facts for {store.Name} " +
                                          $"({report.LatencyMs:F0}ms, {report.TokensInput}+{report.TokensOutput} tokens)");
             }
         } catch (Exception ex) {
@@ -159,5 +174,80 @@ public sealed class MemoryManager
             })
             .Where(f => !f.Fact.IsEmptyOrNull)
             .ToList() ?? [];
+    }
+
+    private static List<MemoryEntry> DeduplicateStm(List<MemoryEntry> entries)
+    {
+        if (entries.Count <= 1) {
+            return entries;
+        }
+
+        var result = new List<MemoryEntry>(entries.Count);
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+
+        for (var i = entries.Count - 1; i >= 0; i--) {
+            var entry = entries[i];
+
+            if (!seen.Add(entry.Content)) {
+                continue;
+            }
+
+            // dedup adjacent
+            if (result.Count > 0) {
+                var prev = result[^1];
+                if (prev.Speaker == entry.Speaker && IsContentSimilar(prev.Content, entry.Content)) {
+                    if (entry.Content.Length >= prev.Content.Length) {
+                        result[^1] = entry;
+                    }
+                    continue;
+                }
+            }
+
+            result.Add(entry);
+        }
+
+        result.Reverse();
+        return result;
+    }
+
+    internal static bool IsContentSimilar(string a, string b)
+    {
+        if (a == b) {
+            return true;
+        }
+
+        if (a.Contains(b, StringComparison.Ordinal) || b.Contains(a, StringComparison.Ordinal)) {
+            return true;
+        }
+
+        if (a.Length < 3 || b.Length < 3) {
+            return false;
+        }
+
+        var bigramsA = GetBigrams(a);
+        var bigramsB = GetBigrams(b);
+
+        if (bigramsA.Count == 0 || bigramsB.Count == 0) {
+            return false;
+        }
+
+        var intersection = 0;
+        foreach (var bg in bigramsA) {
+            if (bigramsB.Contains(bg)) {
+                intersection++;
+            }
+        }
+
+        var union = bigramsA.Count + bigramsB.Count - intersection;
+        return union > 0 && (float)intersection / union > 0.5f;
+
+        HashSet<string> GetBigrams(string s)
+        {
+            var result = new HashSet<string>();
+            for (var i = 0; i < s.Length - 1; i++) {
+                result.Add(s[i..(i + 2)]);
+            }
+            return result;
+        }
     }
 }

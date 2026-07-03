@@ -35,7 +35,10 @@ internal class TabMemoryEditor : YKLayout<LayerMemoryCreationData>
         actions.Button("em_ui_clear_memory".lang(), () => {
             if (SceneDirector.FindSameMapChara(store.Uid, out var chara)) {
                 MemoryManager.Instance.ClearMemory(chara);
-                LayerMemoryEditor.Instance?.Reopen();
+                if (LayerMemoryEditor.Instance != null) {
+                    EClass.ui.RemoveLayer(LayerMemoryEditor.Instance);
+                }
+                LayerEmmersivePanel.Instance?.Reopen();
             }
         }).GetOrCreate<Image>().color = Color.red;
 
