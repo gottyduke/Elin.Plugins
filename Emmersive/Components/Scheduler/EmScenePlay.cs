@@ -38,11 +38,18 @@ public partial class EmScheduler
     public static void RequestScenePlayWithTrigger(Chara? focus = null)
     {
         focus ??= EClass.pc;
+
+        // exclude trigger from memory
+        var triggers = _buffer
+            .Select(t => t.Trigger)
+            .Where(t => !t.IsEmptyOrNull)
+            .ToHashSet();
+
         var builder = ContextBuilder
             .CreateStandardPrefix()
             .Add(new NearbyCharaContext(focus))
             .Add(new NearbyThingContext(focus))
-            .Add(new MemoryContext())
+            .Add(new MemoryContext(triggers))
             // put volatile context at the end to hit as much cache as possible
             .Add(ContextBuilder.RecentActionContext)
             .Add(new SceneTriggerContext(_buffer.ToArray()));

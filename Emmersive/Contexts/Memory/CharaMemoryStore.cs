@@ -48,7 +48,7 @@ public sealed class CharaMemoryStore
     public List<MemoryEntry> GetRecentStm(int count = 0)
     {
         if (count <= 0) {
-            count = EmConfig.Memory.MaxStmEntries.Value;
+            count = EmConfig.Memory.MaxStmInContext.Value;
         }
 
         var result = new List<MemoryEntry>(count);
