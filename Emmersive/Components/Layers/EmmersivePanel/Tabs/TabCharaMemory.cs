@@ -1,4 +1,5 @@
 using System.Linq;
+using Emmersive.API.Plugins;
 using Emmersive.Contexts.Memory;
 using Emmersive.Helper;
 using UnityEngine.UI;
@@ -36,6 +37,12 @@ internal class TabCharaMemory : TabCharaPrompt
             .ToList();
 
         foreach (var memory in memories) {
+            if (!SceneDirector.FindSameMapChara(memory.Uid, out var chara)) {
+                continue;
+            }
+            if (!chara.Profile.IsImportant && !chara.IsPC) {
+                continue;
+            }
             list.Button($"{memory.Name} ({memory.ShortTerm.Count}+{memory.LongTerm.Count})", () => {
                 YK.CreateLayer<LayerMemoryEditor, LayerMemoryCreationData>(new(memory));
             });

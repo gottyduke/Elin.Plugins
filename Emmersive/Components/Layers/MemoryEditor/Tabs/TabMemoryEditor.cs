@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using Emmersive.API.Plugins;
 using Emmersive.Contexts.Memory;
 using Emmersive.Helper;
 using Emmersive.LangMod;
@@ -32,8 +33,7 @@ internal class TabMemoryEditor : YKLayout<LayerMemoryCreationData>
         }).GetOrCreate<Image>().color = Color.green;
 
         actions.Button("em_ui_clear_memory".lang(), () => {
-            var chara = FindChara(store.Uid);
-            if (chara != null) {
+            if (SceneDirector.FindSameMapChara(store.Uid, out var chara)) {
                 MemoryManager.Instance.ClearMemory(chara);
                 LayerMemoryEditor.Instance?.Reopen();
             }
@@ -144,14 +144,5 @@ internal class TabMemoryEditor : YKLayout<LayerMemoryCreationData>
                 LayerMemoryEditor.Instance?.Reopen();
             }).GetOrCreate<Image>().color = Color.red;
         }
-    }
-
-    private static Chara? FindChara(int uid)
-    {
-        if (EClass.pc.uid == uid) {
-            return EClass.pc;
-        }
-
-        return EClass._map.charas.Find(c => c.uid == uid) ?? EClass.game.cards.Find(uid);
     }
 }

@@ -165,7 +165,16 @@ internal partial class EmConfig
             new ConfigDescription(
                 "Maximum short-term memory entries per character (FIFO)\n" +
                 "每个角色的最大短期记忆条目数",
-                new AcceptableValueRange<int>(4, 30)));
+                new AcceptableValueRange<int>(4, 60)));
+
+        Memory.MaxStmEntriesAfterSummarization = config.Bind(
+            "Memory",
+            "MaxStmEntriesAfterSummarization",
+            4,
+            new ConfigDescription(
+                "Maximum short-term memory entries kept after summarization\n" +
+                "每个角色在总结后保留的最大短期记忆条目数",
+                new AcceptableValueRange<int>(2, 30)));
 
         Memory.MaxStmInContext = config.Bind(
             "Memory",
@@ -174,16 +183,16 @@ internal partial class EmConfig
             new ConfigDescription(
                 "Maximum STM entries to inject per character in a scene request\n" +
                 "单次请求中每个角色注入的最大短期记忆条数",
-                new AcceptableValueRange<int>(1, 12)));
+                new AcceptableValueRange<int>(1, 30)));
 
         Memory.MaxLtmInContext = config.Bind(
             "Memory",
             "MaxLtmInContext",
             5,
             new ConfigDescription(
-                "Maximum LTM entries to inject per character in a scene request\n" +
-                "单次请求中每个角色注入的最大长期记忆条数",
-                new AcceptableValueRange<int>(1, 12)));
+                "Maximum LTM entries to inject per character in a scene request(sorted by importance)\n" +
+                "单次请求中每个角色注入的最大长期记忆条数(按重要度排序)",
+                new AcceptableValueRange<int>(1, 30)));
 
         Memory.SummarizeThresholdPercentage = config.Bind(
             "Memory",
@@ -324,6 +333,7 @@ internal partial class EmConfig
     internal static class Memory
     {
         internal static ConfigEntry<int> MaxStmEntries { get; set; } = null!;
+        internal static ConfigEntry<int> MaxStmEntriesAfterSummarization { get; set; } = null!;
         internal static ConfigEntry<int> MaxStmInContext { get; set; } = null!;
         internal static ConfigEntry<int> MaxLtmInContext { get; set; } = null!;
         internal static ConfigEntry<float> SummarizeThresholdPercentage { get; set; } = null!;

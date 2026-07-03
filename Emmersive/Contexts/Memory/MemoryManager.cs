@@ -44,6 +44,10 @@ public sealed class MemoryManager
 
     public void RecordTalk(Chara chara, string content)
     {
+        if (!chara.Profile.IsImportant && !chara.IsPC) {
+            return;
+        }
+
         var store = GetOrCreate(chara);
         var speaker = chara.IsPC ? "Player" : chara.NameSimple;
         store.AddStm(speaker, content, chara.turn);
@@ -85,6 +89,11 @@ public sealed class MemoryManager
                 return false;
             }
 
+            var chara = EClass.game.cards.Find(store.Uid);
+            if (chara is null) {
+                return false;
+            }
+
             var recentTalks = string.Join("\n", stmCopy.Select(e => e.ToString()));
 
             var prompt = new SystemContext("Emmersive/MemoryPrompt.txt").Build();
@@ -117,12 +126,12 @@ public sealed class MemoryManager
             }
 
             var facts = ParseFacts(report.Content);
-            if (facts?.Count is > 0) {
+            if (facts.Count > 0) {
                 store.LongTerm.AddRange(facts);
                 store.LongTerm.RemoveAll(f => f.Fact.IsEmptyOrNull);
                 store.LastSummarized = DateTime.UtcNow;
 
-                var keepCount = Math.Min(3, store.ShortTerm.Count);
+                var keepCount = Math.Min(EmConfig.Memory.MaxStmEntriesAfterSummarization.Value, store.ShortTerm.Count);
                 store.ShortTerm.RemoveRange(0, store.ShortTerm.Count - keepCount);
 
                 EmMod.Log<MemoryManager>($"summarized {facts.Count} facts for {store.Name} " +
@@ -138,7 +147,7 @@ public sealed class MemoryManager
         return true;
     }
 
-    private static List<MemoryFact>? ParseFacts(string json)
+    private static List<MemoryFact> ParseFacts(string json)
     {
         var raw = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(json.Trim());
 
@@ -149,6 +158,6 @@ public sealed class MemoryManager
                     : 1,
             })
             .Where(f => !f.Fact.IsEmptyOrNull)
-            .ToList();
+            .ToList() ?? [];
     }
 }
