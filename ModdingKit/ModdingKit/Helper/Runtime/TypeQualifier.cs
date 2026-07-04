@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -56,7 +55,7 @@ public class TypeQualifier
             return baseAsm;
         }
 
-        var packageAsm = ModUtil.FindFileProviderPackage(new (assembly.Location))?.title ??
+        var packageAsm = ModUtil.FindFileProviderPackage(new(assembly.Location))?.title ??
                          Plugins.FirstOrDefault(p => p.GetType().Assembly == assembly)?.Info.Metadata.Name ??
                          baseAsm;
 

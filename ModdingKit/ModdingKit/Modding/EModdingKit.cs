@@ -9,7 +9,7 @@ public static class ModInfo
 {
     public const string Guid = "elin.plugins.scripting";
     public const string Name = "Elin Scripting Kit";
-    public const string Version = "1.3.0";
+    public const string Version = "1.3.1";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
