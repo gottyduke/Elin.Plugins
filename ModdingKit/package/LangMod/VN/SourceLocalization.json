@@ -1,0 +1,23 @@
+{
+  "LangGeneral.enableModError.text": "Bật hiển thị cửa sổ lỗi",
+  "LangGeneral.errorPopup_tip.text": "Khi bật, các lỗi xảy ra trong trò chơi sẽ hiển thị trong cửa sổ bật lên, liệt kê các mod có thể liên quan.\nGiúp xác định vấn đề do mod gây ra, thuận tiện báo cáo cho tác giả mod.",
+  "LangGeneral.es_error_cs_disabled.text": "Trình biên dịch script đã bị vô hiệu hóa",
+  "LangGeneral.es_error_cs_frozen.text": "Trạng thái script '#1' đã bị đóng băng",
+  "LangGeneral.es_error_csc_diag.text": "Biên dịch '#1' thất bại:\n#2",
+  "LangGeneral.es_log_csc_eval.text": "Đang biên dịch script\n#1",
+  "LangGeneral.es_log_csc_package.text": "Đang biên dịch gói #1 << #2",
+  "LangGeneral.es_log_csc_roslyn.text": "Trình biên dịch Roslyn #1",
+  "LangGeneral.es_log_csc_scripts.text": "Đang biên dịch #2 tệp script '#1'",
+  "LangGeneral.es_ui_callstack.text": "//Thứ tự sự kiện gây ra lỗi này (sự kiện cuối cùng ở trên cùng):",
+  "LangGeneral.es_ui_cs_ready.text": "Trình biên dịch script Roslyn đã sẵn sàng\nCách dùng:\n  cs.eval <viết mã C# bất kỳ tại đây>\n  cs.file <đường dẫn đến tệp script C#>",
+  "LangGeneral.es_ui_csc_changed.text": "Script của mod '#1' đã thay đổi\nSử dụng lệnh 'csc.recompile' khi sẵn sàng",
+  "LangGeneral.es_ui_exception_analyzing.text": "<color=orange><Đang phân tích lỗi…></color>",
+  "LangGeneral.es_ui_exception_copy.text": "<color=purple><[Chuột trái] Sao chép chi tiết>\n<[Chuột giữa] Đóng và không hiển thị lại></color>",
+  "LangGeneral.es_ui_hover_close.text": "<color=blue><[Chuột phải] Đóng></color>",
+  "LangGeneral.es_ui_hover_detail.text": "<color=blue><[Di chuột] Xem thông tin chi tiết></color>",
+  "LangGeneral.es_ui_invalid_patch.text": "<color=#d343f7>(Không tương thích)</color>",
+  "LangGeneral.es_warn_missing_method.text": "<color=#d343f7>Một MOD không tương thích với phiên bản trò chơi hiện tại của bạn.</color>\n#1",
+  "LangGeneral.es_warn_missing_mods.text": "Mod bị thiếu trong bản lưu hiện tại:\n#1",
+  "LangGeneral.es_warn_missing_mods_no.text": "Tiếp tục chơi",
+  "LangGeneral.es_warn_missing_mods_yes.text": "Không lưu và trở về màn hình tiêu đề"
+}

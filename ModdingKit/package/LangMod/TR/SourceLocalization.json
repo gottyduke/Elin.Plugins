@@ -1,0 +1,23 @@
+{
+  "LangGeneral.enableModError.text": "Hata penceresi gösterimini etkinleştir",
+  "LangGeneral.errorPopup_tip.text": "Etkinleştirildiğinde, oyun sırasında oluşan hatalar bir pencere içinde gösterilir ve ilgili olabilecek modlar listelenir.\nMod kaynaklı sorunları tespit etmeye ve mod yazarlarına bildirmeye yardımcı olur.",
+  "LangGeneral.es_error_cs_disabled.text": "Script derleyici devre dışı bırakıldı",
+  "LangGeneral.es_error_cs_frozen.text": "Script durumu '#1' donduruldu",
+  "LangGeneral.es_error_csc_diag.text": "'#1' derleme başarısız:\n#2",
+  "LangGeneral.es_log_csc_eval.text": "Script derleniyor\n#1",
+  "LangGeneral.es_log_csc_package.text": "Paket derleniyor #1 << #2",
+  "LangGeneral.es_log_csc_roslyn.text": "Roslyn derleyici #1",
+  "LangGeneral.es_log_csc_scripts.text": "#2 script dosyası '#1' derleniyor",
+  "LangGeneral.es_ui_callstack.text": "//Bu hataya neden olan olay sırası (son olay en üstte):",
+  "LangGeneral.es_ui_cs_ready.text": "Roslyn script derleyici hazır\nKullanım:\n  cs.eval <buraya herhangi bir C# kodu yazın>\n  cs.file <C# script dosyasının yolu>",
+  "LangGeneral.es_ui_csc_changed.text": "'#1' modunun scriptleri değişti\nHazır olduğunuzda 'csc.recompile' komutunu kullanın",
+  "LangGeneral.es_ui_exception_analyzing.text": "<color=orange><Hata analiz ediliyor…></color>",
+  "LangGeneral.es_ui_exception_copy.text": "<color=purple><[Sol tık] Detayları kopyala>\n<[Orta tık] Kapat ve tekrar gösterme></color>",
+  "LangGeneral.es_ui_hover_close.text": "<color=blue><[Sağ tık] Kapat></color>",
+  "LangGeneral.es_ui_hover_detail.text": "<color=blue><[Fare ile üzerine gel] Detaylı bilgi gör></color>",
+  "LangGeneral.es_ui_invalid_patch.text": "<color=#d343f7>(Uyumsuz)</color>",
+  "LangGeneral.es_warn_missing_method.text": "<color=#d343f7>Bir MOD mevcut oyun sürümünüzle uyumsuz.</color>\n#1",
+  "LangGeneral.es_warn_missing_mods.text": "Mevcut kayıtta eksik modlar:\n#1",
+  "LangGeneral.es_warn_missing_mods_no.text": "Oyuna devam et",
+  "LangGeneral.es_warn_missing_mods_yes.text": "Kaydetmeden başlığa dön"
+}

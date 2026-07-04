@@ -1,0 +1,23 @@
+{
+  "LangGeneral.enableModError.text": "오류 팝업 표시 활성화",
+  "LangGeneral.errorPopup_tip.text": "활성화하면 게임 중 발생한 오류가 팝업으로 표시되며, 관련 가능성이 있는 모드가 나열됩니다.\n모드로 인한 문제를 파악하고 모드 제작자에게 피드백을 보내는 데 도움이 됩니다.",
+  "LangGeneral.es_error_cs_disabled.text": "스크립트 컴파일러가 비활성화되었습니다",
+  "LangGeneral.es_error_cs_frozen.text": "스크립트 상태 '#1'이(가) 동결되었습니다",
+  "LangGeneral.es_error_csc_diag.text": "'#1' 컴파일 실패:\n#2",
+  "LangGeneral.es_log_csc_eval.text": "스크립트 컴파일 중\n#1",
+  "LangGeneral.es_log_csc_package.text": "패키지 컴파일 중 #1 << #2",
+  "LangGeneral.es_log_csc_roslyn.text": "Roslyn 컴파일러 #1",
+  "LangGeneral.es_log_csc_scripts.text": "#2개의 스크립트 파일 '#1' 컴파일 중",
+  "LangGeneral.es_ui_callstack.text": "//이 오류를 발생시킨 이벤트 순서 (마지막 이벤트가 가장 위에 있음):",
+  "LangGeneral.es_ui_cs_ready.text": "Roslyn 스크립트 컴파일러 준비 완료\n사용법:\n  cs.eval <여기에 C# 코드 작성>\n  cs.file <C# 스크립트 파일 경로>",
+  "LangGeneral.es_ui_csc_changed.text": "모드 '#1'의 스크립트가 변경되었습니다\n준비가 되면 'csc.recompile' 명령을 사용하세요",
+  "LangGeneral.es_ui_exception_analyzing.text": "<color=orange><오류 분석 중…></color>",
+  "LangGeneral.es_ui_exception_copy.text": "<color=purple><[마우스 왼쪽 클릭] 세부 정보 복사>\n<[마우스 가운데 클릭] 닫고 다시 표시하지 않음></color>",
+  "LangGeneral.es_ui_hover_close.text": "<color=blue><[마우스 오른쪽 클릭] 닫기></color>",
+  "LangGeneral.es_ui_hover_detail.text": "<color=blue><[마우스 오버] 자세한 정보 보기></color>",
+  "LangGeneral.es_ui_invalid_patch.text": "<color=#d343f7>(호환되지 않음)</color>",
+  "LangGeneral.es_warn_missing_method.text": "<color=#d343f7>하나의 MOD가 현재 게임 버전과 호환되지 않습니다.</color>\n#1",
+  "LangGeneral.es_warn_missing_mods.text": "현재 저장 파일에서 누락된 모드:\n#1",
+  "LangGeneral.es_warn_missing_mods_no.text": "계속 플레이",
+  "LangGeneral.es_warn_missing_mods_yes.text": "저장하지 않고 타이틀로 돌아가기"
+}

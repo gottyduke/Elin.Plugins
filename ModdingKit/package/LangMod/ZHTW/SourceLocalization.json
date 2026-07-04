@@ -1,0 +1,23 @@
+{
+  "LangGeneral.enableModError.text": "啟用錯誤彈窗顯示",
+  "LangGeneral.errorPopup_tip.text": "開啟後，遊戲過程中發生的錯誤將以彈窗顯示，並列出可能相關的模組。\n有助於排查模組引起的問題，方便向模組作者反饋。",
+  "LangGeneral.es_error_cs_disabled.text": "腳本編譯器已被禁用",
+  "LangGeneral.es_error_cs_frozen.text": "腳本狀態 '#1' 已被凍結",
+  "LangGeneral.es_error_csc_diag.text": "編譯 '#1' 失敗:\n#2",
+  "LangGeneral.es_log_csc_eval.text": "正在編譯腳本\n#1",
+  "LangGeneral.es_log_csc_package.text": "正在編譯包 #1 << #2",
+  "LangGeneral.es_log_csc_roslyn.text": "Roslyn 編譯器 #1",
+  "LangGeneral.es_log_csc_scripts.text": "正在編譯 #2 個腳本檔案 '#1'",
+  "LangGeneral.es_ui_callstack.text": "//導致此錯誤的事件順序 (最後的事件在最上方):",
+  "LangGeneral.es_ui_cs_ready.text": "Roslyn 腳本編譯器已就緒\n用法：\n  cs.eval <在此寫入任意 C# 程式碼>\n  cs.file <C# 腳本檔案的路徑>",
+  "LangGeneral.es_ui_csc_changed.text": "模組 '#1' 的腳本已發生更改\n準備就緒後請使用命令 'csc.recompile'",
+  "LangGeneral.es_ui_exception_analyzing.text": "<color=orange><分析報錯中…></color>",
+  "LangGeneral.es_ui_exception_copy.text": "<color=purple><[滑鼠左鍵]複製詳情>\n<[滑鼠中鍵]關閉且不再顯示></color>",
+  "LangGeneral.es_ui_hover_close.text": "<color=blue><[滑鼠右鍵]關閉></color>",
+  "LangGeneral.es_ui_hover_detail.text": "<color=blue><[滑鼠懸浮]查看詳細資訊></color>",
+  "LangGeneral.es_ui_invalid_patch.text": "<color=#d343f7>(不相容)</color>",
+  "LangGeneral.es_warn_missing_method.text": "<color=#d343f7>一個MOD與您當前遊戲版本不相容。</color>\n#1",
+  "LangGeneral.es_warn_missing_mods.text": "當前存檔中缺失的模組：\n#1",
+  "LangGeneral.es_warn_missing_mods_no.text": "繼續遊玩",
+  "LangGeneral.es_warn_missing_mods_yes.text": "不儲存並返回至標題"
+}

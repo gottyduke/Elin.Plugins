@@ -1,0 +1,23 @@
+{
+  "LangGeneral.enableModError.text": "Habilitar ventanas emergentes de error",
+  "LangGeneral.errorPopup_tip.text": "Al activarlo, los errores que ocurran durante el juego se mostrarán en ventanas emergentes, listando los mods posiblemente relacionados.\nAyuda a identificar problemas causados por mods y facilita informar a los autores.",
+  "LangGeneral.es_error_cs_disabled.text": "El compilador de scripts está desactivado",
+  "LangGeneral.es_error_cs_frozen.text": "El estado del script '#1' está congelado",
+  "LangGeneral.es_error_csc_diag.text": "Error al compilar '#1':\n#2",
+  "LangGeneral.es_log_csc_eval.text": "Compilando script\n#1",
+  "LangGeneral.es_log_csc_package.text": "Compilando paquete #1 << #2",
+  "LangGeneral.es_log_csc_roslyn.text": "Compilador Roslyn #1",
+  "LangGeneral.es_log_csc_scripts.text": "Compilando #2 archivos de script '#1'",
+  "LangGeneral.es_ui_callstack.text": "//Secuencia de eventos que causaron este error (el último evento arriba):",
+  "LangGeneral.es_ui_cs_ready.text": "Compilador de scripts Roslyn listo\nUso:\n  cs.eval <escribe cualquier código C# aquí>\n  cs.file <ruta al archivo de script C#>",
+  "LangGeneral.es_ui_csc_changed.text": "Los scripts del mod '#1' han cambiado\nUsa el comando 'csc.recompile' cuando estés listo",
+  "LangGeneral.es_ui_exception_analyzing.text": "<color=orange><Analizando error…></color>",
+  "LangGeneral.es_ui_exception_copy.text": "<color=purple><[Clic izquierdo] Copiar detalles>\n<[Clic central] Cerrar y no mostrar más></color>",
+  "LangGeneral.es_ui_hover_close.text": "<color=blue><[Clic derecho] Cerrar></color>",
+  "LangGeneral.es_ui_hover_detail.text": "<color=blue><[Pasar el ratón] Ver información detallada></color>",
+  "LangGeneral.es_ui_invalid_patch.text": "<color=#d343f7>(Incompatible)</color>",
+  "LangGeneral.es_warn_missing_method.text": "<color=#d343f7>Un MOD es incompatible con tu versión actual del juego.</color>\n#1",
+  "LangGeneral.es_warn_missing_mods.text": "Mods faltantes en la partida actual:\n#1",
+  "LangGeneral.es_warn_missing_mods_no.text": "Continuar jugando",
+  "LangGeneral.es_warn_missing_mods_yes.text": "No guardar y volver al título"
+}

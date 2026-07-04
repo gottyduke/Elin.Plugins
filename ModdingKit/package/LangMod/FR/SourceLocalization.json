@@ -1,0 +1,23 @@
+{
+  "LangGeneral.enableModError.text": "Activer l'affichage des erreurs",
+  "LangGeneral.errorPopup_tip.text": "Une fois activé, les erreurs survenant pendant le jeu s'afficheront dans une fenêtre contextuelle, avec la liste des mods potentiellement concernés.\nAide à identifier les problèmes liés aux mods et à les signaler aux auteurs.",
+  "LangGeneral.es_error_cs_disabled.text": "Le compilateur de scripts est désactivé",
+  "LangGeneral.es_error_cs_frozen.text": "L'état du script '#1' est gelé",
+  "LangGeneral.es_error_csc_diag.text": "Échec de la compilation de '#1' :\n#2",
+  "LangGeneral.es_log_csc_eval.text": "Compilation du script\n#1",
+  "LangGeneral.es_log_csc_package.text": "Compilation du paquet #1 << #2",
+  "LangGeneral.es_log_csc_roslyn.text": "Compilateur Roslyn #1",
+  "LangGeneral.es_log_csc_scripts.text": "Compilation de #2 fichiers de script '#1'",
+  "LangGeneral.es_ui_callstack.text": "//Séquence d'événements ayant causé cette erreur (le dernier événement en haut) :",
+  "LangGeneral.es_ui_cs_ready.text": "Compilateur de scripts Roslyn prêt\nUtilisation :\n  cs.eval <écrivez du code C# ici>\n  cs.file <chemin du fichier de script C#>",
+  "LangGeneral.es_ui_csc_changed.text": "Les scripts du mod '#1' ont changé\nUtilisez la commande 'csc.recompile' quand vous êtes prêt",
+  "LangGeneral.es_ui_exception_analyzing.text": "<color=orange><Analyse de l'erreur…></color>",
+  "LangGeneral.es_ui_exception_copy.text": "<color=purple><[Clic gauche] Copier les détails>\n<[Clic milieu] Fermer et ne plus afficher></color>",
+  "LangGeneral.es_ui_hover_close.text": "<color=blue><[Clic droit] Fermer></color>",
+  "LangGeneral.es_ui_hover_detail.text": "<color=blue><[Survol de la souris] Voir les informations détaillées></color>",
+  "LangGeneral.es_ui_invalid_patch.text": "<color=#d343f7>(Incompatible)</color>",
+  "LangGeneral.es_warn_missing_method.text": "<color=#d343f7>Un MOD est incompatible avec votre version actuelle du jeu.</color>\n#1",
+  "LangGeneral.es_warn_missing_mods.text": "Mods manquants dans la sauvegarde actuelle :\n#1",
+  "LangGeneral.es_warn_missing_mods_no.text": "Continuer à jouer",
+  "LangGeneral.es_warn_missing_mods_yes.text": "Ne pas sauvegarder et retourner au titre"
+}

@@ -1,0 +1,23 @@
+{
+  "LangGeneral.enableModError.text": "Включить отображение ошибок",
+  "LangGeneral.errorPopup_tip.text": "При включении ошибки, возникающие во время игры, будут отображаться во всплывающем окне с перечислением возможно связанных модов.\nПомогает выявлять проблемы, вызванные модами, и сообщать о них авторам.",
+  "LangGeneral.es_error_cs_disabled.text": "Компилятор скриптов отключён",
+  "LangGeneral.es_error_cs_frozen.text": "Состояние скрипта '#1' заморожено",
+  "LangGeneral.es_error_csc_diag.text": "Ошибка компиляции '#1':\n#2",
+  "LangGeneral.es_log_csc_eval.text": "Компиляция скрипта\n#1",
+  "LangGeneral.es_log_csc_package.text": "Компиляция пакета #1 << #2",
+  "LangGeneral.es_log_csc_roslyn.text": "Компилятор Roslyn #1",
+  "LangGeneral.es_log_csc_scripts.text": "Компиляция #2 файлов скриптов '#1'",
+  "LangGeneral.es_ui_callstack.text": "//Последовательность событий, приведших к этой ошибке (последнее событие сверху):",
+  "LangGeneral.es_ui_cs_ready.text": "Компилятор скриптов Roslyn готов\nИспользование:\n  cs.eval <введите любой код C#>\n  cs.file <путь к файлу скрипта C#>",
+  "LangGeneral.es_ui_csc_changed.text": "Скрипты мода '#1' были изменены\nИспользуйте команду 'csc.recompile', когда будете готовы",
+  "LangGeneral.es_ui_exception_analyzing.text": "<color=orange><Анализ ошибки…></color>",
+  "LangGeneral.es_ui_exception_copy.text": "<color=purple><[ЛКМ] Копировать детали>\n<[СКМ] Закрыть и больше не показывать></color>",
+  "LangGeneral.es_ui_hover_close.text": "<color=blue><[ПКМ] Закрыть></color>",
+  "LangGeneral.es_ui_hover_detail.text": "<color=blue><[Наведение мыши] Подробная информация></color>",
+  "LangGeneral.es_ui_invalid_patch.text": "<color=#d343f7>(Несовместимо)</color>",
+  "LangGeneral.es_warn_missing_method.text": "<color=#d343f7>Один из модов несовместим с вашей текущей версией игры.</color>\n#1",
+  "LangGeneral.es_warn_missing_mods.text": "Отсутствующие моды в текущем сохранении:\n#1",
+  "LangGeneral.es_warn_missing_mods_no.text": "Продолжить игру",
+  "LangGeneral.es_warn_missing_mods_yes.text": "Не сохранять и вернуться в меню"
+}
