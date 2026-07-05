@@ -31,6 +31,7 @@ public sealed class MemoryContext(HashSet<string>? excludedEntries) : ContextPro
             var memory = new Dictionary<string, object>();
 
             var rawTalks = new List<(string Speaker, string Content)>();
+            var sentEntries = new List<MemoryEntry>();
 
             // stm from memory store
             if (store is { ShortTerm.Count: > 0 }) {
@@ -40,6 +41,7 @@ public sealed class MemoryContext(HashSet<string>? excludedEntries) : ContextPro
                         continue;
                     }
                     rawTalks.Add((entry.Speaker, entry.Content));
+                    sentEntries.Add(entry);
                 }
             }
 
@@ -80,6 +82,11 @@ public sealed class MemoryContext(HashSet<string>? excludedEntries) : ContextPro
             if (memory.Count > 0) {
                 result[chara.NameSimple] = memory;
                 hasAny = true;
+            }
+
+            // mark sent so they won't repeat
+            foreach (var entry in sentEntries) {
+                entry.MarkSent();
             }
         }
 

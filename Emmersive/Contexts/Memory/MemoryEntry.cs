@@ -21,6 +21,14 @@ public sealed class MemoryEntry
     [JsonConverter(typeof(RangedIntConverter), 1, 5)]
     public int Importance { get; set; } = 1;
 
+    [JsonProperty("sc")]
+    public int SentCount { get; set; }
+
+    public void MarkSent()
+    {
+        SentCount++;
+    }
+
     public override string ToString()
     {
         return $"[{Speaker}]: {Content}";

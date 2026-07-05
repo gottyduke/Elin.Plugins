@@ -42,6 +42,10 @@ public sealed class CharaMemoryStore
             }
         }
 
+        foreach (var entry in ShortTerm) {
+            entry.SentCount = 0;
+        }
+
         ShortTerm.Add(new() {
             Speaker = speaker,
             Content = content,
@@ -60,9 +64,14 @@ public sealed class CharaMemoryStore
             count = EmConfig.Memory.MaxStmInContext.Value;
         }
 
+        var maxRepeat = EmConfig.Memory.MaxStmRepeatInContext.Value;
         var result = new List<MemoryEntry>(count);
         for (var i = ShortTerm.Count - 1; i >= 0 && result.Count < count; i--) {
-            result.Add(ShortTerm[i]);
+            var entry = ShortTerm[i];
+            if (entry.SentCount >= maxRepeat) {
+                continue;
+            }
+            result.Add(entry);
         }
 
         result.Reverse();
