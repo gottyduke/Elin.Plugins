@@ -185,6 +185,18 @@ internal partial class EmConfig
                 "单次请求中每个角色注入的最大短期记忆条数",
                 new AcceptableValueRange<int>(1, 30)));
 
+        Memory.MaxStmRepeatInContext = config.Bind(
+            "Memory",
+            "MaxStmRepeatInContext",
+            1,
+            new ConfigDescription(
+                "How many consecutive requests the same STM entry can appear in.\n" +
+                "1 = each entry is sent once, then skipped until new conversations arrive.\n" +
+                "Higher values let old entries linger longer.\n" +
+                "同一条短期记忆最多在连续几次请求中重复出现。\n" +
+                "设为1时每条记忆只发送一次，有新对话时重置。",
+                new AcceptableValueRange<int>(1, 5)));
+
         Memory.MaxLtmInContext = config.Bind(
             "Memory",
             "MaxLtmInContext",
@@ -348,6 +360,7 @@ internal partial class EmConfig
         internal static ConfigEntry<int> MaxStmEntries { get; set; } = null!;
         internal static ConfigEntry<int> MaxStmEntriesAfterSummarization { get; set; } = null!;
         internal static ConfigEntry<int> MaxStmInContext { get; set; } = null!;
+        internal static ConfigEntry<int> MaxStmRepeatInContext { get; set; } = null!;
         internal static ConfigEntry<int> MaxLtmInContext { get; set; } = null!;
         internal static ConfigEntry<int> MaxLtmEntries { get; set; } = null!;
         internal static ConfigEntry<float> SummarizeThresholdPercentage { get; set; } = null!;
