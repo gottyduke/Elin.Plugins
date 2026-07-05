@@ -128,6 +128,7 @@
   "LangGeneral.em_ui_tokens_tpm.text": "權杖/分鐘：",
   "LangGeneral.em_ui_tokens_tpr.text": "權杖/請求：",
   "LangGeneral.em_ui_use_pop.text": "啟用彈出氣泡",
+  "LangGeneral.em_ui_use_summarize.text": "啟用記憶總結",
   "LangGeneral.em_ui_warn_say_something.text": "偵測到 Say Something 已安裝！\nEmmersive 現在擁有類似的功能，且能同步 AI 對話。\n請前往設定選單檢視按鍵。\n建議取消訂閱 Say Something 以避免衝突，\nEmmersive 聊天也可以不搭配 AI 使用，請變更設定檔。",
   "LangGeneral.em_ui_whitelist.text": "AI 服務白名單模式: {0}",
   "LangGeneral.em_ui_zone.text": "目前區域提示詞 - <i>{0}</i>",

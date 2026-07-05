@@ -52,7 +52,7 @@ public sealed class MemoryManager
         var speaker = chara.IsPC ? "Player" : chara.NameSimple;
         store.AddStm(speaker, content, chara.turn);
 
-        if (store.ShouldSummarize) {
+        if (store.ShouldSummarize && chara.Profile.AllowSummarize) {
             TriggerSummarizeAsync(store, CancellationToken.None).ForgetEx();
         }
     }

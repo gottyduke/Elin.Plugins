@@ -15,6 +15,7 @@ public class CharaProfile(Chara chara)
     public bool OnWhitelist => chara.GetBool("em_wl");
     public bool OnBlacklist => chara.GetBool("em_bl");
     public bool UsePopFeed => chara.GetBool("em_pop");
+    public bool AllowSummarize => chara.GetBool("em_sum");
 
     public bool IsImportant =>
         !chara.IsPC &&

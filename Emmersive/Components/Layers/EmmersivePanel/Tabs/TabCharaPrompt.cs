@@ -64,9 +64,14 @@ internal class TabCharaPrompt : TabEmmersiveBase
                     })
                 .transform
                 .SetSiblingIndex(1);
-            card.Spacer(5)
+            card.Toggle("em_ui_use_summarize",
+                    chara.GetBool("em_sum"),
+                    value => chara.SetBool("em_sum", value))
                 .transform
                 .SetSiblingIndex(2);
+            card.Spacer(5)
+                .transform
+                .SetSiblingIndex(3);
         } catch (Exception ex) {
             if (card != null) {
                 DestroyImmediate(card.gameObject);
