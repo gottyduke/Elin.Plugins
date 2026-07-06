@@ -55,7 +55,13 @@ internal class AIStealPatch
             return false;
         }
 
-        if (!cc.currentZone.AllowCriminal) {
+        if (cc.currentZone.AllowCriminal) {
+            Msg.SetColor("bad");
+            Msg.Say(KocLoc.CaughtPrompt);
+            if (witnesses.Count != 0) {
+                Msg.Say(KocLoc.WithWitness(witnesses.Count));
+            }
+        } else {
             pos.CallGuard(cc, witness);
             KocMod.DoModKarma(true, cc, -1, false, witnesses.Count);
         }
@@ -65,6 +71,6 @@ internal class AIStealPatch
             witness.DoHostileAction(cc);
         }
 
-        return false;
+        return true;
     }
 }
