@@ -8,7 +8,7 @@ public class OllamaProvider() : OpenAIProvider("")
     public override string Alias { get; set; } = "Ollama";
 
     [JsonProperty]
-    public override string CurrentModel { get; set; } = "";
+    public override string CurrentModel { get; set; } = "ollama";
 
     [JsonProperty]
     public override string EndPoint => "http://127.0.0.1:11434/v1";
