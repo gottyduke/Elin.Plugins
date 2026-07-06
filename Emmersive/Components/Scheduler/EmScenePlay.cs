@@ -27,10 +27,14 @@ public partial class EmScheduler
         var builder = ContextBuilder
             .CreateStandardPrefix()
             .Add(new NearbyCharaContext(focus))
-            .Add(new NearbyThingContext(focus))
-            .Add(new MemoryContext())
-            // put volatile context at the end to hit as much cache as possible
-            .Add(ContextBuilder.RecentActionContext);
+            .Add(new NearbyThingContext(focus));
+
+        if (EmConfig.Memory.Enabled.Value) {
+            builder.Add(new MemoryContext());
+        }
+
+        // put volatile context at the end to hit as much cache as possible
+        builder.Add(ContextBuilder.RecentActionContext);
 
         RequestScenePlayWithContext(builder);
     }
@@ -48,9 +52,14 @@ public partial class EmScheduler
         var builder = ContextBuilder
             .CreateStandardPrefix()
             .Add(new NearbyCharaContext(focus))
-            .Add(new NearbyThingContext(focus))
-            .Add(new MemoryContext(triggers))
-            // put volatile context at the end to hit as much cache as possible
+            .Add(new NearbyThingContext(focus));
+
+        if (EmConfig.Memory.Enabled.Value) {
+            builder.Add(new MemoryContext(triggers));
+        }
+
+        // put volatile context at the end to hit as much cache as possible
+        builder
             .Add(ContextBuilder.RecentActionContext)
             .Add(new SceneTriggerContext(_buffer.ToArray()));
 

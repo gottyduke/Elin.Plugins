@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Emmersive.Contexts.Memory;
 using Emmersive.Helper;
 
 namespace Emmersive.Contexts;
@@ -34,6 +35,7 @@ public class RecentActionContext : ContextProviderBase
 
         var logs = new List<string>(depth);
         var seen = new HashSet<string>(StringComparer.Ordinal);
+        var memoryEnabled = EmConfig.Memory.Enabled.Value;
         string? current = null;
 
         while (lastIndex >= _indexSinceStart && logs.Count < depth) {
@@ -47,7 +49,8 @@ public class RecentActionContext : ContextProviderBase
                 continue;
             }
 
-            if (IsTalkEntry(text)) {
+            // memory talks are separated
+            if (memoryEnabled && IsTalkEntry(text)) {
                 lastIndex--;
                 continue;
             }
@@ -65,7 +68,58 @@ public class RecentActionContext : ContextProviderBase
         }
 
         logs.Reverse();
+
+        if (!memoryEnabled) {
+            logs = DeduplicateGameLogs(logs);
+        }
+
         return logs;
+    }
+
+    private static List<string> DeduplicateGameLogs(List<string> logs)
+    {
+        if (logs.Count <= 1) {
+            return logs;
+        }
+
+        var result = new List<string>(logs.Count);
+        for (var i = 0; i < logs.Count; i++) {
+            var current = logs[i];
+            var currentIsTalk = TryParseTalkEntry(current, out var curSpeaker, out var curContent);
+
+            if (result.Count > 0 && currentIsTalk) {
+                var prev = result[^1];
+                var prevIsTalk = TryParseTalkEntry(prev, out var prevSpeaker, out var prevContent);
+
+                if (prevIsTalk &&
+                    string.Equals(prevSpeaker, curSpeaker, StringComparison.Ordinal) &&
+                    MemoryManager.IsContentSimilar(prevContent, curContent)) {
+                    if (curContent.Length >= prevContent.Length) {
+                        result[^1] = current;
+                    }
+                    continue;
+                }
+            }
+
+            result.Add(current);
+        }
+
+        return result;
+    }
+
+    private static bool TryParseTalkEntry(string text, out string speaker, out string content)
+    {
+        speaker = "";
+        content = "";
+
+        var colonIdx = text.IndexOf(": ", StringComparison.Ordinal);
+        if (colonIdx <= 0) {
+            return false;
+        }
+
+        speaker = text[..colonIdx];
+        content = text[(colonIdx + 2)..];
+        return !speaker.IsEmptyOrNull && !content.IsEmptyOrNull;
     }
 
     private static bool IsTalkEntry(string text)

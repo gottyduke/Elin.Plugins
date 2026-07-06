@@ -12,13 +12,7 @@ public class NearbyCharaContext(Chara focus) : ContextProviderBase
 
     protected override IDictionary<string, object>? BuildInternal()
     {
-        var charas = focus.Nearby
-            .Distinct(UniqueCardComparer.Default)
-            .OfType<Chara>()
-            .Where(c => c.Profile.CanTrigger)
-            .OrderByDescending(CharaSorter)
-            .TakeLast(EmConfig.Context.NearbyMaxCount.Value)
-            .ToList();
+        var charas = GetNearbyChara(focus);
         if (charas.Count == 0) {
             return null;
         }
@@ -68,6 +62,20 @@ public class NearbyCharaContext(Chara focus) : ContextProviderBase
          */
 
         return data;
+
+    }
+
+    public static List<Chara> GetNearbyChara(Chara focus)
+    {
+        var charas = focus.Nearby
+            .Distinct(UniqueCardComparer.Default)
+            .OfType<Chara>()
+            .Where(c => c.Profile.CanTrigger)
+            .OrderByDescending(CharaSorter)
+            .TakeLast(EmConfig.Context.NearbyMaxCount.Value)
+            .ToList();
+
+        return charas;
 
         int CharaSorter(Chara owner)
         {

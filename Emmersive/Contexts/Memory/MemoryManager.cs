@@ -44,6 +44,10 @@ public sealed class MemoryManager
 
     public void RecordTalk(Chara chara, string content)
     {
+        if (!EmConfig.Memory.Enabled.Value) {
+            return;
+        }
+
         if (!chara.Profile.IsImportant && !chara.IsPC) {
             return;
         }

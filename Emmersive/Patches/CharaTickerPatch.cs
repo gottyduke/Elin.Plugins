@@ -1,4 +1,5 @@
 using Emmersive.Components;
+using Emmersive.Contexts;
 using Emmersive.Helper;
 using HarmonyLib;
 
@@ -35,6 +36,11 @@ internal class CharaTickerPatch
 
         // start global cooldown
         pc.ResetTalkCooldown();
+
+        var charas = NearbyCharaContext.GetNearbyChara(__instance);
+        if (charas.Count == 0) {
+            return;
+        }
 
         EmScheduler.RequestScenePlayImmediate();
     }

@@ -63,12 +63,14 @@ public partial class SceneDirector
                     text = text.Replace("&", "");
                 }
 
-                if (MemoryManager.Instance.HasRecentTalk(chara, text)) {
+                if (EmConfig.Memory.Enabled.Value && MemoryManager.Instance.HasRecentTalk(chara, text)) {
                     // reduce repetition
                     return;
                 }
 
-                MemoryManager.Instance.RecordTalk(chara, text);
+                if (EmConfig.Memory.Enabled.Value) {
+                    MemoryManager.Instance.RecordTalk(chara, text);
+                }
 
                 Msg.SetColor(color);
 

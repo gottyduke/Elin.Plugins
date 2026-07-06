@@ -9,16 +9,33 @@ namespace Emmersive.Components;
 
 internal class TabCharaMemory : TabCharaPrompt
 {
+    private UIButton? _memoryToggle;
+
     public override void OnLayout()
     {
         var header = Horizontal();
         header.Layout.childForceExpandWidth = true;
 
-        header.Header("em_ui_npc_memory");
+        _memoryToggle = header.Toggle(
+            GetCurrentMemoryState(),
+            EmConfig.Memory.Enabled.Value,
+            value => {
+                EmConfig.Memory.Enabled.Value = value;
+                _memoryToggle?.mainText.text = GetCurrentMemoryState();
+            });
+        _memoryToggle.GetOrCreate<LayoutElement>().minWidth = 80f;
 
         BuildPromptCard("em_ui_memory_prompt", "Emmersive/MemoryPrompt.txt");
 
         BuildCharaMemoryList();
+
+        return;
+
+        string GetCurrentMemoryState()
+        {
+            var isOn = EmConfig.Memory.Enabled.Value;
+            return "em_ui_npc_memory".lang() + $": {(isOn ? "on" : "off").lang()}";
+        }
     }
 
     private void BuildCharaMemoryList()

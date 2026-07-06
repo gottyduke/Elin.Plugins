@@ -158,6 +158,15 @@ internal partial class EmConfig
             "Localize the context entries, may increase prompt length\n" +
             "尝试本地化上下文条目，可能会增加提示词长度");
 
+        Memory.Enabled = config.Bind(
+            "Memory",
+            "Enabled",
+            false,
+            "Enable NPC memory system (STM/LTM/summarization).\n" +
+            "When disabled, NPC talks are merged into the recent action log instead.\n" +
+            "启用NPC记忆系统(短期/长期/总结)。\n" +
+            "禁用时，NPC对话将合并到最近动作日志中。");
+
         Memory.MaxStmEntries = config.Bind(
             "Memory",
             "MaxStmEntries",
@@ -357,6 +366,7 @@ internal partial class EmConfig
 
     internal static class Memory
     {
+        internal static ConfigEntry<bool> Enabled { get; set; } = null!;
         internal static ConfigEntry<int> MaxStmEntries { get; set; } = null!;
         internal static ConfigEntry<int> MaxStmEntriesAfterSummarization { get; set; } = null!;
         internal static ConfigEntry<int> MaxStmInContext { get; set; } = null!;
