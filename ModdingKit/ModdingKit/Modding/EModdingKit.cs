@@ -1,5 +1,6 @@
 using System.Reflection;
 using BepInEx;
+using EModding.Components;
 using EModding.Helper.Runtime;
 using ReflexCLI;
 
@@ -21,7 +22,10 @@ internal partial class EModdingKit : BaseUnityPlugin
     private void Awake()
     {
         Instance = this;
+
         CommandRegistry.assemblies.Add(_assembly);
         ClassCache.typeLoaders.Add(TypeQualifier.TryQualify);
+
+        gameObject.AddComponent<EDebugInfo>();
     }
 }

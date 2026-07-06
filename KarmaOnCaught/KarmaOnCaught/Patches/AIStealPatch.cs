@@ -14,7 +14,13 @@ internal class AIStealPatch
 
     internal static bool Prepare()
     {
-        return Config.Enabled?.Value ?? false;
+        if (!Config.Enabled!.Value) {
+            return false;
+        }
+
+        OnModKarmaPatch.ToRemove.Add(AccessTools.Method("AI_Steal+<>c__DisplayClass9_0:<Run>b__3", []));
+
+        return true;
     }
 
     internal static MethodBase TargetMethod()

@@ -15,7 +15,7 @@ internal class TaskDwarfPatch
     internal static bool Prepare()
     {
         if (!Config.Enabled!.Value) {
-            return Config.Enabled!.Value;
+            return false;
         }
 
         OnModKarmaPatch.ToRemove.Add(

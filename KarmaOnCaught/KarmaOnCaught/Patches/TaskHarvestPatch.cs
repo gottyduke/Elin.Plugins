@@ -14,7 +14,13 @@ internal class TaskHarvestPatch
 
     internal static bool Prepare()
     {
-        return Config.Enabled!.Value;
+        if (!Config.Enabled!.Value) {
+            return false;
+        }
+
+        OnModKarmaPatch.ToRemove.Add(AccessTools.Method("TaskHarvest+<>c__DisplayClass27_0:<OnCreateProgress>b__2", []));
+
+        return true;
     }
 
     internal static MethodBase TargetMethod()
