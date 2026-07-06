@@ -20,6 +20,13 @@
         <None Remove="LICENSE"/>
         <None Remove="README.md"/>
     </ItemGroup>
+    <ItemGroup>
+        <Reference Include="ElinModdingKit">
+            <HintPath Condition="Exists('$(ElinGamePath)\Package\_ModdingKit\ElinModdingKit.dll')">$(ElinGamePath)\Package\_ModdingKit\ElinModdingKit.dll</HintPath>
+            <HintPath Condition="Exists('$(ElinGamePath)\Package\Mod_ElinModdingKit\ElinModdingKit.dll')">$(ElinGamePath)\Package\Mod_ElinModdingKit\ElinModdingKit.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+    </ItemGroup>
     <Target Name="CopyAssets" AfterTargets="AfterBuild">
         <ItemGroup>
             <Assets Include="..\package\**\*.*"/>

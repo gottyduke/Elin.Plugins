@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using EModding.Helper;
 using HarmonyLib;
 
 namespace KarmaOnCaught.Patches;
@@ -9,8 +10,6 @@ namespace KarmaOnCaught.Patches;
 [HarmonyPatch]
 internal class AIStealPatch
 {
-    private static bool _applied;
-
     private static KocConfig.Patch Config => KocConfig.Managed["Steal"];
 
     internal static bool Prepare()
@@ -18,57 +17,19 @@ internal class AIStealPatch
         return Config.Enabled?.Value ?? false;
     }
 
-    [HarmonyTranspiler]
-    [HarmonyPatch(typeof(AI_Steal), nameof(AI_Steal.Run), MethodType.Enumerator)]
-    internal static IEnumerable<CodeInstruction> OnCreateProgressIl(IEnumerable<CodeInstruction> instructions)
+    internal static MethodBase TargetMethod()
     {
-        if (_applied) {
-            return instructions;
-        }
-
-        _applied = true;
-
-        var cm = new CodeMatcher(instructions);
-        var harmony = new Harmony(ModInfo.Guid);
-
-        CodeMatch[] onProgressFunctor = [
-            new(OpCodes.Ldftn),
-            new(OpCodes.Newobj),
-            new(OpCodes.Stfld, AccessTools.Field(
-                typeof(Progress_Custom),
-                nameof(Progress_Custom.onProgress))),
-        ];
-
-        if (cm.MatchStartForward(onProgressFunctor).IsValid && cm.Operand is MethodInfo onProgress) {
-            harmony.Patch(onProgress, transpiler: new(typeof(AIStealPatch), nameof(OnCrimeWitnessIl)));
-            KocMod.Log("patched AI_Steal.Run/onProgressFunctor");
-        } else {
-            KocMod.Log("failed to apply AI_Steal.Run/onProgressFunctor");
-        }
-
-        CodeMatch[] onProgressCompleteFunctor = [
-            new(OpCodes.Ldftn),
-            new(OpCodes.Newobj),
-            new(OpCodes.Stfld, AccessTools.Field(
-                typeof(Progress_Custom),
-                nameof(Progress_Custom.onProgressComplete))),
-        ];
-
-        if (cm.MatchStartForward(onProgressCompleteFunctor).IsValid && cm.Operand is MethodInfo onProgressComplete) {
-            OnModKarmaPatch.ToRemove.Add(onProgressComplete);
-        }
-
-        return cm.InstructionEnumeration();
+        return AccessTools.Method("AI_Steal+<>c__DisplayClass9_0:<Run>b__2", [typeof(Progress_Custom)]);
     }
 
+    [HarmonyTranspiler]
     internal static IEnumerable<CodeInstruction> OnCrimeWitnessIl(IEnumerable<CodeInstruction> instructions)
     {
         return new CodeMatcher(instructions)
             .End()
             .MatchEndBackwards(
-                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(
-                    typeof(Point),
-                    nameof(Point.TryWitnessCrime))))
+                new OperandContains(OpCodes.Callvirt, nameof(Point.TryWitnessCrime)))
+            .EnsureValid("pos.TryWitnessPickpocket")
             .SetAndAdvance(OpCodes.Call, AccessTools.Method(
                 typeof(AIStealPatch),
                 nameof(TryWitnessPickpocket)))

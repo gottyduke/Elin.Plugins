@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using EModding.Helper;
 using HarmonyLib;
 
 namespace KarmaOnCaught.Patches;
@@ -9,8 +10,6 @@ namespace KarmaOnCaught.Patches;
 [HarmonyPatch]
 internal class TaskDwarfPatch
 {
-    private static bool _applied;
-
     private static KocConfig.Patch Config => KocConfig.Managed["Dwarf"];
 
     internal static bool Prepare()
@@ -27,52 +26,22 @@ internal class TaskDwarfPatch
         return true;
     }
 
-    internal static IEnumerable<MethodInfo> TargetMethods()
+    internal static IEnumerable<MethodBase> TargetMethods()
     {
         return [
-            AccessTools.Method(typeof(TaskDig), nameof(TaskDig.OnCreateProgress)),
-            AccessTools.Method(typeof(TaskMine), nameof(TaskDig.OnCreateProgress)),
+            AccessTools.Method("TaskDig+<>c__DisplayClass19_0:<OnCreateProgress>b__1", [typeof(Progress_Custom)]),
+            AccessTools.Method("TaskMine+<>c__DisplayClass23_0:<OnCreateProgress>b__1", [typeof(Progress_Custom)]),
         ];
     }
 
     [HarmonyTranspiler]
-    internal static IEnumerable<CodeInstruction> OnCreateProgressIl(IEnumerable<CodeInstruction> instructions)
-    {
-        if (_applied) {
-            return instructions;
-        }
-
-        _applied = true;
-
-        var cm = new CodeMatcher(instructions);
-        var harmony = new Harmony(ModInfo.Guid);
-
-        CodeMatch[] onProgressFunctor = [
-            new(OpCodes.Ldftn),
-            new(OpCodes.Newobj),
-            new(OpCodes.Stfld, AccessTools.Field(
-                typeof(Progress_Custom),
-                nameof(Progress_Custom.onProgress))),
-        ];
-
-        if (cm.MatchStartForward(onProgressFunctor).IsValid && cm.Operand is MethodInfo onProgress) {
-            harmony.Patch(onProgress, transpiler: new(typeof(TaskDwarfPatch), nameof(OnCrimeWitnessIl)));
-            KocMod.Log("patched TaskDwarf.OnCreateProgress/onProgressFunctor");
-        } else {
-            KocMod.Log("failed to apply TaskDwarf.OnCreateProgress/onProgressFunctor");
-        }
-
-        return cm.InstructionEnumeration();
-    }
-
     internal static IEnumerable<CodeInstruction> OnCrimeWitnessIl(IEnumerable<CodeInstruction> instructions)
     {
         return new CodeMatcher(instructions)
             .End()
             .MatchEndBackwards(
-                new CodeMatch(OpCodes.Callvirt, AccessTools.Method(
-                    typeof(Point),
-                    nameof(Point.TryWitnessCrime))))
+                new OperandContains(OpCodes.Callvirt, nameof(Point.TryWitnessCrime)))
+            .EnsureValid("pos.TryWitnessDwarf")
             .SetInstruction(
                 Transpilers.EmitDelegate(TryWitnessDwarf))
             .InstructionEnumeration();

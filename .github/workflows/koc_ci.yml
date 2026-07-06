@@ -1,0 +1,26 @@
+name: Karma On Caught Elin CI Deploy
+
+on:
+  push:
+    branches: ["*"]
+    paths: ["KarmaOnCaught/**"]
+  pull_request_target:
+    paths: ["KarmaOnCaught/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  ci:
+    uses: ./.github/workflows/build_plugin_ci.yml
+    secrets: inherit
+    with:
+      plugin_name: KarmaOnCaught
+      plugin_path: KarmaOnCaught\KarmaOnCaught
+      tag_prefix: KoC
+      release_name_prefix: "Lose Karma On Caught"
+      artifact_name_prefix: koc
+      include_cwl: false
+      prerelease: false
