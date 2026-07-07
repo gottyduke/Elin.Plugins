@@ -19,7 +19,7 @@ internal class TaskDwarfPatch
         }
 
         OnModKarmaPatch.ToRemove.Add(
-            AccessTools.Method(typeof(TaskDig), nameof(TaskDig.OnProgressComplete)));
+            AccessTools.Method("TaskDig:<OnProgressComplete>g__Dig|22_0", [typeof(Point)]));
         OnModKarmaPatch.ToRemove.Add(
             AccessTools.Method(typeof(TaskMine), nameof(TaskMine.OnProgressComplete)));
 
