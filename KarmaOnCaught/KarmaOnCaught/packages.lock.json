@@ -1,6 +1,13 @@
 {
   "version": 1,
   "dependencies": {
-    ".NETStandard,Version=v2.0": {}
+    ".NETStandard,Version=v2.0": {
+      "GitVersion.MsBuild": {
+        "type": "Direct",
+        "requested": "[6.8.1, )",
+        "resolved": "6.8.1",
+        "contentHash": "x3lIU/s5zFuacWETug6PmeAo0lDXjYjEVWq5OPEQy4FXxbc6MrW/4/+4Ewvmgxsakd8IHvcQPhthYJ4KDg0Tww=="
+      }
+    }
   }
 }

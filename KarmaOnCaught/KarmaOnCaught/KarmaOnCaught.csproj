@@ -27,6 +27,12 @@
             <Private>false</Private>
         </Reference>
     </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="GitVersion.MsBuild" Version="6.8.1">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+    </ItemGroup>
     <Target Name="CopyAssets" AfterTargets="AfterBuild">
         <ItemGroup>
             <Assets Include="..\package\**\*.*"/>
