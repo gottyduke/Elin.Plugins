@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Emmersive.API.Services;
 using Emmersive.Contexts.Memory;
 using Emmersive.Helper;
 
@@ -132,5 +133,16 @@ public class RecentActionContext : ContextProviderBase
     public static void ClearSession(GameIOContext context)
     {
         _indexSinceStart = EClass.game.log.currentLogIndex - 1;
+
+        if (ResourceFetch.Context.Load<HashSet<string>>("action_filters", out var filters)) {
+            Filters = filters;
+        }
+    }
+
+    [ElinPostSave]
+    public static void SaveFilters(GameIOContext context)
+    {
+        Filters.Add(_push);
+        ResourceFetch.Context.Save("action_filters", Filters);
     }
 }
