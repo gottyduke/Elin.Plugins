@@ -75,7 +75,7 @@ jobs:
       - name: Setup DotNet
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 10
+          global-json-file: ${{ github.workspace }}\global.json
           cache: true
           cache-dependency-path: |
             ${{ inputs.include_cwl && format('{0}\CustomWhateverLoader\packages.lock.json', github.workspace) || '' }}
