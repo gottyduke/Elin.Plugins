@@ -5,7 +5,6 @@ namespace ElinTogether.Net.Steam;
 public sealed class SteamNetPeerStat
 {
     public float AvgBpsIn;
-
     public float AvgBpsOut;
     public float AvgPingMs;
     public long BytesReceived;

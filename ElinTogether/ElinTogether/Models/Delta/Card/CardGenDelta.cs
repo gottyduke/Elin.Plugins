@@ -65,8 +65,8 @@ public class CardGenDelta : ElinDelta
                 return true;
             }
 
-            var card = cardGenDelta.Card.Find()!;
-            if (card.parent is null && card.things.Count == 0 && !card.IsKeptAlive) {
+            var card = cardGenDelta.Card.Find();
+            if (card is null || (card.parent is null && card.things.Count == 0 && !card.IsKeptAlive)) {
                 return true;
             }
 

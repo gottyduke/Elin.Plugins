@@ -56,5 +56,19 @@ public static class UIHelper
 
             return card;
         }
+
+        public UIItem AddImageCard(Component parent, Sprite sprite)
+        {
+            var item = Util.Instantiate<UIItem>("UI/Element/Deco/ImageNote", parent);
+            var bg = item.image1;
+            var rt = bg.rectTransform;
+
+            bg.sprite = sprite;
+            if (bg.sprite != null) {
+                bg.SetNativeSize();
+                (rt.parent as RectTransform)?.sizeDelta = rt.sizeDelta;
+            }
+            return item;
+        }
     }
 }

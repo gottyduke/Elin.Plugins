@@ -14,7 +14,7 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.elintogether";
     internal const string Name = "Elin Together";
-    internal const string Version = "0.17.0";
+    internal const string Version = "0.18.0";
 
     internal static string BuildVersion => field ??= EmpMod.Assembly.GetName().Version.ToString();
 }
@@ -48,6 +48,7 @@ internal sealed class EmpMod : BaseUnityPlugin
 #endif
 
         ResourceFetch.InvalidateTemp();
+        EmpConfig.InvalidateConfigs();
         EmpConfig.EnableReloadWatcher();
 
         SteamNetworkingUtils.InitRelayNetworkAccess();
@@ -57,7 +58,7 @@ internal sealed class EmpMod : BaseUnityPlugin
         TitleButtonPatch.RegisterTitleButton(Scene.Mode.Title);
     }
 
-    private void OnApplicationQuit()
+    private void OnDestroy()
     {
         NetSession.Instance.RemoveComponent();
         StringAllocator.UnpinSharedStringHandles();

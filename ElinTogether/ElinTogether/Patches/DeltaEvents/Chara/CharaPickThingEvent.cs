@@ -16,7 +16,7 @@ internal static class CharaPickThingEvent
             return true;
         }
 
-        if (!CardCache.Contains(t)) {
+        if (NetSession.Instance.IsClient && !CardCache.Contains(t)) {
             return false;
         }
 
@@ -56,7 +56,7 @@ internal static class CharaPickOrDropEvent
             return true;
         }
 
-        if (!CardCache.Contains(t)) {
+        if (NetSession.Instance.IsClient && !CardCache.Contains(t)) {
             return false;
         }
 
@@ -87,7 +87,7 @@ internal static class CharaTrySmoothPickEvent
             return true;
         }
 
-        if (!CardCache.Contains(t)) {
+        if (NetSession.Instance.IsClient && !CardCache.Contains(t)) {
             return false;
         }
 

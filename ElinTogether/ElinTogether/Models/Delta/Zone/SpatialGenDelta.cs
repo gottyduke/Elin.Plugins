@@ -46,7 +46,7 @@ public class SpatialGenDelta : ElinDelta
             return;
         }
 
-        var (_, zoneId, zoneLv) = ParseZoneFullName(ZoneFullName);
+        var (_, zoneId, zoneLv) = Zone.ParseZoneFullName(ZoneFullName);
         var parent = game.spatials.Find(ParentZoneUid);
         remoteZone = SpatialGen.Create(zoneId, parent, true, Pos.X, Pos.Z) as Zone;
 
@@ -54,36 +54,13 @@ public class SpatialGenDelta : ElinDelta
             return;
         }
 
+        remoteZone.uid = ZoneUid;
+
         // update on overworld
         if (parent is Region region) {
             region.elomap.SetZone(Pos.X, Pos.Z, remoteZone, true);
         }
 
         SpatialGenEvent.HeldRefZones[ZoneUid] = remoteZone;
-    }
-
-    public static (string zoneType, string zoneId, int zoneLv) ParseZoneFullName(string zoneFullName)
-    {
-        var zoneType = "";
-        var zoneId = "";
-        var zoneLv = 0;
-        zoneFullName = zoneFullName.Replace('/', '@');
-        var zone = game.spatials.Find<Zone>(z => z.ZoneFullName == zoneFullName);
-        if (zone is not null) {
-            return (zoneType, zoneId, zoneLv);
-        }
-
-        var byLv = zoneFullName.LastIndexOf('@');
-        if (byLv > 0 && byLv < zoneFullName.Length - 1) {
-            zoneType = zoneFullName[..byLv];
-            zoneLv = zoneFullName[(byLv + 1)..].ToInt();
-        } else {
-            zoneType = zoneFullName.Replace("@", "");
-        }
-
-        zoneId = zoneType.Replace("Zone_", "");
-        zoneType = "Zone_" + zoneId;
-
-        return (zoneType, zoneId, zoneLv);
     }
 }

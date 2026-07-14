@@ -15,7 +15,7 @@ internal static class ZoneAddCardEvent
             return true;
         }
 
-        if (!CardCache.Contains(t)) {
+        if (NetSession.Instance.IsClient && !CardCache.Contains(t)) {
             return false;
         }
 

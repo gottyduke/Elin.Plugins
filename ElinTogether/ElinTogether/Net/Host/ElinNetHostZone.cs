@@ -16,8 +16,6 @@ internal partial class ElinNetHost
 
         EmpPop.Debug("Initiating zone state change");
 
-        // NOTE (Phase 1): Removed PauseWorldStateUpdate / Resume dance.
-        // Zone replication is now out-of-band; deltas & snapshots continue uninterrupted.
         var packet = ZoneDataResponse.Create(zone);
 
         if (peer is not null) {

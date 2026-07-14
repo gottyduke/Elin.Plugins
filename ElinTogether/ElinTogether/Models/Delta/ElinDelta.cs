@@ -42,6 +42,7 @@ namespace ElinTogether.Models;
 [Union(600, typeof(OnBarterDelta))]
 [Union(601, typeof(CardRendererTalkDelta))]
 [Union(602, typeof(MsgSayDelta))]
+[Union(603, typeof(EnemyVisibilityDelta))]
 // Inv
 [Union(700, typeof(InvOwnerOnProcessDelta))]
 [Union(701, typeof(InvRerollDelta))]

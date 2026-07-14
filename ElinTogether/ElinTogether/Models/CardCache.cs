@@ -28,6 +28,12 @@ public static class CardCache
             return;
         }
 
+        if (NetSession.Instance.IsClient) {
+            // if there is nothing wrong, this shouldn't happen
+            EmpLog.Warning("Card uid conflict");
+            return;
+        }
+
         // reallocate uid
         if (stored.IsGlobal || !card.IsGlobal) {
             card.uid++;
@@ -45,6 +51,11 @@ public static class CardCache
 
     internal static void Set(Card card)
     {
+        if (card.uid < 0) {
+            EmpLog.Warning("Added card with negative uid");
+            return;
+        }
+
         _cards[card.uid] = new(card);
         if (IsClient && card.parent is null) {
             KeepAlive(card);
@@ -58,7 +69,7 @@ public static class CardCache
 
     internal static Card? Find(int uid)
     {
-        if (_cards.TryGetValue(uid, out var reference)) {
+        if (uid >= 0 && _cards.TryGetValue(uid, out var reference)) {
             reference.TryGetTarget(out var card);
             return card;
         }

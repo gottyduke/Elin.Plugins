@@ -45,12 +45,12 @@ internal partial class EmpConfig
                 "请求失败后的重试次数",
                 new AcceptableValueRange<int>(0, 5)));
 
-        Server.ExtraSourceValidation = config.Bind(
+        Server.SourceValidationSet = config.Bind(
             "Server",
             "SourceValidation",
             "",
-            "Extra source validation sets\n" +
-            "额外的源表校验类型");
+            "Source validation sets\n" +
+            "源表校验类型");
 
         Server.SharedAverageSpeed = config.Bind(
             "Server",
@@ -60,6 +60,13 @@ internal partial class EmpConfig
             "Otherwise each player will have their own speed\n" +
             "所有玩家共享平均速度\n" +
             "否则所有人按各自速度行动");
+
+        Server.TurnBasedCombat = config.Bind(
+            "Server",
+            "TurnBasedCombatMode",
+            true,
+            "Players take turns in combat\n" +
+            "战斗中玩家轮流行动");
 
         Reload();
     }
@@ -73,7 +80,8 @@ internal partial class EmpConfig
 
     internal static class Server
     {
-        internal static ConfigEntry<string> ExtraSourceValidation { get; set; } = null!;
+        internal static ConfigEntry<string> SourceValidationSet { get; set; } = null!;
         internal static ConfigEntry<bool> SharedAverageSpeed { get; set; } = null!;
+        internal static ConfigEntry<bool> TurnBasedCombat { get; set; } = null!;
     }
 }

@@ -26,10 +26,15 @@ internal class LayerElinTogether : YKLayer<LayerCreationData>
             Lang.setting.hyphenation = false;
         }
 
-        _tabs.Add(CreateTab<TabLobbyBrowser>("emp_ui_tab_lobby", "emp_tab_lobby"));
+        if (NetSession.Instance.HasActiveConnection) {
+            _tabs.Add(CreateTab<TabSessionInfo>("emp_ui_session", "emp_tab_session"));
+        }
+
         if (NetSession.Instance.Connection is ElinNetHost) {
             _tabs.Add(CreateTab<TabServerConfiguration>("emp_ui_tab_server", "emp_tab_server"));
         }
+
+        _tabs.Add(CreateTab<TabLobbyBrowser>("emp_ui_tab_lobby", "emp_tab_lobby"));
     }
 
     public override void OnAfterAddLayer()

@@ -25,6 +25,10 @@ internal static class CardGenEvent
             return;
         }
 
+        if (ZoneActivateEvent.IsActivating) {
+            return;
+        }
+
         // we use negative uid to avoid conflicting with host
         if (connection.IsClient) {
             __result.uid = -__result.uid;

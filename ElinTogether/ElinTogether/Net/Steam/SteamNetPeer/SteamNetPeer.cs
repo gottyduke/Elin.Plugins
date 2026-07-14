@@ -129,15 +129,15 @@ internal class SteamNetPeer : ISteamNetPeer, IDisposable
         Stat.LastUpdated = DateTime.UtcNow;
 
         // use ema to smooth out the spikes
-        Stat.AvgPingMs = Stat.AvgPingMs == 0
+        Stat.AvgPingMs = Stat.AvgPingMs == 0f
             ? Stat.LastPingMs
             : Mathf.Lerp(Stat.AvgPingMs, Stat.LastPingMs, pingAlpha);
 
-        Stat.AvgBpsOut = Stat.AvgBpsOut == 0
+        Stat.AvgBpsOut = Stat.AvgBpsOut == 0f
             ? status.m_flOutBytesPerSec
             : Mathf.Lerp(Stat.AvgBpsOut, status.m_flOutBytesPerSec, bandwidthAlpha);
 
-        Stat.AvgBpsIn = Stat.AvgBpsIn == 0
+        Stat.AvgBpsIn = Stat.AvgBpsIn == 0f
             ? status.m_flInBytesPerSec
             : Mathf.Lerp(Stat.AvgBpsIn, status.m_flInBytesPerSec, bandwidthAlpha);
     }

@@ -3,9 +3,9 @@ name: Elin Together CI Deploy
 on:
   push:
     branches: ["*"]
-    paths: ["ElinTogether/ElinTogether/**"]
+    paths: ["ElinTogether/**"]
   pull_request_target:
-    paths: ["ElinTogether/ElinTogether/**"]
+    paths: ["ElinTogether/**"]
   workflow_dispatch:
 
 permissions:
@@ -18,7 +18,7 @@ jobs:
     secrets: inherit
     with:
       plugin_name: ElinTogether
-      plugin_path: ElinTogether\ElinTogether
+      plugin_path: ElinTogether
       tag_prefix: EMP
       release_name_prefix: "Elin Together - Preview"
       artifact_name_prefix: emp

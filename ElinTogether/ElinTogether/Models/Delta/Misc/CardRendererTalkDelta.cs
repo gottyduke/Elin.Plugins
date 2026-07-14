@@ -17,10 +17,6 @@ public class CardRendererTalkDelta : ElinDelta
 
     protected override void OnApply(ElinNetBase net)
     {
-        if (net is ElinNetHost) {
-            return;
-        }
-
         if (Card.Find() is not { } card) {
             return;
         }

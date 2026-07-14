@@ -1,3 +1,4 @@
+using ElinTogether.Common;
 using ElinTogether.Models;
 using Steamworks;
 using UnityEngine.Events;
@@ -21,13 +22,20 @@ internal partial class ElinNetClient
         content.transform.Find("Mode").SetActive(false);
 
         // swap out the click event delegate
+        var ready = false;
         var button = content.transform.Find("ButtonEmbark")!.GetComponentInChildren<UIButton>();
         button.onClick.SetPersistentListenerState(0, UnityEventCallState.Off);
         button.onClick.AddListener(() => {
             Host.Send(request.Ready());
             game.Kill();
+            ready = true;
             ui.RemoveLayer(embark);
             core.game = null;
+        });
+        embark.SetOnKill(() => {
+            if (!ready) {
+                Socket.Disconnect(Host, EmpDisconnectInfo.ClientCancel);
+            }
         });
     }
 

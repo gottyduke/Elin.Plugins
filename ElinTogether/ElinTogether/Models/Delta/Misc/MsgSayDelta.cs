@@ -24,10 +24,6 @@ public class MsgSayDelta : ElinDelta
 
     protected override void OnApply(ElinNetBase net)
     {
-        if (net is ElinNetHost) {
-            return;
-        }
-
         Msg.SetColor(new Color {
             r = R,
             g = G,

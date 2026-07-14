@@ -3,6 +3,9 @@
 A WIP attempt of bringing networking feature to Elin.
 
 ## Play
+
+Requires [YK Framework](https://steamcommunity.com/sharedfiles/filedetails/?id=3400020753).
+
 To play with friends, it's recommended to use a minimal modlist and keep them consistent for all players. Use Steam Workshop Collections for that purpose.
 
 To be a host, start the game, load into a save or make a new game(recommended), and open up the panel from Esc-Mods-Elin Together.
@@ -59,25 +62,23 @@ ElinGamePath/
 │  │  ├─ *.dll
 ```
 
-This project references Custom Whatever Loader, you can get it from Steam Workshop, GitHub tagged releases, or build from source within this repo. If building with Steam Workshop version, environment variable `SteamContentPath` must be set to Steam `workshop/content` folder.
-
 This project uses C# 14, you need to install [.NET SDK 10.0](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) to compile correctly.
 
 Clone the project:
 ```ps
-git clone https://github.com/gottyduke/Elin.Plugins.git
-cd Elin.Plugins
+git clone https://github.com/ElinTogether/ElinTogether.git
+cd ElinTogether
 ```
 
 Install the deps:
 ```ps
-dotnet restore ./ElinTogether/ElinTogether --locked-mode
+dotnet restore ./ElinTogether --locked-mode
 ```
 
 Build the project:
 ```ps
-dotnet build ./ElinTogether/ElinTogether -c Debug -o ./out --no-restore
+dotnet build ./ElinTogether -c Debug -o ./out --no-restore
 ```
 
 ---
-<p align="center">MIT License, 2024-present DK</p>
+<p align="center">MIT License, 2024-present</p>

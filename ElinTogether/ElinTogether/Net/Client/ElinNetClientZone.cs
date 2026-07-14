@@ -1,7 +1,8 @@
+using System;
 using ElinTogether.Common;
-using ElinTogether.Helper.Extensions;
 using ElinTogether.Models;
 using ElinTogether.Patches;
+using EModding.Helper.Runtime.Exceptions;
 using ReflexCLI.Attributes;
 using Serilog.Context;
 
@@ -39,27 +40,31 @@ internal partial class ElinNetClient
         if (remoteZone is null) {
             EmpLog.Information("Remote zone does not exist, waiting for new spatial gen");
 
-            var probeZone = response.Zone.Decompress<Zone>();
-            var parent = spatial.Find(probeZone.parent.uid);
+            try {
+                var probeZone = response.Zone.Decompress<Zone>();
+                var parent = spatial.Find(probeZone.parent.uid);
 
-            if (parent is null) {
-                EmpLog.Warning("Remote zone parent does not exist in current game");
+                if (parent is null) {
+                    EmpLog.Warning("Remote zone parent does not exist in current game");
 
-                // TODO: add reconnect logic to resync save probe
-                Socket.Disconnect(Host, EmpDisconnectInfo.InvalidZone);
-                return;
-            }
+                    // TODO: add reconnect logic to resync save probe
+                    Socket.Disconnect(Host, EmpDisconnectInfo.InvalidZone);
+                    return;
+                }
 
-            // swap out the serialized parent
-            probeZone.parent = parent;
-            spatial.map[response.ZoneUid] = remoteZone = probeZone;
+                // swap out the serialized parent
+                probeZone.parent = parent;
+                spatial.map[response.ZoneUid] = remoteZone = probeZone;
 
-            if (parent is Region region) {
-                region.elomap.SetZone(probeZone.x, probeZone.y, remoteZone, true);
+                if (parent is Region region) {
+                    region.elomap.SetZone(probeZone.x, probeZone.y, remoteZone, true);
+                }
+            } catch (Exception ex) {
+                DebugThrow.Void(ex);
             }
         }
 
-        if (remoteZone.ZoneFullName != response.ZoneFullName) {
+        if (remoteZone?.ZoneFullName != response.ZoneFullName) {
             EmpLog.Warning("Zone state mismatch");
 
             // TODO: add reconnect logic to resync save probe

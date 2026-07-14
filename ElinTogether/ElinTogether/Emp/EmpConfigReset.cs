@@ -19,13 +19,16 @@ internal partial class EmpConfig
     internal static void Reset()
     {
         var config = EmpMod.Instance.Config;
+        File.WriteAllText(config.ConfigFilePath, "");
 
-        foreach (var entry in config.Values) {
-            entry.SetSerializedValue(entry.DefaultValue.ToString());
-        }
+        config.SaveOnConfigSet = false;
+        config.Clear();
+
+        Bind();
+        Reload();
 
         config.Save();
-        Reload();
+        config.SaveOnConfigSet = true;
 
         EmpPop.PopupInternal("emp_ui_config_reset".Loc(CurrentVersion));
     }

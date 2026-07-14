@@ -24,7 +24,7 @@ internal static class InvOwnerOnProcessEvent
             return;
         }
 
-        if (!CardCache.Contains(t)) {
+        if (NetSession.Instance.IsClient && !CardCache.Contains(t)) {
             return;
         }
 

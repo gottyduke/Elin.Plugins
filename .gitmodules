@@ -4,3 +4,6 @@
 [submodule "ExpandedMoongate/ExpandedMoongate.GCPWorker"]
 	path = ExpandedMoongate/ExpandedMoongate.GCPWorker
 	url = https://github.com/gottyduke/Elin.ExpandedMoongate.GCPWorker
+[submodule "ElinTogether"]
+	path = ElinTogether
+	url = https://github.com/ElinTogether/ElinTogether.git

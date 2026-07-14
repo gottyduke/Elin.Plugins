@@ -144,6 +144,16 @@ internal partial class ElinNetHost
 
     private void UpdateRemotePlayerStates()
     {
+        // collect peer connection stats into player states
+        foreach (var peer in Socket.Peers) {
+            if (States.TryGetValue(peer.Id, out var state)) {
+                state.LastPingMs = peer.Stat.LastPingMs;
+                state.AvgPingMs = peer.Stat.AvgPingMs;
+                state.ConnectionQualityLocal = peer.Stat.ConnectionQualityLocal;
+                state.ConnectionQualityRemote = peer.Stat.ConnectionQualityRemote;
+            }
+        }
+
         Broadcast(SessionPlayersSnapshot.Create());
     }
 
