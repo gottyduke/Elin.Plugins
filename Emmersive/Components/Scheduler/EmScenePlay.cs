@@ -73,10 +73,11 @@ public partial class EmScheduler
 
     internal static async UniTask ScenePlayAsync(ContextBuilder contextBuilder, int retries = -1)
     {
-        await UniTask.SwitchToThreadPool();
+        // get semaphore first
+        await Semaphore.WaitAsync(UniTasklet.SceneCts.Token);
 
         try {
-            await Semaphore.WaitAsync(UniTasklet.SceneCts.Token);
+            await UniTask.SwitchToThreadPool();
 
             var context = contextBuilder.Build().ToHistory();
             await ScenePlayAsync(context, retries);
