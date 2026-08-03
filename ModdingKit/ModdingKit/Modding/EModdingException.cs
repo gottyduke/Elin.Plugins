@@ -26,7 +26,7 @@ internal partial class EModdingKit
             return;
         }
 
-        if (!Core.Instance.config.other.exceptionPopup) {
+        if (!Core.Instance.config.other.exceptionPopup2) {
             return;
         }
 
