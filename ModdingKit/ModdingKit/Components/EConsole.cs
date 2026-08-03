@@ -77,6 +77,7 @@ internal class EConsole : EMono
         var mode = enable ? ReleaseMode.Debug : ReleaseMode.Public;
         core.SetReleaseMode(mode);
         core.debug.enable = enable;
+        core.debug.Init();
 
         ReloadSources();
         if (enable) {
