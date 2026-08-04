@@ -130,6 +130,10 @@ public class ExceptionProfile(string message)
 
     private void ClickHandler(EGui gui, Event eventData)
     {
+        if (eventData.type is not EventType.MouseDown) {
+            return;
+        }
+
         switch (eventData.button) {
             case 0 when State is AnalyzeState.Completed:
                 GUIUtility.systemCopyBuffer = $"{message}\n```ts\n{Result}\n```".RemoveAllTags();
@@ -154,11 +158,11 @@ public class ExceptionProfile(string message)
 
     private IEnumerator DeferredAnalyzer()
     {
+        var oldFilter = Logger.ChannelFilter;
+        Logger.ChannelFilter = Logger.LogChannel.None;
+
         try {
             Frames.Clear();
-
-            var oldFilter = Logger.ChannelFilter;
-            Logger.ChannelFilter = Logger.LogChannel.None;
 
             var sb = new StringBuilder();
             sb.AppendLine("es_ui_callstack".lang());
@@ -168,42 +172,10 @@ public class ExceptionProfile(string message)
                     continue;
                 }
 
-                var mono = MonoFrame.GetFrame(frame).Parse();
-                if (Frames.Find(f => f.DetailedMethodCall == mono.DetailedMethodCall) is not null) {
-                    continue;
-                }
-
-                Frames.Add(mono);
-
-                switch (mono.FrameType) {
-                    case MonoFrame.StackFrameType.Rethrow:
-                        sb.AppendLine("---");
-                        break;
-                    case MonoFrame.StackFrameType.Unknown:
-                        sb.AppendLine(mono.SanitizedMethodCall.ToTruncateString(150));
-                        break;
-                    case MonoFrame.StackFrameType.Method or MonoFrame.StackFrameType.DynamicMethod:
-                        try {
-                            if (IsMissingMethod && !mono.IsVendorMethod) {
-                                mono.Method!.TestIncompatibleIl();
-                            }
-
-                            sb.AppendLine(mono.DetailedMethodCall);
-
-                            var info = mono.Method.GetPatchInfo();
-                            if (info is not null) {
-                                if (IsMissingMethod) {
-                                    info.TestIncompatiblePatch();
-                                }
-
-                                info.DumpPatchDetails(sb);
-                            }
-                        } catch {
-                            sb.AppendLine(mono.SanitizedMethodCall.ToTruncateString(150));
-                            // noexcept
-                        }
-
-                        break;
+                try {
+                    AnalyzeFrame(frame, sb);
+                } catch {
+                    // noexcept
                 }
             }
 
@@ -211,15 +183,54 @@ public class ExceptionProfile(string message)
             Debug.Log(Result);
 
             Result = Result.TruncateAllLines(150);
-
-            State = AnalyzeState.Completed;
-
-            Logger.ChannelFilter = oldFilter;
         } catch {
-            State = AnalyzeState.Completed;
             // noexcept
+        } finally {
+            State = AnalyzeState.Completed;
+            Logger.ChannelFilter = oldFilter;
         }
 
         yield break;
+    }
+
+    private void AnalyzeFrame(string frame, StringBuilder sb)
+    {
+        var mono = MonoFrame.GetFrame(frame).Parse();
+        if (Frames.Find(f => f.DetailedMethodCall == mono.DetailedMethodCall) is not null) {
+            return;
+        }
+
+        Frames.Add(mono);
+
+        switch (mono.FrameType) {
+            case MonoFrame.StackFrameType.Rethrow:
+                sb.AppendLine("---");
+                break;
+            case MonoFrame.StackFrameType.Unknown:
+                sb.AppendLine(mono.SanitizedMethodCall.ToTruncateString(150));
+                break;
+            case MonoFrame.StackFrameType.Method or MonoFrame.StackFrameType.DynamicMethod:
+                try {
+                    if (IsMissingMethod && !mono.IsVendorMethod) {
+                        mono.Method!.TestIncompatibleIl();
+                    }
+
+                    sb.AppendLine(mono.DetailedMethodCall);
+
+                    var info = mono.Method.GetPatchInfo();
+                    if (info is not null) {
+                        if (IsMissingMethod) {
+                            info.TestIncompatiblePatch();
+                        }
+
+                        info.DumpPatchDetails(sb);
+                    }
+                } catch {
+                    sb.AppendLine(mono.SanitizedMethodCall.ToTruncateString(150));
+                    // noexcept
+                }
+
+                break;
+        }
     }
 }
