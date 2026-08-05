@@ -7,7 +7,7 @@ using UnityEngine;
 namespace EModding.Components;
 
 [ConsoleCommandClassCustomizer("mod")]
-internal class EConsole : EMono
+internal partial class EConsole : EMono
 {
     private void Update()
     {
