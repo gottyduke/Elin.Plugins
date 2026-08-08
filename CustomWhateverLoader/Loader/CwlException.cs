@@ -9,7 +9,7 @@ internal partial class CwlMod
     private static void SetupExceptionHook()
     {
         //Application.logMessageReceived += ExceptionHandler;
-        Core.Instance.config.other.exceptionPopup = CwlConfig.ExceptionPopup;
+        Core.Instance.config.other.exceptionPopup2 |= CwlConfig.ExceptionPopup;
     }
 
     private static void ExceptionHandler(string message, string stackTrace, LogType type)
