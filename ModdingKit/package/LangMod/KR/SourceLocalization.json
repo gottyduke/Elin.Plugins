@@ -34,6 +34,7 @@
   "LangGeneral.mod_info_old_version.text": "#1용으로 제작됨 (현재 Mod API #2)",
   "LangGeneral.mod_info_requires.text": "선행 모드",
   "LangGeneral.mod_info_tags.text": "태그",
+  "LangGeneral.mod_info_workshop.text": "창작마당 페이지 열기",
   "LangGeneral.mod_preset.text": "프리셋",
   "LangGeneral.mod_preset_applied.text": "프리셋을 적용했습니다: #1 (활성화 #2개, 누락 #3개). 게임을 재시작하면 적용됩니다.",
   "LangGeneral.mod_preset_apply.text": "적용",

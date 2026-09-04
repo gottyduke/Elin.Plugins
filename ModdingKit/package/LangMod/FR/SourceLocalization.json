@@ -34,6 +34,7 @@
   "LangGeneral.mod_info_old_version.text": "Conçu pour #1 (API de mods actuelle : #2)",
   "LangGeneral.mod_info_requires.text": "Requiert",
   "LangGeneral.mod_info_tags.text": "Tags",
+  "LangGeneral.mod_info_workshop.text": "Ouvrir la page Workshop",
   "LangGeneral.mod_preset.text": "Préréglages",
   "LangGeneral.mod_preset_applied.text": "Préréglage appliqué : #1 (#2 mods activés, #3 manquants). Redémarrez le jeu pour l'appliquer.",
   "LangGeneral.mod_preset_apply.text": "Appliquer",

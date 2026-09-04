@@ -34,6 +34,7 @@
   "LangGeneral.mod_info_old_version.text": "#1 için yapıldı (mevcut Mod API: #2)",
   "LangGeneral.mod_info_requires.text": "Gerektirir",
   "LangGeneral.mod_info_tags.text": "Etiketler",
+  "LangGeneral.mod_info_workshop.text": "Atölye sayfasını aç",
   "LangGeneral.mod_preset.text": "Hazır ayarlar",
   "LangGeneral.mod_preset_applied.text": "Hazır ayar uygulandı: #1 (#2 mod etkin, #3 eksik). Uygulanması için oyunu yeniden başlatın.",
   "LangGeneral.mod_preset_apply.text": "Uygula",

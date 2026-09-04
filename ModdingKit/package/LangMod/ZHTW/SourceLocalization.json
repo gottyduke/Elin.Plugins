@@ -34,6 +34,7 @@
   "LangGeneral.mod_info_old_version.text": "面向 #1 製作（目前 Mod API 為 #2）",
   "LangGeneral.mod_info_requires.text": "前置 Mod",
   "LangGeneral.mod_info_tags.text": "標籤",
+  "LangGeneral.mod_info_workshop.text": "開啟創意工坊頁面",
   "LangGeneral.mod_preset.text": "預設集",
   "LangGeneral.mod_preset_applied.text": "已套用預設集：#1（啟用 #2 個，缺失 #3 個）。重新啟動遊戲後生效。",
   "LangGeneral.mod_preset_apply.text": "套用",

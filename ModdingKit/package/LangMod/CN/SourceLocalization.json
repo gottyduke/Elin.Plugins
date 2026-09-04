@@ -34,6 +34,7 @@
   "LangGeneral.mod_info_old_version.text": "面向 #1 制作（当前 Mod API 为 #2）",
   "LangGeneral.mod_info_requires.text": "前置 Mod",
   "LangGeneral.mod_info_tags.text": "标签",
+  "LangGeneral.mod_info_workshop.text": "打开创意工坊页面",
   "LangGeneral.mod_preset.text": "预设",
   "LangGeneral.mod_preset_applied.text": "已应用预设：#1（启用 #2 个，缺失 #3 个）。重启游戏后生效。",
   "LangGeneral.mod_preset_apply.text": "应用",

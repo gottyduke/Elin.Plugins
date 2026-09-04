@@ -34,6 +34,7 @@
   "LangGeneral.mod_info_old_version.text": "Được tạo cho #1 (Mod API hiện tại là #2)",
   "LangGeneral.mod_info_requires.text": "Mod yêu cầu",
   "LangGeneral.mod_info_tags.text": "Thẻ",
+  "LangGeneral.mod_info_workshop.text": "Mở trang Workshop",
   "LangGeneral.mod_preset.text": "Cấu hình sẵn",
   "LangGeneral.mod_preset_applied.text": "Đã áp dụng cấu hình sẵn: #1 (bật #2, thiếu #3). Khởi động lại trò chơi để có hiệu lực.",
   "LangGeneral.mod_preset_apply.text": "Áp dụng",

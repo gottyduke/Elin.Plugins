@@ -34,6 +34,7 @@
   "LangGeneral.mod_info_old_version.text": "Erstellt für #1 (aktuelle Mod-API: #2)",
   "LangGeneral.mod_info_requires.text": "Benötigt",
   "LangGeneral.mod_info_tags.text": "Tags",
+  "LangGeneral.mod_info_workshop.text": "Workshop-Seite öffnen",
   "LangGeneral.mod_preset.text": "Voreinstellungen",
   "LangGeneral.mod_preset_applied.text": "Voreinstellung angewendet: #1 (#2 Mods aktiviert, #3 fehlen). Starte das Spiel neu, um sie zu übernehmen.",
   "LangGeneral.mod_preset_apply.text": "Anwenden",

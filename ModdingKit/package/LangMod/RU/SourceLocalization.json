@@ -34,6 +34,7 @@
   "LangGeneral.mod_info_old_version.text": "Создан для #1 (текущий Mod API: #2)",
   "LangGeneral.mod_info_requires.text": "Требует",
   "LangGeneral.mod_info_tags.text": "Теги",
+  "LangGeneral.mod_info_workshop.text": "Открыть страницу в Мастерской",
   "LangGeneral.mod_preset.text": "Пресеты",
   "LangGeneral.mod_preset_applied.text": "Пресет применён: #1 (включено #2, отсутствует #3). Перезапустите игру, чтобы изменения вступили в силу.",
   "LangGeneral.mod_preset_apply.text": "Применить",
