@@ -1,14 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using HarmonyLib;
 
 namespace EModding.Helper.Runtime.Exceptions;
 
 public class MonoFrame
 {
+    public enum FrameResolver
+    {
+        None,
+        Harmony,
+        MonoJit,
+        String,
+    }
+
     public enum StackFrameType
     {
         Unknown,
@@ -19,7 +29,8 @@ public class MonoFrame
 
     private static readonly Dictionary<string, MonoFrame> _cached = [];
 
-    private static readonly HashSet<string> _vendorExclusion = new(StringComparer.Ordinal) {
+    private static readonly HashSet<string> _vendorExclusion = [
+        with(StringComparer.Ordinal),
         "Elin.",
         "UnityEngine.",
         "Plugins.",
@@ -29,7 +40,7 @@ public class MonoFrame
         "0Harmony.",
         "LZ4.",
         "Newtonsoft.Json.",
-    };
+    ];
 
     private MonoFrame(string stackFrame)
     {
@@ -37,7 +48,9 @@ public class MonoFrame
     }
 
     public StackFrameType FrameType { get; private set; } = StackFrameType.Unknown;
+    public FrameResolver Resolver { get; private set; } = FrameResolver.None;
 
+    public bool IsJitted { get; private set; }
     public bool Parsed { get; private set; }
 
     public MethodBase? Method { get; private set; }
@@ -64,16 +77,73 @@ public class MonoFrame
 
     public static MonoFrame GetFrame(MethodBase method)
     {
-        var frame = method.ToString();
+        var frame = $"{method.DeclaringType?.FullName ?? "?"}::{method}";
         if (!_cached.TryGetValue(frame, out var profile)) {
             profile = _cached[frame] = new(frame) {
                 Parsed = true,
                 Method = method,
                 FrameType = StackFrameType.Method,
+                SanitizedMethodCall = $"{method.DeclaringType?.FullName ?? "?"}.{method.Name}",
             };
         }
 
         return profile;
+    }
+
+    public static MonoFrame GetFrame(StackFrame frame)
+    {
+        var address = MonoNative.GetMethodAddress(frame);
+        var jitted = MonoNative.IsJitted(address);
+
+        if (ResolveMethod(frame, out var resolver) is { } method) {
+            return GetFrame(method).Mark(resolver, jitted);
+        }
+
+        var raw = frame.GetFieldValue("internalMethodName") as string ??
+                  MonoNative.MethodNameFromAddress(address) ??
+                  frame.ToString();
+        return GetFrame(raw).Parse().Mark(FrameResolver.String, jitted);
+    }
+
+    private static MethodBase? ResolveMethod(StackFrame frame, out FrameResolver resolver)
+    {
+        resolver = FrameResolver.None;
+
+        try {
+            if (Harmony.GetOriginalMethodFromStackframe(frame) is { } original) {
+                resolver = FrameResolver.Harmony;
+                return original;
+            }
+        } catch {
+            // noexcept
+        }
+
+        try {
+            if (frame.GetMethod() is { } method) {
+                resolver = FrameResolver.Harmony;
+                return method;
+            }
+        } catch {
+            // noexcept
+        }
+
+        if (MonoNative.MethodFromStackFrame(frame) is { } jitted) {
+            resolver = FrameResolver.MonoJit;
+            return jitted;
+        }
+
+        return null;
+    }
+
+    private MonoFrame Mark(FrameResolver resolver, bool jitted)
+    {
+        if (Resolver is FrameResolver.None) {
+            Resolver = resolver;
+        }
+
+        IsJitted |= jitted;
+
+        return this;
     }
 
     public static bool HasFrame(string frame)

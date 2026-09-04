@@ -30,6 +30,8 @@ public class ExceptionProfile(string message)
     ];
     private EGui? _gui;
 
+    private StackFrame[]? _runtimeFrames;
+
     public List<MonoFrame> Frames => field ??= [];
 
     public AnalyzeState State { get; private set; } = AnalyzeState.NotStarted;
@@ -53,6 +55,8 @@ public class ExceptionProfile(string message)
             profile.Occurrences++;
         }
 
+        profile._runtimeFrames ??= CaptureFrames(ExceptionRelay.Take(stackTrace, message));
+
         return profile;
     }
 
@@ -63,16 +67,23 @@ public class ExceptionProfile(string message)
         }
 
         var exp = GetFromStackTrace(Regex.Replace(exception.StackTrace.IsEmpty(""), @"^(\s+at\s)", ""), exception.Message);
-
-        var stackTrace = new StackTrace(exception);
-        foreach (var frame in stackTrace.GetFrames() ?? []) {
-            var method = frame.GetMethod();
-            exp.Frames.Add(method is not null
-                ? MonoFrame.GetFrame(method)
-                : MonoFrame.GetFrame(frame.GetFieldValue("internalMethodName") as string));
-        }
+        exp._runtimeFrames = CaptureFrames(exception) ?? exp._runtimeFrames;
 
         return exp;
+    }
+
+    private static StackFrame[]? CaptureFrames(Exception? exception)
+    {
+        if (exception is null) {
+            return null;
+        }
+
+        try {
+            return new StackTrace(exception).GetFrames();
+        } catch {
+            return null;
+            // noexcept
+        }
     }
 
     public static void DefaultExceptionHandler(Exception exception)
@@ -167,15 +178,25 @@ public class ExceptionProfile(string message)
             var sb = new StringBuilder();
             sb.AppendLine("es_ui_callstack".lang());
 
-            foreach (var frame in StackTrace.SplitByNewline().Distinct()) {
-                if (string.IsNullOrEmpty(frame)) {
-                    continue;
+            if (_runtimeFrames is { Length: > 0 } runtimeFrames) {
+                foreach (var frame in runtimeFrames) {
+                    try {
+                        AnalyzeFrame(MonoFrame.GetFrame(frame), sb);
+                    } catch {
+                        // noexcept
+                    }
                 }
+            } else {
+                foreach (var frame in StackTrace.SplitByNewline().Distinct()) {
+                    if (string.IsNullOrEmpty(frame)) {
+                        continue;
+                    }
 
-                try {
-                    AnalyzeFrame(frame, sb);
-                } catch {
-                    // noexcept
+                    try {
+                        AnalyzeFrame(MonoFrame.GetFrame(frame).Parse(), sb);
+                    } catch {
+                        // noexcept
+                    }
                 }
             }
 
@@ -193,9 +214,8 @@ public class ExceptionProfile(string message)
         yield break;
     }
 
-    private void AnalyzeFrame(string frame, StringBuilder sb)
+    private void AnalyzeFrame(MonoFrame mono, StringBuilder sb)
     {
-        var mono = MonoFrame.GetFrame(frame).Parse();
         if (Frames.Find(f => f.DetailedMethodCall == mono.DetailedMethodCall) is not null) {
             return;
         }
@@ -232,5 +252,25 @@ public class ExceptionProfile(string message)
 
                 break;
         }
+    }
+
+    public static string ReportFrameResolver()
+    {
+        var sb = new StringBuilder();
+
+        sb.AppendLine($"mono jit lookup : {(MonoNative.Available ? "active" : "unavailable")}");
+        sb.AppendLine($"exception relay : {ExceptionRelay.Status}");
+        sb.AppendLine("sample frames    :");
+
+        try {
+            throw new InvalidOperationException("frame resolver");
+        } catch (Exception ex) {
+            foreach (var frame in new StackTrace(ex).GetFrames() ?? []) {
+                var mono = MonoFrame.GetFrame(frame);
+                sb.AppendLine($" {mono.Resolver,-8}{(mono.IsJitted ? "jit" : "   ")}\t{mono.DetailedMethodCall}".RemoveAllTags());
+            }
+        }
+
+        return sb.ToString();
     }
 }

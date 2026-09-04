@@ -24,12 +24,11 @@ public static class MethodInfoDetail
             }
 
             if (MethodCompatibility.CheckedCalls.GetValueOrDefault(methodInfo)) {
-                name = "es_ui_invalid_patch".lang() + name;
+                name = "es_ui_invalid_patch".lang(EClass.core.version.GetText()) + name;
             }
 
             return $"{name}.{methodInfo.Name}";
         }
-
 
         private string GetAssemblyQualifiedDetail(bool full, bool colorize, bool includeParams)
         {

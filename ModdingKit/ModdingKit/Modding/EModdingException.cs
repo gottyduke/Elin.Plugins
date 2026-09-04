@@ -8,6 +8,7 @@ internal partial class EModdingKit
 {
     private static void SetupExceptionHook()
     {
+        ExceptionRelay.Install();
         Application.logMessageReceived += ExceptionHandler;
     }
 
