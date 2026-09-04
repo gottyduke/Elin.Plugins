@@ -16,7 +16,8 @@ internal class EDebugInfo : EMono
             return;
         }
 
-        if (Input.GetKey(KeyCode.LeftAlt) && Input.GetKey(KeyCode.M)) {
+        var alt = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
+        if (alt && Input.GetKey(KeyCode.M)) {
             if (_progress is null) {
                 Show();
             }

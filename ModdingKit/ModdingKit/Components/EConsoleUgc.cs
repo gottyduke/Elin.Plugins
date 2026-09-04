@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using EModding.Helper;
@@ -17,16 +18,11 @@ internal partial class EConsole
     [ConsoleCommand("ugc.list")]
     internal static void CheckWorkshopItems()
     {
-        var query = UgcQuery.GetMyPublished();
-        query.SetReturnKeyValueTags(true);
-        query.SetReturnMetadata(true);
-        query.Execute(OnQueryComplete);
-
+        Steam.QueryAllMyPublished(OnQueryComplete, ex => EGui.CreatePopup(ex));
         return;
 
-        void OnQueryComplete(UgcQuery q)
+        void OnQueryComplete(List<WorkshopItem> list)
         {
-            var list = q.ResultsList;
             var owner = App.Client.Owner;
             var login = UserData.Me;
 

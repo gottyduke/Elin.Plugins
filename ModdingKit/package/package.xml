@@ -5,6 +5,6 @@
   <author>DK</author>
   <builtin>true</builtin>
   <loadPriority>-90</loadPriority>
-  <version>0.23.317</version>
-  <description />
+  <version>0.23.336</version>
+  <description>API layer, error reporting and CScripting for Elin mods.</description>
 </Meta>
