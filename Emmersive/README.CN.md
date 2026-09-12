@@ -8,16 +8,15 @@
 
 使用 AI 大语言模型增强 Elin，让世界充满生机，生成具有环境感知的对话。
 
-## 依赖 Custom Whatever Loader & YKFramework
+## 依赖 YKFramework
 
-* [Custom Whatever Loader](https://steamcommunity.com/sharedfiles/filedetails/?id=3370512305) (使用**正确的**版本)
 * [YKFramework](https://steamcommunity.com/sharedfiles/filedetails/?id=3400020753)
 
 将这俩模组置于 Elin with AI 上方。
 
 ## 功能与饼
 
-这是一个**测试版**，用于收集反馈并优化。
+这是一个 **测试版**，用于收集反馈并优化。
 
 * [x] 支持 Google AI Studio (Gemini)
 * [x] 支持 OpenAI chatGPT

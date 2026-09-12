@@ -8,9 +8,8 @@
 
 Power up Elin with AI and LLMs, make the world alive by generating contextual aware conversations.
 
-## Requires Custom Whatever Loader & YKFramework
+## Requires YKFramework
 
-+ [Custom Whatever Loader](https://steamcommunity.com/sharedfiles/filedetails/?id=3370512305) (Pick Stable **OR** Nightly)
 + [YKFramework](https://steamcommunity.com/sharedfiles/filedetails/?id=3400020753)
 
 ## Features & Todos:
