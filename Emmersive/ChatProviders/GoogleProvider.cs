@@ -40,6 +40,14 @@ public class GoogleProvider(string apiKey) : ChatProviderBase(apiKey)
         },
     };
 
+    protected override PromptExecutionSettings RawExecutionSettings =>
+        field ??= new GeminiPromptExecutionSettings {
+            ResponseMimeType = "application/json",
+            ThinkingConfig = new() {
+                ThinkingBudget = 0,
+            },
+        };
+
     public override void MergeExtensionRequest(IDictionary<string, object> data, HttpRequestMessage request)
     {
         if (!data.TryGetValue("generationConfig", out var geminiRequest) ||

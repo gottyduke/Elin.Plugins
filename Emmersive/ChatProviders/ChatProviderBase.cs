@@ -14,10 +14,12 @@ namespace Emmersive.ChatProviders;
 [JsonObject(MemberSerialization.OptIn)]
 public abstract partial class ChatProviderBase : IChatProvider, IExtensionRequestMerger
 {
-    private DateTime _cooldownUntil = DateTime.MinValue;
-    private float _timeoutIncremental;
+    private static readonly AsyncLocal<bool> _rawOutput = new();
 
     protected string? UnavailableReason;
+
+    private DateTime _cooldownUntil = DateTime.MinValue;
+    private float _timeoutIncremental;
 
     protected ChatProviderBase(string apiKey)
     {
@@ -34,6 +36,10 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionReques
     public static int ServiceCount { get; internal set; }
 
     public abstract PromptExecutionSettings ExecutionSettings { get; set; }
+
+    protected static bool RawOutput => _rawOutput.Value;
+
+    protected virtual PromptExecutionSettings RawExecutionSettings => ExecutionSettings;
 
     protected string ApiKey { get; set; }
 
@@ -88,16 +94,20 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionReques
         var timeout = EmConfig.Policy.Timeout.Value;
 
         var service = kernel.GetRequiredService<IChatCompletionService>(Id);
-        var task = service.GetChatMessageContentAsync(context, ExecutionSettings, kernel, token)
-            .AsUniTask(false)
-            .Preserve();
+        var settings = RawOutput ? RawExecutionSettings : ExecutionSettings;
 
-        var tasklet = await UniTask.WhenAny(task, UniTask.Delay(TimeSpan.FromSeconds(timeout), cancellationToken: token));
-        if (!tasklet.hasResultLeft) {
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(token);
+        cts.CancelAfter(TimeSpan.FromSeconds(timeout));
+
+        ChatMessageContent response;
+        try {
+            response = await service
+                .GetChatMessageContentAsync(context, settings, kernel, cts.Token)
+                .AsUniTask(false);
+        } catch (OperationCanceledException) when (!token.IsCancellationRequested) {
             activity?.SetStatus(EmActivity.StatusType.Timeout);
+            throw;
         }
-
-        var response = await task;
 
         if (activity is not null) {
             HandleRequestActivity(response, activity);
@@ -115,10 +125,26 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionReques
         }
 
         foreach (var (k, v) in RequestParams) {
-            if (!k.IsEmptyOrNull && v is not null) {
-                data[k] = v;
+            if (k.IsEmptyOrNull || v is null) {
+                continue;
             }
+
+            if (RawOutput && k is "response_format") {
+                continue;
+            }
+
+            data[k] = v;
         }
+    }
+
+    internal static ScopeExit ScopedRawOutput()
+    {
+        var previous = _rawOutput.Value;
+        _rawOutput.Value = true;
+
+        return new() {
+            OnExit = () => _rawOutput.Value = previous,
+        };
     }
 
     protected abstract void Register(IKernelBuilder builder, string model);

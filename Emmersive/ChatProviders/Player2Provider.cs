@@ -35,7 +35,7 @@ public class Player2Provider() : OpenAIProvider("")
         base.HandleRequestActivity(response, activity);
 
         var elapsed = DateTime.UtcNow - _lastPing;
-        if (elapsed.Seconds < 60) {
+        if (elapsed.TotalSeconds < 60d) {
             return;
         }
 
@@ -46,7 +46,9 @@ public class Player2Provider() : OpenAIProvider("")
 
         async UniTask PingAsync()
         {
-            var req = UnityWebRequest.Get($"{EndPoint}/health");
+            await UniTask.SwitchToMainThread();
+
+            using var req = UnityWebRequest.Get($"{EndPoint}/health");
             req.SetRequestHeader("player2-game-key", ElinGameClientId);
             await req.SendWebRequest();
         }
