@@ -5,6 +5,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using Emmersive.API.Services;
 using Emmersive.ChatProviders;
+using Emmersive.Helper;
 using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace Emmersive.API.ThirdParty;
@@ -15,9 +16,10 @@ public static class EmAi
 
     public static IReadOnlyList<string> GetModels()
     {
-        return ApiPoolSelector.Instance.Providers
-            .Select(p => p.Id)
-            .ToList();
+        return [
+            ..ApiPoolSelector.Instance.Providers
+                .Select(p => p.Id),
+        ];
     }
 
     public static async UniTask<RequestReport> SendWithReportAsync(
@@ -59,7 +61,7 @@ public static class EmAi
         try {
             var response = await provider.HandleRequest(kernel, history, ct);
 
-            if (string.IsNullOrEmpty(response.Content)) {
+            if (response.Content.IsEmptyOrNull) {
                 activity.SetStatus(EmActivity.StatusType.Failed);
                 provider.MarkUnavailable("Empty response from provider");
                 return RequestReport.Fail("Provider returned an empty response.", provider.Id);
