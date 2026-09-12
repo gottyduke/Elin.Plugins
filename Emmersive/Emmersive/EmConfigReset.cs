@@ -14,7 +14,8 @@ internal partial class EmConfig
     internal static void Reload()
     {
         EmMod.Instance.Config.Reload();
-        EmScheduler.Semaphore = new(1, Policy.ConcurrentRequests.Value);
+        var concurrent = Policy.ConcurrentRequests.Value;
+        EmScheduler.Semaphore = new(concurrent, concurrent);
     }
 
     [ConsoleCommand("reset_cfg")]

@@ -333,9 +333,13 @@ internal partial class EmConfig
         Scene.MinimalReactionDelay = config.Bind(
             "Scene",
             "MinimalReactionDelay",
-            0f,
-            "Minimal reaction delay in seconds between each scene play popup\n" +
-            "场景演出时每次气泡的最低间隔秒数");
+            0.5f,
+            new ConfigDescription(
+                "Minimal reaction delay in seconds between each scene play popup\n" +
+                "Models tend to give every reaction the same delay, 0 pops them all at once\n" +
+                "场景演出时每次气泡的最低间隔秒数\n" +
+                "设为 0 会让气泡同时弹出",
+                new AcceptableValueRange<float>(0f, 10f)));
 
         Reload();
     }

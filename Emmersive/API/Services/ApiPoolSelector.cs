@@ -52,7 +52,7 @@ public sealed class ApiPoolSelector : IAIServiceSelector
 
     public void ClearServices()
     {
-        foreach (var provider in _providers) {
+        foreach (var provider in _providers.ToArray()) {
             RemoveService(provider);
         }
     }

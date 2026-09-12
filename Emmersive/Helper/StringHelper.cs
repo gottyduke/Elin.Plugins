@@ -23,22 +23,6 @@ public static class StringHelper
         return $"{size:0.##} {_memSizeSuffixes[mag]}";
     }
 
-    public static class Cjk
-    {
-        private const string CjkCharRange = @"\u4E00-\u9FFF\u3040-\u309F\u30A0-\u30FF\uAC00-\uD7AF";
-
-        public static readonly Regex Splitter = new(
-            $"[{CjkCharRange}]" +
-            @"|[A-Za-z0-9'\-]+" +
-            @"|[，。！？、；：「」『』（）《》〈〉【】〔〕—…～·]+" +
-            @"|[^\s]",
-            RegexOptions.Compiled);
-
-        public static readonly Regex Char = new($"[{CjkCharRange}]", RegexOptions.Compiled);
-
-        public static readonly Regex Punc = new(@"[，。！？、；：「」『』（）《》〈〉【】〔〕—…～·]", RegexOptions.Compiled);
-    }
-
     extension(string input)
     {
         public bool IsEmptyOrNull => string.IsNullOrEmpty(input);
@@ -128,5 +112,21 @@ public static class StringHelper
 
             return result;
         }
+    }
+
+    public static class Cjk
+    {
+        private const string CjkCharRange = @"\u4E00-\u9FFF\u3040-\u309F\u30A0-\u30FF\uAC00-\uD7AF";
+
+        public static readonly Regex Splitter = new(
+            $"[{CjkCharRange}]" +
+            @"|[A-Za-z0-9'\-]+" +
+            @"|[，。！？、；：「」『』（）《》〈〉【】〔〕—…～·]+" +
+            @"|[^\s]",
+            RegexOptions.Compiled);
+
+        public static readonly Regex Char = new($"[{CjkCharRange}]", RegexOptions.Compiled);
+
+        public static readonly Regex Punc = new(@"[，。！？、；：「」『』（）《》〈〉【】〔〕—…～·]", RegexOptions.Compiled);
     }
 }

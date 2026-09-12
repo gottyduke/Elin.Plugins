@@ -74,7 +74,8 @@ public partial class EmScheduler
     internal static async UniTask ScenePlayAsync(ContextBuilder contextBuilder, int retries = -1)
     {
         // get semaphore first
-        await Semaphore.WaitAsync(UniTasklet.SceneCts.Token);
+        var semaphore = Semaphore;
+        await semaphore.WaitAsync(UniTasklet.SceneCts.Token);
 
         try {
             await UniTask.SwitchToThreadPool();
@@ -83,8 +84,7 @@ public partial class EmScheduler
             await ScenePlayAsync(context, retries);
         } finally {
             await UniTask.Yield();
-
-            Semaphore.Release();
+            semaphore.Release();
         }
     }
 
@@ -120,6 +120,8 @@ public partial class EmScheduler
 
         SetScenePlayDelay(timeout);
 
+        var played = false;
+        var retried = false;
         var lockedCharas = PointScan.LastNearby
             .ToArray()
             .Where(c => !c.Profile.LockedInRequest)
@@ -138,6 +140,7 @@ public partial class EmScheduler
 
                 var director = kernel.GetRequiredService<SceneDirector>();
                 director.Execute(response.Content!);
+                played = true;
 
                 // start global cooldown
                 pc.Profile.ResetTalkCooldown();
@@ -175,6 +178,10 @@ public partial class EmScheduler
             // noexcept
         } finally {
             FreezeCharas(false);
+
+            if (!played && !retried) {
+                SetScenePlayDelay(0f);
+            }
         }
 
         return;
@@ -199,6 +206,7 @@ public partial class EmScheduler
 
             if (retries > 0) {
                 EmMod.Debug<EmScheduler>("em_ui_scene_retry".lang());
+                retried = true;
                 ScenePlayAsyncInternal(context, --retries).ForgetEx();
                 EmMod.DebugPopup<EmScheduler>("scene retry");
             } else {

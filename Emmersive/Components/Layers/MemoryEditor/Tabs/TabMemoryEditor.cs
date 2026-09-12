@@ -60,36 +60,29 @@ internal class TabMemoryEditor : YKLayout<LayerMemoryCreationData>
     private void BuildStmSection(CharaMemoryStore store)
     {
         var card = this.MakeCard();
-        var header = card.Text("em_ui_stm_header");
-
-        var stm = store.GetRecentStm();
+        var header = card.Text(StmHeader());
+        var stm = store.ShortTerm;
         if (stm.Count == 0) {
             card.Text("em_ui_no_stm");
             return;
         }
 
-        foreach (var entry in stm) {
+        foreach (var entry in stm.ToArray()) {
             var line = card.Horizontal();
             line.Text(entry.Speaker, FontColor.Good);
             line.Spacer(0, 5);
             line.Text(entry.Content);
             line.FlexWidth();
             line.Button("x", () => {
-                stm.Remove(entry);
                 store.ShortTerm.Remove(entry);
                 DestroyImmediate(line.gameObject);
-                RefreshHeader();
+                header.SetText(StmHeader());
             }).GetOrCreate<Image>().color = Color.red;
         }
 
-        RefreshHeader();
-
         return;
 
-        void RefreshHeader()
-        {
-            header.SetText("em_ui_stm_header".Loc($"{store.ShortTerm.Count} / {EmConfig.Memory.MaxStmEntries.Value}"));
-        }
+        string StmHeader() => "em_ui_stm_header".Loc($"{store.ShortTerm.Count} / {EmConfig.Memory.MaxStmEntries.Value}");
     }
 
     private void BuildLtmSection(CharaMemoryStore store)

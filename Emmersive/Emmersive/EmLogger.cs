@@ -34,7 +34,7 @@ internal sealed partial class EmMod
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Debug(object? payload, [CallerMemberName] string caller = "")
     {
-        if (!EmConfig.Policy.Verbose.Value) {
+        if (EmConfig.Policy.Verbose is not { Value: true }) {
             return;
         }
 

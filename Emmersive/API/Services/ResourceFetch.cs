@@ -7,7 +7,7 @@ namespace Emmersive.API.Services;
 
 public class ResourceFetch
 {
-    private const string DefaultResource = "Emmersive.package.LangMod.";
+    private const string DefaultResource = "Emmersive.package.LangMod";
 
     // holds user custom edits
     private static readonly Dictionary<ResourceKey, string> _activeResources = [];
