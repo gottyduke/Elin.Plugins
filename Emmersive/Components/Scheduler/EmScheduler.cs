@@ -26,7 +26,8 @@ public partial class EmScheduler : EMono
     public static float GlobalCooldown { get; private set; }
 
     public static bool CanMakeRequest =>
-        (!IsInProgress || Semaphore.CurrentCount > 0) &&
+        !IsInProgress &&
+        Semaphore.CurrentCount > 0 &&
         Mode is SchedulerMode.Buffer or SchedulerMode.Immediate &&
         GlobalCooldown <= 0f;
 

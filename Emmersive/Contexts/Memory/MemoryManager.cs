@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Emmersive.API.Plugins;
 using Emmersive.API.ThirdParty;
 using Emmersive.Helper;
 using Newtonsoft.Json;
@@ -168,8 +169,12 @@ public sealed class MemoryManager
 
     private static List<MemoryFact> ParseFacts(string json)
     {
-        var raw = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(json.Trim());
+        json = SceneDirector.StripMarkdownFence(json);
+        if (json.IsEmptyOrNull) {
+            return [];
+        }
 
+        var raw = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(json);
         return raw?.Select(item => new MemoryFact {
                 Fact = item.TryGetValue("fact", out var f) ? f?.ToString() ?? "" : "",
                 Importance = item.TryGetValue("importance", out var i) && int.TryParse(i?.ToString(), out var iv)

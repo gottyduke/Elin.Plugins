@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Emmersive.API.Services;
+using Emmersive.ChatProviders;
 using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace Emmersive.API.ThirdParty;
@@ -23,7 +24,8 @@ public static class EmAi
         string systemPrompt,
         string userMessage,
         string? providerId = null,
-        CancellationToken ct = default)
+        CancellationToken ct = default,
+        bool rawOutput = true)
     {
         var apiPool = ApiPoolSelector.Instance;
         IChatProvider? provider;
@@ -52,6 +54,7 @@ public static class EmAi
         history.AddUserMessage(userMessage);
 
         using var activity = EmActivity.StartNew(provider.Id);
+        using var _ = rawOutput ? ChatProviderBase.ScopedRawOutput() : null;
 
         try {
             var response = await provider.HandleRequest(kernel, history, ct);

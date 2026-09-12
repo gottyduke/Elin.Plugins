@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using Emmersive.Helper;
 
 namespace Emmersive;
@@ -17,18 +18,26 @@ public record EmActivity : IDisposable
         Timeout,
     }
 
-    public static readonly List<EmActivity> Session = [];
-    private static readonly HashSet<string> _services = new(StringComparer.Ordinal);
+    private static readonly List<EmActivity> _session = [];
+    private static readonly HashSet<string> _services = [with(StringComparer.Ordinal)];
+    private static int _activityCount;
 
     private readonly long _start;
 
     private EmActivity()
     {
         _start = Stopwatch.GetTimestamp();
-        ActivityId = InternalCount;
+        ActivityId = Interlocked.Increment(ref _activityCount);
     }
 
-    private static int InternalCount => ++field;
+    public static IReadOnlyList<EmActivity> Session
+    {
+        get {
+            lock (_session) {
+                return [.._session];
+            }
+        }
+    }
 
     public static EmActivity? Current { get; private set; }
 
@@ -71,14 +80,15 @@ public record EmActivity : IDisposable
 
     public static EmActivity StartNew(string serviceId)
     {
-        _services.Add(serviceId);
-
         var activity = new EmActivity {
             ServiceName = serviceId,
             RequestTime = DateTime.UtcNow,
         };
 
-        Session.Add(activity);
+        lock (_session) {
+            _services.Add(serviceId);
+            _session.Add(activity);
+        }
 
         EmMod.Log<EmActivity>(
             $"<{activity.ActivityId}> [{activity.ServiceName}] " +
@@ -99,7 +109,12 @@ public record EmActivity : IDisposable
 
     public static IEnumerable<EmActivitySummary> GetAllSummaries()
     {
-        return _services.Select(GetSummary);
+        string[] services;
+        lock (_session) {
+            services = _services.ToArray();
+        }
+
+        return services.Select(GetSummary);
     }
 
     public static EmActivitySummary GetSummary(string serviceName = "")
