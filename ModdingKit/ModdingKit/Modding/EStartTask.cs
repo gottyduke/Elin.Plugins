@@ -19,6 +19,7 @@ internal partial class EModdingKit
     {
         SetupExceptionHook();
         TypeQualifier.SafeQueryTypesOfAll();
+        ModConfig.RegisterAll();
         ModIntegrity.SetupEvent();
     }
 
