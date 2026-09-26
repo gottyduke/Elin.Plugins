@@ -23,7 +23,7 @@ public static class MethodInfoDetail
                 name += $"<{genericArgs}>";
             }
 
-            if (MethodCompatibility.CheckedCalls.GetValueOrDefault(methodInfo)) {
+            if (RuntimeIlScan.CheckedCalls.GetValueOrDefault(methodInfo)) {
                 name = "es_ui_invalid_patch".lang(EClass.core.version.GetText()) + name;
             }
 

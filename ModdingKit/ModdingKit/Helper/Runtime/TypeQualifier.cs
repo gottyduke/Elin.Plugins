@@ -127,9 +127,10 @@ public class TypeQualifier
 
     internal static void SafeQueryTypesOfAll()
     {
-        Plugins = ModManager.ListPluginObject
-            .OfType<BaseUnityPlugin>()
-            .ToList();
+        Plugins = [
+            ..ModManager.ListPluginObject
+                .OfType<BaseUnityPlugin>(),
+        ];
 
         foreach (var plugin in Plugins.ToArray()) {
             try {

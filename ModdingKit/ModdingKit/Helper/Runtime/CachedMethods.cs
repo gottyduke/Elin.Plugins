@@ -15,7 +15,7 @@ public static class CachedMethods
 
     public static MethodInfo? GetCachedMethod(string typeName, string methodName, Type[] types)
     {
-        return GetCachedMethod(typeName, methodName, types.Select(t => (t.FullName, (string?)null)).ToArray());
+        return GetCachedMethod(typeName, methodName, [..types.Select(t => (t.FullName, (string?)null))]);
     }
 
     public static MethodInfo? GetCachedMethod(string typeName, string methodName, IReadOnlyList<(string?, string?)> parameters)
@@ -50,7 +50,7 @@ public static class CachedMethods
                 return methods;
             }
 
-            return _cachedMethods[typeInfo] = AccessTools.GetDeclaredMethods(typeInfo).ToArray();
+            return _cachedMethods[typeInfo] = [..AccessTools.GetDeclaredMethods(typeInfo)];
         }
     }
 
@@ -74,12 +74,12 @@ public static class CachedMethods
 
         public bool ValidateParameters(params object?[] args)
         {
-            return method.ValidateParameterTypes(false, args.Select(o => o?.GetType()).ToArray());
+            return method.ValidateParameterTypes(false, [..args.Select(o => o?.GetType())]);
         }
 
         public bool ValidateParameterTypes(bool warn, params Type?[] types)
         {
-            return method.ValidateParameterTypes(warn, types.Select(t => (t?.FullName, (string?)null)).ToArray());
+            return method.ValidateParameterTypes(warn, [..types.Select(t => (t?.FullName, (string?)null))]);
         }
 
         public bool ValidateParameterTypes(bool warn, IReadOnlyList<(string? type, string? name)> types)

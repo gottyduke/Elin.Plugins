@@ -7,14 +7,14 @@ namespace EModding;
 
 public class ModIntegrity
 {
-    public static SerializableModPackage[] CurrentActivated =>
-        BaseModManager.Instance.packages
+    public static SerializableModPackage[] CurrentActivated => [
+        ..BaseModManager.Instance.packages
             .Where(p => p.activated && !p.builtin)
             .Select(p => new SerializableModPackage {
                 ModName = p.title,
                 ModId = p.id,
-            })
-            .ToArray();
+            }),
+    ];
 
     public static void SetupEvent()
     {

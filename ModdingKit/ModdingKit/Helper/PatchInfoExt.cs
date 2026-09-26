@@ -34,11 +34,12 @@ public static class PatchInfoExt
                 return invalids;
             }
 
-            invalids = info.AllPatches
-                .SelectMany(kv => kv.Value)
-                .Select(p => p.PatchMethod)
-                .Where(MethodCompatibility.TestIncompatibleIl)
-                .ToList();
+            invalids = [
+                ..info.AllPatches
+                    .SelectMany(kv => kv.Value)
+                    .Select(p => p.PatchMethod)
+                    .Where(RuntimeIlScan.TestIncompatibleIl),
+            ];
 
             return _tested[info] = invalids;
         }
