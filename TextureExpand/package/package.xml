@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Meta>
+  <title>Provisional TextureExpand</title>
+  <id>Sobagaki_TextureExpand_Provisional</id>
+  <author>Sobagaki</author>
+  <loadPriority>100</loadPriority>
+  <version>0.23.140</version>
+  <tags>Item/NPC Sprite,Utility</tags>
+  <description>
+  
+  I want to be completely upfront in saying that this is not my mod. The brilliant author of TextureExpand goes by the Steam name sobagaki, however they have not responded to comments or questions on the original mod months, and recently TextureExpand ceased to function after the game developer reorganized some code related to how sprites are rendered. I made an attempt to contact sobagaki a week ago withot anny response, but it was learned on the game's official Discord that the only issues could be fixed by simply recompiling the mod using an up-to-date verson of Elin.
+  
+  And so, here it is. I lack any technical know-how to fix it if anything more complex goes wrong, and have no ability to add any previously requested features. This is simply to allow the mod's many users to continue enjoying it for the time being. Hopefully some brave and intelligent modder will take up the flag and create a new mod with even more QoL features, but that modder is not me...
+  
+  Please be aware that I will take this reupload down at the original author's request, and turn ownership of this over to them at their request. As such, you may want to make a copy to run locally should it disappear.
+  
+  Any and all likes or kudos or awards should go to the original mod and its author here: https://steamcommunity.com/sharedfiles/filedetails/?id=3375278123
+
+  Enjoy.
+  
+	(Translated by ChatGPT)
+
+	This MOD changes character textures based on certain conditions.  
+	It includes some modified sample textures for reference, but you can delete them if you only want to use the functionality.  
+
+	# Naming Rules for Target Textures  
+	Place images in the "Texture" folder within the MOD folder and follow the naming rules to use them as replacement textures.  
+	To facilitate distribution of replacement images, the MOD also searches for valid images in other active MOD folders.  
+
+	Textures must begin with "objC_".  
+	Next, specify either the "Character ID" or the "Original Texture Tile ID."  
+
+	For example, the sample `objC_golden_knight#m.png` targets the character with ID `golden_knight` (Golden Knight).  
+	To find Character IDs, you’ll need the source data.  
+
+	The sample `objC_1212#noeq-torso.png` targets all characters with Tile ID `1212`.  
+	Tile ID `1212` corresponds to the Golden Knight’s unique tile, so this behaves identically to specifying the Character ID.  
+	Tile IDs are easier to find using the in-game texture viewer.  
+
+	Replacement occurs when all specified conditions are met.  
+
+	# Gender  
+	Textures change based on whether the character is male or female.  
+	Even characters without gender-based textures can have variations added.  
+
+	- Include `#m` in the file name to specify "male."  
+	Example: `objC_golden_knight#m.png` targets "Golden Knight (Male)."  
+
+	- Include `#f` in the file name to specify "female."  
+	Example: `objC_1213#f.png` targets "Guardian (Female)."  
+
+	# Equipment  
+	Textures change based on the character's equipment.  
+
+	- Include `#eq-{part}-{equipmentID}` to specify certain equipment.  
+	Omitting the equipment ID means any item in that slot satisfies the condition.  
+	Example: `objC_1212#eq-head-hat_wizard.png` targets "Golden Knight wearing the Wizard Hat."  
+
+	- Include `#noeq-{part}` to specify that nothing is equipped in a slot.  
+	Example: `objC_1212#noeq-torso.png` targets "Golden Knight with no torso equipment."  
+
+	# Status  
+	Textures change based on the character’s state or condition.  
+
+	- Include `#con-{status}` to specify a condition.  
+	You’ll need the source data for status names.  
+	Examples: `#con-poison` (poisoned), `#con-sleep` (asleep).  
+	Example: `objC_1212#con-drunk.png` targets "Golden Knight (Drunk)."  
+
+	# Floor  
+	Textures change based on the floor the character is standing on during movement.  
+
+	- Include `#floor-{material}-{type}` to specify conditions.  
+	Omitting parameters broadens the condition.  
+	Example: `objC_1212#floor-97.png` targets "Golden Knight on a floor with material 97 (Sea Sand)."  
+
+	*Note:* Frequent checks during movement may impact performance. Experimental textures are disabled by default (placed in the "Experimental" folder).  
+
+	# Multiple Conditions  
+	Textures with multiple conditions replace only when all conditions are met.  
+	Example: `objC_1212#noeq-torso#con-drunk#floor-97.png` targets "Golden Knight with no torso equipment, drunk, on Sea Sand."  
+
+	# Priority  
+	If multiple textures are assigned to one character, priority determines which texture is used.  
+	Priority generally depends on the number of conditions, with more conditions meaning higher priority.  
+	An exception is gender (`#f`/`#m`), which has 100x the priority of other conditions.  
+
+	- Example: `objC_golden_knight#m.png` has a priority of 100 due to gender.  
+	- Example: `objC_1212#con-drunk.png` has a priority of 1 with only one condition.  
+	Thus, "Golden Knight (Male, Drunk)" will display `objC_golden_knight#m.png` to avoid reverting to a female appearance.  
+
+	You can adjust priority using `#p-{priority}` in the file name.  
+	Example: `objC_1212#con-sleep#p-10.png` has a priority of 11, making it higher than most other samples.  
+
+	# Portraits  
+	Match textures to portraits.  
+	Include `#portrait-{pattern}` to specify portraits containing the pattern.  
+	Example: `objC_1003#portrait-_D` targets "Character with Tile ID 1003 (Girl) with a portrait containing `_D`."  
+
+	# External Config Files  
+	To use images from other MODs or assign multiple conditions to one image, use a `.textureexpand` CSV file.  
+	Each line specifies `{image file path}, {keywords for that image}`.  
+	These files can also be searched in other active MOD folders for easier collaboration between texture creators and condition managers.  
+
+	Example:  
+	In `NJYM_LittleGirl_Replace.textureexpand`, the line  
+	`..\3359533667\Variations\2\objC_1003.png, objC_1003#portrait-_D`  
+	assigns the keyword `objC_1003#portrait-_D` to `objC_1003.png`.  
+	This works the same as naming the image `objC_1003#portrait-_D.png` and placing it in the Texture folder.  
+
+	# Additional Information  
+	This MOD makes texture changes without affecting save data, so:  
+	- It can be applied to existing saves.  
+	- It can be disabled later.  
+	- Target images can be added/removed without issue.  
+
+	Conditions may be updated or added as needed.  
+</description>
+</Meta>
