@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <Platforms>AnyCPU</Platforms>
+        <LangVersion>preview</LangVersion>
+        <Nullable>enable</Nullable>
+        <RootNamespace>TextureExpand</RootNamespace>
+        <AssemblyName>TextureExpand</AssemblyName>
+        <GenerateDependencyFile>false</GenerateDependencyFile>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <OutputPath>$(ElinGamePath)\Package\Mod_$(AssemblyName)\</OutputPath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <Deterministic>false</Deterministic>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Remove="package\**"/>
+        <EmbeddedResource Remove="package\**"/>
+        <None Remove="package\**"/>
+        <None Remove="Docs\**"/>
+        <None Remove="LICENSE"/>
+        <None Remove="README.md"/>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="PolySharp" Version="1.15.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+    <Target Name="CopyAssets" AfterTargets="AfterBuild">
+        <ItemGroup>
+            <Assets Include="package\**\*.*"/>
+        </ItemGroup>
+        <Copy
+            SourceFiles="@(Assets)"
+            DestinationFiles="@(Assets->'$(OutDir)%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+        />
+    </Target>
+</Project>
