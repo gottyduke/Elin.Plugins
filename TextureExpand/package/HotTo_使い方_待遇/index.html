@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8" />
+
+    <meta property="og:title" content="Texture Expand Specification" />
+    <meta property="og:description" content="Technical guide and details for Texture Expand Specification" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://elin-modding.net/TE_Spec_Guide.html" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Texture Expand Specification" />
+    <meta name="twitter:description" content="Technical guide and details for Texture Expand Specification" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Texture Expand - specification</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #333;
+        color: #fff;
+        padding: 10px 20px;
+        position: relative;
+        z-index: 10;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .lang-switcher a {
+        color: #fff;
+        margin-left: 15px;
+        text-decoration: none;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      .lang-switcher a:hover {
+        text-decoration: underline;
+      }
+      .iframe-container {
+        display: flex;
+        flex: 1;
+        width: 100%;
+      }
+      iframe {
+        height: 100%;
+        border: none;
+      }
+      #sidebar-iframe {
+        width: 250px; /* 固定幅 */
+        background-color: #f4f4f4; /* サイドバーの背景色 */
+        overflow-y: auto; /* サイドバーにスクロール */
+      }
+      #content-iframe {
+        flex: 1; /* 余った幅を使用 */
+        background-color: #ffffff; /* コンテンツ部分の背景色 */
+        overflow-y: auto; /* コンテンツにスクロール */
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+      }
+      li {
+        margin: 10px 0;
+      }
+      a {
+        text-decoration: none;
+        color: #333;
+      }
+      a:hover {
+        color: #007bff;
+      }
+      .content-section {
+        margin-bottom: 50px;
+      }
+      .content-section h2 {
+        margin: 10px 0;
+      }
+      .content-section p {
+        margin: 10px 0;
+      }
+      .content-section img {
+        max-width: 100%;
+        border: 1px solid #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1 id="title">Texture Expand - specification(仕様)(规格)</h1>
+      <div class="lang-switcher">
+        <a onclick="changeLanguage('ja')">日本語</a>
+        <a onclick="changeLanguage('en')">English</a>
+        <a onclick="changeLanguage('zh')">中文</a>
+      </div>
+    </header>
+    <div class="iframe-container">
+      <iframe id="sidebar-iframe"></iframe>
+      <iframe id="content-iframe"></iframe>
+    </div>
+
+    <script>
+      // 概要の文.
+      const overview = {
+        ja: [
+          "<strong>概要</strong>",
+          "キャラクターのテクスチャを条件によって変更します。",
+          "確認用の改変キャラテクスチャも数点含みますが、機能を使うだけであれば削除しても問題ありません。",
+          "このMODによる画像の変更はいずれもセーブデータに影響を与えない形で行われているため、既存のセーブデータへの適用、後からMODを無効にする、対象の画像の追加・削除はいずれも問題なく行えるはずです。",
+          "",
+          "「Texture」フォルダの画像の命名規則を元に置き換え対象として扱います。",
+          "画像が命名規則に乗っ取って配布されることを期待しているため、有効になっている他のMODのフォルダも検索します。",
+          "",
+          '画像は"objC_"で始まっていることを前提とします。',
+          "次に「キャラクターのID」か「本来のテクスチャのタイルID」を指定します。",
+          "",
+          '例えばサンプル`objC_golden_knight#m.png`は、"キャラID=golden_knight(黄金の騎士)"を対象とします。',
+          "キャラIDを調べるにはソースデータを取得する必要があります。",
+          "",
+          'サンプル`objC_1212#noeq-torso.png`は、"タイルID=1212"が設定されているキャラすべてを対象とする画像になります。',
+          "タイルID=1212は黄金の騎士の専用タイルIDなので、この場合はキャラIDを指定するときと同じ動作になります。",
+          "タイルIDはゲーム内のテクスチャビューアから確認できるため、キャラIDより調べやすいです。",
+          "",
+          "条件は複数指定することができ、指定した条件を全て満たす画像が差し替え対象となります。",
+          "",
+          "<strong>設定ファイル</strong>",
+          '他のMODの画像を使用する際や、1つの画像に対して複数の条件を設定する際は設定ファイルとして".textureexpand"を拡張子に持つCSVファイルを使用します。',
+          '各行は"{画像ファイルのパス}, {その画像に対するキーワード}"を指定するようになっています。',
+          "設定ファイルの存在チェックは、有効になっている他のMODのフォルダも検索します。",
+          "テクスチャ作成者と置き換え設定作成者が別に存在していても管理しやすくなることを想定しています。",
+          "",
+          "サンプルデータ内NJYM_LittleGirl_Replace.textureexpandは、別のMODである「NJYM_LittleGirl_Replace」の画像を参照するためのものです。",
+          '3行目の`..\\3359533667\\Variations\\2\\objC_1003.png, objC_1003#portrait-_D`は、画像`objC_1003.png`にキーワードとして"objC_1003#portrait-_D"を割り当てます。',
+          "これは画像に`objC_1003#portrait-_D.png`と名付けてTextureフォルダにおいた場合と同様の動作となります。",
+          "",
+          "設定ファイルに以下の3行を書いた場合、1つの画像`special-golden-knight.png`が3つ条件(自分の拠点、野良マップ、ダンジョン)それぞれで表示されるようになります。",
+          "これによりOR条件の代わりに扱うことができます。",
+          "./Texture/special-golden-knight.png, objC_1212#zone-pc",
+          "./Texture/special-golden-knight.png, objC_1212#zone-field",
+          "./Texture/special-golden-knight.png, objC_1212#zone-dungeon",
+        ],
+        en: [
+          "(Translated by ChatGPT)",
+          "<strong>Overview</strong>",
+          "Change the character's texture according to the conditions.",
+          "There are also several modified character textures for confirmation, but you can delete them if you only use the function.",
+          "The image changes by this MOD are all done in a way that does not affect the save data, so it should be possible to apply to existing save data, disable the MOD later, and add or remove the target images without any problems.",
+          "",
+          'It treats images in the "Texture" folder as replacement targets based on the naming convention.',
+          "It is expected that images will be distributed according to the naming convention, so it also searches other MOD folders that are enabled.",
+          "",
+          'The image is assumed to start with "objC_".',
+          'Next, specify either the "Character ID" or the "Tile ID of the original texture".',
+          "",
+          'For example, the sample `objC_golden_knight#m.png` targets the "Character ID=golden_knight".',
+          "To find the Character ID, you need to get the source data.",
+          "",
+          'The sample `objC_1212#noeq-torso.png` is an image that targets all characters with "Tile ID=1212" set.',
+          "Since Tile ID=1212 is the exclusive Tile ID of the golden knight, in this case, it behaves the same as when specifying the Character ID.",
+          "Tile IDs can be confirmed from the in-game texture viewer, so it is easier to check than Character IDs.",
+          "",
+          "Multiple conditions can be specified, and images that meet all specified conditions will be the replacement targets.",
+          "",
+          "<strong>Setting file</strong>",
+          'When using images from other MODs or setting multiple conditions for one image, use a CSV file with the extension ".textureexpand" as a setting file.',
+          'Each line specifies "{image file path}, {keyword for that image}".',
+          "The existence check of the setting file also searches other MOD folders that are enabled.",
+          "It is assumed that it will be easier to manage even if the texture creator and the replacement setting creator are different.",
+          "",
+          'The NJYM_LittleGirl_Replace.textureexpand in the sample data is for referencing images of another MOD "NJYM_LittleGirl_Replace".',
+          'The third line `..\\3359533667\\Variations\\2\\objC_1003.png, objC_1003#portrait-_D` assigns the keyword "objC_1003#portrait-_D" to the image `objC_1003.png`.',
+          "This will behave the same as when you name the image `objC_1003#portrait-_D.png` and place it in the Texture folder.",
+          "",
+          "If you write the following three lines in the setting file, one image `special-golden-knight.png` will be displayed for each of the three conditions (own base, field map, dungeon).",
+          "This allows you to handle it instead of OR conditions.",
+          "./Texture/special-golden-knight.png, objC_1212#zone-pc",
+          "./Texture/special-golden-knight.png, objC_1212#zone-field",
+          "./Texture/special-golden-knight.png, objC_1212#zone-dungeon",
+        ],
+        zh: [
+          "(翻译：ChatGPT)",
+          "<strong>概要</strong>",
+          "根据条件更改角色的纹理。",
+          "还包括几个修改后的角色纹理供确认，但如果只使用功能，可以删除它们。",
+          "此MOD的图像更改都是以不影响保存数据的方式进行的，因此应该可以将其应用于现有的保存数据，稍后禁用MOD，并添加或删除目标图像而无任何问题。",
+          "",
+          '它将"Texture"文件夹中的图像视为替换目标，基于命名约定。',
+          "预期图像将根据命名约定进行分发，因此它还会搜索其他启用的MOD文件夹。",
+          "",
+          '假定图像以"objC_"开头。',
+          '接下来，指定"角色ID"或"原始纹理的瓷砖ID"。',
+          "",
+          '例如，示例`objC_golden_knight#m.png`目标为"角色ID=golden_knight"。',
+          "要查找角色ID，您需要获取源数据。",
+          "",
+          '示例`objC_1212#noeq-torso.png`是一个目标为所有设置了"瓷砖ID=1212"的角色的图像。',
+          "由于瓷砖ID=1212是黄金骑士的专用瓷砖ID，因此在这种情况下，它的行为与指定角色ID时相同。",
+          "瓷砖ID可以从游戏内纹理查看器中确认，因此比角色ID更容易检查。",
+          "",
+          "可以指定多个条件，并且满足所有指定条件的图像将成为替换目标。",
+          "",
+          "<strong>设置文件</strong>",
+          '当使用其他MOD的图像或为一个图像设置多个条件时，请使用扩展名为".textureexpand"的CSV文件作为设置文件。',
+          '每行指定"{图像文件路径}，{该图像的关键字}"。',
+          "设置文件的存在检查也会搜索其他启用的MOD文件夹。",
+          "假设即使纹理创建者和替换设置创建者不同，也更容易管理。",
+          "",
+          '示例数据中的NJYM_LittleGirl_Replace.textureexpand用于引用另一个MOD"NJYM_LittleGirl_Replace"的图像。',
+          '第三行`..\\3359533667\\Variations\\2\\objC_1003.png, objC_1003#portrait-_D`将关键字"objC_1003#portrait-_D"分配给图像`objC_1003.png`。',
+          "这将与将图像命名为`objC_1003#portrait-_D.png`并将其放在Texture文件夹中时的行为相同。",
+          "",
+          "如果在设置文件中写入以下三行，则一个图像`special-golden-knight.png`将分别显示三个条件(自己的基地、野外地图、地牢)。",
+          "这使您可以处理它而不是OR条件。",
+          "./Texture/special-golden-knight.png, objC_1212#zone-pc",
+          "./Texture/special-golden-knight.png, objC_1212#zone-field",
+          "./Texture/special-golden-knight.png, objC_1212#zone-dungeon",
+        ],
+      };
+      const statuses = [
+        {
+          header_jp: "条件指定",
+          header_en: "Condition specification",
+          header_zh: "条件指定",
+        },
+        {
+          name_jp: "説明",
+          name_en: "Description",
+          name_zh: "描述",
+          description_jp: [
+            "差し替え対象の画像名に指定可能な条件を以下に示します。",
+            "ファイル名に特定の文字列が含まれている場合、条件として設定されます。",
+          ],
+          description_en: [
+            "The conditions that can be specified in the image name to be replaced are shown below.",
+            "If a specific string is included in the file name, it is set as a condition.",
+          ],
+          description_zh: [
+            "<b>关于TE前置：</b>",
+            '目前（25年12月），原TextureExpand模组（纹理扩展前置）已经坏了，但有人提供了新版：<a target="_blank" href=https://steamcommunity.com/sharedfiles/filedetails/?id=3551767784>Provisional TextureExpand</a>（点击前面这个蓝色的打开）。',
+            "在原作者修复TE前置之前，请使用新的PTE。",
+            "我修正了本文件描述模糊的优先级部分，以及部分机翻的问题。并把默认语言设置成了中文，其他语言我没动。还添加了一小段说明。",
+            "                                             ",
+            "<b>常见问题：</b>",
+            "1.出问题了，优先打开电脑上创意工坊目录，搜索.Cache文件夹，打开会看见所以TE纹理的缓存图片，删掉它们并重启游戏，很多问题都能解决",
+            "2.TE前置不适用于：你基于CWL捏的CNPC（对@chara类无效），请自己写一小段觉醒代码之类的",
+            "3.点击左侧，快速跳转",
+            "4.建议打开个TE规则（.textureexpand后缀文件），来当例子看（创意工坊搜索以下例子的mod名或者作者名字)",
+            "——简单例子：我写的NJYMTextureExpand、和Ma_Male_God_Servants_TextureExpand",
+            "——详细例子：路過的鹿 的Lurong_MilitantTextureExpand，还可以看 hashidoi 制作的泳装与侍酒师。",
+            "                                             ",
+            "<b>下面是原版描述内容：</b>",
+            "以下显示了可以在要替换的图像名称中指定的条件。",
+            "如果文件名中包含特定字符串，则将其设置为条件。",
+          ],
+          format_jp:
+            "フォーマットです。<br />\
+#{条件タイプ}-{パラメータ1}(-{パラメータ2}...)の形式になります<br />\
+必ず#で始まり、次に現れる#の直前または行末までがキーワードとして認識されます。<br />\
+()で囲まれたものは省略できます",
+          format_en:
+            "Format.<br />\
+It is in the form of #{condition type}-{parameter 1}(-{parameter 2}...)<br />\
+It always starts with #, and until the next # that appears, it is recognized as a keyword.<br />\
+What is enclosed in () can be omitted.",
+          format_zh:
+            "格式。<br />\
+它的形式为#{条件类型}-{参数1}(-{参数2}...)<br />\
+它总是以#开头，直到下一个#出现，它被识别为关键字。<br />\
+括在()中的内容可以省略。",
+          args_jp: [
+            "条件が参照する値です。「-」で区切られれます。",
+            "(値が名前の検索に使用される場合は、言語によって一致しなくなる可能性があることに注意してください。idやaliasによって避けることができるかもしれません)",
+          ],
+          args_en: [
+            'The value that the condition refers to. Separated by "-".',
+            "(Please note that if the value is used for name search, it may not match depending on the language. It may be possible to avoid this by using id or alias.)",
+          ],
+          args_zh: [
+            '条件所引用的值。用"-"分隔。',
+            "(请注意，如果该值用于名称搜索，则根据语言可能不匹配。可以通过使用id或alias来避免这种情况。)",
+          ],
+          example_jp:
+            "具体的な使用例です。「ファイル名(判定する条件)」の形式で記載します",
+          example_en:
+            'Specific usage example. Described in the form of "File name (condition to be judged)"',
+          example_zh: '具体的使用示例。以"文件名(要判断的条件)"的形式描述',
+          images: [],
+        },
+        {
+          name_jp: "男性",
+          name_en: "Male",
+          name_zh: "男性",
+          description_jp: [
+            "男性ならテクスチャを変更します。",
+            "テクスチャが分かれていないキャラクターに対しても男女差分を用意することができます。",
+          ],
+          description_en: [
+            "If male, change the texture.",
+            "Gender differences can be prepared for characters without separate textures.",
+          ],
+          description_zh: [
+            "如果是男性，则更改纹理。",
+            "即使对于没有分开纹理的角色，也可以准备男女差异。",
+          ],
+          format: "#m",
+          args: [],
+          example_jp: "objC_golden_knight#m.png(男性の黄金の騎士)",
+          example_en: "objC_golden_knight#m.png(Male golden knight)",
+          example_zh: "objC_golden_knight#m.png(男性黄金骑士)",
+          images: [],
+        },
+        {
+          name_jp: "女性",
+          name_en: "Female",
+          name_zh: "女性",
+          description_jp: [
+            "女性ならテクスチャを変更します。",
+            "テクスチャが分かれていないキャラクターに対しても男女差分を用意することができます。",
+          ],
+          description_en: [
+            "If female, change the texture.",
+            "Gender differences can be prepared for characters without separate textures.",
+          ],
+          description_zh: [
+            "如果是女性，则更改纹理。",
+            "即使对于没有分开纹理的角色，也可以准备男女差异。",
+          ],
+          format: "#f",
+          args: [],
+          example_jp: "objC_1213#f.png(女性の守護者)",
+          example_en: "objC_1213#f.png(Female guardian)",
+          example_zh: "objC_1213#f.png(女性守护者)",
+          images: [],
+        },
+        {
+          name_jp: "装備をしている",
+          name_en: "Equipped",
+          name_zh: "装备",
+          description_jp: [
+            "特定の装備をしている、または特定の部位に何かを装備しているならテクスチャを変更します。",
+          ],
+          description_en: [
+            "If you are wearing specific equipment or have something equipped on a specific part, change the texture.",
+          ],
+          description_zh: [
+            "如果穿着特定装备或在特定部位装备了某物，则更改纹理。",
+          ],
+          format_jp: "#eq-{装備部位}(-{装備ID})",
+          format_en: "#eq-{equipment part}(-{equipment ID})",
+          format_zh: "#eq-{装备部位}(-{装备ID})",
+          args_jp: [
+            '装備部位: 判定する部位を指定します。<a target="_blank" href=https://docs.google.com/spreadsheets/d/16-LkHtVqjuN9U0rripjBn-nYwyqqSGg_/edit?gid=122377442#gid=122377442&range=B26:B35>部位の名前はこちら</a>',
+            '装備ID: 装備の種別のIDを指定します。省略した場合は装備しているかどうかのみ判定します。<a target="_blank" href=https://docs.google.com/spreadsheets/d/175DaEeB-8qU3N4iBTnaal1ZcP5SU6S_Z/edit?gid=75329941#gid=75329941>装備のIDはこちら</a>',
+          ],
+          args_en: [
+            'Equipment part: Specify the part to be judged.<a target="_blank" href=https://docs.google.com/spreadsheets/d/16-LkHtVqjuN9U0rripjBn-nYwyqqSGg_/edit?gid=122377442#gid=122377442&range=B26:B35>Here is the name of the part</a>',
+            'Equipment ID: Specify the ID of the type of equipment. If omitted, only whether it is equipped or not is judged.<a target="_blank" href=https://docs.google.com/spreadsheets/d/175DaEeB-8qU3N4iBTnaal1ZcP5SU6S_Z/edit?gid=75329941#gid=75329941>Here is the ID of the equipment</a>',
+          ],
+          args_zh: [
+            '装备部位: 指定要判断的部位。<a target="_blank" href=https://docs.google.com/spreadsheets/d/16-LkHtVqjuN9U0rripjBn-nYwyqqSGg_/edit?gid=122377442#gid=122377442&range=B26:B35>这里是部位的名称</a>',
+            '装备ID: 指定装备类型的ID。如果省略，则仅判断是否装备。<a target="_blank" href=https://docs.google.com/spreadsheets/d/175DaEeB-8qU3N4iBTnaal1ZcP5SU6S_Z/edit?gid=75329941#gid=75329941>这里是装备的ID</a>',
+          ],
+          example_jp:
+            "objC_1212#eq-head-hat_wizard.png(頭に魔法帽を装備している黄金の騎士)",
+          example_en:
+            "objC_1212#eq-head-hat_wizard.png(Golden knight equipped with a wizard hat on the head)",
+          example_zh:
+            "objC_1212#eq-head-hat_wizard.png(头部装备了巫师帽的黄金骑士)",
+          images: [],
+        },
+        {
+          name_jp: "装備をしていない",
+          name_en: "Not equipped",
+          name_zh: "未装备",
+          description_jp: [
+            "特定の部位に何も装備していないならテクスチャを変更します。",
+          ],
+          description_en: [
+            "If nothing is equipped on a specific part, change the texture.",
+          ],
+          description_zh: ["如果在特定部位上没有装备任何东西，则更改纹理。"],
+          format_jp: "#noeq-{装備部位}",
+          format_en: "#noeq-{equipment part}",
+          format_zh: "#noeq-{装备部位}",
+          args_jp: [
+            '装備部位: 判定する部位を指定します。<a target="_blank" href=https://docs.google.com/spreadsheets/d/16-LkHtVqjuN9U0rripjBn-nYwyqqSGg_/edit?gid=122377442#gid=122377442&range=B26:B35>部位の名前はこちら</a>',
+          ],
+          args_en: [
+            'Equipment part: Specify the part to be judged.<a target="_blank" href=https://docs.google.com/spreadsheets/d/16-LkHtVqjuN9U0rripjBn-nYwyqqSGg_/edit?gid=122377442#gid=122377442&range=B26:B35>Here is the name of the part</a>',
+          ],
+          args_zh: [
+            '装备部位: 指定要判断的部位。<a target="_blank" href=https://docs.google.com/spreadsheets/d/16-LkHtVqjuN9U0rripjBn-nYwyqqSGg_/edit?gid=122377442#gid=122377442&range=B26:B35>这里是部位的名称</a>',
+          ],
+          example_jp:
+            "objC_1212#noeq-torso.png(胴体に装備をしていない黄金の騎士)",
+          example_en:
+            "objC_1212#noeq-torso.png(Golden knight not equipped on the torso)",
+          example_zh: "objC_1212#noeq-torso.png(胸部未装备的黄金骑士)",
+          images: [],
+        },
+        {
+          name_jp: "状態",
+          name_en: "State",
+          name_zh: "状态",
+          description_jp: [
+            "特定の状態になっているならテクスチャを変更します。",
+          ],
+          description_en: [
+            "If you are in a specific state, change the texture.",
+          ],
+          description_zh: ["如果处于特定状态，则更改纹理。"],
+          format_jp: "#con-{状態ID}",
+          format_en: "#con-{state ID}",
+          format_zh: "#con-{状态ID}",
+          args_jp: [
+            '状態ID: 判定する状態のIDを指定します。<a target="_blank" href=https://docs.google.com/spreadsheets/d/16-LkHtVqjuN9U0rripjBn-nYwyqqSGg_/edit?gid=2024178086#gid=2024178086&range=B:B>状態のIDはこちら</a>',
+          ],
+          args_en: [
+            'State ID: Specify the ID of the state to be judged.<a target="_blank" href=https://docs.google.com/spreadsheets/d/16-LkHtVqjuN9U0rripjBn-nYwyqqSGg_/edit?gid=2024178086#gid=2024178086&range=B:B>Here is the ID of the state</a>',
+          ],
+          args_zh: [
+            '状态ID: 指定要判断的状态的ID。<a target="_blank" href=https://docs.google.com/spreadsheets/d/16-LkHtVqjuN9U0rripjBn-nYwyqqSGg_/edit?gid=2024178086#gid=2024178086&range=B:B>这里是状态的ID</a>',
+          ],
+          example_jp: "objC_1212#con-drunk.png(酔い状態の黄金の騎士)",
+          example_en:
+            "objC_1212#con-drunk.png(Golden knight in a drunken state)",
+          example_zh: "objC_1212#con-drunk.png(醉酒状态的黄金骑士)",
+          images: [],
+        },
+        {
+          name_jp: "床",
+          name_en: "Floor",
+          name_zh: "地板",
+          description_jp: [
+            "特定の床の上にいるならテクスチャを変更します。",
+            "注意：移動ごとに判定が行われるため、この条件を持つテクスチャが増えるとゲームの処理が重くなる可能性があります。",
+          ],
+          description_en: [
+            "If you are on a specific floor, change the texture.",
+            "Note: Since the judgment is made for each movement, the game processing may become heavier if the number of textures with this condition increases.",
+          ],
+          description_zh: [
+            "如果在特定地板上，则更改纹理。",
+            "注意：由于每次移动都会进行判断，因此如果具有此条件的纹理数量增加，则游戏处理可能会变得更加繁重。",
+          ],
+          format_jp:
+            "#floor(-{床の素材ID または alias})(-{床タイプID または alias})<br />\
+#floor-{床の名前に含まれている文字列}",
+          format_en:
+            "#floor(-{floor material ID or alias})(-{floor ID or alias})<br />\
+#floor-{string included in the floor name}",
+          format_zh:
+            "#floor(-{地板材质ID 或 alias})(-{地板ID 或 alias})<br />\
+#floor-{地板名称中包含的字符串}",
+          args_jp: [
+            '床の素材ID または alias: 判定する床の素材を指定します。省略した場合は床タイプだけで判定します。<a target="_blank" href=https://docs.google.com/spreadsheets/d/13oxL_cQEqoTUlcWsjKZyNuAaITFGK56v/edit?gid=1634299066#gid=1634299066&range=A:A>素材IDはこちら</a>',
+            '床タイプID または alias: 床のタイプを指定します。省略した場合は床の素材のみで判定します。<a target="_blank" href=https://docs.google.com/spreadsheets/d/13oxL_cQEqoTUlcWsjKZyNuAaITFGK56v/edit?gid=464345724#gid=464345724&range=A:A>床のIDはこちら</a>',
+            "床の名前に含まれている文字列: 床の名前に含まれている文字列を指定します。(パラメータが1つだけで床素材のaliasにも一致がない場合の動作です)",
+          ],
+          args_en: [
+            'Floor material ID or alias: Specify the material of the floor to be judged. If omitted, only the floor type is judged.<a target="_blank" href=https://docs.google.com/spreadsheets/d/13oxL_cQEqoTUlcWsjKZyNuAaITFGK56v/edit?gid=1634299066#gid=1634299066&range=A:A>Here is the material ID</a>',
+            'Floor ID or alias: Specify the type of floor. If omitted, only the floor material is judged.<a target="_blank" href=https://docs.google.com/spreadsheets/d/13oxL_cQEqoTUlcWsjKZyNuAaITFGK56v/edit?gid=464345724#gid=464345724&range=A:A>Here is the ID of the floor</a>',
+            "String included in the floor name: Specify the string included in the name of the floor. (This is the behavior when there is only one parameter and no match to the alias of the floor material)",
+          ],
+          args_zh: [
+            '地板材质ID 或 alias: 指定要判断的地板材质。如果省略，则仅判断地板类型。<a target="_blank" href=https://docs.google.com/spreadsheets/d/13oxL_cQEqoTUlcWsjKZyNuAaITFGK56v/edit?gid=1634299066#gid=1634299066&range=A:A>这里是材质ID</a>',
+            '地板ID 或 alias: 指定地板类型。如果省略，则仅判断地板材质。<a target="_blank" href=https://docs.google.com/spreadsheets/d/13oxL_cQEqoTUlcWsjKZyNuAaITFGK56v/edit?gid=464345724#gid=464345724&range=A:A>这里是地板ID</a>',
+            "地板名称中包含的字符串: 指定地板名称中包含的字符串。(这是当只有一个参数且地板材质的alias没有匹配时的行为)",
+          ],
+          example_jp:
+            "objC_1212#floor-97.png(素材が海砂の床の上にいる黄金の騎士)<br />\
+objC_1212#floor-poplar.png(素材がポプラの床の上にいる黄金の騎士)<br />\
+objC_1212#floor-poplar-log13.png(素材がポプラの木模様の床[alias=floor_log13]の上にいる黄金の騎士)(木模様の床は同名のものが複数あり文字列だけでは特定できないことに注意)<br />\
+objC_1212#floor-木模様.png(名前に「木模様」が含まれる床の上にいる黄金の騎士)",
+          example_en:
+            'objC_1212#floor-97.png(Golden knight on a floor with sea sand material)<br />\
+objC_1212#floor-poplar.png(Golden knight on a floor with poplar material)<br />\
+objC_1212#floor-poplar-log13.png(Golden knight on a floor with poplar material and plank pattern [alias=floor_log13])(Note that there are multiple floors with the same name of plank pattern and cannot be identified by string alone)<br />\
+objC_1212#floor-plank pattern.png(Golden knight on a floor with "plank pattern" in the name)',
+          example_zh:
+            'objC_1212#floor-97.png(在海沙材质的地板上的黄金骑士)<br />\
+objC_1212#floor-poplar.png(在白杨材质的地板上的黄金骑士)<br />\
+objC_1212#floor-poplar-log13.png(在白杨材质的木纹地板[alias=floor_log13]上的黄金骑士)(请注意，有多个相同名称的木纹地板，仅通过字符串无法识别)<br />\
+objC_1212#floor-木纹.png(在名称中包含"木纹"的地板上的黄金骑士)',
+          images: [],
+        },
+        {
+          name_jp: "ポートレート",
+          name_en: "Portrait",
+          name_zh: "肖像",
+          description_jp: [
+            "ポートレート画像の名前に特定の文字列が含まれているならテクスチャを変更します。",
+          ],
+          description_en: [
+            "If a specific string is included in the name of the portrait image, change the texture.",
+          ],
+          description_zh: ["如果肖像图像的名称中包含特定字符串，则更改纹理。"],
+          format_jp: "#portrait-{ポートレート名に含まれている文字烈}",
+          format_en: "#portrait-{string included in the portrait name}",
+          format_zh: "#portrait-{肖像名称中包含的字符串}",
+          args_jp: [
+            "ポートレート名に含まれている文字列: ポートレート画像の名前に含まれている文字列を指定します。",
+          ],
+          args_en: [
+            "String included in the portrait name: Specify the string included in the name of the portrait image.",
+          ],
+          args_zh: [
+            "肖像名称中包含的字符串: 指定包含在肖像图像名称中的字符串。",
+          ],
+          example_jp:
+            'objC_1003#portrait-_D.png(ポートレートに"_D"が含まれている少女)',
+          example_en:
+            'objC_1003#portrait-_D.png(Little Girl with "_D" in the portrait)',
+          example_zh: 'objC_1003#portrait-_D.png(肖像中包含"_D"的小女孩)',
+          images: [],
+        },
+        {
+          name_jp: "屋内",
+          name_en: "Indoor",
+          name_zh: "室内",
+          description_jp: [
+            "屋内にいるならテクスチャを変更します。",
+            "注意：移動ごとに判定が行われるため、この条件を持つテクスチャが増えるとゲームの処理が重くなる可能性があります。",
+          ],
+          description_en: [
+            "If you are indoors, change the texture.",
+            "Note: Since the judgment is made for each movement, the game processing may become heavier if the number of textures with this condition increases.",
+          ],
+          description_zh: [
+            "如果在室内，则更改纹理。",
+            "注意：由于每次移动都会进行判断，因此如果具有此条件的纹理数量增加，则游戏处理可能会变得更加繁重。",
+          ],
+          format_jp: "#indoor(-{名前})",
+          format_en: "#indoor(-{name})",
+          format_zh: "#indoor(-{名称})",
+          args_jp: [
+            "名前: 部屋の名前に含まれている文字列。省略した場合は屋内にいるかどうかのみ判定します。",
+          ],
+          args_en: [
+            "Name: A string included in the room name. If omitted, only whether you are indoors or not is judged.",
+          ],
+          args_zh: [
+            "名称: 包含在房间名称中的字符串。如果省略，则仅判断是否在室内。",
+          ],
+          example_jp:
+            "objC_1212#indoor.png(屋内にいる黄金の騎士)<br />\
+objC_1212#indoor-魔女.png(名前に「魔女」が含まれる部屋にいる黄金の騎士)",
+          example_en:
+            'objC_1212#indoor.png(Golden knight indoors)<br />\
+objC_1212#indoor-witch.png(Golden knight in a room with "witch" in the name)',
+          example_zh:
+            'objC_1212#indoor.png(室内的黄金骑士)<br />\
+objC_1212#indoor-魔女.png(在名字中包含"魔女"的房间中的黄金骑士)',
+          images: [],
+        },
+        {
+          name_jp: "屋外",
+          name_en: "Outdoor",
+          name_zh: "室外",
+          description_jp: [
+            "屋外にいるならテクスチャを変更します。",
+            "注意：移動ごとに判定が行われるため、この条件を持つテクスチャが増えるとゲームの処理が重くなる可能性があります。",
+          ],
+          description_en: [
+            "If you are outdoors, change the texture.",
+            "Note: Since the judgment is made for each movement, the game processing may become heavier if the number of textures with this condition increases.",
+          ],
+          description_zh: [
+            "如果在室外，则更改纹理。",
+            "注意：由于每次移动都会进行判断，因此如果具有此条件的纹理数量增加，则游戏处理可能会变得更加繁重。",
+          ],
+          format: "#outdoor",
+          args: [],
+          example_jp: "objC_1212#outdoor.png(屋外にいる黄金の騎士)",
+          example_en: "objC_1212#outdoor.png(Golden knight outdoors)",
+          example_zh: "objC_1212#outdoor.png(室外的黄金骑士)",
+          images: [],
+        },
+        {
+          name_jp: "ゾーン(マップ)",
+          name_en: "Zone(Map)",
+          name_zh: "区域(地图)",
+          description_jp: [
+            "特定のゾーン(マップ)にいるならテクスチャを変更します。",
+          ],
+          description_en: [
+            "If you are in a specific zone (map), change the texture.",
+          ],
+          description_zh: ["如果在特定区域(地图)中，则更改纹理。"],
+          format_jp: "#zone-{名前}",
+          format_en: "#zone-{name}",
+          format_zh: "#zone-{名称}",
+          args_jp: [
+            "名前: ゾーンのidか名前に含まれている場合にテクスチャを変更します。<br />\
+idはゾーンに入ったときにログに出力されます。(/AppData/LocalLow/Lafrontier/Elin/Player.log)<br />\
+特定の文字列と一致する場合は特殊な動作をします。<br />\
+pc = 自分の拠点かどうか<br />\
+tent = テントかどうか<br />\
+field = 野良マップかどうか<br />\
+dungeon = ダンジョンかどうか<br />\
+town = 町かどうか<br />\
+civilized = 文明がある地域かどうか（丘の洞窟など町ではないところも含む）",
+          ],
+          args_en: [
+            "Name: If it is included in the zone id or name, the texture will be changed.<br />\
+The id is output to the log when you enter the zone. (/AppData/LocalLow/Lafrontier/Elin/Player.log)<br />\
+If it matches a specific string, it will behave specially.<br />\
+pc = Whether it is your own base<br />\
+tent = Whether it is a tent<br />\
+field = Whether it is a field map<br />\
+dungeon = Whether it is a dungeon<br />\
+town = Whether it is a town<br />\
+civilized = Whether it is a civilized area (including places without civilization such as hill caves and not towns)",
+          ],
+          args_zh: [
+            "名称: 如果包含在区域id或名称中，则将更改纹理。<br />\
+id在进入区域时输出到日志中。(/AppData/LocalLow/Lafrontier/Elin/Player.log)<br />\
+如果与特定字符串匹配，则会有特殊行为。<br />\
+pc = 是否为自己的基地<br />\
+tent = 是否为帐篷<br />\
+field = 是否为野外地图<br />\
+dungeon = 是否为地牢<br />\
+town = 是否为城镇<br />\
+civilized = 是否为文明区域（包括没有文明的地方，如山洞和非城镇）",
+          ],
+          example_jp:
+            "objC_1212#zone-洞窟.png(idか名前に「洞窟」が入るマップでの黄金の騎士)<br />\
+objC_1212#zone-palmia.png(idか名前に「palmia」が入るマップでの黄金の騎士)<br />\
+objC_1212#zone-pc.png(自分の拠点での黄金の騎士)",
+          example_en:
+            'objC_1212#zone-cave.png(Golden knight on a map with "cave" in the id or name)<br />\
+objC_1212#zone-palmia.png(Golden knight on a map with "palmia" in the id or name)<br />\
+objC_1212#zone-pc.png(Golden knight at your own base)',
+          example_zh:
+            'objC_1212#zone-洞窟.png(在id或名称中包含"洞窟"的地图上的黄金骑士)<br />\
+objC_1212#zone-palmia.png(在id或名称中包含"palmia"的地图上的黄金骑士)<br />\
+objC_1212#zone-pc.png(在自己的基地上的黄金骑士)',
+          images: [],
+        },
+        {
+          name_jp: "何月",
+          name_en: "Month",
+          name_zh: "月份",
+          description_jp: ["特定の月ならテクスチャを変更します。"],
+          description_en: ["If it is a specific month, change the texture."],
+          description_zh: ["如果是特定月份，则更改纹理。"],
+          format_jp:
+            "#month-{開始の月}(-{終了の月})<br />\
+#month-{季節}",
+          format_en:
+            "#month-{start month}(-{end month})<br />\
+#month-{season}",
+          format_zh:
+            "#month-{开始月份}(-{结束月份})<br />\
+#month-{季节}",
+          args_jp: [
+            "開始の月: テクスチャを変更する月の開始を指定します。",
+            "終了の月: テクスチャを変更する月の終了を指定します。開始の月より小さい場合は12月から1月に戻った範囲として判定します。省略した場合は開始の月のみを判定します。",
+            "季節: テクスチャを変更する季節を指定します。指定できる値はspring(3-5月), summer(6-8月), autumn(9-11月), winter(12-2月)です。",
+          ],
+          args_en: [
+            "Start month: Specify the start of the month to change the texture.",
+            "End month: Specify the end of the month to change the texture. If it is smaller than the start month, it is judged as a range that returns from December to January. If omitted, only the start month is judged.",
+            "Season: Specify the season to change the texture. The values that can be specified are spring (March-May), summer (June-August), autumn (September-November), and winter (December-February).",
+          ],
+          args_zh: [
+            "开始月份: 指定更改纹理的月份的开始。",
+            "结束月份: 指定更改纹理的月份的结束。如果小于开始月份，则判定为从12月返回到1月的范围。如果省略，则仅判定开始月份。",
+            "季节: 指定更改纹理的季节。可以指定的值为spring(3-5月), summer(6-8月), autumn(9-11月), winter(12-2月)。",
+          ],
+          example_jp:
+            "objC_1212#month-1.png(1月の黄金の騎士)<br />\
+objC_1212#month-2-4.png(2月から4月の黄金の騎士)<br />\
+objC_1212#month-5-2.png(5月から12月,1月から2月の黄金の騎士)<br />\
+objC_1212#month-spring.png(春=3から5月の黄金の騎士)",
+          example_en:
+            "objC_1212#month-1.png(Golden knight in January)<br />\
+objC_1212#month-2-4.png(Golden knight from February to April)<br />\
+objC_1212#month-5-2.png(Golden knight from May to December, January to February)<br />\
+objC_1212#month-spring.png(Golden knight in spring=March to May)",
+          example_zh:
+            "objC_1212#month-1.png(1月的黄金骑士)<br />\
+objC_1212#month-2-4.png(2月到4月的黄金骑士)<br />\
+objC_1212#month-5-2.png(5月到12月，1月到2月的黄金骑士)<br />\
+objC_1212#month-spring.png(春季=3到5月的黄金骑士)",
+          images: [],
+        },
+        {
+          name_jp: "雪",
+          name_en: "Snow",
+          name_zh: "雪",
+          description_jp: [
+            "マップが雪に覆われているならテクスチャを変更します。(天気の雪とは別です。市民などのテクスチャが変わる仕組みであるsnow_tileと同じ条件判定です)",
+          ],
+          description_en: [
+            "If the map is covered with snow, change the texture. (This is different from snow weather. It is the same condition judgment as snow_tile, which changes the texture of citizens, etc.)",
+          ],
+          description_zh: [
+            "如果地图被雪覆盖，则更改纹理。(这与雪天气不同。这是与snow_tile相同的条件判断，snow_tile更改市民等的纹理)",
+          ],
+          format: "#snow",
+          args: [],
+          example_jp: "objC_1212#snow.png(雪で覆われたマップでの黄金の騎士)",
+          example_en:
+            "objC_1212#snow.png(Golden knight on a map covered with snow)",
+          example_zh: "objC_1212#snow.png(在被雪覆盖的地图上的黄金骑士)",
+          images: [],
+        },
+        {
+          name_jp: "天気",
+          name_en: "Weather",
+          name_zh: "天气",
+          description_jp: ["特定の天気のときにテクスチャを変更します。"],
+          description_en: ["Change the texture when it is a specific weather."],
+          description_zh: ["在特定天气时更改纹理。"],
+          format_jp: "#weather-{天気}",
+          format_en: "#weather-{weather}",
+          format_zh: "#weather-{天气}",
+          args_jp: [
+            "天気: 判定する天気を指定します。指定できる値はfine(晴れ)、cloudy(曇り)、rain(雨)、rainheavy(大雨)、snow(雪)、snowheavy(大雪)です。",
+          ],
+          args_en: [
+            "Weather: Specify the weather to be judged. The values that can be specified are fine, cloudy, rain, rainheavy, snow, and snowheavy.",
+          ],
+          args_zh: [
+            "天气: 指定要判断的天气。可以指定的值为fine(晴天)、cloudy(多云)、rain(雨)、rainheavy(大雨)、snow(雪)、snowheavy(大雪)。",
+          ],
+          example_jp: "objC_1212#weather-rain.png(雨のときの黄金の騎士)",
+          example_en: "objC_1212#weather-rain.png(Golden knight when it rains)",
+          example_zh: "objC_1212#weather-rain.png(下雨时的黄金骑士)",
+          images: [],
+        },
+        {
+          name_jp: "戦闘中",
+          name_en: "In battle",
+          name_zh: "战斗中",
+          description_jp: [
+            "戦闘中ならテクスチャを変更します。(正確には敵をターゲットしているとき)",
+          ],
+          description_en: [
+            "Change the texture if you are in battle. (To be precise, when targeting an enemy)",
+          ],
+          description_zh: [
+            "如果在战斗中，则更改纹理。(准确地说，当瞄准敌人时)",
+          ],
+          format: "#battle",
+          args: [],
+          example_jp: "objC_1212#battle.png(戦闘中の黄金の騎士)",
+          example_en: "objC_1212#battle.png(Golden knight in battle)",
+          example_zh: "objC_1212#battle.png(战斗中的黄金骑士)",
+          images: [],
+        },
+        {
+          name_jp: "敵意",
+          name_en: "Hostility",
+          name_zh: "敌意（敌人/中立/友好/盟友）",
+          description_jp: ["特定の敵意のときにテクスチャを変更します。"],
+          description_en: [
+            "Change the texture when there is a specific hostility.",
+          ],
+          description_zh: ["在特定敌意时更改纹理。"],
+          format_jp: "#hostility-{敵意}",
+          format_en: "#hostility-{hostility}",
+          format_zh: "#hostility-{敌意}",
+          args_jp: [
+            "敵意: 判定する敵意を指定します。指定できる値はenemy(敵)、neutral(中立)、friend(友好)、ally(味方)です。",
+          ],
+          args_en: [
+            "Hostility: Specify the hostility to be judged. The values that can be specified are enemy, neutral, friend, and ally.",
+          ],
+          args_zh: [
+            "敌意: 指定要判断的敌意。可以指定的值为enemy(敌人)、neutral(中立)、friend(友好)、ally(盟友)。",
+          ],
+          example_jp: "objC_shojo#hostility-enemy.png(敵対している少女)",
+          example_en: "objC_shojo#hostility-enemy.png(Shoujo hostile)",
+          example_zh: "objC_shojo#hostility-enemy.png(敌对的少女)",
+          images: [],
+        },
+        {
+          name_jp: "毛皮",
+          name_en: "Fur",
+          name_zh: "毛皮",
+          description_jp: [
+            "毛を刈ることができる状態ならテクスチャを変更します。",
+          ],
+          description_en: [
+            "Change the texture if you are in a state where you can shear fur.",
+          ],
+          description_zh: ["如果处于可以剪毛的状态，则更改纹理。"],
+          format: "#fur",
+          args: [],
+          example_jp: "objC_putty_snow#fur(毛を刈れる雪プチ)",
+          example_en: "objC_putty_snow#fur(Snow Putty that can shear fur)",
+          example_zh: "objC_putty_snow#fur(可以剪毛的雪泥)",
+          images: [],
+        },
+        {
+          name_jp: "信仰",
+          name_en: "Faith",
+          name_zh: "信仰",
+          description_jp: ["特定の信仰のときにテクスチャを変更します。"],
+          description_en: [
+            "Change the texture when there is a specific faith.",
+          ],
+          description_zh: ["在特定信仰时更改纹理。"],
+          format_jp: "#faith-{宗教ID}",
+          format_en: "#faith-{religionID}",
+          format_zh: "#faith-{宗教ID}",
+          args_jp: [
+            '宗教ID: 判定する宗教のIDです。宗教IDは<a target="_blank" href=https://docs.google.com/spreadsheets/d/16-LkHtVqjuN9U0rripjBn-nYwyqqSGg_/edit?gid=1359685889#gid=1359685889&range=A:A>こちら</a>で確認できます。',
+          ],
+          args_en: [
+            'Religion ID: The ID of the religion to be judged. You can check the religion ID <a target="_blank" href=https://docs.google.com/spreadsheets/d/16-LkHtVqjuN9U0rripjBn-nYwyqqSGg_/edit?gid=1359685889#gid=1359685889&range=A:A>here</a>.',
+          ],
+          args_zh: [
+            '宗教ID: 要判断的宗教ID。您可以在<a target="_blank" href=https://docs.google.com/spreadsheets/d/16-LkHtVqjuN9U0rripjBn-nYwyqqSGg_/edit?gid=1359685889#gid=1359685889&range=A:A>这里</a>检查宗教ID。',
+          ],
+          example_jp:
+            "objC_1212#faith-earth.png(信仰が地のオパートスの黄金の騎士)",
+          example_en:
+            "objC_1212#faith-earth.png(Golden knight with faith in Earth Opatus)",
+          example_zh: "objC_1212#faith-earth.png(信仰地之奥帕托斯的黄金骑士)",
+          images: [],
+        },
+        {
+          name_jp: "体重",
+          name_en: "Weight",
+          name_zh: "体重",
+          description_jp: ["体重が指定以上のときにテクスチャを変更します。"],
+          description_en: [
+            "Change the texture when the weight is equal to or greater than the specified value.",
+          ],
+          description_zh: ["当体重等于或大于指定值时更改纹理。"],
+          format_jp: "#weight-{体重}",
+          format_en: "#weight-{weight}",
+          format_zh: "#weight-{体重}",
+          args_jp: [
+            "体重: 判定する体重の値です。notと組み合わせることで未満を判定できます。",
+          ],
+          args_en: [
+            "Weight: The value of the weight to be judged. By combining with not, you can judge less than.",
+          ],
+          args_zh: ["体重: 要判断的体重值。 通过与not组合，可以判断小于。"],
+          example_jp:
+            "objC_1212#weight-50.png(体重が50kg以上の黄金の騎士)<br />\
+objC_1212#not-weight-60.png(体重が60kg未満の黄金の騎士)",
+          example_en:
+            "objC_1212#weight-50.png(Golden knight with a weight of 50kg or more)<br />\
+objC_1212#not-weight-60.png(Golden knight with a weight of less than 60kg)",
+          example_zh:
+            "objC_1212#weight-50.png(体重大于50kg的黄金骑士)<br />\
+objC_1212#not-weight-60.png(体重小于60kg的黄金骑士)",
+          images: [],
+        },
+        {
+          name_jp: "身長",
+          name_en: "Height",
+          name_zh: "身高",
+          description_jp: ["身長が指定以上のときにテクスチャを変更します。"],
+          description_en: [
+            "Change the texture when the height is equal to or greater than the specified value.",
+          ],
+          description_zh: ["当身高等于或大于指定值时更改纹理。"],
+          format_jp: "#height-{身長}",
+          format_en: "#height-{height}",
+          format_zh: "#height-{身高}",
+          args_jp: [
+            "身長: 判定する身長の値です。notと組み合わせることで未満を判定できます。",
+          ],
+          args_en: [
+            "Height: The value of the height to be judged. By combining with not, you can judge less than.",
+          ],
+          args_zh: ["身高: 要判断的身高值。 通过与not组合，可以判断小于。"],
+          example_jp:
+            "objC_1212#height-160.png(身長が160cm以上の黄金の騎士)<br />\
+objC_1212#not-height-170.png(身長が170cm未満の黄金の騎士)",
+          example_en:
+            "objC_1212#height-160.png(Golden knight with a height of 160cm or more)<br />\
+objC_1212#not-height-170.png(Golden knight with a height of less than 170cm)",
+          example_zh:
+            "objC_1212#height-160.png(身高大于160cm的黄金骑士)<br />\
+objC_1212#not-height-170.png(身高小于170cm的黄金骑士)",
+          images: [],
+        },
+        {
+          name_jp: "年齢",
+          name_en: "Age",
+          name_zh: "年龄",
+          description_jp: ["年齢が指定以上のときにテクスチャを変更します。"],
+          description_en: [
+            "Change the texture when the age is equal to or greater than the specified value.",
+          ],
+          description_zh: ["当年龄等于或大于指定值时更改纹理。"],
+          format_jp: "#age-{年齢}",
+          format_en: "#age-{age}",
+          format_zh: "#age-{年龄}",
+          args_jp: [
+            "年齢: 判定する年齢の値です。notと組み合わせることで未満を判定できます。",
+          ],
+          args_en: [
+            "Age: The value of the age to be judged. By combining with not, you can judge less than.",
+          ],
+          args_zh: ["年龄: 要判断的年龄值。 通过与not组合，可以判断小于。"],
+          example_jp:
+            "objC_1212#age-20.png(年齢が20歳以上の黄金の騎士)<br />\
+objC_1212#not-age-30.png(年齢が30歳未満の黄金の騎士)",
+          example_en:
+            "objC_1212#age-20.png(Golden knight aged 20 or older)<br />\
+objC_1212#not-age-30.png(Golden knight aged less than 30)",
+          example_zh:
+            "objC_1212#age-20.png(年龄大于20岁的黄金骑士)<br />\
+objC_1212#not-age-30.png(年龄小于30岁的黄金骑士)",
+          images: [],
+        },
+        {
+          name_jp: "気持ちいいこと",
+          name_en: "Interested in a little tail t'night?",
+          name_zh: "爽一爽",
+          description_jp: ["気持ちいいこと中ならテクスチャを変更します。"],
+          description_en: [
+            "Change the texture if you are interested in a little tail t'night.",
+          ],
+          description_zh: ["如果爽一爽，则更改纹理。"],
+          format: "#tail",
+          args: [],
+          example_jp: "objC_1212#tail(気持ちいいこと中の黄金の騎士)",
+          example_en:
+            "objC_1212#tail(Golden knight interested in a little tail t'night)",
+          example_zh: "objC_1212#tail(爽一爽时的黄金骑士)",
+          images: [],
+        },
+
+        {
+          header_jp: "特殊な記法",
+          header_en: "Special notation",
+          header_zh: "特殊记法",
+        },
+        {
+          name_jp: "優先度",
+          name_en: "Priority",
+          name_zh: "优先度（权重）",
+          description_jp: [
+            "条件が複数指定された場合、どれを使うかを判断するための優先度を指定します。",
+            "通常は条件1つにつき+1が設定されますが、明示的に指定することもできます。",
+            "(例外的に性別の条件は優先度が+100されます)",
+          ],
+          description_en: [
+            "If multiple conditions are specified, specify the priority for determining which one to use.",
+            "Normally, +1 is set for each condition, but you can also specify it explicitly.",
+            "(Exceptionally, the gender condition has a priority of +100)",
+          ],
+          description_zh: [
+            "如果某种状况下，有多张图，请指定哪个优先级高。",
+            "通常，每个条件的权重都设置为+1。但也可以明确指定",
+            "简单来说，优先级（权重）是个加法，p-1为基础权重1，此外有几个条件就加几权重。",
+            "(有例外，别的条件权重是+1，但性别条件的权重为+100)",
+          ],
+          format_jp: "#p-{優先度}",
+          format_en: "#p-{priority}",
+          format_zh: "#p-{优先度参数}",
+          args_jp: ["優先度: 優先度の値です。マイナス値も指定できます。"],
+          args_en: [
+            "Priority: The value of the priority. Negative values can also be specified.",
+          ],
+          args_zh: ["优先度参数: 基础优先级数值。也可以指定负值。"],
+          example_jp:
+            "objC_1212#p-2.png(優先度が2の黄金の騎士。優先度が1以下=条件が1つの差し替えより優先されます)",
+          example_en:
+            "objC_1212#p-2.png(Golden knight with a priority of 2. Priority 1 or less = prioritized over replacement with one condition)",
+          example_zh:
+            "objC_1212#f#zone-pc#battle#con-drunk#p-2.png(黄金骑士权重为：性别权重100+zone权重1+战斗状态权重1+醉酒状态权重1+基础权重2)",
+          images: [],
+        },
+        {
+          name_jp: "条件の否定",
+          name_en: "Negation of conditions",
+          name_zh: "条件的否定",
+          description_jp: [
+            "条件を否定します。",
+            "例えば、「自分の拠点にいる」条件の前につけると「自分の拠点にいない」場合にテクスチャを変更します。",
+          ],
+          description_en: [
+            "Negate the condition.",
+            'For example, if you put it in front of the condition "at your own base", the texture will be changed when you are not at your own base.',
+          ],
+          description_zh: [
+            "否定条件。",
+            '例如，如果将其放在"在自己的基地"条件之前，则在不在自己的基地时更改纹理。',
+          ],
+          format_jp: "#not-{条件タイプ}-{パラメータ1}(-{パラメータ2}...)",
+          format_en: "#not-{condition type}-{parameter 1}(-{parameter 2}...)",
+          format_zh: "#not-{条件类型}-{参数1}(-{参数2}...)",
+          args: [],
+          example_jp: "objC_1212#not-zone-pc.png(自分の拠点以外での黄金の騎士)",
+          example_en:
+            "objC_1212#not-zone-pc.png(Golden knight not at your own base)",
+          example_zh: "objC_1212#not-zone-pc.png(不在自己的基地上的黄金骑士)",
+          images: [],
+        },
+        {
+          name_jp: "レイヤー",
+          name_en: "Layer",
+          name_zh: "层",
+          description_jp: [
+            "他のテクスチャの上に重ねる画像として扱います。",
+            "レイヤーは他のテクスチャやレイヤーと組み合わせて使われます。",
+            "例えば、レイヤー指定をしていないテクスチャA/BとレイヤーC/Dがあるとき、A,AC,AD,ACD,B,BC,BD,BCDの8パターンが表示される可能性があります。",
+            "表情などの変化を表現するために使うことを想定しています。",
+          ],
+          description_en: [
+            "Treat it as an image to be overlaid on other textures.",
+            "Layers are used in combination with other textures or layers.",
+            "For example, if there are textures A/B without layer specification and layers C/D, there are 8 patterns that may be displayed: A, AC, AD, ACD, B, BC, BD, BCD.",
+            "It is assumed to be used to express changes such as facial expressions.",
+          ],
+          description_zh: [
+            "将其视为要叠加在其他纹理上的图像。",
+            "图层与其他纹理或图层结合使用。",
+            "例如，如果没有图层规范的纹理A/B和图层C/D，则可能显示8种模式：A, AC, AD, ACD, B, BC, BD, BCD。",
+            "假定用于表达诸如面部表情之类的变化。",
+          ],
+          format_jp: "#layer-{レイヤー番号}",
+          format_en: "#layer-{layer number}",
+          format_zh: "#layer-{层编号}",
+          args_jp: [
+            "レイヤー番号: レイヤーの番号です。同じ番号のレイヤーは最も優先度が高い1枚だけが表示されます。大きいほど手前に表示され、マイナスなら通常のテクスチャより奥に表示されます。",
+          ],
+          args_en: [
+            "Layer number: The number of the layer. Only one layer with the same number will be displayed, which has the highest priority. The larger the number, the closer it is displayed, and if it is negative, it is displayed behind the normal texture.",
+          ],
+          args_zh: [
+            "层编号: 层的编号。只显示具有相同编号的一个图层，该图层具有最高优先级。编号越大，显示得越近，如果为负，则显示在普通纹理的后面。",
+          ],
+          example_jp:
+            "A「objC_1212.png(黄金の騎士。通常の見た目)」、B「objC_1212#zone-pc(拠点にいる黄金の騎士。部屋着)」 に対して、<br />\
+C「objC_1212#con-sleep#layer-1.png(眠り状態の黄金の騎士。閉じた目のレイヤー)」、D「objC_1212#con-poison#layer-2.png(毒状態の黄金の騎士。青ざめた顔のレイヤー)」があるとき、<br />\
+組み合わせにより「通常」「通常＋閉じた目」「通常＋青ざめた顔」「通常＋閉じた目＋青ざめた顔」「部屋着」「部屋着＋閉じた目」「部屋着＋青ざめた顔」「部屋着＋閉じた目＋青ざめた顔」の8パターンが表示される可能性があります。",
+          example_en:
+            'For A "objC_1212.png(Golden knight. Normal appearance)" and B "objC_1212#zone-pc(Golden knight in the base. Room wear)",<br />\
+If there are C "objC_1212#con-sleep#layer-1.png(Golden knight in sleep state. Layer with closed eyes)" and D "objC_1212#con-poison#layer-2.png(Golden knight in poison state. Layer with pale face)",<br />\
+Depending on the combination, there may be 8 patterns: "Normal", "Normal + Closed eyes", "Normal + Pale face", "Normal + Closed eyes + Pale face", "Room wear", "Room wear + Closed eyes", "Room wear + Pale face", "Room wear + Closed eyes + Pale face".',
+          example_zh:
+            '对于A "objC_1212.png(黄金骑士。正常外观)" 和 B "objC_1212#zone-pc(基地中的黄金骑士。室内穿着)",<br />\
+如果有C "objC_1212#con-sleep#layer-1.png(睡眠状态的黄金骑士。闭眼层)" 和 D "objC_1212#con-poison#layer-2.png(中毒状态的黄金骑士。苍白的脸层)",<br />\
+根据组合，可能有8种模式："正常", "正常 + 闭眼", "正常 + 苍白的脸", "正常 + 闭眼 + 苍白的脸", "室内穿着", "室内穿着 + 闭眼", "室内穿着 + 苍白的脸", "室内穿着 + 闭眼 + 苍白的脸"。',
+          images: [],
+        },
+
+        {
+          header_jp: "Tips",
+          header_en: "Tips",
+          header_zh: "提示",
+        },
+        {
+          name_jp: "キャッシュについて",
+          name_en: "About cache",
+          name_zh: "关于缓存",
+          description_jp: [
+            "ゲームの起動時にこのMODで扱うためのテクスチャを作成しMODフォルダ内の「.Cacheフォルダ」に保存します。",
+            "命名規則により置き換えの対象になったテクスチャや、レイヤー機能により合成された結果はこのフォルダ内に保存された画像で確認できます。",
+            "基本的には対象の画像に更新があった際などに自動で更新されますが、何らかの理由で更新されない場合はこのフォルダを削除することで再生成されます。",
+          ],
+          description_en: [
+            'At the start of the game, the textures handled by this MOD are created and saved in the ".Cache folder" in the MOD folder.',
+            "The images that have been replaced by the naming convention or the results synthesized by the layer function can be confirmed by the images saved in this folder.",
+            "Basically, it is automatically updated when there is an update to the target image, but if it is not updated for some reason, it will be regenerated by deleting this folder.",
+          ],
+          description_zh: [
+            '在游戏开始时，此MOD处理的纹理会被创建并保存在MOD文件夹中的".Cache文件夹"中。',
+            "通过命名约定替换的图像或通过图层功能合成的结果可以通过保存在此文件夹中的图像来确认。",
+            "基本上，当目标图像有更新时，它会自动更新，但如果由于某种原因没有更新，则通过删除此文件夹来重新生成。",
+          ],
+        },
+        {
+          name_jp: "パターン数の上限",
+          name_en: "Maximum number of patterns",
+          name_zh: "模式数的上限",
+          description_jp: [
+            "1キャラにつき対して扱えるパターンは最大で1024個までです。上限を超えると正しく表示されない可能性があります。",
+            "「タイル」ではなく「キャラID」に対する上限であることに注意してください。(仔犬や不死の妹など複数の見た目があるキャラは上限を共有します)",
+            "レイヤーの組み合わせにより増えた分もこの上限の中に含まれます。(例えばON/OFFを切り替えられるレイヤーが10個ある場合、組み合わせのパターンは1024個になり上限を超えます)",
+            "別のキャラとの合計が1024を超える分には問題ありません。",
+          ],
+          description_en: [
+            "The maximum number of patterns that can be handled per character is up to 1024. If you exceed the limit, it may not be displayed correctly.",
+            'Please note that this is the limit for "Character ID" rather than "Tile". (Characters with multiple appearances such as puppies and undead sisters share the limit)',
+            "The increase due to the combination of layers is also included in this limit. (For example, if there are 10 layers that can be switched ON/OFF, the number of combination patterns will be 1024, exceeding the limit)",
+            "There is no problem if the total with another character exceeds 1024.",
+          ],
+          description_zh: [
+            "每个角色最多可以处理的模式数为1024。如果超过限制，可能无法正确显示。",
+            '请注意，这是"角色ID"而不是"瓷砖"的限制。(具有多个外观的角色，如小狗共享限制。所有不死的妹也共享限制。)',
+            "由于图层组合而增加的部分也包含在此限制中。(例如，如果有10个可以切换ON/OFF的图层，则组合模式的数量将为1024，超过限制)",
+            "如果与另一个角色的总数超过1024，则没有问题。",
+          ],
+        },
+      ];
+
+      const labels = {
+        ja: {
+          format: "フォーマット",
+          args: "パラメータ",
+          example: "例",
+        },
+        en: {
+          format: "Format",
+          args: "Parameters",
+          example: "Example",
+        },
+        zh: {
+          format: "格式",
+          args: "参数",
+          example: "例子",
+        },
+      };
+
+      const overviewSummary = {
+        ja: "基本的な使い方",
+        en: "Basic usage",
+        zh: "基本用法",
+      };
+
+      function changeLanguage(lang) {
+        const sidebarIframe = document.getElementById("sidebar-iframe");
+        const contentIframe = document.getElementById("content-iframe");
+        let sidebarHtml = "<ul>";
+
+        statuses.forEach((status, index) => {
+          // 言語にあったsuffixを取得.
+          const suffix = lang === "ja" ? "_jp" : lang === "en" ? "_en" : "_zh";
+
+          // headerがある場合は、それを見出しに使うだけ.
+          if (status[`header${suffix}`] || status.header) {
+            sidebarHtml += `<li><strong>${
+              status[`header${suffix}`] || status.header
+            }</strong></li>`;
+            return;
+          }
+
+          // suffixなしのものがあるなら、それを使う.
+          const name = status[`name${suffix}`] || status.name;
+          sidebarHtml += `<li><a href="javascript:void(0);" onclick="parent.scrollToContent(${index})">${name}</a></li>`;
+        });
+
+        sidebarHtml += "</ul>";
+        sidebarIframe.contentWindow.document.open();
+        sidebarIframe.contentWindow.document.write(`
+                <html>
+                    <head>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 10px; }
+                            ul { list-style: none; padding: 0; }
+                            li { margin: 10px 0; }
+                            a { text-decoration: none; color: #333; }
+                            a:hover { color: #007BFF; }
+                        </style>
+                    </head>
+                    <body>${sidebarHtml}</body>
+                </html>
+            `);
+        sidebarIframe.contentWindow.document.close();
+
+        let contentHtml = "";
+        statuses.forEach((status, index) => {
+          // 言語にあったsuffixを取得.
+          const suffix = lang === "ja" ? "_jp" : lang === "en" ? "_en" : "_zh";
+          // suffixなしのものがあるならそれを使う.
+          let formattedDescription =
+            status[`description${suffix}`] || status.description;
+
+          // 区切り線を追加.
+          contentHtml += "<hr>";
+
+          // headerがある場合は、それを見出しに使うだけ.
+          if (status[`header${suffix}`] || status.header) {
+            contentHtml += `<h1>${
+              status[`header${suffix}`] || status.header
+            }</h1>`;
+            return;
+          }
+
+          contentHtml += `<div id="status-${index}" class="content-section">`;
+          {
+            // suffixなしのものがあるならそれを使う.
+            const name = status[`name${suffix}`] || status.name;
+            contentHtml += `<h2>${name}</h2>`;
+            const description =
+              status[`description${suffix}`] || status.description;
+            contentHtml += `<p>${description.join("<br>")}</p>`;
+            // 以降はある場合のみ表示.
+            const format = status[`format${suffix}`] || status.format;
+            if (format) {
+              contentHtml += `<p><strong>${labels[lang].format}:</strong> ${format}</p>`;
+            }
+            const args = status[`args${suffix}`] || status.args;
+            if (args && args.length) {
+              contentHtml += `<p><strong>${
+                labels[lang].args
+              }:</strong> ${args.join("<br>")}</p>`;
+            }
+            const example = status[`example${suffix}`] || status.example;
+            if (example) {
+              contentHtml += `<p><strong>${labels[lang].example}:</strong> ${example}</p>`;
+            }
+            if (status.images) {
+              contentHtml += status.images.length
+                ? `<div><img src="${status.images[0]}" alt="${name}"></div>`
+                : "";
+            }
+          }
+          contentHtml += "</div>";
+        });
+
+        contentIframe.contentWindow.document.open();
+        contentIframe.contentWindow.document.write(`
+                <html>
+                    <head>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; }
+                            img { max-width: 100%; border: 1px solid #ccc; }
+                        </style>
+                    </head>
+                    <body>
+                        <details>
+                            <summary><strong>${
+                              overviewSummary[lang]
+                            }</strong></summary>
+                            ${overview[lang].join("<br>")}
+                        </details>
+                        ${contentHtml}
+                    </body>
+                </html>
+            `);
+        contentIframe.contentWindow.document.close();
+      }
+
+      function scrollToContent(index) {
+        const contentIframe = document.getElementById("content-iframe");
+        const target = contentIframe.contentWindow.document.getElementById(
+          `status-${index}`
+        );
+        target.scrollIntoView({ behavior: "smooth" });
+      }
+
+      changeLanguage("en");
+    </script>
+  </body>
+</html>
