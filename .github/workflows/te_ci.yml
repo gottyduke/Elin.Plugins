@@ -1,0 +1,26 @@
+name: TextureExpand CI Deploy
+
+on:
+  push:
+    branches: ["*"]
+    paths: ["TextureExpand/**"]
+  pull_request_target:
+    paths: ["TextureExpand/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  ci:
+    uses: ./.github/workflows/build_plugin_ci.yml
+    secrets: inherit
+    with:
+      plugin_name: TextureExpand
+      plugin_path: TextureExpand
+      tag_prefix: TE
+      release_name_prefix: "TextureExpand"
+      artifact_name_prefix: te
+      include_cwl: false
+      prerelease: false
