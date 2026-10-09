@@ -1,39 +1,13 @@
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Emmersive.API.Plugins;
 using Emmersive.Helper;
-using EModding.Helper.Runtime;
-using UnityEngine;
 using UnityEngine.UI;
 
 namespace Emmersive.Components;
 
 internal class EmTalkTrigger : EClass
 {
-    private bool _defer;
-
-    // DISABLED: 23.282 Stable
-    private void Update()
-    {
-        if (!Input.GetKeyDown(EmConfig.Policy.PlayerTalkKey.Value)) {
-            return;
-        }
-
-        if (ui.TopLayer != null) {
-            return;
-        }
-
-        if (_defer) {
-            _defer = false;
-            return;
-        }
-
-        ShowPlayerTalkDialog();
-
-        _defer = true;
-    }
-
     internal static Dialog ShowPlayerTalkDialog()
     {
         var d = Dialog.InputName(
@@ -44,7 +18,6 @@ internal class EmTalkTrigger : EClass
                     return;
                 }
 
-
                 var chara = pc;
                 var canRequest = EmConfig.Policy.PlayerTalkTrigger.Value &&
                                  EmScheduler.Mode != EmScheduler.SchedulerMode.Stop;
@@ -53,13 +26,17 @@ internal class EmTalkTrigger : EClass
                 if (m.Success) {
                     var index = m.Groups["idx"].Value.Normalize(NormalizationForm.FormKC);
                     if (int.TryParse(index, out var result)) {
-                        text = text[2..];
+                        text = text[2..].Trim();
                         chara = pc.party.members.TryGet(result);
                     }
                 }
 
                 if (text.StartsWith("@")) {
                     text = text[1..];
+                }
+
+                if (text.IsWhiteSpaceOrNull) {
+                    return;
                 }
 
                 chara ??= pc;
@@ -69,14 +46,17 @@ internal class EmTalkTrigger : EClass
                     canRequest = false;
                 }
 
-                EmKernel.Kernel!.GetRequiredService<SceneDirector>()
-                    .DoPopText(chara.uid, text);
+                var isPlayer = chara.IsPC;
+
+                SceneDirector.Instance.DoPopText(chara.uid, text, isPlayer: isPlayer);
 
                 if (canRequest) {
                     // trigger immediately
                     EmScheduler.OnTalkTrigger(new() {
                         Chara = chara,
                         Trigger = text,
+                        IsPlayer = isPlayer,
+                        AlreadyShown = true,
                     });
                 }
             },
@@ -85,24 +65,11 @@ internal class EmTalkTrigger : EClass
         d.input.field.characterLimit = 200;
         d.input.field.contentType = InputField.ContentType.Standard;
         d.input.field.text = "";
+        UIHelper.SetPlaceholder(d.input.field, "em_ui_chat_hint".lang());
 
         // disable dark screen
         d.transform.GetChild(0).SetActive(false);
 
         return d;
-    }
-
-    // DISABLED: 23.282 Stable
-    //[CwlPostLoad]
-    private static void ShowModWarning()
-    {
-        const string chilemiaoId = "me.chilemiao.plugin.SaySomething";
-        if (TypeQualifier.Plugins.FirstOrDefault(p => p.Info.Metadata.GUID == chilemiaoId) is null) {
-            return;
-        }
-
-        Dialog.YesNo(
-            "em_ui_warn_say_something",
-            () => LayerEmmersivePanel.OpenPanelSesame("em_tab_prompt_setting"));
     }
 }

@@ -1,96 +1,154 @@
-using System.ComponentModel;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Emmersive.API.ThirdParty;
 using Emmersive.Contexts.Memory;
 using Emmersive.Helper;
-using Microsoft.SemanticKernel;
 using UnityEngine;
 
 namespace Emmersive.API.Plugins;
 
 public partial class SceneDirector
 {
-    [KernelFunction("character_bubble")]
-    [Description("Displays a dialogue, gesture, or thought above character's head. Use multiple if needed, DO NOT mix contents.")]
-    public void DoPopText([Description("The unique identifier (uid) of the character who will speak or act.")] int uid,
-                          [Description("The text to be displayed. Use a brief, single line. " +
-                                       "Gesture and thought should be concise and contains only a few words. " +
-                                       "Do not include quotation marks. " +
-                                       "Unity rich text tags are supported.")]
-                          string content,
-                          [Description("How long, in seconds, the text bubble should remain visible.")] float duration = 2.5f,
-                          [Description("Delay, in seconds, before executing this action. Use it to chain actions naturally.")]
-                          float delay = 0f)
+    private static readonly Regex _richTextTag = new("<[^>]+>", RegexOptions.Compiled);
+
+    public void DoPopText(int uid, string content, float duration = 0f, float delay = 0f, bool isPlayer = false)
     {
         if (!FindSameMapChara(uid, out var chara)) {
             return;
         }
 
-        content = chara.ApplyTone(content);
-        content = content.Replace('~', '*');
+        if (!isPlayer) {
+            content = chara.ApplyTone(content);
+        }
+
+        content = content.Trim();
+
+        if (content.Length >= 2 && content.StartsWith('~') && content.EndsWith('~')) {
+            content = $"*{content[1..^1]}*";
+        }
+
         // gpt prefers this quote
         content = content.Replace('’', '\'');
 
-        var matches = Regex.Matches(content, @"(\*[^*]+\*)|([^\*]+)");
+        if (duration <= 0f) {
+            duration = BubbleDuration(content, 0f);
+        }
 
-        foreach (Match match in matches) {
-            if (!match.Success) {
-                continue;
-            }
-
+        var segments = new List<(string Text, bool Gesture)>();
+        foreach (Match match in Regex.Matches(content, @"(\*[^*]+\*)|([^\*]+)")) {
             var text = match.Value.Trim();
-            var gesture = text.StartsWith("*") && text.EndsWith("*");
-
-            CoroutineHelper.Deferred(PopText, delay);
-
-            continue;
-
-            void PopText()
-            {
-                if (chara is not { isDestroyed: false, ExistsOnMap: true }) {
-                    return;
-                }
-
-                var profile = chara.Profile;
-                if (!pc.CanSee(chara)) {
-                    return;
-                }
-
-                Color color;
-                if (gesture) {
-                    color = Msg.colors.Ono;
-                } else {
-                    color = Msg.colors.Talk;
-                    text = text.Replace("&", "");
-                }
-
-                if (EmConfig.Memory.Enabled.Value && MemoryManager.Instance.HasRecentTalk(chara, text)) {
-                    // reduce repetition
-                    return;
-                }
-
-                if (EmConfig.Memory.Enabled.Value) {
-                    MemoryManager.Instance.RecordTalk(chara, text);
-                }
-
-                Msg.SetColor(color);
-
-                var logText = gesture ? text : text.Bracket();
-                if (EmConfig.Scene.PrefixSpeakerName.Value) {
-                    logText = $"{chara.NameSimple}: {logText}";
-                }
-
-                chara.Say(logText);
-
-                if (profile.UsePopFeed) {
-                    WidgetFeed.Instance.SayRaw(chara, text.Wrap());
-                } else {
-                    chara.HostRenderer.Say(text.Wrap(), duration: duration);
-                }
-
-                profile.ResetTalkCooldown();
+            if (!text.IsEmptyOrNull) {
+                segments.Add((text, text.StartsWith("*") && text.EndsWith("*")));
             }
         }
 
+        CoroutineHelper.Deferred(() => {
+            foreach (var (text, gesture) in segments) {
+                PopText(text, gesture);
+            }
+        }, delay);
+
         EmMod.Debug<SceneDirector>($"{chara.Name}: (delay:{delay} duration:{duration}): {content}");
+
+        return;
+
+        void PopText(string text, bool gesture)
+        {
+            if (chara is not { isDestroyed: false, ExistsOnMap: true }) {
+                return;
+            }
+
+            var profile = chara.Profile;
+            if (!pc.CanSee(chara)) {
+                return;
+            }
+
+            Color color;
+            if (gesture) {
+                color = Msg.colors.Ono;
+            } else {
+                color = Msg.colors.Talk;
+                text = text.Replace("&", "");
+            }
+
+            var memory = EmConfig.Memory.Enabled.Value;
+            if (memory && !isPlayer && MemoryManager.Instance.HasRecentTalk(chara, text)) {
+                return;
+            }
+
+            if (memory) {
+                MemoryManager.Instance.RecordTalk(chara, text);
+            }
+
+            var line = new SceneLineArgs {
+                Chara = chara,
+                Text = CleanLine(text, gesture),
+                IsGesture = gesture,
+                IsPlayer = isPlayer,
+                Duration = duration,
+            };
+
+            var clean = line.Text;
+            EmEvent.RaiseSceneLine(line);
+            PublishSceneLine(line);
+
+            if (line.Suppress || line.Text.IsWhiteSpaceOrNull) {
+                profile.ResetTalkCooldown();
+                return;
+            }
+
+            if (line.Text != clean) {
+                text = gesture ? $"*{line.Text}*" : line.Text;
+            }
+
+            Msg.SetColor(color);
+
+            var logText = gesture ? text : text.Bracket();
+            if (EmConfig.Scene.PrefixSpeakerName.Value) {
+                logText = $"{chara.NameSimple}: {logText}";
+            }
+
+            chara.Say(logText);
+
+            var popText = text.Wrap();
+            if (popText.Length > 0 && popText[0] is '@' or '^' or '|') {
+                popText = "​" + popText;
+            }
+
+            if (profile.UsePopFeed && WidgetFeed.Instance != null) {
+                WidgetFeed.Instance.SayRaw(chara, popText);
+            } else {
+                chara.HostRenderer.Say(popText, duration: line.Duration);
+            }
+
+            profile.ResetTalkCooldown();
+        }
+    }
+
+    private static string CleanLine(string text, bool gesture)
+    {
+        if (gesture) {
+            text = text.Trim('*');
+        }
+
+        return _richTextTag.Replace(text, "").Trim();
+    }
+
+    private static void PublishSceneLine(SceneLineArgs line)
+    {
+        var data = new Dictionary<string, object> {
+            ["uid"] = line.Chara.uid,
+            ["name"] = line.Chara.NameSimple,
+            ["text"] = line.Text,
+            ["gesture"] = line.IsGesture,
+            ["player"] = line.IsPlayer,
+            ["duration"] = line.Duration,
+        };
+
+        BaseModManager.PublishEvent<IDictionary<string, object>>(EmEvent.SceneLine, data);
+
+        if (data.TryGetValue("text", out var rewritten) && rewritten is string text) {
+            line.Text = text;
+        }
     }
 }

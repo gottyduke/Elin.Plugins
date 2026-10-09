@@ -18,11 +18,14 @@ public record EmActivity : IDisposable
         Timeout,
     }
 
+    private const int MaxSessionEntries = 500;
+
     private static readonly List<EmActivity> _session = [];
     private static readonly HashSet<string> _services = [with(StringComparer.Ordinal)];
     private static int _activityCount;
 
     private readonly long _start;
+    private bool _disposed;
 
     private EmActivity()
     {
@@ -46,6 +49,11 @@ public record EmActivity : IDisposable
     public int TokensInput { get; set; }
     public int TokensOutput { get; set; }
     public TimeSpan Latency { get; set; } = TimeSpan.Zero;
+
+    public TimeSpan Elapsed => _disposed
+        ? Latency
+        : TimeSpan.FromSeconds((Stopwatch.GetTimestamp() - _start) / (double)Stopwatch.Frequency);
+
     public StatusType Status { get; private set; } = StatusType.Unknown;
 
     public required string ServiceName { get; init; }
@@ -53,7 +61,12 @@ public record EmActivity : IDisposable
 
     public void Dispose()
     {
-        Latency = TimeSpan.FromSeconds((Stopwatch.GetTimestamp() - _start) / (double)Stopwatch.Frequency);
+        if (_disposed) {
+            return;
+        }
+
+        Latency = Elapsed;
+        _disposed = true;
 
         EmMod.Log<EmActivity>(
             $"<{ActivityId}> [{ServiceName}] " +
@@ -88,6 +101,10 @@ public record EmActivity : IDisposable
         lock (_session) {
             _services.Add(serviceId);
             _session.Add(activity);
+
+            while (_session.Count > MaxSessionEntries) {
+                _session.RemoveAt(0);
+            }
         }
 
         EmMod.Log<EmActivity>(
@@ -111,7 +128,7 @@ public record EmActivity : IDisposable
     {
         string[] services;
         lock (_session) {
-            services = _services.ToArray();
+            services = [.._services];
         }
 
         return services.Select(GetSummary);
@@ -119,9 +136,9 @@ public record EmActivity : IDisposable
 
     public static EmActivitySummary GetSummary(string serviceName = "")
     {
-        var activities = serviceName.IsEmptyOrNull ? Session : FromProvider(serviceName).ToList();
-        var total = activities.Count;
+        var activities = serviceName.IsEmptyOrNull ? Session : [..FromProvider(serviceName)];
 
+        var total = 0;
         var success = 0;
         var tokensInput = 0;
         var tokensOutput = 0;
@@ -135,6 +152,12 @@ public record EmActivity : IDisposable
         var oneHourAgo = DateTime.UtcNow - TimeSpan.FromHours(1);
 
         foreach (var a in activities) {
+            if (a.Status is StatusType.Unknown or StatusType.InProgress) {
+                continue;
+            }
+
+            total++;
+
             if (a.Status == StatusType.Completed) {
                 success++;
             }
@@ -199,7 +222,10 @@ public record EmActivity : IDisposable
         public long TokensOutput { get; init; }
         public int TokensLastHour { get; init; }
         public long TokensTotal => TokensInput + TokensOutput;
-        public double TokensPerMin => RequestDuration.Minutes > 0 ? TokensTotal / (double)RequestDuration.Minutes : 0;
+
+        public double TokensPerMin =>
+            RequestDuration.TotalMinutes > 0 ? TokensTotal / RequestDuration.TotalMinutes : 0;
+
         public double TokensPerRequest => RequestSuccess > 0 ? (double)TokensTotal / RequestSuccess : 0;
 
         public double LatencyTotalSec { get; init; }

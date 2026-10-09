@@ -38,6 +38,8 @@ public class CharaContext(Chara chara) : ContextProviderBase
         if (chara.IsPC) {
             data["stamina"] = $"{chara.stamina.value}/{chara.stamina.max}";
         } else {
+            data["distance"] = chara.Dist(EClass.pc);
+
             switch (hostility) {
                 case Hostility.Enemy:
                 case Hostility.Neutral:
@@ -91,9 +93,9 @@ public class CharaContext(Chara chara) : ContextProviderBase
             data["condition"] = string.Join(',', conditions.Select(c => c.GetText()));
         }
 
-        var background = new BackgroundContext(chara).Build();
-        if (background is not null) {
-            data["persona"] = background;
+        var background = new BackgroundContext(chara);
+        if (background.IsAvailable && background.Build() is { } persona) {
+            data["persona"] = persona;
         }
 
         return data;

@@ -1,3 +1,4 @@
+using System;
 using Emmersive.Components;
 using Emmersive.Contexts;
 using Emmersive.Helper;
@@ -12,11 +13,7 @@ internal class CharaTickerPatch
     [HarmonyPatch(typeof(Chara), nameof(Chara.Tick))]
     internal static void OnPlayerTick(Chara __instance)
     {
-        if (!EmScheduler.CanMakeRequest) {
-            return;
-        }
-
-        if (!__instance.IsPC) {
+        if (!__instance.IsPC || !EmScheduler.CanMakeRequest) {
             return;
         }
 
@@ -25,23 +22,28 @@ internal class CharaTickerPatch
             return;
         }
 
-        if (__instance.Profile is not { OnTalkCooldown: false, LockedInRequest: false } pc) {
+        if (__instance.isDead || __instance.conSleep is not null || EClass.ui.TopLayer != null) {
             return;
         }
 
-        var diff = __instance.turn - pc.LastReactionTurn;
-        if (diff < idle) {
+        if (__instance.Profile is not { OnTalkCooldown: false, LockedInRequest: false } profile) {
             return;
         }
 
-        // start global cooldown
-        pc.ResetTalkCooldown();
-
-        var charas = NearbyCharaContext.GetNearbyChara(__instance);
-        if (charas.Count == 0) {
+        if (__instance.turn - profile.LastReactionTurn < idle) {
             return;
         }
 
-        EmScheduler.RequestScenePlayImmediate();
+        profile.ResetTalkCooldown();
+
+        if (NearbyCharaContext.GetNearbyChara(__instance).Count == 0) {
+            return;
+        }
+
+        try {
+            EmScheduler.RequestScenePlayWithTrigger([]);
+        } catch (Exception ex) {
+            EmMod.Warn<CharaTickerPatch>($"idle trigger failed: {ex}");
+        }
     }
 }

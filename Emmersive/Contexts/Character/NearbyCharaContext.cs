@@ -24,45 +24,28 @@ public class NearbyCharaContext(Chara focus) : ContextProviderBase
 
         foreach (var chara in charas) {
             try {
-                var context = new CharaContext(chara).Build();
-                if (context is not null) {
-                    charaContexts[chara.NameSimple] = context;
+                var charaContext = new CharaContext(chara);
+                if (!charaContext.IsAvailable || charaContext.Build() is not { } context) {
+                    continue;
                 }
+
+                var key = charaContexts.ContainsKey(chara.NameSimple)
+                    ? $"{chara.NameSimple}#{chara.uid}"
+                    : chara.NameSimple;
+
+                charaContexts[key] = context;
             } catch (Exception ex) {
                 DebugThrow.Void(ex);
                 // noexcept
             }
         }
 
-        var relationships = new RelationContext(charas).Build();
-        if (relationships is not null) {
+        var relation = new RelationContext([..charas, EClass.pc]);
+        if (relation.IsAvailable && relation.Build() is { } relationships) {
             data["relationships"] = relationships;
         }
 
-        /* TODO disable religion for now
-
-        var religions = charas
-            .Where(c => c is { hostility: >= Hostility.Friend, faith: not ReligionEyth })
-            .Select(c => c.faith)
-            .ToHashSet();
-        if (religions.Count > 0) {
-            var religionData = new Dictionary<string, object>(StringComparer.Ordinal);
-
-            foreach (var religion in religions) {
-                var context = new ReligionContext(religion).Build();
-                if (context is not null) {
-                    religionData[religion.Name] = context;
-                }
-            }
-
-            if (religions.Count > 0) {
-                data["religions"] = religionData;
-            }
-        }
-         */
-
         return data;
-
     }
 
     public static List<Chara> GetNearbyChara(Chara focus)
@@ -72,7 +55,7 @@ public class NearbyCharaContext(Chara focus) : ContextProviderBase
             .OfType<Chara>()
             .Where(c => c.Profile.CanTrigger)
             .OrderByDescending(CharaSorter)
-            .TakeLast(EmConfig.Context.NearbyMaxCount.Value)
+            .Take(EmConfig.Context.NearbyMaxCount.Value)
             .ToList();
 
         return charas;

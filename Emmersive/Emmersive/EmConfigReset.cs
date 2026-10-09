@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Emmersive.API.Services;
 using Emmersive.Components;
@@ -10,7 +11,16 @@ internal partial class EmConfig
 {
     private const EmConfigVersion CurrentVersion = EmConfigVersion.V4;
 
+    private static readonly Debouncer _reloadDebounce = new(0.3f);
+    private static string? _savedByMod;
+
     [ConsoleCommand("reload_cfg")]
+    internal static void ReloadWithPopup()
+    {
+        Reload();
+        EmMod.Popup<EmConfig>("em_ui_config_reloaded".lang());
+    }
+
     internal static void Reload()
     {
         EmMod.Instance.Config.Reload();
@@ -22,6 +32,13 @@ internal partial class EmConfig
     internal static void Reset()
     {
         var config = EmMod.Instance.Config;
+        var backup = $"{config.ConfigFilePath}.bak";
+        try {
+            File.Copy(config.ConfigFilePath, backup, true);
+        } catch (Exception ex) {
+            EmMod.Warn<EmConfig>($"failed to back up config: {ex.Message}");
+        }
+
         File.WriteAllText(config.ConfigFilePath, "");
 
         config.SaveOnConfigSet = false;
@@ -32,15 +49,21 @@ internal partial class EmConfig
 
         config.Save();
         config.SaveOnConfigSet = true;
+        _savedByMod = File.ReadAllText(config.ConfigFilePath);
 
-        EmMod.Popup<EmConfig>("em_ui_config_reset".Loc(CurrentVersion));
+        EmMod.Popup<EmConfig>("em_ui_config_reset".Loc(CurrentVersion, backup), 10f);
     }
 
     internal static void InvalidateConfigs()
     {
         var context = ResourceFetch.Context;
-        if (context.Load<EmConfigVersion>("config_version", out var version) &&
-            version >= CurrentVersion) {
+
+        if (!context.Load<EmConfigVersion>("config_version", out var version)) {
+            context.SaveUncompressed("config_version", CurrentVersion);
+            return;
+        }
+
+        if (version >= CurrentVersion) {
             return;
         }
 
@@ -51,6 +74,11 @@ internal partial class EmConfig
     internal static void EnableReloadWatcher()
     {
         var config = EmMod.Instance.Config;
+        config.SettingChanged += (_, _) => {
+            if (config.SaveOnConfigSet) {
+                _savedByMod = File.ReadAllText(config.ConfigFilePath);
+            }
+        };
 
         FileWatcherHelper.Register(
             "em_config",
@@ -61,11 +89,18 @@ internal partial class EmConfig
                     return;
                 }
 
-                EmMod.Popup<EmConfig>("em_ui_config_changed".lang());
+                _reloadDebounce.Trigger(() => {
+                    if (File.ReadAllText(config.ConfigFilePath) == _savedByMod) {
+                        return;
+                    }
 
-                config.SaveOnConfigSet = false;
-                config.Reload();
-                config.SaveOnConfigSet = true;
+                    _savedByMod = null;
+                    EmMod.Popup<EmConfig>("em_ui_config_changed".lang());
+
+                    config.SaveOnConfigSet = false;
+                    Reload();
+                    config.SaveOnConfigSet = true;
+                });
             });
     }
 

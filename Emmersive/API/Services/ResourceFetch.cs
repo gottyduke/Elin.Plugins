@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,9 +10,12 @@ namespace Emmersive.API.Services;
 public class ResourceFetch
 {
     private const string DefaultResource = "Emmersive.package.LangMod";
+    private const string PlayerBackground = "Emmersive/Characters/player.txt";
 
     // holds user custom edits
     private static readonly Dictionary<ResourceKey, string> _activeResources = [];
+
+    private static readonly ConcurrentDictionary<string, string?> _writtenByMod = new(StringComparer.OrdinalIgnoreCase);
 
     // holds active data exchanges
     public static readonly GameIOContext Context = GameIOContext.GetPersistentModContext("Emmersive")!;
@@ -21,10 +26,11 @@ public class ResourceFetch
     public static IEnumerable<ResourceDescriptor> GetAvailableResources(ResourceKey key)
     {
         using var _ = PackageIterator.AddTempLookup(CustomFolder);
-        return PackageIterator
-            .GetFilesEx(key)
-            .Select(fm => new ResourceDescriptor(fm.file, fm.package?.title ?? "Custom"))
-            .ToArray();
+        return [
+            ..PackageIterator
+                .GetFilesEx(key)
+                .Select(fm => new ResourceDescriptor(fm.file, fm.package?.title ?? "Custom")),
+        ];
     }
 
     public static string GetDefaultResource(string manifest)
@@ -50,14 +56,15 @@ public class ResourceFetch
         }
     }
 
+    [ElinPostLoad]
+    private static void OnGameLoaded(GameIOContext context)
+    {
+        RemoveActiveResource(PlayerBackground);
+    }
+
     public sealed record ResourceDescriptor(FileInfo Provider, string PackageName = "");
 
 #region Active Resource
-
-    public static bool HasActiveResource(ResourceKey key)
-    {
-        return _activeResources.ContainsKey(key);
-    }
 
     public static string GetActiveResource(ResourceKey key, bool autoSet = true)
     {
@@ -120,10 +127,21 @@ public class ResourceFetch
 
         Directory.CreateDirectory(Path.GetDirectoryName(file)!);
         File.WriteAllText(file, content);
+        _writtenByMod[Path.GetFullPath(file)] = content;
 
         RemoveActiveResource(key);
 
         EmMod.Debug<ResourceFetch>($"set custom resource {file}");
+    }
+
+    internal static bool IsUnchangedSinceModWrite(string path)
+    {
+        try {
+            return _writtenByMod.TryGetValue(Path.GetFullPath(path), out var content) &&
+                   (File.Exists(path) ? File.ReadAllText(path) == content : content is null);
+        } catch {
+            return false;
+        }
     }
 
     public static void RemoveCustomResource(ResourceKey key)
@@ -132,6 +150,7 @@ public class ResourceFetch
 
         try {
             File.Delete(file);
+            _writtenByMod[Path.GetFullPath(file)] = null;
         } catch {
             // noexcept
         }
@@ -141,7 +160,13 @@ public class ResourceFetch
     {
         var file = CustomFolder + key;
         if (!File.Exists(file)) {
-            SetCustomResource(key, GetActiveResource(key));
+            var content = GetActiveResource(key);
+
+            if (content == "em_ui_non_provided") {
+                content = "";
+            }
+
+            SetCustomResource(key, content);
         }
 
         Util.Run(file);

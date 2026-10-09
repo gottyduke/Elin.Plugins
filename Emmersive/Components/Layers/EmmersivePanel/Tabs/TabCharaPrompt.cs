@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Emmersive.API.Services;
 using Emmersive.Contexts;
 using Emmersive.Helper;
@@ -28,18 +27,6 @@ internal class TabCharaPrompt : TabEmmersiveBase
         BuildCharacterPromptCards();
     }
 
-    internal static Chara[] GetMapCharas()
-    {
-        return [
-            EClass.pc,
-            ..EClass._map.charas
-                .Where(c => c.Profile.IsImportant)
-                .Distinct(UniqueCardComparer.Default)
-                .OfType<Chara>()
-                .OrderByDescending(c => c.IsPCFaction),
-        ];
-    }
-
     internal void BuildCharacterPromptCards()
     {
         foreach (var chara in GetMapCharas()) {
@@ -58,7 +45,7 @@ internal class TabCharaPrompt : TabEmmersiveBase
                     chara.GetBool("em_pop"),
                     value => {
                         chara.SetBool("em_pop", value);
-                        if (value) {
+                        if (value && WidgetFeed.Instance != null) {
                             WidgetFeed.Instance.SayRaw(chara, _popupEmoji.RandomItem());
                         }
                     })

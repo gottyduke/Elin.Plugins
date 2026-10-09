@@ -7,7 +7,7 @@ namespace Emmersive.Helper;
 
 public static class Localizer
 {
-    private static readonly HashSet<string> _unlocalized = new(StringComparer.Ordinal);
+    private static readonly HashSet<string> _unlocalized = [with(StringComparer.Ordinal)];
 
     internal static void DumpUnlocalized()
     {

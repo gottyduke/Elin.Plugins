@@ -6,7 +6,7 @@ using Emmersive.API.Services;
 
 namespace Emmersive;
 
-internal class ExecutionAnalysis
+internal static class ExecutionAnalysis
 {
     internal static void CleanupActivityLogs()
     {
@@ -31,8 +31,6 @@ internal class ExecutionAnalysis
 
     internal static void DumpSessionActivities()
     {
-        using var _ = EmPromptReset.ScopedNotifyChanges(false);
-
         CleanupActivityLogs();
 
         var activities = EmActivity.Session;

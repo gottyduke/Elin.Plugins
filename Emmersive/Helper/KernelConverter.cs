@@ -26,21 +26,5 @@ public static class KernelConverter
 
             return history;
         }
-
-        // best not to use template rendering due to escape issue
-        // also we'd prefer enforcing system prompt as its own role
-        public string ToTemplate()
-        {
-            var sb = new StringBuilder();
-
-            sb.AppendLine("<message role=\"system\">");
-            sb.AppendLine(args["system_prompt"]!.ToString());
-            sb.AppendLine("</message>");
-            sb.AppendLine("<message role=\"user\">");
-            sb.AppendLine(args["game_contexts"]!.ToString());
-            sb.AppendLine("</message>");
-
-            return sb.ToString();
-        }
     }
 }

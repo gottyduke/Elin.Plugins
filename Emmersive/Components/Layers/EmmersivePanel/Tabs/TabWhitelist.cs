@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Emmersive.Helper;
 using Emmersive.LangMod;
 using UnityEngine.UI;
@@ -7,7 +8,7 @@ using YKF;
 
 namespace Emmersive.Components;
 
-internal class TabWhitelist : TabCharaRelations
+internal class TabWhitelist : TabEmmersiveBase
 {
     private UIButton? _whitelistMode;
 
@@ -30,7 +31,11 @@ internal class TabWhitelist : TabCharaRelations
                 })
             .WithMinWidth(240);
 
-        var mapCharas = GetMapCharas();
+        var mapCharas = GetMapCharas(EmConfig.Context.NearbyImportantOnly.Value).Where(c => !c.IsPC).ToArray();
+
+        if (isWhitelist && !mapCharas.Any(c => c.Profile.OnWhitelist)) {
+            this.MakeCard().Text("em_ui_whitelist_empty".lang(), FontColor.Bad);
+        }
 
         BuildList(
             isWhitelist ? "em_ui_active_whitelist" : "em_ui_active_blacklist",

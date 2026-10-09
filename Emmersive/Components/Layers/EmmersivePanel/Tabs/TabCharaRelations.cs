@@ -8,7 +8,7 @@ using YKF;
 
 namespace Emmersive.Components;
 
-internal class TabCharaRelations : TabCharaPrompt
+internal class TabCharaRelations : TabEmmersiveBase
 {
     public override void OnLayout()
     {
@@ -52,6 +52,15 @@ internal class TabCharaRelations : TabCharaPrompt
 
             generator.TextFlavor("em_ui_edit_relations");
 
+            var list = generator.Grid()
+                .WithConstraintCount(2);
+            list.Fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            list.Layout.cellSize = FitCell(2);
+
+            foreach (var chara in GetMapCharas()) {
+                list.Toggle(chara.Name, charas[chara], value => charas[chara] = value);
+            }
+
             generator.Button("em_ui_generate_relation".lang(), () => {
                 var ids = charas
                     .Where(kv => kv.Value)
@@ -66,15 +75,6 @@ internal class TabCharaRelations : TabCharaPrompt
                 var relationKey = RelationContext.GetRelationKey(ids);
                 ResourceFetch.OpenOrCreateCustomResource($"Emmersive/Relations/{relationKey}.txt");
             });
-
-            var list = generator.Grid()
-                .WithConstraintCount(2);
-            list.Fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-            list.Layout.cellSize = FitCell(2);
-
-            foreach (var chara in GetMapCharas()) {
-                list.Toggle(chara.Name, charas[chara], value => charas[chara] = value);
-            }
         }
     }
 }

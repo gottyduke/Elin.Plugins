@@ -6,7 +6,9 @@ namespace Emmersive.Helper;
 
 public static class UniTasklet
 {
-    public static CancellationToken GameToken = EmMod.Instance.GetCancellationTokenOnDestroy();
+    private static CancellationToken? _gameToken;
+
+    public static CancellationToken GameToken => _gameToken ??= EmMod.Instance.GetCancellationTokenOnDestroy();
 
     public static CancellationTokenSource SceneCts
     {

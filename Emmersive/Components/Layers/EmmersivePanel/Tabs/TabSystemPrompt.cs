@@ -21,7 +21,15 @@ internal class TabSystemPrompt : TabEmmersiveBase
         BuildPromptCard("em_ui_system_prompt", "Emmersive/SystemPrompt.txt");
 
         if (EClass.core.IsGameStarted) {
-            BuildPromptCard("em_ui_zone".Loc(EClass._zone.Name), $"Emmersive/Zones/{EClass._zone.ZoneFullName}.txt");
+            var zone = EClass._zone;
+            var zonePrompt = $"Emmersive/Zones/{zone.ZoneFullName}.txt";
+            var genericPrompt = $"Emmersive/Zones/Zone_{zone.id}.txt";
+            if (ResourceFetch.GetActiveResource(zonePrompt).IsEmptyOrNull &&
+                !ResourceFetch.GetActiveResource(genericPrompt).IsEmptyOrNull) {
+                zonePrompt = genericPrompt;
+            }
+
+            BuildPromptCard("em_ui_zone".Loc(zone.Name), zonePrompt);
         }
 
         BuildContextFilter();
@@ -29,11 +37,13 @@ internal class TabSystemPrompt : TabEmmersiveBase
 
     public override void OnLayoutConfirm()
     {
-        RecentActionContext.Filters = _filters
-            .Select(i => i.Text)
-            .ToHashSet();
+        RecentActionContext.Filters = [
+            .._filters
+                .Select(i => i.Text),
+        ];
 
         RecentActionContext.Filters.Remove("");
+        RecentActionContext.SaveFilters();
 
         base.OnLayoutConfirm();
     }
@@ -48,7 +58,7 @@ internal class TabSystemPrompt : TabEmmersiveBase
             ResourceFetch.ClearActiveResources();
             RelationContext.Clear();
             LayerEmmersivePanel.Instance?.Reopen();
-        }).GetComponent<Image>().color = Color.red;
+        });
 
         btnGroup.Button("em_ui_open_folder".lang(), () => Util.Run(ResourceFetch.CustomFolder));
     }
@@ -60,35 +70,28 @@ internal class TabSystemPrompt : TabEmmersiveBase
         card.HeaderCard("em_ui_filter");
 
         foreach (var filter in RecentActionContext.Filters) {
-            _filters.Add(AddFilterInput(filter));
+            AddFilterInput(filter);
         }
 
         card.Button("em_ui_add".lang(), () => {
-            var filter = AddFilterInput("");
-            filter.transform.parent.SetSiblingIndex(filter.transform.parent.GetSiblingIndex() - 1);
-            _filters.Add(filter);
+            var row = AddFilterInput("");
+            row.transform.SetSiblingIndex(row.transform.GetSiblingIndex() - 1);
         });
 
         return;
 
-        UIInputText AddFilterInput(string text)
+        YKHorizontal AddFilterInput(string text)
         {
-            var pair = card.Horizontal();
-            pair.Layout.childForceExpandWidth = true;
+            var row = card.Horizontal();
+            var input = row.PlainTextInput(text);
+            _filters.Add(input);
 
-            var input = pair.InputText(text);
+            row.Button("×", () => {
+                _filters.Remove(input);
+                DestroyImmediate(row.gameObject);
+            }).GetOrCreate<Image>().color = Color.red;
 
-            input.type = UIInputText.Type.Name;
-            input.field.characterLimit = 150;
-            input.field.contentType = InputField.ContentType.Standard;
-            input.field.inputType = InputField.InputType.Standard;
-            input.field.characterValidation = InputField.CharacterValidation.None;
-
-            input.Text = text;
-
-            pair.Button("em_ui_remove".lang(), () => DestroyImmediate(pair.gameObject));
-
-            return input;
+            return row;
         }
     }
 }

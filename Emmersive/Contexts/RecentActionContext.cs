@@ -139,10 +139,8 @@ public class RecentActionContext : ContextProviderBase
         }
     }
 
-    [ElinPostSave]
-    public static void SaveFilters(GameIOContext context)
+    internal static void SaveFilters()
     {
-        Filters.Add(_push);
         ResourceFetch.Context.Save("action_filters", Filters);
     }
 }

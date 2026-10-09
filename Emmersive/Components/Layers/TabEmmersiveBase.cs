@@ -1,5 +1,9 @@
+using System.IO;
+using System.Linq;
 using Emmersive.API.Services;
+using Emmersive.Contexts;
 using Emmersive.Helper;
+using Emmersive.LangMod;
 using EModding.Helper;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +15,18 @@ internal abstract class TabEmmersiveBase : YKLayout<LayerCreationData>
 {
     public virtual void OnLayoutConfirm()
     {
+    }
+
+    internal static Chara[] GetMapCharas(bool importantOnly = true)
+    {
+        return [
+            EClass.pc,
+            ..EClass._map.charas
+                .Where(c => importantOnly ? c.Profile.IsImportant : !c.IsPC)
+                .Distinct(UniqueCardComparer.Default)
+                .OfType<Chara>()
+                .OrderByDescending(c => c.IsPCFaction),
+        ];
     }
 
     internal YKLayout BuildPromptCard(string idLang, string path)
@@ -25,15 +41,28 @@ internal abstract class TabEmmersiveBase : YKLayout<LayerCreationData>
         var btnGroup = titleGroup.Horizontal();
         btnGroup.Layout.childForceExpandWidth = true;
 
-        btnGroup.Button("em_ui_reset".lang(), () => {
+        var reset = btnGroup.Button("em_ui_reset".lang(), () => UIHelper.ConfirmDanger("em_ui_confirm_reset_prompt", () => {
             ResourceFetch.RemoveCustomResource(path);
             ResourceFetch.RemoveActiveResource(path);
-            OnLayoutConfirm();
-        }).GetComponent<Image>().color = Color.red;
+            RelationContext.Clear();
+            LayerEmmersivePanel.Instance?.Reopen();
+        }, "em_ui_reset"));
+        reset.GetComponent<Image>().color = Color.red;
 
-        btnGroup.Button("em_ui_edit".lang(), () => ResourceFetch.OpenOrCreateCustomResource(path));
+        var custom = new FileInfo(ResourceFetch.CustomFolder + path);
+        reset.SetInteractableWithAlpha(custom.Exists);
+
+        btnGroup.Button("em_ui_edit".lang(), () => {
+            ResourceFetch.OpenOrCreateCustomResource(path);
+            reset.SetInteractableWithAlpha(true);
+        });
 
         card.Spacer(5);
+
+        var builtin = PackageIterator.GetFile(path, ModInfo.Guid);
+        if (custom.Exists && builtin is { Exists: true } && builtin.LastWriteTime > custom.LastWriteTime) {
+            card.Text("em_ui_prompt_outdated".Loc(builtin.LastWriteTime.ToString("yyyy-MM-dd")), FontColor.Warning);
+        }
 
         var truncated = ResourceFetch.GetActiveResource(path).Truncate(400);
         card.Text(truncated.OrIfEmpty("em_ui_non_provided"));
@@ -43,7 +72,7 @@ internal abstract class TabEmmersiveBase : YKLayout<LayerCreationData>
 
     internal static Vector2 FitCell(int constraint)
     {
-        var scaler = EMono.ui.canvasScaler.scaleFactor;
-        return new Vector2(Screen.width / 1.7f / constraint, 45f) / scaler;
+        var width = Screen.width / 1.7f / constraint / EMono.ui.canvasScaler.scaleFactor;
+        return new(width, 45f);
     }
 }

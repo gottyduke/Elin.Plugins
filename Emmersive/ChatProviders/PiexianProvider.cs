@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using Emmersive.API.Plugins;
-using Emmersive.Helper;
 using Newtonsoft.Json;
-using UnityEngine.UI;
 using YKF;
 
 namespace Emmersive.ChatProviders;
@@ -10,8 +8,6 @@ namespace Emmersive.ChatProviders;
 [JsonObject(MemberSerialization.OptIn)]
 internal sealed class PiexianProvider() : OpenAIProvider("")
 {
-    private UIInputText? _apiInput;
-
     [JsonProperty]
     public override string Alias { get; set; } = "氕氙";
 
@@ -27,17 +23,6 @@ internal sealed class PiexianProvider() : OpenAIProvider("")
 
     protected override void OnLayoutInternal(YKLayout card)
     {
-        _apiInput = card.AddPair("em_ui_api_key", ApiKey);
-        _apiInput.field.inputType = InputField.InputType.Password;
-    }
-
-    public override void OnLayoutConfirm()
-    {
-        if (_apiInput != null) {
-            ApiKey = _apiInput.Text;
-        }
-
-        base.OnLayoutConfirm();
     }
 
     protected override void HandleRequestInternal()

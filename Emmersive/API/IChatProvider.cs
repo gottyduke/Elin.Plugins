@@ -19,5 +19,9 @@ public interface IChatProvider
 
     public void UpdateAvailability();
 
-    public UniTask<ChatMessageContent> HandleRequest(Kernel kernel, ChatHistory context, CancellationToken token);
+    public UniTask<ChatMessageContent> HandleRequest(Kernel kernel,
+                                                     ChatHistory history,
+                                                     EmActivity activity,
+                                                     bool rawOutput,
+                                                     CancellationToken token);
 }

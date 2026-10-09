@@ -72,6 +72,7 @@
             DestinationFiles="@(Assets->'$(OutDir)%(RecursiveDir)%(Filename)%(Extension)')"
             SkipUnchangedFiles="true"
         />
+        <Delete Files="$(OutDir)LangMod\EN\SourceLocalization.json"/>
     </Target>
     <Target Name="RemoveDebugKeys" AfterTargets="CopyAssets" Condition="'$(Configuration)' == 'Release' OR '$(Configuration)' == 'ReleaseNightly'">
         <Delete Files="$(OutDir)/LangMod/EN/Emmersive/DebugKeys.json;$(TargetDir)$(TargetName).pdb"/>

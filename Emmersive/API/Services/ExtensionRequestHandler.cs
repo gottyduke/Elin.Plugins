@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Emmersive.API.Exceptions;
+using Emmersive.ChatProviders;
 using Emmersive.Components;
 using Emmersive.Helper;
+using Emmersive.LangMod;
 using EModding.Helper.Runtime.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -22,22 +26,49 @@ public class ExtensionRequestHandler()
 
     protected override void Dispose(bool disposing)
     {
-        // no dispose
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        if (ApiPoolSelector.Instance.CurrentProvider is not IExtensionRequestMerger provider) {
-            EmMod.Debug<ExtensionRequestHandler>($"requesting {request.RequestUri}");
-            return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        var (provider, _, _) = ChatProviderBase.CurrentScope;
+        var body = await ReadBodyAsync(request).ConfigureAwait(false);
+
+        if (provider is IExtensionRequestMerger merger && body is not null) {
+            try {
+                merger.MergeExtensionRequest(body, request);
+
+                var finalized = JsonConvert.SerializeObject(body, Formatting.None);
+                request.Content = new StringContent(finalized, Encoding.UTF8, "application/json");
+            } catch (Exception ex) {
+                EmMod.Warn<ExtensionRequestHandler>($"failed to merge ExtensionData into request\n{ex}");
+                DebugThrow.Void(ex);
+                // noexcept
+            }
         }
 
-        // merge into params
-        var json = await request.Content.ReadAsStringAsync();
-        var dict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+        ResetHeaders(request);
+
+        if (EmScheduler.Mode == EmScheduler.SchedulerMode.DryRun) {
+            DumpDryRun(request, body);
+            throw new SchedulerDryRunException();
+        }
+
+        EmMod.Debug<ExtensionRequestHandler>($"requesting {request.RequestUri}");
+
+        return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
+    }
+
+    private static async Task<Dictionary<string, object>?> ReadBodyAsync(HttpRequestMessage request)
+    {
+        if (request.Content is null) {
+            return null;
+        }
+
         try {
+            var json = await request.Content.ReadAsStringAsync().ConfigureAwait(false);
             var root = JObject.Parse(json);
 
+            var dict = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
             foreach (var prop in root.Properties()) {
                 dict[prop.Name] = prop.Value.Type switch {
                     JTokenType.Object => prop.Value.ToObject<Dictionary<string, object>>()!,
@@ -47,45 +78,30 @@ public class ExtensionRequestHandler()
                 };
             }
 
-            provider.MergeExtensionRequest(dict, request);
-
-            var finalized = JsonConvert.SerializeObject(dict, Formatting.None);
-            request.Content = new StringContent(finalized, Encoding.UTF8, "application/json");
+            return dict;
         } catch (Exception ex) {
-            EmMod.Warn<ExtensionRequestHandler>($"failed to merge ExtensionData into request\n{ex}");
-            DebugThrow.Void(ex);
+            EmMod.Warn<ExtensionRequestHandler>($"failed to read request body\n{ex}");
+            return null;
             // noexcept
         }
+    }
 
-        ResetHeaders(request);
+    private static void DumpDryRun(HttpRequestMessage request, Dictionary<string, object>? body)
+    {
+        var sb = new StringBuilder();
 
-        ThrowIfDryRun();
+        sb.AppendLine($"[{request.Method}]: {request.RequestUri}");
+        sb.Append("[Content]: ").Append(body?.ToIndentedJson() ?? "");
 
-        EmMod.Debug<ExtensionRequestHandler>($"requesting {request.RequestUri}");
+        var log = sb.ToString();
+        EmMod.Log<EmScheduler>(log);
 
-        return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        const string file = "dry_run.txt";
+        ResourceFetch.SetCustomResource(file, log);
+        ResourceFetch.OpenOrCreateCustomResource(file);
 
-        void ThrowIfDryRun()
-        {
-            if (EmScheduler.Mode != EmScheduler.SchedulerMode.DryRun) {
-                return;
-            }
-
-            var sb = new StringBuilder();
-
-            sb.AppendLine($"[{request.Method}]: {request.RequestUri}");
-            sb.Append("[Content]: ").Append(dict.ToIndentedJson());
-
-            var log = sb.ToString();
-            EmMod.Log<EmScheduler>(log);
-
-            ResourceFetch.SetCustomResource("dry_run.txt", log);
-            ResourceFetch.OpenOrCreateCustomResource("dry_run.txt");
-
-            EmScheduler.SwitchMode(EmScheduler.SchedulerMode.Buffer);
-
-            throw new SchedulerDryRunException();
-        }
+        var path = Path.GetFullPath(ResourceFetch.CustomFolder + file);
+        UniTask.Post(() => EmMod.Popup<EmScheduler>("em_ui_dry_run_done".Loc(path), 10f));
     }
 
     private static void ResetHeaders(HttpRequestMessage request)

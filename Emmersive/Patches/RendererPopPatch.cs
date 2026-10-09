@@ -1,11 +1,14 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using Emmersive.API.Profiles;
 using Emmersive.API.Services;
 using Emmersive.Components;
 using Emmersive.Contexts.Memory;
 using Emmersive.Helper;
+using EModding.Helper;
 using HarmonyLib;
 using UnityEngine;
 
@@ -14,6 +17,18 @@ namespace Emmersive.Patches;
 [HarmonyPatch]
 internal class RendererPopPatch
 {
+    private static (Card Card, bool Show)? _lastPop;
+
+    private static readonly MethodInfo _rendererSay = AccessTools.Method(
+        typeof(CardRenderer),
+        nameof(CardRenderer.Say),
+        [typeof(string), typeof(Color), typeof(float)]);
+
+    private static readonly MethodInfo _msgSay = AccessTools.Method(
+        typeof(Msg),
+        nameof(Msg.Say),
+        [typeof(string)]);
+
     internal static IEnumerable<MethodBase> TargetMethods()
     {
         return [
@@ -24,62 +39,65 @@ internal class RendererPopPatch
     }
 
     [HarmonyTranspiler]
-    internal static IEnumerable<CodeInstruction> OnRendererPopIl(IEnumerable<CodeInstruction> instructions)
+    internal static IEnumerable<CodeInstruction> OnRendererPopIl(IEnumerable<CodeInstruction> instructions, MethodBase original)
     {
         var cm = new CodeMatcher(instructions);
-        return cm
-            .MatchEndForward(
-                new OperandContains(OpCodes.Callvirt, nameof(CardRenderer.Say)))
+        cm.MatchEndForward(
+                new CodeMatch(ci => ci.Calls(_rendererSay)))
             .EnsureValid("set scene trigger on CardRenderer.Say")
             // preserve labels in TalkTopic
             .SetInstructionAndAdvance(new CodeInstruction(OpCodes.Ldarg_0).WithLabels(cm.Labels))
             .InsertAndAdvance(
                 Transpilers.EmitDelegate(SetSceneTrigger))
             .End()
-            // TalkRaw & TalkTopic
             .MatchEndBackwards(
-                new OperandContains(OpCodes.Call, nameof(Msg.Say)))
+                new CodeMatch(ci => ci.Calls(_msgSay)));
+
+        if (cm.IsInvalid) {
+            if (original.Name != nameof(Card.SayRaw)) {
+                EmMod.Warn<RendererPopPatch>($"Msg.Say not found in {original.Name}, barks will not be gated");
+            }
+
+            return cm.InstructionEnumeration();
+        }
+
+        Func<string, Card, string, string> onLog = original.Name == nameof(Chara.TalkTopic)
+            ? OnTopicLog
+            : OnTalkLog;
+
+        return cm
             .Repeat(m => m
                 .RemoveInstruction()
                 .InsertAndAdvance(
                     new(OpCodes.Ldarg_0),
                     new(OpCodes.Ldarg_1),
-                    Transpilers.EmitDelegate(OnBlockedTalk)))
+                    Transpilers.EmitDelegate(onLog)))
             .InstructionEnumeration();
     }
 
-    internal static string OnBlockedTalk(string text, Card card, string topic)
+    internal static string OnTalkLog(string text, Card card, string topic)
     {
-        if (!ApiPoolSelector.Instance.HasAnyAvailableServices() ||
-            card is not Chara { Profile: { } profile } || topic == "dead" ||
-            !profile.CanTrigger) {
-            AllowOriginalText();
-            return "";
-        }
+        var show = _lastPop is not { } pop || pop.Card != card || pop.Show;
+        _lastPop = null;
 
-        if (EmScheduler.IsInProgress && !profile.IsPC) {
-            // block all talks during scene request
-            Msg.SetColor();
-            return "";
-        }
+        return LogOrBlock(text, show);
+    }
 
-        if ((profile.LockedInRequest && !EmConfig.Scene.BlockCharaTalk.Value && !profile.OnTalkCooldown) ||
-            (!EmScheduler.CanMakeRequest && !profile.OnTalkCooldown)) {
-            // let non-blocked gc talk
-            AllowOriginalText();
-            return "";
-        }
+    internal static string OnTopicLog(string text, Card card, string topic)
+    {
+        var show = topic == "dead" || card is not Chara { Profile: { } profile } chara || CanShowPop(chara, profile);
+        return LogOrBlock(text, show);
+    }
 
-        Msg.SetColor();
-        return "";
-
-        void AllowOriginalText()
-        {
+    private static string LogOrBlock(string text, bool show)
+    {
+        if (show) {
             Msg.Say(text);
-            if (card is Chara chara) {
-                MemoryManager.Instance.RecordTalk(chara, text);
-            }
+        } else {
+            Msg.SetColor();
         }
+
+        return "";
     }
 
     internal static void SetSceneTrigger(CardRenderer renderer, string text, Color color, float duration, Card card)
@@ -91,46 +109,44 @@ internal class RendererPopPatch
 
         text = chara.ApplyNewLine(text).StripBrackets();
 
-        if (!ApiPoolSelector.Instance.HasAnyAvailableServices() ||
-            !profile.CanTrigger ||
-            chara.Dist(EClass.pc) > EmConfig.Context.NearbyRadius.Value) {
-            AllowOriginalPop();
+        var show = CanShowPop(chara, profile);
+        _lastPop = (card, show);
+
+        if (!show) {
+            EmMod.Debug<RendererPopPatch>($"blocked {chara.NameSimple}");
             return;
         }
 
-        // block if chara is locked in scheduler
-        if (profile.LockedInRequest && !profile.IsPC) {
-            if (!EmConfig.Scene.BlockCharaTalk.Value && !profile.OnTalkCooldown) {
-                AllowOriginalPop();
-            } else {
-                EmMod.DebugPopup<EmScheduler>($"blocked {chara.NameSimple}");
-            }
-
-            return;
-        }
-
-        if (EmScheduler.CanMakeRequest) {
+        if (IsSceneCandidate(chara, profile) &&
+            (!profile.LockedInRequest || profile.IsPC) &&
+            EmScheduler.CanMakeRequest) {
             EmScheduler.OnTalkTrigger(new() {
                 Chara = chara,
                 Trigger = text,
+                AlreadyShown = true,
             });
-
             EmScheduler.AddBufferDelay(EmConfig.Scene.SceneBufferWindow.Value);
         }
 
-        if (!profile.OnTalkCooldown || profile.IsPC) {
-            AllowOriginalPop();
+        renderer.Say(text, color, duration);
+        profile.ResetTalkCooldown();
+        MemoryManager.Instance.RecordTalk(chara, text);
+    }
+
+    private static bool IsSceneCandidate(Chara chara, CharaProfile profile)
+    {
+        return EmScheduler.IsEnabled &&
+               ApiPoolSelector.Instance.HasAnyAvailableServices() &&
+               profile.CanTrigger &&
+               chara.Dist(EClass.pc) <= EmConfig.Context.NearbyRadius.Value;
+    }
+
+    private static bool CanShowPop(Chara chara, CharaProfile profile)
+    {
+        if (profile.IsPC || !IsSceneCandidate(chara, profile)) {
+            return true;
         }
 
-        return;
-
-        // make a new trigger
-
-        void AllowOriginalPop()
-        {
-            renderer.Say(text, color, duration);
-            profile.ResetTalkCooldown();
-            MemoryManager.Instance.RecordTalk(chara, text);
-        }
+        return !profile.OnTalkCooldown && (!profile.LockedInRequest || !EmConfig.Scene.BlockCharaTalk.Value);
     }
 }

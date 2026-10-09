@@ -2,12 +2,13 @@ using System.Linq;
 using Emmersive.API.Plugins;
 using Emmersive.Contexts.Memory;
 using Emmersive.Helper;
+using Emmersive.LangMod;
 using UnityEngine.UI;
 using YKF;
 
 namespace Emmersive.Components;
 
-internal class TabCharaMemory : TabCharaPrompt
+internal class TabCharaMemory : TabEmmersiveBase
 {
     private UIButton? _memoryToggle;
 
@@ -34,7 +35,7 @@ internal class TabCharaMemory : TabCharaPrompt
         string GetCurrentMemoryState()
         {
             var isOn = EmConfig.Memory.Enabled.Value;
-            return "em_ui_npc_memory".lang() + $": {(isOn ? "on" : "off").lang()}";
+            return "em_ui_npc_memory".Loc((isOn ? "on" : "off").lang());
         }
     }
 

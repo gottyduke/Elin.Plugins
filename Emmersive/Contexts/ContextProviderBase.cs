@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Emmersive.API;
@@ -7,7 +8,8 @@ namespace Emmersive.Contexts;
 
 public abstract class ContextProviderBase : IContextProvider
 {
-    public bool IsAvailable => !EmConfig.Context.DisabledProviders.Value.Contains(Name);
+    public bool IsAvailable => Name == "system_prompt" || !IsDisabled(Name);
+
     public abstract string Name { get; }
 
     public virtual object? Build()
@@ -22,6 +24,18 @@ public abstract class ContextProviderBase : IContextProvider
         }
 
         return data;
+    }
+
+    internal static bool IsDisabled(string name)
+    {
+        var disabled = EmConfig.Context.DisabledProviders.Value;
+        if (disabled.IsEmptyOrNull) {
+            return false;
+        }
+
+        return disabled
+            .Split(',')
+            .Any(entry => string.Equals(entry.Trim(), name, StringComparison.OrdinalIgnoreCase));
     }
 
     protected virtual void Localize(IDictionary<string, object> data, string? prefixOverride = null)

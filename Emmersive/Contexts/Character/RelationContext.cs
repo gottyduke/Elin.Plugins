@@ -108,12 +108,13 @@ public class RelationContext(IList<Chara> charas) : ContextProviderBase
     public static List<RelationPrompt> BuildLookup()
     {
         using var _ = PackageIterator.AddTempLookup(ResourceFetch.CustomFolder);
-        return PackageIterator
-            .GetDirectories("Emmersive/Relations")
-            .SelectMany(d => d.GetFiles("*.txt", SearchOption.TopDirectoryOnly))
-            .Select(LoadFromFile)
-            .OfType<RelationPrompt>()
-            .ToList();
+        return [
+            ..PackageIterator
+                .GetDirectories("Emmersive/Relations")
+                .SelectMany(d => d.GetFiles("*.txt", SearchOption.TopDirectoryOnly))
+                .Select(LoadFromFile)
+                .OfType<RelationPrompt>(),
+        ];
     }
 
     public static void Clear()

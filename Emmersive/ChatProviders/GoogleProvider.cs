@@ -27,14 +27,11 @@ public class GoogleProvider(string apiKey) : ChatProviderBase(apiKey)
     public override IDictionary<string, object> RequestParams { get; set; } = new Dictionary<string, object> {
         ["topP"] = 0.9f,
         ["temperature"] = 0.9f,
-        ["thinkingConfig"] = JObject.FromObject(new {
-            thinkingBudget = 0,
-        }),
     };
 
     public override PromptExecutionSettings ExecutionSettings { get; set; } = new GeminiPromptExecutionSettings {
         ResponseMimeType = "application/json",
-        ResponseSchema = typeof(SceneReaction[]),
+        ResponseSchema = SceneReaction.KernelSchema,
         ThinkingConfig = new() {
             ThinkingBudget = 0,
         },
@@ -47,6 +44,8 @@ public class GoogleProvider(string apiKey) : ChatProviderBase(apiKey)
                 ThinkingBudget = 0,
             },
         };
+
+    private bool UsesThinking => CurrentModel.Contains("pro", StringComparison.OrdinalIgnoreCase);
 
     public override void MergeExtensionRequest(IDictionary<string, object> data, HttpRequestMessage request)
     {
@@ -61,7 +60,23 @@ public class GoogleProvider(string apiKey) : ChatProviderBase(apiKey)
             request.RequestUri = new(EndPoint + uri[DefaultGoogleV1Beta.Length..]);
         }
 
+        generationConfig.TryGetValue("thinkingConfig", out var thinking);
+
         base.MergeExtensionRequest(generationConfig, request);
+
+        if (UsesThinking) {
+            if (thinking is null) {
+                generationConfig.Remove("thinkingConfig");
+            } else {
+                generationConfig["thinkingConfig"] = thinking;
+            }
+        }
+    }
+
+    protected override void ApplyResponseSchema(IDictionary<string, object> data, JObject schema)
+    {
+        data["responseMimeType"] = "application/json";
+        data["responseSchema"] = schema;
     }
 
     protected override void OnLayoutInternal(YKLayout card)
@@ -86,7 +101,9 @@ public class GoogleProvider(string apiKey) : ChatProviderBase(apiKey)
 
     protected override void HandleRequestInternal()
     {
-        (ExecutionSettings as GeminiPromptExecutionSettings)?.ThinkingConfig?.ThinkingBudget =
-            CurrentModel.EndsWith("pro") ? 128 : 0;
+        var budget = UsesThinking ? 128 : 0;
+
+        (ExecutionSettings as GeminiPromptExecutionSettings)?.ThinkingConfig?.ThinkingBudget = budget;
+        (RawExecutionSettings as GeminiPromptExecutionSettings)?.ThinkingConfig?.ThinkingBudget = budget;
     }
 }

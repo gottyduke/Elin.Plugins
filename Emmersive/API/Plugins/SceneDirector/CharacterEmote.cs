@@ -1,14 +1,9 @@
-using System.ComponentModel;
-using System.Text.Json.Serialization;
-using Microsoft.SemanticKernel;
-
 // ReSharper disable InconsistentNaming
 
 namespace Emmersive.API.Plugins;
 
 public partial class SceneDirector
 {
-    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum CharacterEmote
     {
         Angry = Emo.angry,
@@ -19,21 +14,18 @@ public partial class SceneDirector
         Idea = Emo.idea,
     }
 
-    [KernelFunction("character_emote")]
-    [Description("Display a visual emotion or expression (emote) above a character's head.")]
-    public void DoEmote([Description("The unique identifier (uid) of the character who will emote.")] int uid,
-                        [Description("The specific type of emotion or expression to display.")] CharacterEmote emote,
-                        [Description("How long, in seconds, the emote should be displayed. Default is 1 second.")]
-                        float duration = 1f,
-                        [Description("Delay, in seconds, before executing this action. Use for chaining actions naturally.")]
-                        float delay = 0f)
+    public void DoEmote(int uid, CharacterEmote emote, float delay = 0f)
     {
         if (!FindSameMapChara(uid, out var chara)) {
             return;
         }
 
+        CoroutineHelper.Deferred(() => {
+            if (chara is { isDestroyed: false, ExistsOnMap: true }) {
+                chara.ShowEmo((Emo)emote);
+            }
+        }, delay);
 
-        CoroutineHelper.Deferred(() => chara.ShowEmo((Emo)emote, duration), delay);
         EmMod.Debug<SceneDirector>($"{chara.Name} emotes (delay: {delay}): {emote}");
     }
 }

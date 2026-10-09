@@ -24,6 +24,12 @@ public sealed class MemoryEntry
     [JsonProperty("sc")]
     public int SentCount { get; set; }
 
+    [JsonProperty("sm")]
+    public bool Summarized { get; set; }
+
+    [JsonProperty("gt")]
+    public int GameTime { get; init; }
+
     public void MarkSent()
     {
         SentCount++;

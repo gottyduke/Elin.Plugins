@@ -24,6 +24,10 @@ public class Player2Provider() : OpenAIProvider("")
     [JsonProperty]
     public override string EndPoint => "http://127.0.0.1:4315/v1";
 
+    protected override bool RequiresApiKey => false;
+
+    public override bool AllowEndpointCustomization => false;
+
     public override void MergeExtensionRequest(IDictionary<string, object> data, HttpRequestMessage request)
     {
         base.MergeExtensionRequest(data, request);

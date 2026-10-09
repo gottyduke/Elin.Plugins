@@ -1,9 +1,9 @@
+using System;
 using System.Net.Http;
 using Emmersive.API.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using ReflexCLI.Attributes;
-using SceneDirector = Emmersive.API.Plugins.SceneDirector;
 
 namespace Emmersive;
 
@@ -17,7 +17,6 @@ public static class EmKernel
     {
         return Kernel = Kernel
             .CreateBuilder()
-            .AddScenePlugin()
             .AddExtensionHandler()
             .AddChatProviders()
             .Build();
@@ -25,12 +24,6 @@ public static class EmKernel
 
     extension(IKernelBuilder builder)
     {
-        private IKernelBuilder AddScenePlugin()
-        {
-            builder.Services.AddSingleton(new SceneDirector());
-            return builder;
-        }
-
         private IKernelBuilder AddExtensionHandler()
         {
             builder.Services.AddSingleton(new HttpClient(ExtensionRequestHandler.Instance, false));
@@ -43,7 +36,14 @@ public static class EmKernel
             builder.Services.AddSingleton<IAIServiceSelector>(apiPool);
 
             foreach (var provider in apiPool.Providers) {
-                provider.Register(builder);
+                try {
+                    provider.Register(builder);
+                } catch (Exception ex) {
+                    EmMod.Warn<ApiPoolSelector>($"failed to register {provider.Id}\n{ex}");
+                    if (provider.IsAvailable) {
+                        provider.MarkUnavailable("em_ui_err_register".lang());
+                    }
+                }
             }
 
             return builder;

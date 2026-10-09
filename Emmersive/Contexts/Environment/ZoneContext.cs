@@ -11,18 +11,10 @@ public class ZoneContext(Zone zone) : ContextProviderBase
     protected override IDictionary<string, object>? BuildInternal()
     {
         var world = EClass.world;
-        var season = world.date.month switch {
-            >= 3 and <= 5 => "Spring",
-            >= 6 and <= 8 => "Summer",
-            >= 9 and <= 11 => "Autumn",
-            12 or >= 1 and <= 2 => "Winter",
-            _ => "Unknown",
-        };
-
         var data = new Dictionary<string, object> {
             ["name"] = zone.NameWithDangerLevel,
             ["date"] =
-                $"{world.date.GetText(Date.TextFormat.Widget)}, {world.date.NameTime}, {season}, {world.weather.GetName()}",
+                $"{world.date.GetText(Date.TextFormat.Widget)}, {world.date.NameTime}, {world.date.NameSeason}, {world.weather.GetName()}",
         };
 
         if (zone.IsRegion) {

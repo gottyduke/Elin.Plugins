@@ -10,7 +10,7 @@ namespace Emmersive.LangMod;
 
 public static class LocFormatter
 {
-    private static readonly HashSet<string> _unlocalized = new(StringComparer.Ordinal);
+    private static readonly HashSet<string> _unlocalized = [with(StringComparer.Ordinal)];
 
     [Conditional("DEBUG")]
     internal static void DumpUnlocalized()

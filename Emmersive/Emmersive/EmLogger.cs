@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using EModding.Helper;
 using EModding.Helper.Runtime.Exceptions;
@@ -68,6 +67,7 @@ internal sealed partial class EmMod
 
         switch (log) {
             case Exception ex:
+                LogInternal(ex);
                 var exp = ExceptionProfile.GetFromStackTrace(ref ex);
                 exp.CreateAndPop(payload.ToString());
                 break;
@@ -101,6 +101,7 @@ internal sealed partial class EmMod
 
         switch (log) {
             case Exception ex:
+                LogInternal(ex);
                 var exp = ExceptionProfile.GetFromStackTrace(ref ex);
                 exp.CreateAndPop(payload.ToString());
                 break;
@@ -118,13 +119,7 @@ internal sealed partial class EmMod
         }
     }
 
-    [Conditional("DEBUG")]
-    internal static void DebugPopup<T>(string message, float seconds = 2.5f)
-    {
-        Popup<T>(message, seconds);
-    }
-
-    internal static void Popup<T>(string message, float seconds = 2.5f)
+    internal static void Popup<T>(string message, float seconds = 5f)
     {
         Log<T>(message);
         EGui.CreatePopup(message, seconds);

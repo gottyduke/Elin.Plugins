@@ -38,11 +38,12 @@ public class NearbyThingContext(Chara focus) : ContextProviderBase
 
         List<string> Summarize(IEnumerable<string> names)
         {
-            return names
-                .GroupBy(n => n)
-                .Select(g => g.Count() > 1 ? $"{g.Key} x{g.Count()}" : g.Key)
-                .Take(10)
-                .ToList();
+            return [
+                ..names
+                    .GroupBy(n => n)
+                    .Select(g => g.Count() > 1 ? $"{g.Key} x{g.Count()}" : g.Key)
+                    .Take(10),
+            ];
         }
     }
 }

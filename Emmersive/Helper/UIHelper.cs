@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,6 +9,8 @@ namespace Emmersive.Helper;
 
 public static class UIHelper
 {
+    private const float PairLabelWidth = 180f;
+
     private static readonly Dictionary<string, Sprite> _lookup = [];
 
     public static Sprite? FindSprite(string path, string name)
@@ -17,6 +20,29 @@ public static class UIHelper
         }
 
         return sprite;
+    }
+
+    internal static void ConfirmDanger(string langKey, Action onYes, string langYes = "yes")
+    {
+        Dialog.YesNo(langKey, onYes, langYes: langYes);
+    }
+
+    internal static void SetPlaceholder(InputField field, string text)
+    {
+        if (field.placeholder == null) {
+            return;
+        }
+
+        field.placeholder.gameObject.SetActive(true);
+
+        switch (field.placeholder) {
+            case UIText uiText:
+                uiText.SetText(text);
+                break;
+            case Text plain:
+                plain.text = text;
+                break;
+        }
     }
 
     extension<T>(T layout) where T : YKLayout
@@ -36,18 +62,27 @@ public static class UIHelper
         public UIInputText AddPair(string idLang, string text)
         {
             var pair = layout.Horizontal();
-            pair.Layout.childForceExpandWidth = true;
+            pair.Layout.childForceExpandWidth = false;
 
-            pair.Text(idLang);
-            var input = pair.InputText(text);
+            var label = pair.Text(idLang).LayoutElement();
+            label.minWidth = label.preferredWidth = PairLabelWidth;
+            label.flexibleWidth = 0f;
+
+            return pair.PlainTextInput(text);
+        }
+
+        internal UIInputText PlainTextInput(string text, int characterLimit = 150)
+        {
+            var input = layout.InputText(text);
 
             input.type = UIInputText.Type.Name;
-            input.field.characterLimit = 150;
+            input.field.characterLimit = characterLimit;
             input.field.contentType = InputField.ContentType.Standard;
             input.field.inputType = InputField.InputType.Standard;
             input.field.characterValidation = InputField.CharacterValidation.None;
 
             input.Text = text;
+            input.LayoutElement().flexibleWidth = 1f;
 
             return input;
         }

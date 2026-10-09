@@ -1,3 +1,4 @@
+using System.Linq;
 using Cysharp.Threading.Tasks;
 using Emmersive.API.Plugins;
 using Emmersive.Contexts.Memory;
@@ -27,12 +28,12 @@ internal class TabMemoryEditor : YKLayout<LayerMemoryCreationData>
         var actions = Horizontal();
         actions.Layout.childForceExpandWidth = true;
 
-        actions.Button("em_ui_summarize_now".lang(), () => {
-            EmMod.Popup<MemoryManager>("em_ui_summarizing".lang());
-            Summarize().ForgetEx();
-        }).GetOrCreate<Image>().color = Color.green;
+        UIButton? summarize = null;
+        summarize = actions.Button("em_ui_summarize_now".lang(), () => Summarize(summarize!).ForgetEx());
+        summarize.GetOrCreate<Image>().color = Color.green;
+        summarize.SetInteractableWithAlpha(store.ShortTerm.Any(e => !e.Summarized));
 
-        actions.Button("em_ui_clear_memory".lang(), () => {
+        actions.Button("em_ui_clear_memory".lang(), () => UIHelper.ConfirmDanger("em_ui_confirm_clear_memory", () => {
             if (SceneDirector.FindSameMapChara(store.Uid, out var chara)) {
                 MemoryManager.Instance.ClearMemory(chara);
                 if (LayerMemoryEditor.Instance != null) {
@@ -40,20 +41,30 @@ internal class TabMemoryEditor : YKLayout<LayerMemoryCreationData>
                 }
                 LayerEmmersivePanel.Instance?.Reopen();
             }
-        }).GetOrCreate<Image>().color = Color.red;
+        }, "em_ui_clear_memory")).GetOrCreate<Image>().color = Color.red;
 
         return;
 
-        async UniTask Summarize()
+        async UniTask Summarize(UIButton button)
         {
+            button.SetInteractableWithAlpha(false);
+            button.mainText.text = "em_ui_summarizing".lang();
+
             var success = await MemoryManager.Instance.TriggerSummarizeAsync(store);
             await UniTask.Yield();
+
             if (success) {
-                EmMod.Popup<MemoryManager>("em_ui_summarize_done".lang());
+                EmMod.Popup<MemoryManager>("em_ui_summarize_done".Loc(MemoryManager.Instance.LastSummarizeAdded));
                 LayerMemoryEditor.Instance?.Reopen();
-            } else {
-                EmMod.Popup<MemoryManager>("failed to summarize");
+                return;
             }
+
+            if (button != null) {
+                button.SetInteractableWithAlpha(true);
+                button.mainText.text = "em_ui_summarize_now".lang();
+            }
+
+            EmMod.Popup<MemoryManager>(MemoryManager.Instance.LastSummarizeError ?? "em_ui_sum_failed".lang());
         }
     }
 
@@ -71,9 +82,9 @@ internal class TabMemoryEditor : YKLayout<LayerMemoryCreationData>
             var line = card.Horizontal();
             line.Text(entry.Speaker, FontColor.Good);
             line.Spacer(0, 5);
-            line.Text(entry.Content);
+            line.Text(entry.Content, entry.Summarized ? FontColor.Passive : FontColor.DontChange);
             line.FlexWidth();
-            line.Button("x", () => {
+            line.Button("×", () => {
                 store.ShortTerm.Remove(entry);
                 DestroyImmediate(line.gameObject);
                 header.SetText(StmHeader());
@@ -121,14 +132,7 @@ internal class TabMemoryEditor : YKLayout<LayerMemoryCreationData>
                 LayerMemoryEditor.Instance?.Reopen();
             }).LayoutElement().minWidth = 50f;
 
-            var input = row.InputText(fact.Fact);
-            input.type = UIInputText.Type.Name;
-            input.field.characterLimit = 150;
-            input.field.contentType = InputField.ContentType.Standard;
-            input.field.inputType = InputField.InputType.Standard;
-            input.field.characterValidation = InputField.CharacterValidation.None;
-            input.Text = fact.Fact;
-            input.LayoutElement().preferredWidth = 1919_810f;
+            var input = row.PlainTextInput(fact.Fact, 0);
 
             var idx = i;
             input.field.onValueChanged.AddListener(_ => {

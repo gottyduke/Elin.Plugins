@@ -8,12 +8,18 @@ using Emmersive.API.ThirdParty;
 using Emmersive.Helper;
 using EModding.Helper.Runtime.Exceptions;
 using Microsoft.SemanticKernel;
+using Newtonsoft.Json;
 
 namespace Emmersive.Contexts;
 
 public sealed class ContextBuilder
 {
     private readonly List<IContextProvider> _providers = [];
+
+    internal IReadOnlyList<Chara> TriggerCharas { get; set; } = [];
+    internal IReadOnlyList<Chara> NearbyCharas { get; set; } = [];
+    internal IReadOnlyCollection<string>? ShownLines { get; set; }
+    internal bool IsManual { get; set; }
 
     private ContextBuilder()
     {
@@ -60,13 +66,21 @@ public sealed class ContextBuilder
         return this;
     }
 
-    public KernelArguments Build()
+    public ContextBuilder AddExternalProviders()
+    {
+        _providers.AddRange(EmPluginRegistry.Instance.ExternalContextProviders
+            .Where(p => p.IsAvailable && !ContextProviderBase.IsDisabled(p.Name)));
+        return this;
+    }
+
+    public KernelArguments? Build()
     {
         if (!EClass.core.IsGameStarted) {
-            return [];
+            return null;
         }
 
         var sw = Stopwatch.StartNew();
+        var verbose = EmConfig.Policy.Verbose.Value;
 
         var sb = new StringBuilder();
 
@@ -74,18 +88,18 @@ public sealed class ContextBuilder
             try {
                 var current = sw.Elapsed;
 
-                EmMod.Debug<ContextBuilder>(provider.Name);
-
-                sb.AppendLine($"[{provider.Name}]");
-
                 var context = provider.Build();
                 if (context is null) {
                     continue;
                 }
 
-                sb.AppendLine(context.ToCompactJson());
+                sb.AppendLine($"[{provider.Name}]");
+                sb.AppendLine(Serialize(provider, context, false));
 
-                EmMod.Debug<ContextBuilder>($"{(sw.Elapsed - current).Milliseconds}ms\n{context.ToIndentedJson()}");
+                if (verbose) {
+                    EmMod.Debug<ContextBuilder>(
+                        $"{provider.Name} {(sw.Elapsed - current).TotalMilliseconds:F1}ms\n{Serialize(provider, context, true)}");
+                }
             } catch (Exception ex) {
                 EmMod.Warn<ContextBuilder>($"provider {provider.Name} failed\n{ex}");
                 DebugThrow.Void(ex);
@@ -93,38 +107,30 @@ public sealed class ContextBuilder
             }
         }
 
-        // 处理外部 IEmContextProvider
-        foreach (var extProvider in EmPluginRegistry.Instance.ExternalContextProviders) {
-            if (!extProvider.IsAvailable) {
-                continue;
-            }
+        var language = MOD.langs.TryGetValue(Lang.langCode, out var lang)
+            ? $"{lang.name}({lang.name_en})"
+            : Lang.langCode;
 
-            try {
-                sb.AppendLine($"[{extProvider.Name}]");
-                var context = extProvider.Build();
-                if (context is null) {
-                    continue;
-                }
-
-                sb.AppendLine(context.ToCompactJson());
-            } catch (Exception ex) {
-                EmMod.Warn<ContextBuilder>($"external provider {extProvider.Name} failed\n{ex}");
-                DebugThrow.Void(ex);
-            }
-        }
-
-        var lang = MOD.langs[Lang.langCode];
         var data = new KernelArguments {
             ["system_prompt"] = SystemContext.Build(),
             ["game_contexts"] = $"Current game state in JSON:\n{sb}",
-            ["language_code"] = $"{lang.name}({lang.name_en})",
+            ["language_code"] = language,
             ["max_reactions"] = EmConfig.Scene.MaxReactions.Value,
         };
 
         sw.Stop();
-        EmMod.Debug<ContextBuilder>($"took {sw.Elapsed.Milliseconds}ms");
+        EmMod.Debug<ContextBuilder>($"took {sw.Elapsed.TotalMilliseconds:F1}ms");
 
         return data;
+    }
+
+    private static string Serialize(IContextProvider provider, object context, bool indented)
+    {
+        if (provider is ContextProviderBase) {
+            return indented ? context.ToIndentedJson() : context.ToCompactJson();
+        }
+
+        return JsonConvert.SerializeObject(context, indented ? Formatting.Indented : Formatting.None);
     }
 
     public static void ResetAllContexts()

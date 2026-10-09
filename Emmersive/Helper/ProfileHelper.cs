@@ -15,7 +15,15 @@ public static class ProfileHelper
 
     extension(Chara chara)
     {
-        public CharaProfile Profile => _profiles.GetOrAdd(chara.uid, _ => new(chara));
+        public CharaProfile Profile
+        {
+            get {
+                var profile = _profiles.GetOrAdd(chara.uid, _ => new(chara));
+                profile.Chara = chara;
+                return profile;
+            }
+        }
+
         public string UnifiedId => chara.IsPC ? "player" : chara.id;
     }
 }

@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using Emmersive.ChatProviders;
 using Emmersive.Helper;
+using Emmersive.LangMod;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Services;
 
@@ -12,34 +15,33 @@ public sealed class ApiPoolSelector : IAIServiceSelector
 {
     private readonly List<IChatProvider> _providers = [];
 
-    private bool _dirty;
-
     public IReadOnlyList<IChatProvider> Providers => _providers;
-    public IChatProvider? CurrentProvider { get; private set; }
 
+    public IChatProvider? CurrentProvider { get; private set; }
 
     public static ApiPoolSelector Instance => field ??= new();
 
+    internal string? LoadFailedBackupDir { get; private set; }
+
     public void AddService(IChatProvider provider)
     {
-        _providers.Add(provider);
-        _dirty = true;
+        provider.RemoveProviderParam();
+        AddServiceInternal(provider);
+        LoadFailedBackupDir = null;
 
-        provider.LoadProviderParam();
-
-        EmMod.Log<ApiPoolSelector>($"added {provider.Id}");
+        SaveServices();
     }
 
     public void ReorderService(IChatProvider provider, int mod)
     {
         _providers.Move(provider, mod);
-        _dirty = true;
+
+        SaveServices();
     }
 
     public void RemoveService(IChatProvider provider)
     {
         _providers.Remove(provider);
-        _dirty = true;
 
         if (CurrentProvider == provider) {
             CurrentProvider = null;
@@ -48,6 +50,8 @@ public sealed class ApiPoolSelector : IAIServiceSelector
         provider.RemoveProviderParam();
 
         EmMod.Log<ApiPoolSelector>($"removed {provider.Id}");
+
+        SaveServices();
     }
 
     public void ClearServices()
@@ -59,7 +63,7 @@ public sealed class ApiPoolSelector : IAIServiceSelector
 
     public void SaveServices()
     {
-        if (!_dirty) {
+        if (LoadFailedBackupDir is not null && _providers.Count == 0) {
             return;
         }
 
@@ -84,17 +88,53 @@ public sealed class ApiPoolSelector : IAIServiceSelector
 
         var context = ResourceFetch.Context;
 
-        if (!context.Load<List<IChatProvider>>("active_providers", out var providers)) {
-            return;
+        List<IChatProvider>? providers = null;
+        try {
+            context.Load("active_providers", out providers);
+        } catch (Exception ex) {
+            BackupChunk(context, "active_providers");
+            LoadFailedBackupDir = Path.Combine(context.ChunkDir.FullName, "backup");
+            EmMod.ErrorWithPopup<ApiPoolSelector>("em_ui_err_services_load".Loc(LoadFailedBackupDir), ex);
         }
 
-        foreach (var provider in providers) {
-            AddService(provider);
+        foreach (var provider in providers ?? []) {
+            AddServiceInternal(provider);
+        }
+
+        var undecrypted = _providers
+            .OfType<ChatProviderBase>()
+            .Where(p => p.KeyDecryptFailed)
+            .Select(p => p.Alias)
+            .ToArray();
+        if (undecrypted.Length > 0) {
+            BackupChunk(context, "active_providers");
+            EmMod.Popup<ApiPoolSelector>($"[{string.Join(", ", undecrypted)}] {"em_ui_err_key_decrypt".lang()}", 10f);
         }
 
         if (context.Load<int>("service_count", out var serviceCount)) {
             ChatProviderBase.ServiceCount = serviceCount;
         }
+    }
+
+    private static void BackupChunk(GameIOContext context, string chunkName)
+    {
+        try {
+            var dir = context.ChunkDir.CreateSubdirectory("backup");
+            foreach (var file in context.ChunkDir.GetFiles($"{chunkName}.*")) {
+                file.CopyTo(Path.Combine(dir.FullName, $"{chunkName}_{DateTime.Now:yyyyMMdd_HHmmss}{file.Extension}"), true);
+            }
+        } catch {
+            // noexcept
+        }
+    }
+
+    private void AddServiceInternal(IChatProvider provider)
+    {
+        _providers.Add(provider);
+
+        provider.LoadProviderParam();
+
+        EmMod.Log<ApiPoolSelector>($"added {provider.Id}");
     }
 
 #region Test Services
@@ -104,7 +144,7 @@ public sealed class ApiPoolSelector : IAIServiceSelector
         var apiPool = Instance;
         var keyFile = PackageIterator
             .GetMapping(ModInfo.Guid)
-            .RelocateFile("Emmersive/DebugKey.json");
+            .RelocateFile("Emmersive/DebugKeys.json");
 
         var keys = IO.LoadFile<Dictionary<string, string[]>>(keyFile.FullName);
 
@@ -114,7 +154,7 @@ public sealed class ApiPoolSelector : IAIServiceSelector
 
         foreach (var key in keys["Em_GoogleGeminiAPI_Dummy"]) {
             apiPool.AddService(new GoogleProvider(key) {
-                CurrentModel = "gemini-2.5-flash",
+                CurrentModel = "gemini-3-flash",
             });
         }
 

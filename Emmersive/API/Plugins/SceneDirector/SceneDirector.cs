@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Emmersive.Components;
+using Emmersive.Contexts.Memory;
 using Emmersive.Helper;
-using Emmersive.LangMod;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -15,12 +14,11 @@ using UnityEngine;
 
 namespace Emmersive.API.Plugins;
 
-[Description("Core plugin that orchestrates scene play.")]
-[EmPlugin]
 public partial class SceneDirector : EClass
 {
     private const int MaxWrapperDepth = 4;
-    private const float DefaultDuration = 2.5f;
+
+    private const float BaseBubbleSeconds = 3.5f;
 
     private static readonly string[] _knownWrappers = [
         "items",
@@ -34,17 +32,32 @@ public partial class SceneDirector : EClass
         "output",
     ];
 
+    private static readonly Regex _latinWord = new(@"[A-Za-z0-9'\-]+", RegexOptions.Compiled);
+
+    public static SceneDirector Instance => field ??= new();
+
     public static bool FindSameMapChara(int uid, [NotNullWhen(true)] out Chara? chara)
     {
         chara = game.cards.Find(uid) ?? _map.charas.Find(c => c.uid == uid);
         return chara is { isDestroyed: false, ExistsOnMap: true };
     }
 
-    public void Execute(string content)
+    public float Execute(string content, IReadOnlyCollection<string>? shownLines = null)
     {
         var reactions = TryParseReactions(content);
         if (reactions is not { Length: > 0 }) {
-            throw new FormatException("em_ui_scene_parse_error".Loc(content));
+            throw new FormatException($"scene failed to parse scripts\n{content}");
+        }
+
+        if (shownLines is { Count: > 0 }) {
+            reactions = [
+                ..reactions.Where(r => !shownLines.Any(line => MemoryManager.IsContentSimilar(r.text, line))),
+            ];
+        }
+
+        var max = EmConfig.Scene.MaxReactions.Value;
+        if (reactions.Length > max) {
+            reactions = reactions[..max];
         }
 
         var schedule = Schedule(
@@ -59,11 +72,27 @@ public partial class SceneDirector : EClass
 
         var sceneEnd = 0f;
         foreach (var (reaction, delay) in schedule) {
-            sceneEnd = Mathf.Max(sceneEnd, delay + reaction.duration);
-            DoPopText(reaction.uid, reaction.text, reaction.duration, delay);
+            var mult = BubbleDuration(reaction.text, reaction.duration);
+            sceneEnd = Mathf.Max(sceneEnd, delay + mult * BaseBubbleSeconds);
+
+            DoPopText(reaction.uid, reaction.text, mult, delay);
+
+            if (reaction.emote is { } emote) {
+                DoEmote(reaction.uid, emote, delay);
+            }
         }
 
         EmScheduler.SetScenePlayDelay(sceneEnd);
+
+        return sceneEnd;
+    }
+
+    internal static float BubbleDuration(string text, float modelDuration)
+    {
+        var units = Helper.StringHelper.Cjk.Char.Matches(text).Count + _latinWord.Matches(text).Count;
+        var mult = Mathf.Clamp(0.6f + units / 12f, 1f, 3f);
+
+        return Mathf.Max(mult, Mathf.Clamp(modelDuration, 0f, 3f));
     }
 
     internal static List<(SceneReaction Reaction, float Delay)> Schedule(
@@ -78,7 +107,7 @@ public partial class SceneDirector : EClass
 
         foreach (var reaction in reactions) {
             if (reaction.uid == playerUid) {
-                delayReduced += reaction.duration;
+                delayReduced += BubbleDuration(reaction.text, reaction.duration) * BaseBubbleSeconds;
                 continue;
             }
 
@@ -126,7 +155,7 @@ public partial class SceneDirector : EClass
             }
         }
 
-        return reactions.Count > 0 ? reactions.ToArray() : null;
+        return reactions.Count > 0 ? [..reactions] : null;
     }
 
     private static JArray? FindReactionArray(JToken? token, int depth = 0)
@@ -195,11 +224,30 @@ public partial class SceneDirector : EClass
         reaction = new() {
             uid = (int)uid,
             text = text!,
-            duration = TryReadNumber(obj["duration"], out var duration) ? Mathf.Max(0f, duration) : DefaultDuration,
-            delay = TryReadNumber(obj["delay"], out var delay) ? Mathf.Max(0f, delay) : 0f,
+            duration = TryReadNumber(obj["duration"], out var duration) ? Mathf.Clamp(duration, 0f, 3f) : 0f,
+            delay = TryReadNumber(obj["delay"], out var delay) ? Mathf.Clamp(delay, 0f, 10f) : 0f,
+            emote = TryReadEmote(obj["emote"]),
         };
 
         return true;
+    }
+
+    private static CharacterEmote? TryReadEmote(JToken? token)
+    {
+        if (token?.Type is not JTokenType.String) {
+            return null;
+        }
+
+        var name = token.Value<string>()?.Trim();
+        if (name.IsEmptyOrNull) {
+            return null;
+        }
+
+        return Enum.TryParse<CharacterEmote>(name, true, out var emote) &&
+               Enum.IsDefined(typeof(CharacterEmote), emote) &&
+               !char.IsDigit(name![0])
+            ? emote
+            : null;
     }
 
     private static bool TryReadNumber(JToken? token, out float value)

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Emmersive.Helper;
 using ReflexCLI.Attributes;
@@ -31,11 +32,11 @@ internal class LayerEmmersivePanel : LayerEmmersiveBase<LayerCreationData>
         _tabs.Add(CreateTab<TabAiService>("em_ui_tab_ai_service", "em_tab_ai_service"));
 
         if (EClass.core.IsGameStarted) {
-            _tabs.Add(CreateTab<TabWhitelist>("em_ui_tab_whitelist", "em_tab_whitelist"));
             _tabs.Add(CreateTab<TabSystemPrompt>("em_ui_tab_prompts", "em_tab_prompt_setting"));
             _tabs.Add(CreateTab<TabCharaPrompt>("em_ui_tab_characters", "em_tab_chara_prompts"));
-            _tabs.Add(CreateTab<TabCharaRelations>("em_ui_tab_relations", "em_tab_chara_relations"));
             _tabs.Add(CreateTab<TabCharaMemory>("em_ui_tab_memory", "em_tab_npc_memory"));
+            _tabs.Add(CreateTab<TabCharaRelations>("em_ui_tab_relations", "em_tab_chara_relations"));
+            _tabs.Add(CreateTab<TabWhitelist>("em_ui_tab_whitelist", "em_tab_whitelist"));
         }
 
         _tabs.Add(CreateTab<TabDebugPanel>("em_ui_tab_debug", "em_tab_debug_panel"));
@@ -52,21 +53,24 @@ internal class LayerEmmersivePanel : LayerEmmersiveBase<LayerCreationData>
         Window.SwitchContent(_lastOpenedTab);
 
         Window.transform.localPosition = _browsedPosition;
+        Window.ClampToScreen();
     }
 
     public override void OnKill()
     {
-        OnLayoutConfirm();
+        try {
+            OnLayoutConfirm();
 
-        if (Window != null && Window.CurrentContent != null) {
-            _lastOpenedTab = Window.CurrentContent.name;
+            if (Window != null && Window.CurrentContent != null) {
+                _lastOpenedTab = Window.CurrentContent.name;
+            }
+        } finally {
+            if (_resetHyp) {
+                Lang.setting.hyphenation = true;
+            }
+
+            Instance = null;
         }
-
-        if (_resetHyp) {
-            Lang.setting.hyphenation = true;
-        }
-
-        Instance = null;
     }
 
     public void Reopen()
@@ -78,7 +82,12 @@ internal class LayerEmmersivePanel : LayerEmmersiveBase<LayerCreationData>
     public void OnLayoutConfirm()
     {
         foreach (var tab in _tabs) {
-            tab.OnLayoutConfirm();
+            try {
+                tab.OnLayoutConfirm();
+            } catch (Exception ex) {
+                EmMod.Warn<LayerEmmersivePanel>($"failed to apply {tab.name}");
+                EmMod.ErrorWithPopup<LayerEmmersivePanel>("em_ui_err_apply".lang(), ex);
+            }
         }
 
         _browsedPosition = Window.transform.localPosition;

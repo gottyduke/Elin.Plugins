@@ -1,8 +1,11 @@
+using System;
 using System.Reflection;
 using BepInEx;
 using Emmersive.API.Services;
+using Emmersive.API.ThirdParty;
 using Emmersive.Components;
 using Emmersive.Helper;
+using EModding.Helper.Runtime.Exceptions;
 using HarmonyLib;
 using ReflexCLI;
 
@@ -12,7 +15,7 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.emmersive";
     internal const string Name = "Elin with AI (Beta)";
-    internal const string Version = "0.10.13";
+    internal const string Version = "0.11.0";
 
     public static string BuildVersion => field ??= EmMod.Assembly.GetName().Version.ToString();
 }
@@ -31,32 +34,49 @@ internal sealed partial class EmMod : BaseUnityPlugin
         EmConfig.Bind();
 
         CommandRegistry.assemblies.Add(Assembly);
-        Harmony.CreateAndPatchAll(Assembly, ModInfo.Guid);
+
+        var harmony = new Harmony(ModInfo.Guid);
+        foreach (var type in AccessTools.GetTypesFromAssembly(Assembly)) {
+            if (type.GetCustomAttributes(typeof(HarmonyPatch), true).Length == 0) {
+                continue;
+            }
+
+            try {
+                harmony.CreateClassProcessor(type).Patch();
+            } catch (Exception ex) {
+                Error<EmMod>($"failed to apply {type.Name}\n{ex}");
+            }
+        }
     }
 
     private void Start()
     {
 #if !DEBUG
-        EModding.Helper.Runtime.Exceptions.MonoFrame.AddVendorExclusion("Azure.");
-        EModding.Helper.Runtime.Exceptions.MonoFrame.AddVendorExclusion("Microsoft.");
-        EModding.Helper.Runtime.Exceptions.MonoFrame.AddVendorExclusion("OpenAI");
+        MonoFrame.AddVendorExclusion("Azure.");
+        MonoFrame.AddVendorExclusion("Microsoft.");
+        MonoFrame.AddVendorExclusion("OpenAI");
 #endif
 
         EmConfig.InvalidateConfigs();
         EmConfig.EnableReloadWatcher();
 
+        try {
 #if EM_TEST_SERVICE
-        ApiPoolSelector.MockTestServices();
+            ApiPoolSelector.MockTestServices();
 #else
-        ApiPoolSelector.Instance.LoadServices();
+            ApiPoolSelector.Instance.LoadServices();
 #endif
 
-        EmKernel.RebuildKernel();
+            EmKernel.RebuildKernel();
+        } catch (Exception ex) {
+            ErrorWithPopup<EmMod>("em_ui_err_startup".lang(), ex);
+        }
 
         EmPromptReset.EnablePromptWatcher();
 
         transform.GetOrCreate<EmScheduler>();
-        //transform.GetOrCreate<EmTalkTrigger>();
+
+        BaseModManager.PublishEvent(EmEvent.EmmersiveReady, EmEvent.ApiLevel);
     }
 
     private void OnApplicationQuit()

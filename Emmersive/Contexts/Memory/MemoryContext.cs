@@ -2,22 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Emmersive.Helper;
+using TalkLine = (string Speaker, string Content, int Time);
 
 namespace Emmersive.Contexts.Memory;
 
-public sealed class MemoryContext(HashSet<string>? excludedEntries) : ContextProviderBase
+public sealed class MemoryContext(IReadOnlyList<Chara> charas, HashSet<string>? excludedEntries = null) : ContextProviderBase
 {
     private readonly HashSet<string> _excludedEntries = excludedEntries ?? [];
-
-    public MemoryContext() : this(null) { }
 
     public override string Name => "npc_memories";
 
     protected override IDictionary<string, object>? BuildInternal()
     {
-        var nearbyCharas = PointScan.LastNearby.ToList();
-        nearbyCharas.Add(EClass.pc);
-        if (nearbyCharas.Count == 0) {
+        if (charas.Count == 0) {
             return null;
         }
 
@@ -26,11 +23,11 @@ public sealed class MemoryContext(HashSet<string>? excludedEntries) : ContextPro
         var result = new Dictionary<string, object>();
         var hasAny = false;
 
-        foreach (var chara in nearbyCharas) {
+        foreach (var chara in charas) {
             var store = MemoryManager.Instance.Get(chara.uid);
             var memory = new Dictionary<string, object>();
 
-            var rawTalks = new List<(string Speaker, string Content)>();
+            var rawTalks = new List<TalkLine>();
             var sentEntries = new List<MemoryEntry>();
 
             // stm from memory store
@@ -40,7 +37,7 @@ public sealed class MemoryContext(HashSet<string>? excludedEntries) : ContextPro
                     if (_excludedEntries.Contains(entry.Content)) {
                         continue;
                     }
-                    rawTalks.Add((entry.Speaker, entry.Content));
+                    rawTalks.Add((entry.Speaker, entry.Content, entry.GameTime));
                     sentEntries.Add(entry);
                 }
             }
@@ -50,21 +47,17 @@ public sealed class MemoryContext(HashSet<string>? excludedEntries) : ContextPro
                 .Select(e => e.Content)
                 .ToHashSet(StringComparer.Ordinal) ?? [];
 
-            if (rawTalks.Count < EmConfig.Memory.MaxStmInContext.Value &&
-                logs.TryGetValue(chara.NameSimple, out var logTalks)) {
-                foreach (var talk in logTalks) {
-                    if (_excludedEntries.Contains(talk.Content) || stmLogged.Contains(talk.Content)) {
-                        continue;
-                    }
-                    rawTalks.Add((talk.Speaker, talk.Content));
-                    if (rawTalks.Count >= EmConfig.Memory.MaxStmInContext.Value) {
-                        break;
-                    }
-                }
+            var room = EmConfig.Memory.MaxStmInContext.Value - rawTalks.Count;
+            if (room > 0 && logs.TryGetValue(chara.NameSimple, out var logTalks)) {
+                rawTalks.AddRange(logTalks
+                    .Where(t => !_excludedEntries.Contains(t.Content) && !stmLogged.Contains(t.Content))
+                    .Reverse()
+                    .Take(room)
+                    .Reverse());
             }
 
             // dedup
-            var deduped = DeduplicateTalkList(rawTalks);
+            var deduped = DeduplicateTalkList([..rawTalks.OrderBy(t => t.Time)]);
             if (deduped.Count > 0) {
                 memory["recent_talks"] = deduped
                     .Select(t => $"[{t.Speaker}]: {t.Content}")
@@ -93,46 +86,31 @@ public sealed class MemoryContext(HashSet<string>? excludedEntries) : ContextPro
         return hasAny ? result : null;
     }
 
-    private static List<(string Speaker, string Content)> DeduplicateTalkList(
-        List<(string Speaker, string Content)> talks)
+    private static List<TalkLine> DeduplicateTalkList(List<TalkLine> talks)
     {
-        if (talks.Count <= 1) {
-            return talks;
-        }
-
-        var result = new List<(string Speaker, string Content)>(talks.Count);
-        var seen = new HashSet<string>(StringComparer.Ordinal);
+        var result = new List<TalkLine>(talks.Count);
 
         // recent
         for (var i = talks.Count - 1; i >= 0; i--) {
             var talk = talks[i];
-
-            if (!seen.Add(talk.Content)) {
-                continue;
+            var similar = result.FindIndex(t => t.Content == talk.Content ||
+                                                (t.Speaker == talk.Speaker &&
+                                                 MemoryManager.IsContentSimilar(t.Content, talk.Content)));
+            if (similar < 0) {
+                result.Add(talk);
+            } else if (talk.Content.Length > result[similar].Content.Length) {
+                result[similar] = talk;
             }
-
-            if (result.Count > 0) {
-                var prev = result[^1];
-                if (prev.Speaker == talk.Speaker &&
-                    MemoryManager.IsContentSimilar(prev.Content, talk.Content)) {
-                    if (talk.Content.Length >= prev.Content.Length) {
-                        result[^1] = talk;
-                    }
-                    continue;
-                }
-            }
-
-            result.Add(talk);
         }
 
         result.Reverse();
         return result;
     }
 
-    private static Dictionary<string, List<(string Speaker, string Content)>> ReadGameLogTalks()
+    private static Dictionary<string, List<TalkLine>> ReadGameLogTalks()
     {
         var depth = EmConfig.Context.GameLogDepth.Value;
-        var result = new Dictionary<string, List<(string Speaker, string Content)>>(StringComparer.Ordinal);
+        var result = new Dictionary<string, List<TalkLine>>(StringComparer.Ordinal);
 
         if (depth <= 0) {
             return result;
@@ -172,7 +150,7 @@ public sealed class MemoryContext(HashSet<string>? excludedEntries) : ContextPro
                 result[speaker] = talks;
             }
 
-            talks.Add((speaker, content));
+            talks.Add((speaker, content, msg.date?.GetRaw() ?? 0));
             scanned++;
         }
 

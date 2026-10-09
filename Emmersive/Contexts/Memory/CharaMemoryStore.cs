@@ -8,6 +8,8 @@ namespace Emmersive.Contexts.Memory;
 
 public sealed class CharaMemoryStore
 {
+    private const int PinnedLtmCount = 5;
+
     [JsonProperty("u")]
     public int Uid { get; init; }
 
@@ -50,6 +52,7 @@ public sealed class CharaMemoryStore
             Speaker = speaker,
             Content = content,
             Turn = turn,
+            GameTime = EClass.world.date.GetRaw(),
         });
 
         // fifo
@@ -87,10 +90,11 @@ public sealed class CharaMemoryStore
         LongTerm.RemoveAll(f => f.Fact.IsEmptyOrNull);
 
         var facts = new List<MemoryFact>(LongTerm);
-        // by importance desc then by recall count
         facts.Sort((a, b) => {
             var imp = b.Importance.CompareTo(a.Importance);
-            return imp != 0 ? imp : b.RecallCount.CompareTo(a.RecallCount);
+            return imp != 0
+                ? imp
+                : (a.LastRecalled ?? DateTime.MinValue).CompareTo(b.LastRecalled ?? DateTime.MinValue);
         });
 
         var result = new List<MemoryFact>(Math.Min(count, facts.Count));
@@ -109,29 +113,18 @@ public sealed class CharaMemoryStore
             return;
         }
 
+        var pinned = LongTerm
+            .Where(f => f.Importance >= 4)
+            .OrderBy(f => f.Created)
+            .Take(PinnedLtmCount)
+            .ToHashSet();
+
         var now = DateTime.UtcNow;
-
-        var scored = LongTerm
-            .Select(f => (Fact: f, Score: ScoreFact(f, now)))
-            .OrderBy(x => x.Score)
-            .ToList();
-
-        var toRemove = new HashSet<MemoryFact>();
-        var needToRemove = LongTerm.Count - maxEntries;
-
-        foreach (var (fact, _) in scored) {
-            if (needToRemove <= 0) {
-                break;
-            }
-
-            // pin importance >= 4
-            if (fact.Importance >= 4) {
-                continue;
-            }
-
-            toRemove.Add(fact);
-            needToRemove--;
-        }
+        var toRemove = LongTerm
+            .Where(f => !pinned.Contains(f))
+            .OrderBy(f => ScoreFact(f, now))
+            .Take(LongTerm.Count - maxEntries)
+            .ToHashSet();
 
         if (toRemove.Count > 0) {
             LongTerm.RemoveAll(toRemove.Contains);
