@@ -1,1 +1,3 @@
-The meadow starting location provides the player with many plants, a small lake for fishing, and a more convenient location for paying taxes. It is located to the south, near Olvina, Mysilia, and Derphy.
+原野，一片宁静的乡野，是玩家的第一个据点。
+这里植物繁多，有一个可以钓鱼的小湖，去缴税也很方便。
+它位于南方，靠近奥尔维纳、米西利亚和特尔斐。

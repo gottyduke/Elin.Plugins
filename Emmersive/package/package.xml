@@ -5,6 +5,9 @@
     <author>DK</author>
     <builtin>false</builtin>
     <loadPriority>100</loadPriority>
+    <loadBefore id="cassava0799.elin.aicombatpolicy"/>
+    <loadBefore id="KK_ElinWithTTS"/>
+    <loadBefore id="Nerun_AI"/>
     <version>1.14.514</version>
     <tag>AI,Talks,Chat,Integration</tag>
     <visibility>Public</visibility>

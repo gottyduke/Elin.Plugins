@@ -1,8 +1,10 @@
-## Character Background
+## Character Backgrounds
 
-File name: `charaId` or `player`.
+File name: `<chara id>.txt`, using the character's `SourceChara` id, e.g. `fiama.txt`. Use `player.txt` for the player.
 
-When `player.txt` is not provided, player's in game background will be used.
+The whole file is the background prompt.
 
-When a character's background prompt is not provided but the character has CWL custom biography, the custom background
-will be used.
+When no file is found:
+
+- for the player, the in-game background text is used;
+- for an NPC that has a custom biography from a mod, the background of that biography is used.
