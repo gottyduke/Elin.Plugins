@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Meta>
+  <title>Elin Runtime MCP</title>
+  <id>dk.elinplugins.runtimemcp</id>
+  <author>DK</author>
+  <builtin>false</builtin>
+  <loadPriority>0</loadPriority>
+  <version>0.23.349</version>
+  <description>
+[h1]Elin Runtime MCP[/h1]
+
+[b]A development tool for modders, not for normal play.[/b] It lets an AI coding agent (Claude Code, Cursor, VS Code…) drive the running game through the Model Context Protocol: evaluate C# in the game, run console commands, take screenshots, read the BepInEx/Unity log, hot-load a patch without rebuilding, build and relaunch.
+
+[h2]Setup[/h2]
+
+1. Install [url=https://nodejs.org]Node.js[/url] 20 or newer.
+2. Run [b]node "(this mod's folder)/bridge/elin-mcp.mjs" --config[/b]. It prints ready-to-paste MCP client entries (Claude Code, Codex, OpenCode, Gemini CLI, Cursor, VS Code) with the path filled in. The in-game console command [b]rmcp.setup[/b] prints the same path.
+3. Add the entry to your MCP client and restart it. Your agent can take it from there: the server explains itself when it connects, and [b]README.md[/b] in this mod's folder is the full reference.
+4. Optional: copy [b]skills/elin-runtime[/b] from this mod's folder into your agent's skills folder (for Claude Code, [b].claude/skills[/b]). It is a short guide to testing and debugging mods with these tools.
+
+[h2]Security[/h2]
+
+The mod opens a port on 127.0.0.1 (27551-27560) that executes any C# it receives from a local process. Unsubscribe when you are not developing, or set [b]Listener.Enabled = false[/b] in [b]BepInEx/config/dk.elinplugins.runtimemcp.cfg[/b].
+
+[url=https://github.com/gottyduke/Elin.Plugins/tree/master/ElinRuntimeMcp]source and tool reference[/url]
+  </description>
+</Meta>

@@ -1,0 +1,20 @@
+{
+	"name": "elin-runtime-mcp",
+	"private": true,
+	"type": "module",
+	"description": "stdio MCP bridge to the Elin Runtime MCP in-game listener",
+	"scripts": {
+		"bundle": "node build.mjs",
+		"check": "tsc --noEmit",
+		"dev": "node src/index.ts"
+	},
+	"dependencies": {
+		"@modelcontextprotocol/server": "^2.1.0",
+		"zod": "^4.6.0"
+	},
+	"devDependencies": {
+		"@types/node": "^24.0.0",
+		"esbuild": "^0.28.2",
+		"typescript": "^5.9.0"
+	}
+}

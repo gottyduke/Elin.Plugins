@@ -1,0 +1,26 @@
+name: Elin Runtime MCP CI Deploy
+
+on:
+  push:
+    branches: ["*"]
+    paths: ["ElinRuntimeMcp/**", "!ElinRuntimeMcp/bridge/**"]
+  pull_request_target:
+    paths: ["ElinRuntimeMcp/**", "!ElinRuntimeMcp/bridge/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  ci:
+    uses: ./.github/workflows/build_plugin_ci.yml
+    secrets: inherit
+    with:
+      plugin_name: ElinRuntimeMcp
+      plugin_path: ElinRuntimeMcp\ElinRuntimeMcp
+      tag_prefix: RMCP
+      release_name_prefix: "Elin Runtime MCP"
+      artifact_name_prefix: rmcp
+      include_cwl: false
+      prerelease: false

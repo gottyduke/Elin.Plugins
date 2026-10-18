@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <Platforms>AnyCPU</Platforms>
+        <LangVersion>preview</LangVersion>
+        <Nullable>enable</Nullable>
+        <RootNamespace>ElinRuntimeMcp</RootNamespace>
+        <AssemblyName>ElinRuntimeMcp</AssemblyName>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <GenerateDependencyFile>false</GenerateDependencyFile>
+        <OutputPath>$(ElinGamePath)\Package\Mod_$(AssemblyName)\</OutputPath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+        <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <Deterministic>false</Deterministic>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Remove="Directory.Build.props"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="ElinModdingKit">
+            <HintPath Condition="Exists('$(ElinGamePath)\Package\_ModdingKit\ElinModdingKit.dll')">$(ElinGamePath)\Package\_ModdingKit\ElinModdingKit.dll</HintPath>
+            <HintPath Condition="Exists('$(ElinGamePath)\Package\Mod_ElinModdingKit\ElinModdingKit.dll')">$(ElinGamePath)\Package\Mod_ElinModdingKit\ElinModdingKit.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+    </ItemGroup>
+    <Target Name="BundleBridge" BeforeTargets="CopyAssets" Condition="Exists('..\bridge\node_modules')">
+        <Exec Command="node build.mjs" WorkingDirectory="..\bridge"/>
+    </Target>
+    <Target Name="RemovePdbFromRelease" AfterTargets="Build" Condition="'$(Configuration)' == 'Release' OR '$(Configuration)' == 'ReleaseNightly'">
+        <Delete Files="$(TargetDir)$(TargetName).pdb"/>
+    </Target>
+    <Target Name="CopyAssets" AfterTargets="AfterBuild">
+        <ItemGroup>
+            <Assets Include="..\package\**\*.*;..\README.md"/>
+            <Skills Include="..\skills\**\*.*"/>
+        </ItemGroup>
+        <Copy
+            SourceFiles="@(Assets)"
+            DestinationFiles="@(Assets->'$(OutDir)%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+        />
+        <Copy
+            SourceFiles="@(Skills)"
+            DestinationFiles="@(Skills->'$(OutDir)skills\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true"
+        />
+    </Target>
+</Project>
