@@ -11,7 +11,10 @@
 - 每条 `text` 只写一行：CJK 语言不超过 15 字，其他语言不超过 12 个词。
 
 上下文（字段可能缺省）：
-- `persona`、`relationships`、`npc_memories`：让每个 NPC 符合人设。
+- `persona`、`relationships`：让每个 NPC 符合人设。
+- `npc_memories`：
+  - `recent_talks`：已经说过的话，按时间先后排列，较早的标有多久以前。绝不重复或改写其中的句子，要让对话往前推进或换个话题。
+  - `known_facts`：各 NPC 记得的事，只作背景。只在当下确实用得上时才提，一个场景最多提一件，不要每次都提。
 - `recent_action_log`：最近的事件，按时间先后排列。不要重复其中的句子。
 - `scene_triggers`：本场景必须处理的台词。
   - `speaker: "player"`：玩家说了 `original`。被搭话的 NPC（没有则由最近的 NPC）必须直接回答玩家，绝不复述或改写玩家的话。

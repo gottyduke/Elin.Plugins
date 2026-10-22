@@ -144,7 +144,7 @@
   "LangGeneral.em_ui_sum_failed.text": "总结失败，详情见Player.log（位于%USERPROFILE%\\AppData\\LocalLow\\Lafrontier\\Elin）",
   "LangGeneral.em_ui_sum_nothing.text": "最近的对话里没有值得记住的内容",
   "LangGeneral.em_ui_sum_timeout.text": "总结超时（{0}秒），可在「Mod配置」中调大Timeout",
-  "LangGeneral.em_ui_summarize_done.text": "总结完成，新增{0}条长期记忆",
+  "LangGeneral.em_ui_summarize_done.text": "总结完成，新增或更新了{0}条长期记忆",
   "LangGeneral.em_ui_summarize_now.text": "立即总结",
   "LangGeneral.em_ui_summarizing.text": "总结中…",
   "LangGeneral.em_ui_system_prompt.text": "系统提示词",

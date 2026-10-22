@@ -151,11 +151,11 @@ public abstract partial class ChatProviderBase : IChatProvider, IExtensionReques
     }
 
     internal async UniTask<ChatMessageContent> HandleRequestWithSchema(Kernel kernel,
-                                                             ChatHistory context,
-                                                             EmActivity activity,
-                                                             bool rawOutput,
-                                                             JObject? responseSchema,
-                                                             CancellationToken token)
+                                                                       ChatHistory context,
+                                                                       EmActivity activity,
+                                                                       bool rawOutput,
+                                                                       JObject? responseSchema,
+                                                                       CancellationToken token)
     {
         activity.SetStatus(EmActivity.StatusType.InProgress);
 

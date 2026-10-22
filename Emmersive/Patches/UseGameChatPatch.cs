@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Emmersive.Components;
-using Emmersive.Helper;
 using EModding.Helper;
 using HarmonyLib;
 

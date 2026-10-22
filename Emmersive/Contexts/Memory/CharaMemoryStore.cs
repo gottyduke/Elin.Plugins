@@ -9,6 +9,19 @@ namespace Emmersive.Contexts.Memory;
 public sealed class CharaMemoryStore
 {
     private const int PinnedLtmCount = 5;
+    private const int StmDedupLookback = 4;
+    private const int OwnLinesAlwaysSent = 2;
+    private const int OwnLinesFreshMinutes = 6 * 60;
+    private const int RecentRepeatMinutes = 3 * 60;
+    private const int MaxFillerFacts = 2;
+    private const int CoreImportance = 5;
+    private const float RelevanceWeight = 1.5f;
+    private const float RecencyWeight = 0.5f;
+    private const float RecencyDecayPerDay = 0.95f;
+    private const float LegacyRecency = 0.3f;
+
+    private static readonly object _entryTimeLock = new();
+    private static long _lastEntryTicks;
 
     [JsonProperty("u")]
     public int Uid { get; init; }
@@ -34,29 +47,48 @@ public sealed class CharaMemoryStore
 
     public bool IsEmpty => ShortTerm.Count == 0 && LongTerm.Count == 0;
 
+    internal static DateTime NextEntryTime(DateTime now)
+    {
+        lock (_entryTimeLock) {
+            _lastEntryTicks = Math.Max(now.Ticks, _lastEntryTicks + 1);
+            return new(_lastEntryTicks, DateTimeKind.Utc);
+        }
+    }
+
     public void AddStm(string speaker, string content, int turn)
     {
-        // skip same speaker
-        if (ShortTerm.Count > 0) {
-            var last = ShortTerm[^1];
-            if (last.Speaker == speaker && last.Content == content) {
-                return;
+        AddStm(speaker, content, turn, EClass.world.date.GetRaw(), EmConfig.Memory.MaxStmEntries.Value);
+    }
+
+    internal void AddStm(string speaker, string content, int turn, int gameTime, int maxEntries)
+    {
+        var isPlayer = speaker == MemoryManager.PlayerSpeaker;
+        if (isPlayer) {
+            foreach (var entry in ShortTerm) {
+                entry.SentCount = 0;
             }
         }
 
-        foreach (var entry in ShortTerm) {
-            entry.SentCount = 0;
+        if (!isPlayer) {
+            var normalized = MemoryRelevance.Normalize(content);
+            for (var i = ShortTerm.Count - 1; i >= 0 && i >= ShortTerm.Count - StmDedupLookback; i--) {
+                var entry = ShortTerm[i];
+                if (entry.Speaker == speaker && MemoryRelevance.Normalize(entry.Content) == normalized) {
+                    return;
+                }
+            }
         }
 
         ShortTerm.Add(new() {
             Speaker = speaker,
             Content = content,
             Turn = turn,
-            GameTime = EClass.world.date.GetRaw(),
+            GameTime = gameTime,
+            Time = NextEntryTime(DateTime.UtcNow),
         });
 
         // fifo
-        while (ShortTerm.Count > EmConfig.Memory.MaxStmEntries.Value) {
+        while (ShortTerm.Count > maxEntries) {
             ShortTerm.RemoveAt(0);
         }
     }
@@ -67,14 +99,29 @@ public sealed class CharaMemoryStore
             count = EmConfig.Memory.MaxStmInContext.Value;
         }
 
-        var maxRepeat = EmConfig.Memory.MaxStmRepeatInContext.Value;
+        return GetRecentStm(count, EmConfig.Memory.MaxStmRepeatInContext.Value, Name, EClass.world.date.GetRaw());
+    }
+
+    internal List<MemoryEntry> GetRecentStm(int count, int maxRepeat, string? ownerSpeaker, int gameTime)
+    {
         var result = new List<MemoryEntry>(count);
+        var ownSeen = 0;
+
         for (var i = ShortTerm.Count - 1; i >= 0 && result.Count < count; i--) {
             var entry = ShortTerm[i];
-            if (entry.SentCount >= maxRepeat) {
-                continue;
+            var isOwn = entry.Speaker == ownerSpeaker;
+            var ownRecent = isOwn &&
+                            ownSeen < OwnLinesAlwaysSent &&
+                            entry.GameTime > 0 &&
+                            gameTime - entry.GameTime <= OwnLinesFreshMinutes;
+
+            if (entry.SentCount < maxRepeat || ownRecent) {
+                result.Add(entry);
             }
-            result.Add(entry);
+
+            if (isOwn) {
+                ownSeen++;
+            }
         }
 
         result.Reverse();
@@ -87,30 +134,121 @@ public sealed class CharaMemoryStore
             count = EmConfig.Memory.MaxLtmInContext.Value;
         }
 
-        LongTerm.RemoveAll(f => f.Fact.IsEmptyOrNull);
+        return [
+            ..LongTerm
+                .Where(f => !f.Fact.IsWhiteSpaceOrNull)
+                .OrderByDescending(f => f.Importance)
+                .ThenBy(f => f.LastRecalled ?? DateTime.MinValue)
+                .Take(count),
+        ];
+    }
 
-        var facts = new List<MemoryFact>(LongTerm);
-        facts.Sort((a, b) => {
-            var imp = b.Importance.CompareTo(a.Importance);
-            return imp != 0
-                ? imp
-                : (a.LastRecalled ?? DateTime.MinValue).CompareTo(b.LastRecalled ?? DateTime.MinValue);
-        });
-
-        var result = new List<MemoryFact>(Math.Min(count, facts.Count));
-        for (var i = 0; i < count && i < facts.Count; i++) {
-            facts[i].MarkRecalled();
-            result.Add(facts[i]);
+    internal List<MemoryFact> RecallLtm(RecallRequest request)
+    {
+        if (request.Max <= 0) {
+            return [];
         }
 
-        return result;
+        var relevant = new List<(MemoryFact Fact, float Score)>();
+        var others = new List<(MemoryFact Fact, float Score)>();
+
+        foreach (var fact in LongTerm) {
+            if (fact.Fact.IsWhiteSpaceOrNull) {
+                continue;
+            }
+
+            var relevance = MemoryRelevance.Relevance(fact.Tokens, request.Lines, request.Ignore, out var triggered);
+            if (request.Tick <= fact.SaidUntilTick) {
+                MemoryRelevance.Relevance(fact.Tokens, request.PlayerLines, request.Ignore, out var asked);
+                if (!asked) {
+                    continue;
+                }
+            }
+
+            var score = RelevanceWeight * relevance + (fact.Importance - 1) / 4f +
+                        RecencyWeight * Recency(fact.GameTime, request.GameTime);
+            (triggered ? relevant : others).Add((fact, score));
+        }
+
+        var recalled = relevant
+            .OrderByDescending(f => f.Score)
+            .Take(request.Max)
+            .Select(f => f.Fact)
+            .ToList();
+
+        foreach (var fact in recalled) {
+            fact.MarkRecalled();
+        }
+
+        var budget = Math.Min(MaxFillerFacts, request.Max - recalled.Count);
+        var ranked = others.OrderByDescending(f => f.Score).Select(f => f.Fact).ToList();
+
+        var core = ranked
+            .Where(f => f.Importance >= CoreImportance && !(request.Tick - f.LastInjectedTick <= 1))
+            .OrderBy(f => f.LastInjectedTick ?? int.MinValue)
+            .FirstOrDefault();
+        if (budget > 0 && core is not null) {
+            recalled.Add(core);
+            budget--;
+        }
+
+        recalled.AddRange(ranked
+            .Where(f => f != core && !(request.Tick - f.LastInjectedTick <= request.Cooldown))
+            .Take(Math.Max(0, budget)));
+
+        foreach (var fact in recalled) {
+            fact.LastInjectedTick = request.Tick;
+        }
+
+        return recalled;
+    }
+
+    internal void MarkSaid(string line, IEnumerable<string> ignoreNames, int tick, int cooldown)
+    {
+        var lineTokens = MemoryRelevance.Tokenize(line);
+        if (lineTokens.Count == 0) {
+            return;
+        }
+
+        var ignore = MemoryRelevance.IgnoreTokens(ignoreNames);
+        foreach (var fact in LongTerm) {
+            if (fact.Fact.IsWhiteSpaceOrNull) {
+                continue;
+            }
+
+            if (MemoryRelevance.Covers(fact.Tokens, lineTokens, ignore)) {
+                fact.SaidUntilTick = tick + cooldown;
+            }
+        }
+    }
+
+    internal bool HasRecentRepeat(string content, int lookback, int gameTime)
+    {
+        if (!MemoryRelevance.IsSubstantive(content)) {
+            return false;
+        }
+
+        for (var i = ShortTerm.Count - 1; i >= 0 && i >= ShortTerm.Count - lookback; i--) {
+            var entry = ShortTerm[i];
+            if (entry.GameTime > 0 &&
+                gameTime - entry.GameTime <= RecentRepeatMinutes &&
+                MemoryRelevance.IsNearDuplicate(entry.Content, content)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void EvictLtm()
     {
-        var maxEntries = EmConfig.Memory.MaxLtmEntries.Value;
+        EvictLtm(EmConfig.Memory.MaxLtmEntries.Value, DateTime.UtcNow);
+    }
+
+    internal List<MemoryFact> EvictLtm(int maxEntries, DateTime now)
+    {
         if (LongTerm.Count <= maxEntries) {
-            return;
+            return [];
         }
 
         var pinned = LongTerm
@@ -119,21 +257,34 @@ public sealed class CharaMemoryStore
             .Take(PinnedLtmCount)
             .ToHashSet();
 
-        var now = DateTime.UtcNow;
         var toRemove = LongTerm
             .Where(f => !pinned.Contains(f))
-            .OrderBy(f => ScoreFact(f, now))
+            .OrderBy(f => f.Importance)
+            .ThenBy(f => ScoreFact(f, now))
             .Take(LongTerm.Count - maxEntries)
-            .ToHashSet();
+            .ToList();
 
         if (toRemove.Count > 0) {
-            LongTerm.RemoveAll(toRemove.Contains);
+            var removing = toRemove.ToHashSet();
+            LongTerm.RemoveAll(removing.Contains);
         }
+
+        return toRemove;
+    }
+
+    private static float Recency(int factTime, int now)
+    {
+        if (factTime <= 0) {
+            return LegacyRecency;
+        }
+
+        var days = Math.Max(0, now - factTime) / 1440f;
+        return (float)Math.Pow(RecencyDecayPerDay, days);
     }
 
     private static float ScoreFact(MemoryFact f, DateTime now)
     {
-        var score = f.Importance * (1f + Math.Min(f.RecallCount, 5));
+        var score = f.Importance * (1f + 0.25f * Math.Min(f.RecallCount, 4));
         var access = f.LastRecalled ?? f.Created;
         var recency = (float)(now - access).TotalHours switch {
             < 1 => 1.5f,
@@ -145,3 +296,12 @@ public sealed class CharaMemoryStore
         return score * recency;
     }
 }
+
+internal sealed record RecallRequest(
+    IReadOnlyList<HashSet<string>> Lines,
+    HashSet<string> Ignore,
+    int Tick,
+    int Max,
+    int Cooldown,
+    int GameTime,
+    IReadOnlyList<HashSet<string>> PlayerLines);

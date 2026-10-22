@@ -11,7 +11,10 @@ Rules:
 - One line per `text`: at most 12 words, or 15 characters in CJK languages.
 
 Context (fields may be missing):
-- `persona`, `relationships`, `npc_memories`: keep each NPC in character.
+- `persona`, `relationships`: keep each NPC in character.
+- `npc_memories`:
+  - `recent_talks`: lines already said, oldest first; older ones show how long ago. Never repeat or paraphrase them; move the talk forward or change the subject.
+  - `known_facts`: what each NPC remembers, as background only. Bring one up only when the moment calls for it, at most one per scene, and not every time.
 - `recent_action_log`: recent events, oldest first. Never repeat these lines.
 - `scene_triggers`: lines this scene must handle.
   - `speaker: "player"`: the player said `original`. The NPC addressed, or else the closest one, must answer the player directly. Never repeat or paraphrase the player's words.

@@ -86,12 +86,7 @@ public partial class EmScheduler
             .Add(new NearbyThingContext(focus));
 
         if (EmConfig.Memory.Enabled.Value) {
-            var excluded = triggers?
-                .Select(t => t.Trigger)
-                .Where(t => !t.IsEmptyOrNull)
-                .ToHashSet();
-
-            builder.Add(new MemoryContext([..nearby, pc], excluded));
+            builder.Add(new MemoryContext([..nearby, pc], triggers ?? []));
         }
 
         builder.AddExternalProviders();

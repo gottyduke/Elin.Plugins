@@ -48,7 +48,7 @@ internal class EmTalkTrigger : EClass
 
                 var isPlayer = chara.IsPC;
 
-                SceneDirector.Instance.DoPopText(chara.uid, text, isPlayer: isPlayer);
+                SceneDirector.Instance.DoPopText(chara.uid, text, 0f, 0f, isPlayer, true);
 
                 if (canRequest) {
                     // trigger immediately

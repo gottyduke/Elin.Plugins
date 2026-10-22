@@ -1,26 +1,27 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Emmersive.API;
-using Emmersive.API.Plugins;
 using Emmersive.API.Services;
 using Emmersive.API.ThirdParty;
 using Emmersive.ChatProviders;
 using Emmersive.Components;
 using Emmersive.Helper;
 using Emmersive.LangMod;
-using Newtonsoft.Json.Linq;
 
 namespace Emmersive.Contexts.Memory;
 
 public sealed class MemoryManager
 {
-    private const int MaxFactWrapperDepth = 4;
+    internal const string PlayerSpeaker = "Player";
 
+    private const int MaxHeardTriggers = 256;
+
+    private readonly Dictionary<string, int> _heardTriggers = [];
+    private int _recallTick;
     private int _summarizeInProgress;
 
     [ElinGameIOProperty("emmersive_memory_store")]
@@ -61,11 +62,11 @@ public sealed class MemoryManager
             return;
         }
 
-        if (!chara.IsPC && !chara.Profile.IsImportant) {
+        if (chara is { IsPC: false, Profile.IsImportant: false }) {
             return;
         }
 
-        var speaker = chara.IsPC ? "Player" : chara.NameSimple;
+        var speaker = chara.IsPC ? PlayerSpeaker : chara.NameSimple;
         Record(chara, speaker, content, chara.turn);
 
         if (!chara.IsPC) {
@@ -84,31 +85,64 @@ public sealed class MemoryManager
         var store = GetOrCreate(owner);
         store.AddStm(speaker, content, turn);
 
-        if (store.ShouldSummarize && owner.Profile.AllowSummarize && EmScheduler.IsEnabled) {
+        var editing = LayerMemoryEditor.Instance is { Data.Memory: var open } && open == store;
+        if (store.ShouldSummarize && owner.Profile.AllowSummarize && EmScheduler.IsEnabled && !editing) {
             TriggerSummarizeAsync(store, CancellationToken.None).ForgetEx();
         }
     }
 
-    public bool HasRecentTalk(Chara chara, string content, int lookback = 3)
+    public bool HasRecentTalk(Chara chara, string content, int lookback = 6)
     {
-        var store = Get(chara.uid);
-        if (store is not { ShortTerm.Count: > 0 }) {
+        return Get(chara.uid)?.HasRecentRepeat(content, lookback, EClass.world.date.GetRaw()) ?? false;
+    }
+
+    internal void MarkSaid(Chara chara, string content)
+    {
+        if (!EmConfig.Memory.Enabled.Value || chara.IsPC || Get(chara.uid) is not { LongTerm.Count: > 0 } store) {
+            return;
+        }
+
+        store.MarkSaid(content, IgnoreNames(chara), _recallTick, EmConfig.Memory.LtmRecallCooldown.Value * 2);
+    }
+
+    internal int NextRecallTick()
+    {
+        return ++_recallTick;
+    }
+
+    internal bool IsNewTrigger(string text, int tick, int window)
+    {
+        var key = MemoryRelevance.Normalize(text);
+        if (key.Length == 0) {
             return false;
         }
 
-        var stm = store.ShortTerm;
-        for (var i = stm.Count - 1; i >= 0 && i >= stm.Count - lookback; i--) {
-            if (stm[i].Content == content) {
-                return true;
+        var fresh = !_heardTriggers.TryGetValue(key, out var last) || tick - last > window;
+        _heardTriggers[key] = tick;
+
+        if (_heardTriggers.Count > MaxHeardTriggers) {
+            foreach (var old in _heardTriggers.Where(kv => tick - kv.Value > window).Select(kv => kv.Key).ToList()) {
+                _heardTriggers.Remove(old);
             }
         }
 
-        return false;
+        return fresh;
+    }
+
+    internal static string[] IgnoreNames(Chara chara)
+    {
+        return chara.IsPC ? [chara.NameSimple] : [chara.NameSimple, EClass.pc.NameSimple];
     }
 
     public void ClearMemory(Chara chara)
     {
         Stores.TryRemove(chara.uid, out _);
+    }
+
+    [ElinPostLoad]
+    private static void ClearSession(GameIOContext context)
+    {
+        Instance._heardTriggers.Clear();
     }
 
     [ElinPreSave]
@@ -151,18 +185,23 @@ public sealed class MemoryManager
                 return false;
             }
 
-            var recentTalks = string.Join("\n", DeduplicateStm(snapshot).Select(e => e.ToString()));
-            var knownFacts = string.Join("; ", store.LongTerm
-                .Where(f => !f.Fact.IsWhiteSpaceOrNull)
-                .Select(f => f.Fact));
+            var now = EClass.world.date.GetRaw();
+            var recentTalks = string.Join("\n", MemoryContext.BuildTranscript(
+                snapshot.Select(e => new TalkLine(e.Speaker, e.Content, e.GameTime, e.Time.Ticks)),
+                now));
+
+            List<MemoryFact> known = [..store.LongTerm.Where(f => !f.Fact.IsWhiteSpaceOrNull)];
+            List<string> knownTexts = [..known.Select(f => f.Fact)];
+            var knownFacts = known.Count == 0
+                ? "-"
+                : string.Join("\n", known.Select((f, i) => $"{i + 1}. {f.Fact}"));
 
             var prompt = new SystemContext("Emmersive/MemoryPrompt.txt").Build();
-            var background = new BackgroundContext(chara).Build();
-            var user = $"NPC: {store.Name}\n" +
-                       $"Background: {background}\n" +
-                       (knownFacts.IsEmptyOrNull ? "" : $"Already known (do not repeat or rephrase): {knownFacts}\n") +
-                       $"Recent conversations: {recentTalks}\n" +
-                       "Extract key facts:";
+            var user = RequestTemplate()
+                .Replace("{{npc}}", store.Name)
+                .Replace("{{background}}", new BackgroundContext(chara).Build()?.ToString())
+                .Replace("{{facts}}", knownFacts)
+                .Replace("{{talks}}", recentTalks);
 
             var report = await EmAi.SendWithReportAsync(prompt.ToString(), user, null, ct);
             await UniTask.SwitchToMainThread();
@@ -175,27 +214,19 @@ public sealed class MemoryManager
                 return false;
             }
 
-            if (report.Content.IsEmptyOrNull) {
+            if (!Stores.TryGetValue(store.Uid, out var current) || !ReferenceEquals(current, store)) {
                 LastSummarizeError = "em_ui_sum_failed".lang();
                 return false;
             }
 
-            var facts = ParseFacts(report.Content!);
-            if (facts.Count == 0) {
-                LastSummarizeError = "em_ui_sum_nothing".lang();
+            if (report.Content.IsEmptyOrNull || MemoryConsolidation.Parse(report.Content!) is not { } ops) {
+                EmMod.Warn<MemoryManager>($"summarization reply for {store.Name} is not usable\n{report.Content}");
+                LastSummarizeError = "em_ui_sum_failed".lang();
                 return false;
             }
 
-            var newFacts = new List<MemoryFact>();
-            foreach (var fact in facts) {
-                if (!store.LongTerm.Concat(newFacts).Any(f => IsContentSimilar(f.Fact, fact.Fact))) {
-                    newFacts.Add(fact);
-                }
-            }
-
-            store.LongTerm.AddRange(newFacts);
-            store.LongTerm.RemoveAll(f => f.Fact.IsEmptyOrNull);
-            store.EvictLtm();
+            var changes = MemoryConsolidation.Apply(store, known, ops, now, knownTexts);
+            var forgotten = store.EvictLtm(EmConfig.Memory.MaxLtmEntries.Value, DateTime.UtcNow);
 
             foreach (var entry in snapshot) {
                 entry.Summarized = true;
@@ -206,10 +237,19 @@ public sealed class MemoryManager
                 store.ShortTerm.RemoveAt(0);
             }
 
-            EmMod.Log<MemoryManager>($"summarized {newFacts.Count} facts for {store.Name} " +
+            PublishFactChanges(store, chara, changes, forgotten);
+
+            var kept = changes.Count(c => !forgotten.Contains(c.Fact));
+            EmMod.Log<MemoryManager>($"summarized {kept} facts for {store.Name}, forgot {forgotten.Count} " +
                                      $"({report.LatencyMs:F0}ms, {report.TokensInput}+{report.TokensOutput} tokens)");
+
+            if (ops.Count == 0) {
+                LastSummarizeError = "em_ui_sum_nothing".lang();
+                return false;
+            }
+
             LastSummarizeError = null;
-            LastSummarizeAdded = newFacts.Count;
+            LastSummarizeAdded = kept;
         } catch (Exception ex) {
             EmMod.Warn<MemoryManager>($"summarization failed for {store.Name}: {ex.Message}");
             LastSummarizeError = "em_ui_sum_failed".lang();
@@ -227,105 +267,61 @@ public sealed class MemoryManager
                 ? chat.TimeoutSeconds
                 : EmConfig.Policy.Timeout.Value;
         }
+
+        static string RequestTemplate()
+        {
+            const string key = "Emmersive/MemoryRequest.txt";
+            var template = new SystemContext(key).Build().ToString();
+            if (template.Contains("{{facts}}") && template.Contains("{{talks}}")) {
+                return template;
+            }
+
+            EmMod.Warn<MemoryManager>($"{key} needs {{{{facts}}}} and {{{{talks}}}}, using the built-in one");
+            return ResourceFetch.GetDefaultResource(key);
+        }
     }
 
-    private static List<MemoryFact> ParseFacts(string json)
+    private static void PublishFactChanges(CharaMemoryStore store,
+                                           Chara chara,
+                                           List<FactChange> changes,
+                                           List<MemoryFact> forgotten)
     {
-        json = SceneDirector.StripMarkdownFence(json);
-        if (json.IsEmptyOrNull) {
-            return [];
-        }
+        var added = changes
+            .Where(c => c.Kind == MemoryFactChange.Added)
+            .Select(c => c.Fact)
+            .ToHashSet();
 
-        JToken root;
-        try {
-            root = JToken.Parse(json);
-        } catch {
-            return [];
-            // noexcept
-        }
+        var events = changes
+            .Where(c => !(c.Kind == MemoryFactChange.Added && forgotten.Contains(c.Fact)))
+            .Concat(forgotten
+                .Where(f => !added.Contains(f))
+                .Select(f => new FactChange(MemoryFactChange.Forgotten, f, null, 0)));
 
-        var array = FindFactArray(root, 0);
-        if (array is null) {
-            return [];
-        }
-
-        var facts = new List<MemoryFact>();
-        foreach (var item in array.OfType<JObject>()) {
-            var fact = item["fact"]?.ToString().Trim();
-            if (fact.IsEmptyOrNull) {
+        foreach (var change in events) {
+            if (change.Fact.Fact.IsWhiteSpaceOrNull) {
                 continue;
             }
 
-            var importance = 1;
-            if (item["importance"] is { } imp &&
-                float.TryParse(imp.ToString(), NumberStyles.Float, CultureInfo.InvariantCulture, out var value)) {
-                importance = Math.Clamp((int)Math.Round(value), 1, 5);
+            switch (change.Kind) {
+                case MemoryFactChange.Updated:
+                    EmMod.Log<MemoryManager>($"{store.Name} fact rewritten: {change.OldFact} -> {change.Fact.Fact}");
+                    break;
+                case MemoryFactChange.Forgotten:
+                    EmMod.Log<MemoryManager>($"{store.Name} fact forgotten: {change.Fact.Fact}");
+                    break;
             }
 
-            facts.Add(new() {
-                Fact = fact!,
-                Importance = importance,
+            EmEvent.RaiseMemoryFactChanged(new() {
+                Uid = store.Uid,
+                Name = store.Name,
+                Change = change.Kind,
+                Fact = change.Fact.Fact,
+                Importance = change.Fact.Importance,
+                OldFact = change.OldFact,
+                OldImportance = change.OldImportance,
+                Chara = chara,
             });
         }
-
-        return facts;
-    }
-
-    private static JArray? FindFactArray(JToken token, int depth)
-    {
-        if (depth > MaxFactWrapperDepth) {
-            return null;
-        }
-
-        switch (token) {
-            case JArray array when array.Any(i => i is JObject obj && obj["fact"] is not null):
-                return array;
-            case JArray array:
-                return array
-                    .Select(i => FindFactArray(i, depth + 1))
-                    .FirstOrDefault(hit => hit is not null);
-            case JObject obj:
-                return obj
-                    .Properties()
-                    .Select(p => FindFactArray(p.Value, depth + 1))
-                    .FirstOrDefault(hit => hit is not null);
-            default:
-                return null;
-        }
-    }
-
-    private static List<MemoryEntry> DeduplicateStm(List<MemoryEntry> entries)
-    {
-        if (entries.Count <= 1) {
-            return entries;
-        }
-
-        var result = new List<MemoryEntry>(entries.Count);
-        var seen = new HashSet<string>(StringComparer.Ordinal);
-
-        for (var i = entries.Count - 1; i >= 0; i--) {
-            var entry = entries[i];
-
-            if (!seen.Add(entry.Content)) {
-                continue;
-            }
-
-            // dedup adjacent
-            if (result.Count > 0) {
-                var prev = result[^1];
-                if (prev.Speaker == entry.Speaker && IsContentSimilar(prev.Content, entry.Content)) {
-                    if (entry.Content.Length >= prev.Content.Length) {
-                        result[^1] = entry;
-                    }
-                    continue;
-                }
-            }
-
-            result.Add(entry);
-        }
-
-        result.Reverse();
-        return result;
     }
 
     internal static bool IsContentSimilar(string a, string b)

@@ -30,6 +30,9 @@ public sealed class MemoryEntry
     [JsonProperty("gt")]
     public int GameTime { get; init; }
 
+    [JsonIgnore]
+    internal bool Seen { get; set; }
+
     public void MarkSent()
     {
         SentCount++;

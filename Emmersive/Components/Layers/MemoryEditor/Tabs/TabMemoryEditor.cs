@@ -104,7 +104,7 @@ internal class TabMemoryEditor : YKLayout<LayerMemoryCreationData>
         header.Text("em_ui_ltm_header".Loc(store.LongTerm.Count));
 
         header.Button("em_ui_add_ltm".lang(), () => {
-            store.LongTerm.Add(new() { Fact = "" });
+            store.LongTerm.Add(new() { Fact = "", Importance = 3, GameTime = EClass.world.date.GetRaw() });
             LayerMemoryEditor.Instance?.Reopen();
         });
 
@@ -113,8 +113,7 @@ internal class TabMemoryEditor : YKLayout<LayerMemoryCreationData>
             return;
         }
 
-        for (var i = 0; i < store.LongTerm.Count; i++) {
-            var fact = store.LongTerm[i];
+        foreach (var fact in store.LongTerm.ToArray()) {
             var row = card.Horizontal();
 
             var scoreGroup = row.Horizontal();
@@ -134,13 +133,12 @@ internal class TabMemoryEditor : YKLayout<LayerMemoryCreationData>
 
             var input = row.PlainTextInput(fact.Fact, 0);
 
-            var idx = i;
             input.field.onValueChanged.AddListener(_ => {
-                store.LongTerm[idx].Fact = input.Text;
+                fact.Fact = input.Text;
             });
 
             row.Button("×", () => {
-                store.LongTerm.RemoveAt(idx);
+                store.LongTerm.Remove(fact);
                 LayerMemoryEditor.Instance?.Reopen();
             }).GetOrCreate<Image>().color = Color.red;
         }

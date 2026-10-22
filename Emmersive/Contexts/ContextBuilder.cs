@@ -16,14 +16,14 @@ public sealed class ContextBuilder
 {
     private readonly List<IContextProvider> _providers = [];
 
+    private ContextBuilder()
+    {
+    }
+
     internal IReadOnlyList<Chara> TriggerCharas { get; set; } = [];
     internal IReadOnlyList<Chara> NearbyCharas { get; set; } = [];
     internal IReadOnlyCollection<string>? ShownLines { get; set; }
     internal bool IsManual { get; set; }
-
-    private ContextBuilder()
-    {
-    }
 
 
     public static IContextProvider RecentActionContext => field ??= new RecentActionContext();

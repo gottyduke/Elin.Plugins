@@ -16,24 +16,24 @@ internal static class EmPromptReset
     {
         Directory.CreateDirectory(ResourceFetch.CustomFolder);
 
-        FileWatcherHelper.Register(
-            "em_custom_prompts",
-            ResourceFetch.CustomFolder,
-            "*.txt",
-            args => {
-                var name = args.Name ?? "";
-                if (name.EndsWith("dry_run.txt", StringComparison.OrdinalIgnoreCase) ||
-                    name.StartsWith("Params", StringComparison.OrdinalIgnoreCase)) {
-                    return;
-                }
+        FileWatcherHelper.Register("em_custom_prompts", ResourceFetch.CustomFolder, "*.txt", OnCustomFileChanged);
+        FileWatcherHelper.Register("em_custom_lexicon", ResourceFetch.CustomFolder, "*.json", OnCustomFileChanged);
+    }
 
-                var path = args.FullPath;
-                _debounce.Trigger(() => {
-                    if (!ResourceFetch.IsUnchangedSinceModWrite(path)) {
-                        ReloadPrompts();
-                    }
-                });
-            });
+    private static void OnCustomFileChanged(FileSystemEventArgs args)
+    {
+        var name = args.Name ?? "";
+        if (name.EndsWith("dry_run.txt", StringComparison.OrdinalIgnoreCase) ||
+            name.StartsWith("Params", StringComparison.OrdinalIgnoreCase)) {
+            return;
+        }
+
+        var path = args.FullPath;
+        _debounce.Trigger(() => {
+            if (!ResourceFetch.IsUnchangedSinceModWrite(path)) {
+                ReloadPrompts();
+            }
+        });
     }
 
     private static void ReloadPrompts()

@@ -11,7 +11,14 @@ public partial class SceneDirector
 {
     private static readonly Regex _richTextTag = new("<[^>]+>", RegexOptions.Compiled);
 
+    internal RecentLineGuard RecentLines { get; } = new();
+
     public void DoPopText(int uid, string content, float duration = 0f, float delay = 0f, bool isPlayer = false)
+    {
+        DoPopText(uid, content, duration, delay, isPlayer, isPlayer);
+    }
+
+    internal void DoPopText(int uid, string content, float duration, float delay, bool isPlayer, bool typed)
     {
         if (!FindSameMapChara(uid, out var chara)) {
             return;
@@ -72,23 +79,22 @@ public partial class SceneDirector
             }
 
             var memory = EmConfig.Memory.Enabled.Value;
-            if (memory && !isPlayer && MemoryManager.Instance.HasRecentTalk(chara, text)) {
+            var clean = CleanLine(text, gesture);
+            if (!typed &&
+                (RecentLines.IsRepeat(chara.uid, clean, gesture, Time.unscaledTime) ||
+                 (memory && MemoryManager.Instance.HasRecentTalk(chara, text)))) {
+                EmMod.Debug<SceneDirector>($"dropped repeated line from {chara.NameSimple}: {text}");
                 return;
-            }
-
-            if (memory) {
-                MemoryManager.Instance.RecordTalk(chara, text);
             }
 
             var line = new SceneLineArgs {
                 Chara = chara,
-                Text = CleanLine(text, gesture),
+                Text = clean,
                 IsGesture = gesture,
                 IsPlayer = isPlayer,
                 Duration = duration,
             };
 
-            var clean = line.Text;
             EmEvent.RaiseSceneLine(line);
             PublishSceneLine(line);
 
@@ -99,6 +105,14 @@ public partial class SceneDirector
 
             if (line.Text != clean) {
                 text = gesture ? $"*{line.Text}*" : line.Text;
+            }
+
+            RecentLines.Add(chara.uid, line.Text, Time.unscaledTime);
+            if (memory) {
+                MemoryManager.Instance.RecordTalk(chara, text);
+                if (!typed) {
+                    MemoryManager.Instance.MarkSaid(chara, text);
+                }
             }
 
             Msg.SetColor(color);
@@ -125,7 +139,13 @@ public partial class SceneDirector
         }
     }
 
-    private static string CleanLine(string text, bool gesture)
+    [ElinPostLoad]
+    private static void ClearRecentLines(GameIOContext context)
+    {
+        Instance.RecentLines.Clear();
+    }
+
+    internal static string CleanLine(string text, bool gesture)
     {
         if (gesture) {
             text = text.Trim('*');

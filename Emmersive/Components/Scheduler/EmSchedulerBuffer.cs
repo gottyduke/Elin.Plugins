@@ -43,7 +43,7 @@ public partial class EmScheduler
                     trigger.Chara.Profile.LockedInRequest = false;
                 }
             } else {
-                RequestScenePlayWithTrigger(_buffer.ToArray());
+                RequestScenePlayWithTrigger([.._buffer]);
             }
         } finally {
             _buffer.Clear();

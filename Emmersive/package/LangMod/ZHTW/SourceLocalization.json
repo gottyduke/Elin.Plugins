@@ -144,7 +144,7 @@
   "LangGeneral.em_ui_sum_failed.text": "摘要失敗，詳情見Player.log（位於%USERPROFILE%\\AppData\\LocalLow\\Lafrontier\\Elin）",
   "LangGeneral.em_ui_sum_nothing.text": "最近的對話裡沒有值得記住的內容",
   "LangGeneral.em_ui_sum_timeout.text": "摘要逾時（{0}秒），可在「Mod設定」中調大Timeout",
-  "LangGeneral.em_ui_summarize_done.text": "摘要完成，新增{0}條長期記憶",
+  "LangGeneral.em_ui_summarize_done.text": "摘要完成，新增或更新了{0}條長期記憶",
   "LangGeneral.em_ui_summarize_now.text": "立即摘要",
   "LangGeneral.em_ui_summarizing.text": "摘要中…",
   "LangGeneral.em_ui_system_prompt.text": "系統提示詞",

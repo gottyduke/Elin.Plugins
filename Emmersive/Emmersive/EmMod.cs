@@ -5,7 +5,6 @@ using Emmersive.API.Services;
 using Emmersive.API.ThirdParty;
 using Emmersive.Components;
 using Emmersive.Helper;
-using EModding.Helper.Runtime.Exceptions;
 using HarmonyLib;
 using ReflexCLI;
 
@@ -15,7 +14,7 @@ internal static class ModInfo
 {
     internal const string Guid = "dk.elinplugins.emmersive";
     internal const string Name = "Elin with AI (Beta)";
-    internal const string Version = "0.11.0";
+    internal const string Version = "0.11.4";
 
     public static string BuildVersion => field ??= EmMod.Assembly.GetName().Version.ToString();
 }

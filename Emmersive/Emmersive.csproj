@@ -58,6 +58,12 @@
     <ItemGroup>
         <None Remove="package\LangMod\EN\Emmersive\SystemPrompt.txt"/>
         <EmbeddedResource Include="package\LangMod\EN\Emmersive\SystemPrompt.txt"/>
+        <None Remove="package\LangMod\EN\Emmersive\MemoryLexicon.json"/>
+        <EmbeddedResource Include="package\LangMod\EN\Emmersive\MemoryLexicon.json"/>
+        <None Remove="package\LangMod\EN\Emmersive\MemoryRequest.txt"/>
+        <EmbeddedResource Include="package\LangMod\EN\Emmersive\MemoryRequest.txt"/>
+        <None Remove="package\LangMod\EN\Emmersive\MemoryUsage.txt"/>
+        <EmbeddedResource Include="package\LangMod\EN\Emmersive\MemoryUsage.txt"/>
         <EmbeddedResource Remove="Emmersive.Test\**"/>
     </ItemGroup>
     <ItemGroup>

@@ -250,7 +250,7 @@ public partial class SceneDirector : EClass
             : null;
     }
 
-    private static bool TryReadNumber(JToken? token, out float value)
+    internal static bool TryReadNumber(JToken? token, out float value)
     {
         value = 0f;
 

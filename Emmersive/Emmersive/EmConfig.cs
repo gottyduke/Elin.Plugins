@@ -27,11 +27,11 @@ internal partial class EmConfig
             "Timeout",
             15f,
             new ConfigDescription(
-                "Seconds to wait for an AI reply (1-60). Ollama always waits at least 60 seconds\n" +
+                "Seconds to wait for an AI reply (1-240). Ollama always waits at least 60 seconds\n" +
                 "A timed-out request is not retried, and the service cools down for ServiceCooldown seconds\n" +
-                "等待 AI 回复的最长秒数（1–60），Ollama 至少等待 60 秒\n" +
+                "等待 AI 回复的最长秒数（1–240），Ollama 至少等待 60 秒\n" +
                 "超时后不会换服务重试，该服务会暂停使用 ServiceCooldown 秒",
-                new AcceptableValueRange<float>(1f, 60f)));
+                new AcceptableValueRange<float>(1f, 240f)));
 
         Policy.Retries = config.Bind(
             "RuntimePolicy",
@@ -60,22 +60,22 @@ internal partial class EmConfig
             "GlobalRequestCooldown",
             1.5f,
             new ConfigDescription(
-                "Real-time seconds to wait after an AI conversation finishes playing before the next one can start (0-20)\n" +
+                "Real-time seconds to wait after an AI conversation finishes playing before the next one can start (0-600)\n" +
                 "Only counted after a successful conversation\n" +
-                "一轮 AI 对话播放完后，至少再等多少秒（现实时间）才能开始下一轮（0–20）\n" +
+                "一轮 AI 对话播放完后，至少再等多少秒（现实时间）才能开始下一轮（0–600）\n" +
                 "只在成功的对话之后计时",
-                new AcceptableValueRange<float>(0f, 20f)));
+                new AcceptableValueRange<float>(0f, 600f)));
 
         Policy.ServiceCooldown = config.Bind(
             "RuntimePolicy",
             "ServiceCooldown",
             15f,
             new ConfigDescription(
-                "Real-time seconds a failed service is set aside while other services are used (0-60)\n" +
+                "Real-time seconds a failed service is set aside while other services are used (0-600)\n" +
                 "Each further failure in a row adds 1 second\n" +
-                "服务请求失败后暂停使用它的秒数（现实时间，0–60），期间改用其他服务\n" +
+                "服务请求失败后暂停使用它的秒数（现实时间，0–600），期间改用其他服务\n" +
                 "连续失败时每次再多 1 秒",
-                new AcceptableValueRange<float>(0f, 60f)));
+                new AcceptableValueRange<float>(0f, 600f)));
 
         Policy.ToggleKey = config.Bind(
             "RuntimePolicy",
@@ -114,7 +114,7 @@ internal partial class EmConfig
             20,
             new ConfigDescription(
                 "How many recent game log lines are sent to the AI (0-100), 0 = none\n" +
-                "With Memory on, talks in the log are left out here and sent by the memory system instead\n" +
+                "With Memory on, dialogue in the log is left out here and sent by the memory system instead\n" +
                 "发给 AI 的最近游戏日志条数（0–100），0 为不发送\n" +
                 "开启记忆后，日志里的对话不计入这里，改由记忆系统发送",
                 new AcceptableValueRange<int>(0, 100)));
@@ -124,12 +124,12 @@ internal partial class EmConfig
             "NearbyRadius",
             4,
             new ConfigDescription(
-                "Radius in tiles around the player (0-12). Characters and items in range are sent to the AI, " +
+                "Radius in tiles around the player (0-20). Characters and items in range are sent to the AI, " +
                 "and lines said in range can start an AI conversation\n" +
                 "A bigger radius includes more characters and uses more tokens\n" +
-                "以玩家为中心的半径格数（0–12），范围内的角色和物品会发给 AI，范围内说出的台词也会触发 AI 对话\n" +
+                "以玩家为中心的半径格数（0–20），范围内的角色和物品会发给 AI，范围内说出的台词也可能触发 AI 对话\n" +
                 "半径越大，包含的角色越多，Token 消耗也越多",
-                new AcceptableValueRange<int>(0, 12)));
+                new AcceptableValueRange<int>(0, 20)));
 
         Context.NearbyMaxCount = config.Bind(
             "Context",
@@ -146,7 +146,7 @@ internal partial class EmConfig
             false,
             "Only important characters (your faction, plus unique or global NPCs that are not animals) take part in AI Talk\n" +
             "Everyone else keeps their vanilla lines and is not sent to the AI\n" +
-            "只让重要角色（你的同伴，以及非动物的唯一或全局 NPC）参与 AI 对话\n" +
+            "只让重要角色（你阵营的角色，以及非动物的唯一或全局 NPC）参与 AI 对话\n" +
             "其他角色照常说原版台词，也不会发给 AI");
 
         Context.WhitelistMode = config.Bind(
@@ -167,10 +167,10 @@ internal partial class EmConfig
             "Memory",
             "Enabled",
             false,
-            "NPC memory: important characters remember recent talks (short-term memory)\n" +
+            "NPC memory: important characters remember recent conversations (short-term memory)\n" +
             "Long-term memory is only summarized automatically for characters with " +
             "\"Auto-summarize long-term memory\" checked in the Backgrounds tab\n" +
-            "When off, talks are sent with the recent game log instead\n" +
+            "When off, dialogue is sent with the recent game log instead\n" +
             "NPC 记忆：重要角色会记住最近的对话（短期记忆）\n" +
             "只有在「角色背景」页勾选了「自动总结长期记忆」的角色，才会自动总结出长期记忆\n" +
             "关闭时，对话改为随最近游戏日志一起发送");
@@ -198,8 +198,10 @@ internal partial class EmConfig
             "MaxStmInContext",
             5,
             new ConfigDescription(
-                "Short-term memory entries per character sent in one request (1-30)\n" +
-                "每次请求为每个角色发送的短期记忆条数（1–30）",
+                "Maximum short-term memory entries per character sent in one request (1-30)\n" +
+                "Lines heard by several characters are sent only once\n" +
+                "每次请求为每个角色最多发送的短期记忆条数（1–30）\n" +
+                "多个角色都听到的同一句话只发送一次",
                 new AcceptableValueRange<int>(1, 30)));
 
         Memory.MaxStmRepeatInContext = config.Bind(
@@ -207,10 +209,11 @@ internal partial class EmConfig
             "MaxStmRepeatInContext",
             2,
             new ConfigDescription(
-                "How many requests in a row the same short-term memory entry can be sent in (1-10)\n" +
-                "1 = each entry is sent once, and the count starts over with each new talk. Higher values keep old entries around longer\n" +
-                "同一条短期记忆最多连续出现在几次请求中（1–10）\n" +
-                "设为 1 时每条只发送一次，有新对话后重新计数；值越大，旧记忆停留越久",
+                "How many requests the same short-term memory entry can be sent in (1-10). Higher values keep old entries around longer\n" +
+                "The count starts over when you say something. A character's own last 2 lines from the past 6 game hours " +
+                "ignore this limit, so it knows what it just said\n" +
+                "同一条短期记忆最多出现在几次请求中（1–10），值越大，旧记忆停留越久\n" +
+                "你说话后重新计数。角色自己 6 个游戏小时内的最后 2 句话不受此限，让它知道自己刚说过什么",
                 new AcceptableValueRange<int>(1, 10)));
 
         Memory.MaxLtmInContext = config.Bind(
@@ -218,8 +221,11 @@ internal partial class EmConfig
             "MaxLtmInContext",
             5,
             new ConfigDescription(
-                "Long-term memory facts per character sent in one request, higher ★ first (1-30)\n" +
-                "每次请求为每个角色发送的长期记忆条数，★ 高的优先（1–30）",
+                "Maximum long-term memory facts per character sent in one request (1-30)\n" +
+                "Facts about what is being said come first, then at most 2 more: one ★5 fact (★5 facts take turns), " +
+                "then higher ★ and newer facts first\n" +
+                "每次请求为每个角色发送的长期记忆条数上限（1–30）\n" +
+                "与当前对话有关的事实优先，其余最多再补 2 条：先补一条 ★5 事实（多条 ★5 轮流），再按 ★ 高、较新的优先",
                 new AcceptableValueRange<int>(1, 30)));
 
         Memory.MaxLtmEntries = config.Bind(
@@ -228,11 +234,24 @@ internal partial class EmConfig
             20,
             new ConfigDescription(
                 "Long-term memory facts stored per character (5-50)\n" +
-                "When full, facts with low ★, few recalls and no recent use are forgotten first. " +
+                "When full, the lowest ★ facts are forgotten first; among equal ★, facts rarely recalled and not used lately go first. " +
                 "The 5 oldest facts with ★4 or more are always kept\n" +
                 "每个角色最多保存的长期记忆条数（5–50）\n" +
-                "存满后，先遗忘 ★ 低、很少被提起、很久没用到的条目；★4 及以上最早的 5 条始终保留",
+                "存满后先遗忘 ★ 最低的条目，★ 相同时先遗忘很少被提起、很久没用到的；★4 及以上最早的 5 条始终保留",
                 new AcceptableValueRange<int>(5, 50)));
+
+        Memory.LtmRecallCooldown = config.Bind(
+            "Memory",
+            "LtmRecallCooldown",
+            3,
+            new ConfigDescription(
+                "How many AI conversations a long-term fact sits out after being sent, " +
+                "so characters don't bring up the same thing every time (0-20)\n" +
+                "A fact the conversation is about is sent anyway. ★5 facts ignore this and sit out one conversation (several ★5 facts take turns). " +
+                "A fact a character has just said sits out twice as long, unless you ask about it\n" +
+                "长期记忆发送后，接下来几轮 AI 对话不再发送它，避免角色每次都提同一件事（0–20）\n" +
+                "对话正好与它有关时照常发送。★5 事实不受此限，只停一轮（多条 ★5 轮流）。角色刚说过的事实会停两倍的轮数，除非你主动问起",
+                new AcceptableValueRange<int>(0, 20)));
 
         Memory.SummarizeThresholdPercentage = config.Bind(
             "Memory",
@@ -300,7 +319,7 @@ internal partial class EmConfig
                 "Seconds to collect lines said at almost the same time into one AI conversation (0-1)\n" +
                 "Keeps everyone from talking at once, e.g. right after loading a save. Leave it as is unless asked to change it\n" +
                 "把几乎同时说出的台词收进同一轮 AI 对话的等待秒数（0–1）\n" +
-                "可以避免刚读档时所有人同时说话；除非有人让你改，否则保持默认",
+                "可以避免所有人同时说话，例如刚读档时；除非有人让你改，否则保持默认",
                 new AcceptableValueRange<float>(0f, 1f)));
 
         Scene.BlockCharaTalk = config.Bind(
@@ -324,11 +343,11 @@ internal partial class EmConfig
             "MinimalReactionDelay",
             0.5f,
             new ConfigDescription(
-                "Minimum seconds between two lines of one AI conversation (0-10)\n" +
+                "Minimum seconds between two lines of one AI conversation (0-20)\n" +
                 "Models tend to give every line the same delay, so at 0 they may all pop up at once\n" +
-                "一轮 AI 对话中两句台词之间的最短间隔秒数（0–10）\n" +
+                "一轮 AI 对话中两句台词之间的最短间隔秒数（0–20）\n" +
                 "模型常给每句相同的延迟，设为 0 时可能同时弹出",
-                new AcceptableValueRange<float>(0f, 10f)));
+                new AcceptableValueRange<float>(0f, 20f)));
 
         Reload();
     }
@@ -365,6 +384,7 @@ internal partial class EmConfig
         internal static ConfigEntry<int> MaxStmRepeatInContext { get; set; } = null!;
         internal static ConfigEntry<int> MaxLtmInContext { get; set; } = null!;
         internal static ConfigEntry<int> MaxLtmEntries { get; set; } = null!;
+        internal static ConfigEntry<int> LtmRecallCooldown { get; set; } = null!;
         internal static ConfigEntry<float> SummarizeThresholdPercentage { get; set; } = null!;
         internal static ConfigEntry<int> SummarizeThresholdSeconds { get; set; } = null!;
     }

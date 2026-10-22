@@ -1,0 +1,1 @@
+recent_talks were already said, oldest first: never repeat or paraphrase them, move the talk on. known_facts are what each NPC remembers: background only, bring one up only when the moment calls for it.

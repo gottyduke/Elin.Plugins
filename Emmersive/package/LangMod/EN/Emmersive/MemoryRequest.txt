@@ -1,0 +1,7 @@
+NPC: {{npc}}
+Background: {{background}}
+Known facts (rewrite one by its number when the talk changes it, never add it again):
+{{facts}}
+Recent conversations, oldest first:
+{{talks}}
+Extract key facts:

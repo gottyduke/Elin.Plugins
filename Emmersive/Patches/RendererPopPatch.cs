@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using Emmersive.API.Plugins;
 using Emmersive.API.Profiles;
 using Emmersive.API.Services;
 using Emmersive.Components;
@@ -130,6 +131,7 @@ internal class RendererPopPatch
 
         renderer.Say(text, color, duration);
         profile.ResetTalkCooldown();
+        SceneDirector.Instance.RecentLines.Add(chara.uid, SceneDirector.CleanLine(text, false), Time.unscaledTime);
         MemoryManager.Instance.RecordTalk(chara, text);
     }
 
