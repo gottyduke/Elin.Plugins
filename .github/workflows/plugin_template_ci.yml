@@ -32,10 +32,16 @@ jobs:
         with:
           dotnet-version: 10
 
-      - name: Pack NuGet
+      - name: NuGet login
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: freshcloth
+
+      - name: Pack NuGet & Push
         id: build
         shell: pwsh
         run: |
           cd PluginTemplate
           dotnet pack -o .\nupkgs
-          dotnet nuget push .\nupkgs\*.nupkg -k ${{ secrets.NUGET_PUBLISH_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
+          dotnet nuget push .\nupkgs\*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
