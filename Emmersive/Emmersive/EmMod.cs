@@ -7,6 +7,9 @@ using Emmersive.Components;
 using Emmersive.Helper;
 using HarmonyLib;
 using ReflexCLI;
+#if !DEBUG
+using EModding.Helper.Runtime.Exceptions;
+#endif
 
 namespace Emmersive;
 

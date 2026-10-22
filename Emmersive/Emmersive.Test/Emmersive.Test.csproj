@@ -18,6 +18,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None Include="..\package\LangMod\EN\Emmersive\MemoryLexicon.json" Link="MemoryLexicon.json" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
+    <ItemGroup>
         <ProjectReference Include="..\Emmersive.csproj" />
         <ProjectReference Include="..\..\CustomWhateverLoader\CustomWhateverLoader.csproj" />
     </ItemGroup>

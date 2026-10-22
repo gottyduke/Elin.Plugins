@@ -1,5 +1,6 @@
 using System.Reflection;
-using Emmersive.Helper;
+using Cwl.Helper.String;
+using Emmersive.Contexts.Memory;
 
 namespace Emmersive.Test;
 
@@ -23,5 +24,12 @@ public static class TestInit
                 .Select(Assembly.LoadFrom)
                 .FirstOrDefault();
         };
+
+        LoadMemoryLexicon();
+    }
+
+    private static void LoadMemoryLexicon()
+    {
+        MemoryLexicon.Current = MemoryLexicon.Merge(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "MemoryLexicon.json")));
     }
 }
