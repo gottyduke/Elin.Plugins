@@ -4,7 +4,7 @@ A development mod that lets an AI coding agent drive the running game through th
 
 This is a tool for modders. It opens a localhost port that executes any C# it receives, so do not keep it enabled for normal play.
 
-> **If you are an AI agent reading this file:** the folder that contains it is the installed mod. If the `elin_*` runtime tools are not connected yet, follow [Quick start](#quick-start). Then read [`skills/elin-runtime/SKILL.md`](skills/elin-runtime/SKILL.md), which is the short working guide. This README is the reference behind it.
+> **If you are an AI agent reading this file:** the folder that contains it is the installed mod. If the `elin_*` runtime tools are not connected yet, follow [Quick start](#quick-start). Then read [`skills/elin-runtime/SKILL.md`](skills/elin-runtime/SKILL.md), which is the short working guide. This README is the reference behind it. <https://mcp.elin-modding.net/llms.txt> walks through the same setup for agents. It also covers the companion knowledge server and both agent skills, so follow it when you are asked to set up Elin MCP as a whole.
 
 | To | Read |
 |---|---|
@@ -18,8 +18,10 @@ This is a tool for modders. It opens a localhost port that executes any C# it re
 
 ## Quick start
 
+If you use an AI agent, tell it: *"Set up Elin MCP from https://mcp.elin-modding.net/llms.txt"*. That page tells the agent how to install this mod from GitHub when it is missing, connect it together with the companion knowledge server, and install both agent skills. The steps below are the manual route.
+
 1. Check that Node.js 20 or newer is installed with `node --version`. Install it from <https://nodejs.org> if needed.
-2. Make sure the game has this mod enabled in its mod list. The game does not need to be running yet.
+2. Install the mod and make sure it is enabled in the game's mod list. The game does not need to be running yet. You can subscribe on the Steam Workshop. Or take the newest [`RMCP-*` release](https://github.com/gottyduke/Elin.Plugins/releases?q=RMCP&expanded=true), pick `rmcp-ci-builds-<branch>-<game version>-release.zip` for the branch your game runs on (`"nightly": true` in the game's `version.json` means nightly, otherwise stable), and extract it into `<Elin install>/Package/Mod_ElinRuntimeMcp/`.
 3. Print the client configuration for this install:
 
    ```
@@ -35,7 +37,7 @@ This is a tool for modders. It opens a localhost port that executes any C# it re
 | Install | Folder |
 |---|---|
 | Steam Workshop | `<Steam library>/steamapps/workshop/content/2135150/<workshop item id>/` |
-| Built from source or copied by hand | `<Elin install>/Package/Mod_ElinRuntimeMcp/` |
+| GitHub release, built from source, or copied by hand | `<Elin install>/Package/Mod_ElinRuntimeMcp/` |
 
 If you cannot run a command, write the entry by hand. It is a stdio server started with `node` and the bridge's absolute path. In the `mcpServers` format of Claude Code and Cursor it looks like this:
 
@@ -79,7 +81,7 @@ New-Item -ItemType Junction -Path "$HOME\.claude\skills\elin-runtime" -Target "<
 ln -s "<this folder>/skills/elin-runtime" ~/.claude/skills/elin-runtime
 ```
 
-The companion skill [`elin-modding`](https://github.com/Elin-Modding-Resources/Elin.MCP/tree/main/skills) covers the knowledge server, mod packaging, and decompiling the game. Install both if you use both servers.
+The companion skill [`elin-modding`](https://github.com/Elin-Modding-Resources/Elin.MCP/tree/main/skills) covers the knowledge server, mod packaging, and decompiling the game. Install both if you use both servers. The knowledge server serves its two files: download <https://mcp.elin-modding.net/skills/elin-modding/SKILL.md> and <https://mcp.elin-modding.net/skills/elin-modding/setup.md> into `<skills folder>/elin-modding/`.
 
 ## Tools
 
@@ -213,7 +215,7 @@ This server runs code in the game but does not index its source. Use these three
 
 ### The knowledge server
 
-<https://mcp.elin-modding.net> serves the decompiled game source and the modding wiki over MCP, with no install and no game files. The `--config` output includes it as `elin`. It indexes Elin's two branches, `stable` and `nightly`.
+<https://mcp.elin-modding.net> serves the decompiled game source and the modding wiki over MCP, with no install and no game files. The `--config` output includes it as `elin`, and <https://mcp.elin-modding.net/llms.txt> is its setup guide for agents. It indexes Elin's two branches, `stable` and `nightly`.
 
 | For | Call |
 |---|---|

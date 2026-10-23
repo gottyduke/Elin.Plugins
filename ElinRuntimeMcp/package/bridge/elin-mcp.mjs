@@ -34651,7 +34651,7 @@ To try a patch without rebuilding, elin_hotload one .cs file or source string: c
 elin_eval runs a C# script on the Unity main thread and the game freezes while it runs. Never await, and never loop waiting for game state inside a script; poll with elin_wait_eval instead. Qualify game statics (EClass.pc, EClass._zone, EClass.game, EClass.core). Return JsonConvert.SerializeObject(...) for structured results. Script["key"] keeps values between calls.
 
 Looking up game code: this server does not index source.
-- If the Elin knowledge MCP server (${KNOWLEDGE_URL}) is connected, use its elin_guide, elin_find, elin_callers and elin_read tools.
+- If the Elin knowledge MCP server (${KNOWLEDGE_URL}) is connected, use its elin_guide, elin_find, elin_callers and elin_read tools. If it is not, offer it to the user: it needs no install, and ${KNOWLEDGE_URL}/llms.txt is its setup guide.
 - For the exact signatures of the installed game version, including inherited members and parameter names (Harmony injects by name), reflect in elin_eval: ${SIGNATURE_RECIPE}
 - For full-text search, decompile <game>/Elin_Data/Managed/Elin.dll locally with ilspycmd.
 
@@ -34992,9 +34992,9 @@ function configText() {
     `Elin Runtime MCP bridge: ${self}`,
     `Needs Node >= 20 and the game running with the Elin Runtime MCP mod. "elin" is the optional companion knowledge server (game source index and modding wiki).`,
     "",
-    "## Claude Code",
-    `claude mcp add elin-runtime -- node "${self}"`,
-    `claude mcp add --transport http elin ${KNOWLEDGE_URL}`,
+    "## Claude Code  (--scope user: one install serves every mod project)",
+    `claude mcp add --scope user elin-runtime -- node "${self}"`,
+    `claude mcp add --scope user --transport http elin ${KNOWLEDGE_URL}`,
     "",
     "## Claude Code  .mcp.json  /  Cursor  .cursor/mcp.json",
     json2({ mcpServers: { "elin-runtime": { command: "node", args: [self] }, elin: { type: "http", url: KNOWLEDGE_URL } } }),
@@ -35020,7 +35020,8 @@ url = "${KNOWLEDGE_URL}"`,
     `elin-runtime is a stdio server: command "node", args ["${self}"]. elin is a Streamable HTTP server at ${KNOWLEDGE_URL} (the field is called url, httpUrl or serverUrl depending on the client).`,
     "",
     "Optional env for elin_build defaults: ELIN_BUILD_PROJECT (path to your .csproj, relative to the project root), ELIN_BUILD_CONFIGURATION.",
-    `A client that only speaks stdio can reach the knowledge server through mcp-remote: command "npx", args ["-y", "mcp-remote", "${KNOWLEDGE_URL}"] (on Windows: command "cmd", args ["/c", "npx", "-y", "mcp-remote", "${KNOWLEDGE_URL}"]).`
+    `A client that only speaks stdio can reach the knowledge server through mcp-remote: command "npx", args ["-y", "mcp-remote", "${KNOWLEDGE_URL}"] (on Windows: command "cmd", args ["/c", "npx", "-y", "mcp-remote", "${KNOWLEDGE_URL}"]).`,
+    `Setup guide for agents, covering both servers and both agent skills: ${KNOWLEDGE_URL}/llms.txt`
   ].join("\n");
 }
 var argv = process.argv.slice(2);

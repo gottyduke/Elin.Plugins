@@ -13,6 +13,8 @@
 
 [h2]Setup[/h2]
 
+The easy way is to tell your AI agent: [i]"Set up Elin MCP from https://mcp.elin-modding.net/llms.txt"[/i]. It connects this mod along with the companion knowledge server, which indexes the game's source and the modding wiki, and it installs both agent skills. To do it by hand:
+
 1. Install [url=https://nodejs.org]Node.js[/url] 20 or newer.
 2. Run [b]node "(this mod's folder)/bridge/elin-mcp.mjs" --config[/b]. It prints ready-to-paste MCP client entries (Claude Code, Codex, OpenCode, Gemini CLI, Cursor, VS Code) with the path filled in. The in-game console command [b]rmcp.setup[/b] prints the same path.
 3. Add the entry to your MCP client and restart it. Your agent can take it from there: the server explains itself when it connects, and [b]README.md[/b] in this mod's folder is the full reference.

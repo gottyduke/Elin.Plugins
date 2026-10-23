@@ -7,14 +7,14 @@ description: Use when testing, debugging or inspecting an Elin mod inside the ru
 
 The **Elin Runtime MCP** mod runs a listener inside the game, and its `elin-runtime` MCP server turns that into tools. The running game is the ground truth: a change is done when you have watched it work in the game, not when it compiles.
 
-Full reference: `README.md` in the mod folder, also at <https://github.com/gottyduke/Elin.Plugins/tree/master/ElinRuntimeMcp>. For "how do I make X" and for reading the game's source, the companion skill is `elin-modding` (<https://github.com/Elin-Modding-Resources/Elin.MCP/tree/main/skills>).
+Full reference: `README.md` in the mod folder, also at <https://github.com/gottyduke/Elin.Plugins/tree/master/ElinRuntimeMcp>. For "how do I make X" and for reading the game's source, the companion skill is `elin-modding` (<https://github.com/Elin-Modding-Resources/Elin.MCP/tree/main/skills>). Setup for both servers and both skills is at <https://mcp.elin-modding.net/llms.txt>.
 
 ## Which tools you have
 
 | Server | Tools | If missing |
 |---|---|---|
-| `elin-runtime` (local, this mod) | `elin_instances`, `elin_eval`, `elin_wait_eval`, `elin_command`, `elin_state`, `elin_screenshot`, `elin_hotload`, `elin_hotunload`, `elin_logs`, `elin_wait_log`, `elin_build`, `elin_launch`, `elin_kill` | The user enables the mod, installs Node.js 20+, adds the entry printed by `node "<mod folder>/bridge/elin-mcp.mjs" --config`, and restarts the client. You cannot add an MCP server to your own running session. |
-| `elin` (remote knowledge server, <https://mcp.elin-modding.net>) | `elin_guide`, `elin_find`, `elin_outline`, `elin_callers`, `elin_read`, `elin_strings`, `elin_versions`, … | Optional. The same `--config` output includes it. |
+| `elin-runtime` (local, this mod) | `elin_instances`, `elin_eval`, `elin_wait_eval`, `elin_command`, `elin_state`, `elin_screenshot`, `elin_hotload`, `elin_hotunload`, `elin_logs`, `elin_wait_log`, `elin_build`, `elin_launch`, `elin_kill` | Follow <https://mcp.elin-modding.net/llms.txt>, which the knowledge server's `elin_setup` tool also returns. It installs the mod from its GitHub release when it is missing and connects it. The client needs Node.js 20+ and the entry printed by `node "<mod folder>/bridge/elin-mcp.mjs" --config`. You cannot add an MCP server to your own running session, so the user restarts the client afterwards. |
+| `elin` (remote knowledge server, <https://mcp.elin-modding.net>) | `elin_guide`, `elin_find`, `elin_outline`, `elin_callers`, `elin_read`, `elin_strings`, `elin_versions`, … | Recommended. It needs no install. The same `--config` output and the same setup page include it. |
 
 Start with `elin_instances`. If nothing is listening, `elin_launch` starts the game through Steam and waits for it.
 
