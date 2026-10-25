@@ -133,19 +133,58 @@ public class TypeQualifier
         ];
 
         foreach (var plugin in Plugins.ToArray()) {
-            try {
-                var types = plugin.GetType().Assembly.DefinedTypes
-                    .Where(t => !t.IsDefined(typeof(CompilerGeneratedAttribute), false) && !t.Name.Contains('<'))
-                    .ToArray();
-                // test cast for missing dependency
-                _ = types.Select(ti => typeof(object).IsAssignableFrom(ti)).ToArray();
-                Declared.UnionWith(types);
-            } catch {
+            var types = QueryTypes(plugin.GetType().Assembly);
+            if (types is null) {
                 Plugins.Remove(plugin);
+                continue;
+            }
+
+            Declared.UnionWith(types);
+        }
+
+        ClassCache.modTypes.UnionWith(Declared);
+    }
+
+    internal static List<TypeInfo>? QueryTypes(Assembly assembly)
+    {
+        var name = assembly.GetName().Name;
+        Type?[] candidates;
+        try {
+            candidates = assembly.GetTypes();
+        } catch (ReflectionTypeLoadException ex) {
+            candidates = ex.Types;
+            var reasons = ex.LoaderExceptions
+                .Select(e => e.Message)
+                .Distinct()
+                .Take(3);
+            Debug.LogWarning($"#mod-content {name} has unresolvable types, skipping: {string.Join("; ", reasons)}");
+        } catch (Exception ex) {
+            Debug.LogWarning($"#mod-content failed to query types of {name}: {ex.Message}");
+            return null;
+            // noexcept
+        }
+
+        var declared = new List<TypeInfo>(candidates.Length);
+        foreach (var type in candidates) {
+            if (type is null) {
+                continue;
+            }
+
+            try {
+                var info = type.GetTypeInfo();
+                if (info.IsDefined(typeof(CompilerGeneratedAttribute), false) || info.Name.Contains('<')) {
+                    continue;
+                }
+
+                // test cast for missing dependency
+                _ = typeof(object).IsAssignableFrom(info);
+                declared.Add(info);
+            } catch (Exception ex) {
+                Debug.LogWarning($"#mod-content skipped type {type.FullName} in {name}: {ex.GetType().Name}");
                 // noexcept
             }
         }
 
-        ClassCache.modTypes.UnionWith(Declared);
+        return declared;
     }
 }
