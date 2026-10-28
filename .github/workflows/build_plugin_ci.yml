@@ -19,10 +19,18 @@ on:
         required: false
         type: boolean
         default: true
+      include_emmersive:
+        required: false
+        type: boolean
+        default: false
       prerelease:
         required: false
         type: boolean
         default: false
+      nuget_cache:
+        required: false
+        type: boolean
+        default: true
       artifact_name_prefix:
         required: true
         type: string
@@ -49,6 +57,7 @@ jobs:
           fetch-depth: 0
           sparse-checkout: |
             ${{ inputs.include_cwl && 'CustomWhateverLoader/' || '' }}
+            ${{ inputs.include_emmersive && 'Emmersive/' || '' }}
             ${{ inputs.plugin_name }}/
             Directory.Build.props
             global.json
@@ -76,14 +85,16 @@ jobs:
         uses: actions/setup-dotnet@v5
         with:
           global-json-file: ${{ github.workspace }}\global.json
-          cache: true
+          cache: ${{ inputs.nuget_cache }}
           cache-dependency-path: |
             ${{ inputs.include_cwl && format('{0}\CustomWhateverLoader\packages.lock.json', github.workspace) || '' }}
+            ${{ inputs.include_emmersive && format('{0}\Emmersive\packages.lock.json', github.workspace) || '' }}
             ${{ github.workspace }}\${{ inputs.plugin_path }}\packages.lock.json
 
       - name: Setup Packages
         run: |
           ${{ inputs.include_cwl && format('dotnet restore {0}\CustomWhateverLoader\ --locked-mode', github.workspace) || '' }}
+          ${{ inputs.include_emmersive && format('dotnet restore {0}\Emmersive\ --locked-mode', github.workspace) || '' }}
           dotnet restore ${{ github.workspace }}\${{ inputs.plugin_path }}\ --locked-mode
 
       - name: Build
@@ -97,7 +108,8 @@ jobs:
 
           $outDir = "${{ github.workspace }}\out\${{ matrix.version }}-${{ matrix.configuration }}"
           ${{ inputs.include_cwl && format('dotnet build {0}\CustomWhateverLoader\CustomWhateverLoader.csproj -o {0}\{1}\Package\Mod_CustomWhateverLoader -c $config --no-restore', github.workspace, matrix.version) || '' }}
-          dotnet build ${{ github.workspace }}\${{ inputs.plugin_path }}\${{ inputs.plugin_name }}.csproj -o $outDir -c $config --no-restore
+          ${{ inputs.include_emmersive && format('dotnet build {0}\Emmersive\Emmersive.csproj -o {0}\{1}\Package\Mod_Emmersive -c $config --no-restore', github.workspace, matrix.version) || '' }}
+          dotnet build ${{ github.workspace }}\${{ inputs.plugin_path }}\${{ inputs.plugin_name }}.csproj -o $outDir -c $config --no-restore ${{ inputs.include_emmersive && format('-p:EmmersiveDllPath={0}\{1}\Package\Mod_Emmersive\Emmersive.dll', github.workspace, matrix.version) || '' }}
 
           $dllPath = Join-Path -Path $outDir -ChildPath "${{ inputs.plugin_name }}.dll"
           $fileVersion = (Get-Item -Path $dllPath).VersionInfo.FileVersion
