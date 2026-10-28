@@ -66,19 +66,13 @@ internal static class ProbeDie
 
 ## Looking up game code
 
-This server does not index source. Use these three, in this order:
+This server does not index source. Look things up in this order:
 
-1. **Knowledge server**, if connected. `elin_guide` answers how to make something. For how something is implemented, use `elin_find`, then `elin_callers`, then `elin_read`. `elin_strings` finds values such as sound ids and lang keys, which are not symbol names.
-2. **Reflection in `elin_eval`** gives the exact signatures of the installed version, including inherited overloads and the parameter names Harmony binds by:
-   `string.Join("\n", typeof(Chara).GetMethods(AccessTools.all).Where(m => m.Name == "DamageHP").Select(m => m.DeclaringType.Name + "." + m.Name + "(" + string.Join(", ", m.GetParameters().Select(p => p.ParameterType.Name + " " + p.Name)) + ")"))`
-3. **A local decompile** you make yourself from the installed game, so it matches that version. `<Elin install>` is the game root, the folder with `BepInEx` and `Elin_Data`, and is often in `$ElinGamePath`. You need the .NET 10 SDK.
-   ```bash
-   dotnet tool install --global ilspycmd
-   ilspycmd -p -o ./Elin-Decompiled/Elin -r "<Elin install>/Elin_Data/Managed" -r "<Elin install>/Package/_ModdingKit" -r "<Elin install>/BepInEx/core" "<Elin install>/Elin_Data/Managed/Elin.dll"
-   ```
-   All game logic is in `Elin.dll`. `Assembly-CSharp.dll` is a near-empty leftover. `Lang` and `BaseModManager` are in `Plugins.BaseCore.dll`, and the official modding API is in `Plugins.Modding.dll`. Decompile those the same way when you need them.
+1. **The local decompile** in `~/Elin-Decompiled`. It is built from the installed game, so it matches the running version. Step 2 of <https://mcp.elin-modding.net/llms.txt> creates and refreshes it, and the `elin-modding` skill covers checking that it is current and searching it.
+2. **The knowledge server**, when you cannot build a local copy or need the branch the user does not run. `elin_guide` answers how to make something; `elin_find`, `elin_callers`, `elin_read` and `elin_strings` search its online index.
 
-When the knowledge server is connected, compare `elin_versions` with the game version from `elin_instances` (`EA 23.349` vs `23.348.1`: compare the middle number). If the installed game is newer than the index, use reflection for signatures and a fresh decompile for method bodies, and tell the user the index lags.
+To confirm a signature in the running game, including inherited overloads and the parameter names Harmony binds by, reflect in `elin_eval`:
+`string.Join("\n", typeof(Chara).GetMethods(AccessTools.all).Where(m => m.Name == "DamageHP").Select(m => m.DeclaringType.Name + "." + m.Name + "(" + string.Join(", ", m.GetParameters().Select(p => p.ParameterType.Name + " " + p.Name)) + ")"))`
 
 Locate before you read. `Chara.cs` is about 67k tokens and `Card.cs` about 45k. Search for the member with `rg -n`, then read about 60 lines around the hit.
 
@@ -103,7 +97,7 @@ Older stable builds log fewer of these. Then read `Player.log`, which sits next 
 |---|---|
 | Testing right after `elin_build` | `elin_kill` and `elin_launch` first |
 | Patch compiles, so it is reported as working | Trigger it and see its log line or effect |
-| Patch loads but never fires | `elin_callers` to check the method runs on that path; reflect to check the overload and parameter names |
+| Patch loads but never fires | Search the call sites in the local decompile (`rg -n "\bName\("`, or `elin_callers`) to check the method runs on that path; reflect to check the overload and parameter names |
 | Calling `elin_eval` on player state at the title screen | Load a save first |
 | Reading a whole decompiled file | `rg -n` for the member, read a slice |
 | Moving the player in the user's main save | Most zone changes autosave. Ask first, or use a throwaway save. |

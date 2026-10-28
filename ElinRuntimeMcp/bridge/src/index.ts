@@ -41,9 +41,9 @@ To try a patch without rebuilding, elin_hotload one .cs file or source string: c
 elin_eval runs a C# script on the Unity main thread and the game freezes while it runs. Never await, and never loop waiting for game state inside a script; poll with elin_wait_eval instead. Qualify game statics (EClass.pc, EClass._zone, EClass.game, EClass.core). Return JsonConvert.SerializeObject(...) for structured results. Script["key"] keeps values between calls.
 
 Looking up game code: this server does not index source.
-- If the Elin knowledge MCP server (${KNOWLEDGE_URL}) is connected, use its elin_guide, elin_find, elin_callers and elin_read tools. If it is not, offer it to the user: it needs no install, and ${KNOWLEDGE_URL}/llms.txt is its setup guide.
-- For the exact signatures of the installed game version, including inherited members and parameter names (Harmony injects by name), reflect in elin_eval: ${SIGNATURE_RECIPE}
-- For full-text search, decompile <game>/Elin_Data/Managed/Elin.dll locally with ilspycmd.
+- First, the local decompile of the installed game in ~/Elin-Decompiled. It matches the installed version; step 2 of ${KNOWLEDGE_URL}/llms.txt creates and refreshes it. Search it with rg and read only the lines you need.
+- Then the Elin knowledge MCP server (${KNOWLEDGE_URL}), when there is no local copy or you need the other branch: elin_find, elin_callers, elin_read. Its elin_guide is where to start for how to make a mod. If it is not connected, offer it to the user: it needs no install, and ${KNOWLEDGE_URL}/llms.txt is its setup guide.
+- For the exact signatures in the running game, including inherited members and parameter names (Harmony injects by name), reflect in elin_eval: ${SIGNATURE_RECIPE}
 
 elin_logs holds this instance's BepInEx and Unity log since the process started. Lines logged before this mod loaded show "startup" instead of a time; search those with contains, since their level is not recorded. Why a mod did not load, by what to search for: "Failed to activate mod" (its activation threw), "Skipped (" (made for an older game version, or a dependency is missing), "Blocked:" (incompatible with another mod), "Not a package:" (folder without package.xml), "does not parse" (broken package.xml; the game then refuses to start). "Activating(" only means activation was attempted. Older stable game builds log fewer of these lines.
 

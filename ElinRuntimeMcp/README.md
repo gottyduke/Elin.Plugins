@@ -81,7 +81,7 @@ New-Item -ItemType Junction -Path "$HOME\.claude\skills\elin-runtime" -Target "<
 ln -s "<this folder>/skills/elin-runtime" ~/.claude/skills/elin-runtime
 ```
 
-The companion skill [`elin-modding`](https://github.com/Elin-Modding-Resources/Elin.MCP/tree/main/skills) covers the knowledge server, mod packaging, and decompiling the game. Install both if you use both servers. The knowledge server serves its two files: download <https://mcp.elin-modding.net/skills/elin-modding/SKILL.md> and <https://mcp.elin-modding.net/skills/elin-modding/setup.md> into `<skills folder>/elin-modding/`.
+The companion skill [`elin-modding`](https://github.com/Elin-Modding-Resources/Elin.MCP/tree/main/skills) covers looking up game code (a local decompile first, then the knowledge server), mod packaging, and source sheets. Install both if you use both servers. The knowledge server serves its two files: download <https://mcp.elin-modding.net/skills/elin-modding/SKILL.md> and <https://mcp.elin-modding.net/skills/elin-modding/setup.md> into `<skills folder>/elin-modding/`.
 
 ## Tools
 
@@ -205,13 +205,24 @@ Turn on the game's debug cheats without restarting with `elin_command "mod.elin_
 
 ## Looking up game code
 
-This server runs code in the game but does not index its source. Use these three sources, in this order:
+This server runs code in the game but does not index its source. Use these sources, in this order:
 
 | Source | Answers | Needs |
 |---|---|---|
-| [Knowledge server](#the-knowledge-server) | How do I make X? Where is X implemented, and who calls it? Which ids and sheet columns exist? | Nothing local, only the URL |
-| [Reflection](#reflection-in-the-running-game) in `elin_eval` | The exact signatures, overloads, and parameter names in the version you have installed | The game running with this mod |
-| [A local decompile](#a-local-decompile) | Method bodies of a game version the index does not have yet, regex across the whole source, offline work | .NET 10 SDK and `ilspycmd` |
+| [A local decompile](#a-local-decompile) | Where X is implemented and who calls it, in the version you have installed. Regex across the whole source, offline. | .NET 10 SDK and `ilspycmd` |
+| [Knowledge server](#the-knowledge-server) | How do I make X? Which ids and sheet columns exist? Code lookups when you have no local copy, or for the other branch. | Nothing local, only the URL |
+| [Reflection](#reflection-in-the-running-game) in `elin_eval` | The exact signatures, overloads, and parameter names in the running game | The game running with this mod |
+
+### A local decompile
+
+Step 2 of <https://mcp.elin-modding.net/llms.txt> decompiles the game you have installed into `~/Elin-Decompiled`, one folder per assembly, and re-runs in seconds when nothing changed, so run it again after each game update. The `elin-modding` skill covers checking that the copy is current and searching it. Keep the output out of your mod's repository and do not publish it.
+
+Do not read a decompiled file whole. `Chara.cs` is 248 KB and `Card.cs` is 167 KB, which is about 67k and 45k tokens. Locate the member first, then read only its lines:
+
+```bash
+rg -n "\bvoid Die\(" ~/Elin-Decompiled/Elin/Chara.cs   # the member's line
+rg -n "\.Die\(" ~/Elin-Decompiled -g "*.cs"            # call sites
+```
 
 ### The knowledge server
 
@@ -220,63 +231,16 @@ This server runs code in the game but does not index its source. Use these three
 | For | Call |
 |---|---|
 | How do I make X | `elin_guide`, then the articles it names |
-| Where X is implemented | `elin_find`, then `elin_read` for the one member you need |
+| Where X is implemented, with no local copy | `elin_find`, then `elin_read` for the one member you need |
 | When X runs | `elin_callers`. Skipping this is the usual reason a patch compiles, loads, and never fires. |
 | A value rather than a name, such as a sound id or a lang key | `elin_strings` |
 | Which game version each branch is indexed at | `elin_versions` |
 
-Compare `elin_versions` with the game version that `elin_instances` reports. `EA 23.349` against `23.348.1` means compare the middle number; the third part is a hotfix counter. When the installed game is newer than the index, use reflection for signatures and a local decompile for method bodies.
+Line numbers from the knowledge server match your local copy only when both were made with the same `ilspycmd` version, so search by name.
 
 ### Reflection in the running game
 
-The signature recipe under [Recipes](#recipes) answers for the version that is actually running, including overloads declared on base classes. It matters most on the nightly branch, where the index can lag behind.
-
-### A local decompile
-
-Make your own copy from the game you have installed, so it always matches that version. The modding kit references Roslyn in its own folder and Harmony in `BepInEx/core`, so pass all three folders with `-r`, or signatures show bare assembly names instead of types.
-
-```bash
-dotnet tool install --global ilspycmd
-```
-
-PowerShell:
-
-```powershell
-$Game = "C:\Program Files (x86)\Steam\steamapps\common\Elin"   # or $env:ElinGamePath
-$M = "$Game\Elin_Data\Managed"
-foreach ($a in 'Elin', 'Plugins.BaseCore', 'Plugins.Modding') {
-    ilspycmd -p -o ".\Elin-Decompiled\$a" -r $M -r "$Game\Package\_ModdingKit" -r "$Game\BepInEx\core" "$M\$a.dll"
-}
-```
-
-bash:
-
-```bash
-GAME="/c/Program Files (x86)/Steam/steamapps/common/Elin"   # or "$ElinGamePath"
-M="$GAME/Elin_Data/Managed"
-for a in Elin Plugins.BaseCore Plugins.Modding; do
-  ilspycmd -p -o "./Elin-Decompiled/$a" -r "$M" -r "$GAME/Package/_ModdingKit" -r "$GAME/BepInEx/core" "$M/$a.dll"
-done
-```
-
-| Assembly | Contents |
-|---|---|
-| `Elin` | All game logic. This is what Harmony patches target. |
-| `Plugins.BaseCore` | `Lang`, `EInput`, and `BaseModManager`, the mod event bus |
-| `Plugins.Modding` | The official modding API: `EMod`, `ICustomContent`, `PackageIterator` |
-
-`Assembly-CSharp.dll` is a near-empty leftover, so skip it. The `elin-modding` skill lists the full set of assemblies the knowledge server indexes. Elin is a Mono build, so there is no IL2CPP step.
-
-Keep the output out of your mod's repository and do not publish it. It is for reading.
-
-Do not read a decompiled file whole. `Chara.cs` is 248 KB and `Card.cs` is 167 KB, which is about 67k and 45k tokens. Locate the member first, then read only its lines:
-
-```bash
-rg -n "\bvoid Die\(" Elin-Decompiled/Elin/Chara.cs   # the member's line
-rg -n "\.Die\(" Elin-Decompiled -g "*.cs"            # call sites
-```
-
-Search by name. Line numbers from the knowledge server match your copy only when both were made with the same `ilspycmd` version.
+The signature recipe under [Recipes](#recipes) answers for the version that is actually running, including overloads declared on base classes.
 
 ## Several instances
 
