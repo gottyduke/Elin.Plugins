@@ -48,7 +48,7 @@ internal class TabAiService : TabEmmersiveBase
             try {
                 external.OnLayout(Horizontal());
             } catch (Exception ex) {
-                EmMod.Warn<TabAiService>($"external layout {external.GetType().Name} failed: {ex.Message}");
+                EmMod.Warn<TabAiService>($"external layout {EmPluginRegistry.GetProviderName(external)} failed: {ex.Message}");
             }
         }
     }
@@ -63,7 +63,7 @@ internal class TabAiService : TabEmmersiveBase
             try {
                 external.OnLayoutConfirm();
             } catch (Exception ex) {
-                EmMod.Warn<TabAiService>($"external layout {external.GetType().Name} failed: {ex.Message}");
+                EmMod.Warn<TabAiService>($"external layout {EmPluginRegistry.GetProviderName(external)} failed: {ex.Message}");
             }
         }
 

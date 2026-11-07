@@ -5,11 +5,11 @@ namespace Emmersive.API.ThirdParty;
 
 public static class EmEvent
 {
-    public const int ApiLevel = 6;
+    public const int ApiLevel = 7;
 
     /// <summary>
     ///     args = <see cref="int" />,
-    ///     current: 6
+    ///     current: 7
     /// </summary>
     public const string EmmersiveReady = "emmersive.mod_ready";
     public const string SceneLine = "emmersive.scene_line";
