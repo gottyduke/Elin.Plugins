@@ -18,7 +18,7 @@ internal partial class EConsole
     [ConsoleCommand("ugc.list")]
     internal static void CheckWorkshopItems()
     {
-        Steam.QueryAllMyPublished(OnQueryComplete, ex => EGui.CreatePopup(ex));
+        Steam.QueryAllMyPublished(OnQueryComplete, ex => EGui.CreatePopup(ex), 60f);
         return;
 
         void OnQueryComplete(List<WorkshopItem> list)

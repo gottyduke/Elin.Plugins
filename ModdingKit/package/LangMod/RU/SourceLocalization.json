@@ -20,6 +20,9 @@
   "LangGeneral.es_warn_missing_mods.text": "Отсутствующие моды в текущем сохранении:\n#1",
   "LangGeneral.es_warn_missing_mods_no.text": "Продолжить игру",
   "LangGeneral.es_warn_missing_mods_yes.text": "Не сохранять и вернуться в меню",
+  "LangGeneral.feedbackCurrentSave.text": "Текущее сохранение",
+  "LangGeneral.mod_check_all.text": "Отметить все",
+  "LangGeneral.mod_check_all_confirm.text": "Отметить модов: #1?",
   "LangGeneral.mod_filter.text": "Фильтр",
   "LangGeneral.mod_filter_disabled.text": "Отключённые",
   "LangGeneral.mod_filter_enabled.text": "Включённые",
@@ -80,5 +83,7 @@
   "LangGeneral.mod_preview.text": "Показать изображение превью",
   "LangGeneral.mod_preview_none.text": "Нет изображения превью",
   "LangGeneral.mod_preview_unsupported.text": "Неподдерживаемый формат изображения превью",
-  "LangGeneral.mod_search.text": "Поиск модов..."
+  "LangGeneral.mod_search.text": "Поиск модов...",
+  "LangGeneral.mod_uncheck_all.text": "Снять все отметки",
+  "LangGeneral.mod_uncheck_all_confirm.text": "Снять отметку с модов: #1?"
 }

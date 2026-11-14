@@ -20,6 +20,9 @@
   "LangGeneral.es_warn_missing_mods.text": "Mods manquants dans la sauvegarde actuelle :\n#1",
   "LangGeneral.es_warn_missing_mods_no.text": "Continuer à jouer",
   "LangGeneral.es_warn_missing_mods_yes.text": "Ne pas sauvegarder et retourner au titre",
+  "LangGeneral.feedbackCurrentSave.text": "Sauvegarde actuelle",
+  "LangGeneral.mod_check_all.text": "Tout cocher",
+  "LangGeneral.mod_check_all_confirm.text": "Cocher #1 mod(s) ?",
   "LangGeneral.mod_filter.text": "Filtre",
   "LangGeneral.mod_filter_disabled.text": "Désactivés",
   "LangGeneral.mod_filter_enabled.text": "Activés",
@@ -80,5 +83,7 @@
   "LangGeneral.mod_preview.text": "Voir l'aperçu",
   "LangGeneral.mod_preview_none.text": "Aucune image d'aperçu",
   "LangGeneral.mod_preview_unsupported.text": "Format d'image d'aperçu non pris en charge",
-  "LangGeneral.mod_search.text": "Rechercher des mods..."
+  "LangGeneral.mod_search.text": "Rechercher des mods...",
+  "LangGeneral.mod_uncheck_all.text": "Tout décocher",
+  "LangGeneral.mod_uncheck_all_confirm.text": "Décocher #1 mod(s) ?"
 }

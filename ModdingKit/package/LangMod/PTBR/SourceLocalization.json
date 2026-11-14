@@ -20,6 +20,9 @@
   "LangGeneral.es_warn_missing_mods.text": "Mods ausentes no save atual:\n#1",
   "LangGeneral.es_warn_missing_mods_no.text": "Continuar jogando",
   "LangGeneral.es_warn_missing_mods_yes.text": "Não salvar e voltar ao título",
+  "LangGeneral.feedbackCurrentSave.text": "Save atual",
+  "LangGeneral.mod_check_all.text": "Marcar tudo",
+  "LangGeneral.mod_check_all_confirm.text": "Marcar #1 mod(s)?",
   "LangGeneral.mod_filter.text": "Filtro",
   "LangGeneral.mod_filter_disabled.text": "Desativados",
   "LangGeneral.mod_filter_enabled.text": "Ativados",
@@ -80,5 +83,7 @@
   "LangGeneral.mod_preview.text": "Ver imagem de pré-visualização",
   "LangGeneral.mod_preview_none.text": "Sem imagem de pré-visualização",
   "LangGeneral.mod_preview_unsupported.text": "Formato de imagem de pré-visualização não suportado",
-  "LangGeneral.mod_search.text": "Buscar mods..."
+  "LangGeneral.mod_search.text": "Buscar mods...",
+  "LangGeneral.mod_uncheck_all.text": "Desmarcar tudo",
+  "LangGeneral.mod_uncheck_all_confirm.text": "Desmarcar #1 mod(s)?"
 }

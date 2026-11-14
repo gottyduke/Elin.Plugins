@@ -20,6 +20,9 @@
   "LangGeneral.es_warn_missing_mods.text": "현재 저장 파일에서 누락된 모드:\n#1",
   "LangGeneral.es_warn_missing_mods_no.text": "계속 플레이",
   "LangGeneral.es_warn_missing_mods_yes.text": "저장하지 않고 타이틀로 돌아가기",
+  "LangGeneral.feedbackCurrentSave.text": "현재 저장 파일",
+  "LangGeneral.mod_check_all.text": "모두 선택",
+  "LangGeneral.mod_check_all_confirm.text": "모드 #1개를 선택하시겠습니까?",
   "LangGeneral.mod_filter.text": "필터",
   "LangGeneral.mod_filter_disabled.text": "비활성화됨",
   "LangGeneral.mod_filter_enabled.text": "활성화됨",
@@ -80,5 +83,7 @@
   "LangGeneral.mod_preview.text": "미리보기 이미지 보기",
   "LangGeneral.mod_preview_none.text": "미리보기 이미지가 없습니다",
   "LangGeneral.mod_preview_unsupported.text": "지원하지 않는 미리보기 이미지 형식입니다",
-  "LangGeneral.mod_search.text": "모드 검색..."
+  "LangGeneral.mod_search.text": "모드 검색...",
+  "LangGeneral.mod_uncheck_all.text": "모두 선택 해제",
+  "LangGeneral.mod_uncheck_all_confirm.text": "모드 #1개의 선택을 해제하시겠습니까?"
 }

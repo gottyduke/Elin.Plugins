@@ -20,6 +20,9 @@
   "LangGeneral.es_warn_missing_mods.text": "Fehlende Mods im aktuellen Spielstand:\n#1",
   "LangGeneral.es_warn_missing_mods_no.text": "Weiterspielen",
   "LangGeneral.es_warn_missing_mods_yes.text": "Nicht speichern und zum Titel zurückkehren",
+  "LangGeneral.feedbackCurrentSave.text": "Aktueller Spielstand",
+  "LangGeneral.mod_check_all.text": "Alle auswählen",
+  "LangGeneral.mod_check_all_confirm.text": "#1 Mod(s) auswählen?",
   "LangGeneral.mod_filter.text": "Filter",
   "LangGeneral.mod_filter_disabled.text": "Deaktiviert",
   "LangGeneral.mod_filter_enabled.text": "Aktiviert",
@@ -80,5 +83,7 @@
   "LangGeneral.mod_preview.text": "Vorschaubild anzeigen",
   "LangGeneral.mod_preview_none.text": "Kein Vorschaubild",
   "LangGeneral.mod_preview_unsupported.text": "Vorschaubildformat wird nicht unterstützt",
-  "LangGeneral.mod_search.text": "Mods suchen..."
+  "LangGeneral.mod_search.text": "Mods suchen...",
+  "LangGeneral.mod_uncheck_all.text": "Alle abwählen",
+  "LangGeneral.mod_uncheck_all_confirm.text": "#1 Mod(s) abwählen?"
 }

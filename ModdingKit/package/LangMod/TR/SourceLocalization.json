@@ -20,6 +20,9 @@
   "LangGeneral.es_warn_missing_mods.text": "Mevcut kayıtta eksik modlar:\n#1",
   "LangGeneral.es_warn_missing_mods_no.text": "Oyuna devam et",
   "LangGeneral.es_warn_missing_mods_yes.text": "Kaydetmeden başlığa dön",
+  "LangGeneral.feedbackCurrentSave.text": "Mevcut kayıt",
+  "LangGeneral.mod_check_all.text": "Tümünü işaretle",
+  "LangGeneral.mod_check_all_confirm.text": "#1 mod işaretlensin mi?",
   "LangGeneral.mod_filter.text": "Filtre",
   "LangGeneral.mod_filter_disabled.text": "Devre dışı",
   "LangGeneral.mod_filter_enabled.text": "Etkin",
@@ -80,5 +83,7 @@
   "LangGeneral.mod_preview.text": "Önizleme görselini göster",
   "LangGeneral.mod_preview_none.text": "Önizleme görseli yok",
   "LangGeneral.mod_preview_unsupported.text": "Desteklenmeyen önizleme görseli biçimi",
-  "LangGeneral.mod_search.text": "Mod ara..."
+  "LangGeneral.mod_search.text": "Mod ara...",
+  "LangGeneral.mod_uncheck_all.text": "Tüm işaretleri kaldır",
+  "LangGeneral.mod_uncheck_all_confirm.text": "#1 modun işareti kaldırılsın mı?"
 }
