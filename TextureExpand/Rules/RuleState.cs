@@ -18,18 +18,18 @@ internal static class RuleState
         ReplaceRules.Clear();
     }
 
-    internal static bool Judge(Chara chara, int tile)
+    internal static bool Judge(Chara chara)
     {
         List<ReplaceRule>? tileRules = null;
         if (RenderDataExpander.TileOrigins.TryGetValue(chara.source._idRenderData, out var origins) &&
-            origins.TryGetValue(tile, out var original)) {
+            origins.TryGetValue(CurrentTile(chara), out var original)) {
             RuleRegistry.ByTile.TryGetValue(original, out tileRules);
         }
 
         RuleRegistry.ByCharaId.TryGetValue(chara.id, out var charaRules);
 
         if (tileRules is null && charaRules is null) {
-            return false;
+            return ReplaceRules.Remove(chara.uid);
         }
 
         ReplaceRules.TryGetValue(chara.uid, out var before);
@@ -43,6 +43,20 @@ internal static class RuleState
 
         ReplaceRules.TryGetValue(chara.uid, out var after);
         return !ReferenceEquals(before, after);
+    }
+
+    private static int CurrentTile(Chara chara)
+    {
+        var row = chara.source;
+        var tiles = row._tiles_snow.Length != 0 && EClass._zone.IsSnowCovered ? row._tiles_snow : row._tiles;
+        if (tiles.Length == 0) {
+            return -1;
+        }
+
+        var skin = tiles.Length > 1 && chara.idSkin == 0 && !row.staticSkin
+            ? chara.uid % tiles.Length / 2 * 2 + (chara.IsMale ? 0 : 1)
+            : chara.idSkin;
+        return tiles[skin < tiles.Length ? skin : 0];
     }
 
     private static bool Judge(Chara chara, List<ReplaceRule> rules, bool conditionalOnly)

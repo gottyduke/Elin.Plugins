@@ -19,7 +19,7 @@ internal class CharaRendererPatch
         }
 
         var owner = __instance.owner;
-        if (RuleState.JudgeQueue.Remove(owner.uid) && RuleState.Judge(owner, (int)Mathf.Abs(p.tile))) {
+        if (RuleState.JudgeQueue.Remove(owner.uid) && RuleState.Judge(owner)) {
             ActorSprite.Reload(__instance);
         }
 
