@@ -12,7 +12,7 @@ internal static class ModInfo
 {
     internal const string Guid = "sobagaki.TextureExpand";
     internal const string Name = "TextureExpand";
-    internal const string Version = "1.6.0";
+    internal const string Version = "1.7.0";
 }
 
 [BepInPlugin(ModInfo.Guid, ModInfo.Name, ModInfo.Version)]
