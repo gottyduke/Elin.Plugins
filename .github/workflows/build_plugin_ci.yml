@@ -132,6 +132,8 @@ jobs:
         if: github.event_name != 'pull_request' && github.event_name != 'pull_request_target'
         id: artifact
         shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           $source = "${{ steps.build.outputs.out_dir }}"
           $debugSuffix = "${{ steps.build.outputs.debug_suffix }}"
@@ -139,37 +141,87 @@ jobs:
 
           Compress-Archive -Path "$source\*" -DestinationPath $destination -Force
           $path = $destination -Replace '\\', '/'
-      
-          $tag = "${{ inputs.tag_prefix }}-${{ steps.build.outputs.file_version_short }}"
 
-          gh api repos/${{ github.repository }}/git/refs/tags/$tag -q "if .object then true else false" 2>$null
-          if ($LASTEXITCODE -eq 0) { gh api -X DELETE repos/${{ github.repository }}/git/refs/tags/$tag }
-          if (git tag -l $tag) { git tag -d $tag }
-          
-          $lastTag = git describe --tags --abbrev=0 --match="${{ inputs.tag_prefix }}-*"
-          $lastTagSha = git rev-parse $lastTag
-          $commits = @(git log "$($lastTag)..HEAD" --date=format:"%y-%m-%d %H:%M" --pretty=format:"- %cd %h %s @%an" -- ${{ inputs.plugin_path }} |
-            ? { $_ -notmatch "cleanup" })
+          $repo = "${{ github.repository }}"
+          $repoUrl = "${{ github.server_url }}/$repo"
+          $prefix = "${{ inputs.tag_prefix }}"
+          $version = [version]"${{ steps.build.outputs.file_version_short }}"
+          $tag = "$prefix-${{ steps.build.outputs.file_version_short }}"
+          $head = git rev-parse HEAD
 
-          $changelog = @(
-            "Last Tag ($lastTag): $lastTagSha"
-            ""
-          )
-          $changelog += $commits
+          gh api "repos/$repo/git/ref/tags/$tag" --silent 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            gh api -X PATCH "repos/$repo/git/refs/tags/$tag" -f sha=$head -F force=true --silent
+            if ($LASTEXITCODE -ne 0) { throw "failed to move $tag to $head" }
+          }
 
-          $changelog | Set-Content -Path "${{ github.workspace }}\CHANGELOG.txt" -Encoding utf8
+          $existing = (gh release view $tag -R $repo --json body -q .body 2>$null) -join "`n"
+
+          $lastTag = git tag -l "$prefix-*" |
+            ? { $v = $null; [version]::TryParse($_.Substring($prefix.Length + 1), [ref]$v) -and $v -lt $version } |
+            Sort-Object { [version]$_.Substring($prefix.Length + 1) } -Descending |
+            Select-Object -First 1
+
+          $begin = '<!-- ci-changelog -->'
+          $end = '<!-- /ci-changelog -->'
+          $notes = @($begin)
+          if ($lastTag) {
+            $notes += "Previous release: [$lastTag]($repoUrl/releases/tag/$lastTag) ([compare]($repoUrl/compare/$lastTag...$tag))"
+            $notes += ""
+            $notes += @(git log "$lastTag...HEAD" --right-only --cherry-pick --no-merges --date=format:"%y-%m-%d %H:%M" --pretty=format:"%H%x09%h%x09%cd%x09%s" -- ${{ inputs.plugin_path }} |
+              % { $sha, $short, $date, $subject = $_ -split "`t", 4; if ($subject -notmatch 'cleanup|bump version') { "- $date [$short]($repoUrl/commit/$sha) $subject" } })
+          } else {
+            $notes += "Initial release."
+          }
+          $notes += $end
+          $block = $notes -join "`n"
+
+          $i = $existing.IndexOf($begin)
+          $j = $existing.IndexOf($end)
+          if ($i -ge 0 -and $j -gt $i) {
+            $body = $existing.Substring(0, $i) + $block + $existing.Substring($j + $end.Length)
+          } else {
+            $manual = (($existing -split '\r?\n' | ? { $_ -notmatch '^(Last Tag \(|- \d{2}-\d{2}-\d{2} \d{2}:\d{2} [0-9a-f]{7,} )' }) -join "`n").Trim()
+            $body = if ($manual) { "$block`n`n$manual" } else { $block }
+          }
+
+          $notesPath = "$env:RUNNER_TEMP\release_notes.md"
+          $body | Set-Content -Path $notesPath -Encoding utf8
           echo "artifact_path=$path" >> $env:GITHUB_OUTPUT
+          echo "notes_path=$notesPath" >> $env:GITHUB_OUTPUT
+          echo "head_sha=$head" >> $env:GITHUB_OUTPUT
+          echo "tag=$tag" >> $env:GITHUB_OUTPUT
 
       - name: Create or Update Release
         if: github.event_name != 'pull_request' && github.event_name != 'pull_request_target'
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ inputs.tag_prefix }}-${{ steps.build.outputs.file_version_short }}
+          target_commitish: ${{ steps.artifact.outputs.head_sha }}
           name: ${{ inputs.release_name_prefix }} ${{ steps.build.outputs.file_version }}
           draft: false
           prerelease: ${{ inputs.prerelease }}
           generate_release_notes: false
-          body_path: ${{ github.workspace }}\CHANGELOG.txt
+          body_path: ${{ steps.artifact.outputs.notes_path }}
           files: ${{ steps.artifact.outputs.artifact_path }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Remove Stale Assets
+        if: github.event_name != 'pull_request' && github.event_name != 'pull_request_target'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $repo = "${{ github.repository }}"
+          $tag = "${{ steps.artifact.outputs.tag }}"
+          $current = Split-Path "${{ steps.artifact.outputs.artifact_path }}" -Leaf
+          $slot = "${{ inputs.artifact_name_prefix }}-ci-builds-${{ matrix.version }}-*-${{ steps.build.outputs.debug_suffix }}.zip"
+
+          $assets = @(gh release view $tag -R $repo --json assets -q '.assets[].name')
+          if ($LASTEXITCODE -ne 0) { throw "failed to list assets of $tag" }
+
+          $assets | ? { $_ -like $slot -and $_ -ne $current } | % {
+            gh release delete-asset $tag $_ -R $repo -y
+            if ($LASTEXITCODE -ne 0) { throw "failed to delete $_ from $tag" }
+          }
