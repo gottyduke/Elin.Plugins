@@ -31,7 +31,7 @@ internal class CharaPatch
     }
 
     [HarmonyPostfix]
-    [HarmonyPatch(typeof(Chara), nameof(Chara.AddCondition), typeof(Condition), typeof(bool))]
+    [HarmonyPatch(typeof(Chara), nameof(Chara.AddCondition), typeof(Condition), typeof(Chara), typeof(bool))]
     internal static void OnAddCondition(Chara __instance)
     {
         if (RuleKeywords.Has(__instance.id, Trigger.Condition)) {
