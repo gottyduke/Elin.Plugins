@@ -8,9 +8,6 @@ internal static class TextureExpander
 {
     internal static void Initialize()
     {
-        EClass.sources.charas.Init();
-        EClass.sources.elements.Init();
-
         RenderDataExpander.Begin();
 
         var groups = ReplaceSource.Collect();

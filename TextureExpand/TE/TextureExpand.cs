@@ -30,9 +30,12 @@ internal class TextureExpand : BaseUnityPlugin
     private void Awake()
     {
         Instance = this;
+        TextureCache.Dir = Path.GetDirectoryName(Info.Location)!;
 
         var harmony = new Harmony(ModInfo.Guid);
         harmony.PatchAll();
+
+        BaseModManager.SubscribeEvent(EVENT.SourceImported, OnSourceImported);
     }
 
     public IEnumerator Start()
@@ -41,9 +44,9 @@ internal class TextureExpand : BaseUnityPlugin
         UnpatchSuperseded();
     }
 
-    public void OnStartCore()
+    private static void OnSourceImported()
     {
-        TextureCache.Dir = Path.GetDirectoryName(Info.Location)!;
+        BaseModManager.UnsubscribeEvent(EVENT.SourceImported, OnSourceImported);
 
         try {
             TextureExpander.Initialize();
